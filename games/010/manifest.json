@@ -1,0 +1,20 @@
+{
+  "game": 10,
+  "players": null,
+  "ruleset": null,
+  "turns": null,
+  "outcome": null,
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": null,
+  "started": null,
+  "ended": null,
+  "coverage": {
+    "tier": "site_only",
+    "note": "No raw event log survives; this is a pre-rendered site copied verbatim from the game's original archive."
+  },
+  "era": "development"
+}

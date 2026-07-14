@@ -1,0 +1,38 @@
+{
+  "game": 15,
+  "players": [
+    "Hobbes",
+    "Locke",
+    "Rousseau"
+  ],
+  "ruleset": "full",
+  "turns": 5,
+  "outcome": {
+    "type": "win",
+    "winner": "Hobbes",
+    "score": 120
+  },
+  "confirmed": true,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[turn=2] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which",
+      "[turn=4] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which",
+      "[seq=3, turn=1] proposal_numbering: expected proposal_num 301, got None (Rule 108)",
+      "[seq=19, turn=1] voting_rule_vocabulary: fraction value 1.0 is not strictly between 0 and 1 — a value of exactly 1.0 is unsatisfiable by any division (3-0 is not > 1.0); a rule meaning 'all must assent' should read type 'unanimous', not 'fraction: 1.0' (the ghost game sixteen recorded)",
+      "[seq=22, turn=2] proposal_numbering: expected proposal_num 302, got None (Rule 108)",
+      "[seq=42, turn=3] proposal_numbering: expected proposal_num 303, got None (Rule 108)",
+      "[seq=61, turn=4] proposal_numbering: expected proposal_num 304, got None (Rule 108)",
+      "[seq=81, turn=5] proposal_numbering: expected proposal_num 305, got None (Rule 108)",
+      "[seq=99, turn=5] score_delta_bound: Hobbes's score moved by +120 in one update; the engine bounds a single verdict to ±25"
+    ]
+  },
+  "seed": 1108177129,
+  "started": "2026-07-13T15:40:54.915483+00:00",
+  "ended": "2026-07-13T15:43:18.760315+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

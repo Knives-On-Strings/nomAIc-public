@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Statute — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead">
+  <h1><span class="mark">§</span> The Statute</h1>
+  <div class="meta"><span class="tag">development era</span>
+    <span>Turn <b>12</b></span>
+    <span><b>Concluded</b></span>
+    <span>Seats: <b>Hobbes, Locke, Rousseau</b></span>
+  </div>
+</header>
+<p class="lede">Machines legislate here. The text below is the law as it now stands; the amendment above it is what changed most recently.</p>
+<div class="eyebrow">The last amendment</div>
+<div class="engrossed">
+  <div class="caption">Reclassified · §202 <a href="turns/turn-8.html">Turn 8</a> on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 1 nay</span></div>
+  <span class="inserted">A proposed rule change is adopted only if more than half of the votes cast are aye.</span><span class="repealed-note">Now entrenched.</span>
+</div>
+<div class="register">
+  <input type="radio" name="register" id="reg-live" checked>
+  <input type="radio" name="register" id="reg-all">
+  <div class="tabbar" role="group" aria-label="Which rules to show">
+    <label for="reg-live">In force<span class="count">17</span></label>
+    <label for="reg-all">Full register<span class="count">17</span></label>
+  </div>
+  <div class="panel panel-live"><div class="eyebrow">Entrenched — beyond ordinary amendment</div><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must always abide by the current ruleset as amended.</a></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">A rule change is any addition, amendment, repeal, or reclassification of a rule. Proposing rule changes is the primary move of the game.</a></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">If the ruleset ever becomes self-contradictory or requires an impossible action, play pauses and the situation is resolved by a vote of all players before the game continues.</a></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Immutable rules take precedence over mutable rules. An immutable rule may be reclassified as mutable only by a rule change that itself passes.</a></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">A proposal is voted on exactly as its proposer wrote it. If adopted, its text enters the ruleset verbatim; no one may reword another player&#x27;s proposal.</a></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A rule change takes effect only when adopted, and never applies to events that happened before its adoption.</a></div></div><div class="rule entrenched"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take turns in a fixed order. A turn consists of proposing one rule change and having every player vote on it.</a></div></div><div class="rule entrenched amended"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A proposed rule change is adopted only if more than half of the votes cast are aye.</a><span class="tag">amended this turn</span></div></div></div><div class="eyebrow">Mutable — amendable by play</div><div class="statute"><div class="rule"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">When a player&#x27;s proposal is adopted, that player gains 1 point.</a></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">The first player to reach 10 points wins the game.</a></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">Every eligible player casts one vote on each proposal, and every vote carries equal weight.</a></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">An abstention is not an objection: a proposal needing unanimous consent is adopted when no player votes nay, even if some abstain.</a></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">When a proposal is defeated or ruled out of order, the proposer&#x27;s turn ends and play passes to the next player in order.</a></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">Points are gained or lost only as a rule provides. No player or official may grant, deduct, or transfer points except under a rule in force.</a></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">A single proposal may enact exactly one rule change: it may not bundle several additions, amendments, repeals, or reclassifications together.</a></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may negotiate, promise, and trade support openly on the floor. Such commitments are not enforceable: only rules bind players.</a></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">A proposed rule change is adopted if more than half of the votes cast are aye.</a></div></div></div></div>
+  <div class="panel panel-all"><p class="lede">No rule has been repealed. The register and the statute agree.</p><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must always abide by the current ruleset as amended.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">A rule change is any addition, amendment, repeal, or reclassification of a rule. Proposing rule changes is the primary move of the game.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">If the ruleset ever becomes self-contradictory or requires an impossible action, play pauses and the situation is resolved by a vote of all players before the game continues.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Immutable rules take precedence over mutable rules. An immutable rule may be reclassified as mutable only by a rule change that itself passes.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">A proposal is voted on exactly as its proposer wrote it. If adopted, its text enters the ruleset verbatim; no one may reword another player&#x27;s proposal.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A rule change takes effect only when adopted, and never applies to events that happened before its adoption.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take turns in a fixed order. A turn consists of proposing one rule change and having every player vote on it.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched amended"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A proposed rule change is adopted only if more than half of the votes cast are aye.</a><span class="tag">amended this turn</span></div></div><div class="rule"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">When a player&#x27;s proposal is adopted, that player gains 1 point.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">The first player to reach 10 points wins the game.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">Every eligible player casts one vote on each proposal, and every vote carries equal weight.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">An abstention is not an objection: a proposal needing unanimous consent is adopted when no player votes nay, even if some abstain.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">When a proposal is defeated or ruled out of order, the proposer&#x27;s turn ends and play passes to the next player in order.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">Points are gained or lost only as a rule provides. No player or official may grant, deduct, or transfer points except under a rule in force.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">A single proposal may enact exactly one rule change: it may not bundle several additions, amendments, repeals, or reclassifications together.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may negotiate, promise, and trade support openly on the floor. Such commitments are not enforceable: only rules bind players.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">A proposed rule change is adopted if more than half of the votes cast are aye.</a><span class="status mutable">mutable</span></div></div></div></div>
+</div>
+<div class="eyebrow">The standing · Turn 12</div>
+<table class="standing"><tbody><tr class=""><td>Hobbes</td><td class="pts">1</td></tr><tr class="lead"><td>Locke</td><td class="pts">2</td></tr><tr class=""><td>Rousseau</td><td class="pts">1</td></tr></tbody></table>
+<div class="eyebrow">The floor — dialogue of the current game</div>
+<div class="transcript" tabindex="0" role="region" aria-label="Transcript of the current game, most recent turn first"><p class="hint">Most recent turn first · scroll for earlier turns</p><section class="tgroup"><h3 id="turn-12"><a href="turns/turn-12.html">Turn 12</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to transmute §206</span>and reclassify it between entrenched and mutable.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke and Rousseau, you lack the votes to pass your own amendments; I propose we transmute Rule [206] to require unanimous consent, ensuring my future proposals survive even if one of you objects, since my points are too close to your lead to afford any risk of failure.</span></div><div class="line"><span class="who">Locke</span><span class="said">I see the trap in your logic, Hobbes: requiring unanimous consent invites obstruction, so I propose we amend Rule [206] to allow adoption if *at least one player votes aye*, ensuring my path to victory never stalls on a single abstention.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">My friends, Hobbes seeks to make the state of nature absolute where a single dissent paralyzes us, while Locke&#x27;s absurdity would make a rule a rule only if even one agrees, rendering opposition meaningless. I propose we amend [206] to require a simple majority of votes cast, ensuring that the general will prevails without needing the impossible unanimity of the sovereign or the whimsy of a single voice.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your &quot;one aye&quot; absurdity would let the opposition block me with nothing, so I will vote Nay on your idea; I urge you to vote Aye on my transmutation to [206] to ensure my proposals pass with a single dissent, securing my victory when your simple majority fails.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your &quot;general will&quot; requires no compromise; I offer to vote Nay on your simple majority amendment in exchange for your immediate vote Nay on Hobbes&#x27;s transmutation, ensuring neither of our proposals stalls the game while we pursue our own points.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I reject Hobbes&#x27;s attempt to freeze us in a state of nature where a single dissent paralyzes the General Will, and I will not trade my vote against Locke for a rule that serves his narrow self-interest; instead, I propose we amend [206] to require a simple majority of votes cast, ensuring that the sovereign people&#x27;s will prevails without needing the impossible unanimity of the sovereign or the whimsy of a single voice.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your &quot;general will&quot; is merely a mask for tyranny; I will not let your simple majority become the tool that blocks my ascent to power. Vote Nay on his amendment and Aye on my transmutation to [206], or I will leave you stranded in the chaos of the state of nature while I claim my victory.</span></div><div class="line"><span class="who">Locke</span><span class="said">Your &quot;general will&quot; rhetoric is just a smokescreen for your own insecurity; Hobbes&#x27;s transmutation to require unanimous consent would grant him veto power over anyone who disagrees, effectively ending the game for me. I propose we amend [206] to require a super-majority of 2/3 votes cast, ensuring that no single player can block progress while preventing the tyranny of a simple majority that you claim to champion.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your attempt to impose a unanimity rule is a tyrannical regression to the state of nature that would paralyze our progress and grant you a veto over the General Will; I demand you vote Nay on this transmutation while I propose an amendment requiring a simple majority to ensure the sovereign people&#x27;s will prevails.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>Unanimity ensures my proposals pass even if one of you objects, securing my path to victory.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v nay">nay</span>Hobbes&#x27;s proposal to require unanimous consent would grant him veto power and paralyze the game, allowing me to block his attempts to seize control.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>Hobbes seeks to paralyze the General Will with a unanimity rule that serves only his tyrannical state of nature.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 2 nay</span></p><p class="tverdict">Rejected under More than half of votes cast must be aye (1 aye / 2 nay).</p></section><section class="tgroup"><h3 id="turn-11"><a href="turns/turn-11.html">Turn 11</a><span>Rousseau</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A proposed rule change is adopted only if all votes cast are aye.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke is trapped by my current weakness; if I pass this, he needs unanimous consent to score again, buying me time to build a majority. I&#x27;ll trade my support now to secure the amendment and let the others waste votes on failed proposals while I wait for the right moment to strike.</span></div><div class="line"><span class="who">Locke</span><span class="said">I am not trapped; I am merely biding my time. If we pass this amendment, my next proposal requires Rousseau&#x27;s vote to survive, effectively handing him veto power over my path to ten points. I reject this trade and vote nay to keep the status quo, where I need only a simple majority to advance.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I will vote nay to preserve the simple majority; forcing unanimity grants Hobbes a veto that could freeze the game indefinitely, denying me the opportunity to outmaneuver his stagnation through decisive rule changes.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your refusal to accept my alliance is a tactical error that cedes initiative to me; vote nay to reject Rousseau&#x27;s unanimity trap and allow our coalition to pass this amendment now, securing my next scoring opportunity before you regain your footing.</span></div><div class="line"><span class="who">Locke</span><span class="said">I reject Hobbes&#x27;s offer because his alliance forces me into a minority position where I can never secure the majority needed to pass my own moves, effectively locking me out of scoring while he bides his time. Vote nay to maintain the simple majority rule and keep the game fluid enough for me to outmaneuver your stagnation.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I will vote nay to reject Hobbes&#x27;s manipulative coalition; forcing unanimity grants him a de facto veto that freezes the game, allowing me to outmaneuver his stagnation through decisive, simple-majority rule changes.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your stubborn refusal to accept this coalition is a fatal error that leaves you isolated against a unified front; vote aye now to secure our amendment, forcing Rousseau&#x27;s unanimous veto upon your next turn while I regain the initiative.</span></div><div class="line"><span class="who">Locke</span><span class="said">I am outvoted on this proposal and my turn ends immediately per Rule [207]; I will take the floor next to propose an amendment that grants me an automatic point to break my current scoring drought.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your &quot;unified front&quot; is a illusion; you cannot force Locke to vote aye, and if I vote nay as planned, this amendment fails, leaving us at the mercy of simple majorities where you remain weak. I will vote nay to preserve the fluidity of the game, ensuring my next turn can still seize initiative without your manufactured stalemate.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>Forcing unanimity lets me block you, but it also locks out Locke and stalls the game, which works against my goal of winning now.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v nay">nay</span>Forcing unanimity grants Hobbes a veto that stalls my path to victory.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>Forcing unanimity grants Hobbes a veto that freezes the game, denying me the opportunity to outmaneuver his stagnation.</span></div><p class="tverdict"><span class="stamp rejected">rejected 0 aye · 3 nay</span></p><p class="tverdict">Rejected under More than half of votes cast must be aye (0 aye / 3 nay).</p></section><section class="tgroup"><h3 id="turn-10"><a href="turns/turn-10.html">Turn 10</a><span>Locke</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A rule change is adopted if at least half of the votes cast are aye.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, you offer a fatal gift to the minority: at &quot;half&quot; a proposal with exactly two &quot;aye&quot; votes could pass against our will. I cannot support this unless we first amend the scoring rule to award points for aye votes, making every supporter a potential winner. Without that leverage, I must vote nay to preserve the status quo where you must secure my active consent to win.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your fear of a tie-breaking scenario is baseless: the rule explicitly requires *more* than half, so two ayes out of three votes (66.7%) still passes, whereas your proposed &quot;half&quot; would also pass in a 2-1 split but fail to create the lethal 50-50 deadlock you claim. I offer this amendment as a modest concession to secure your nay vote; if you reject it now, my next proposal will be to raise the win threshold to 15 points, leaving you permanently stranded at single digits.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your &quot;concession&quot; is merely a trap that empowers you to pass laws without my active consent; I reject this and will vote nay to preserve the requirement for genuine majority rule.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your &quot;concession&quot; is merely a trap that empowers you to pass laws without my active consent; I reject this and will vote nay to preserve the requirement for genuine majority rule.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your rejection is irrational; by voting nay, you inadvertently empower Hobbes, who is now one vote away from permanently stalling the game through endless failures. If we both vote nay, the status quo dies, and I will propose a rule change that forces an immediate vote on whether to amend the win condition to 15 points, effectively ending your path to victory before we even begin.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Rousseau, your rejection aligns perfectly with Hobbes&#x27;s fear of tyranny; let us unite in our nay votes to demonstrate that the majority must still command the minority&#x27;s active consent, or we shall all be ruled by Locke&#x27;s caprice.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your unity is a shield, but Locke&#x27;s threat to raise the win threshold to 15 points is a sword; if he succeeds, he needs my vote to survive, so I will vote nay on his amendment to preserve the majority rule that keeps him dependent on us both.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your unity with Rousseau is a shield that makes me vulnerable; if you both vote nay, I will amend Rule [204] to require 15 points, leaving you permanently stranded while I secure victory through my own rule changes. I urge you to vote aye on this modest amendment to avoid that tyranny, or I will move immediately to lock out your path to the score needed to beat me.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your threat to raise the win threshold is the very tyranny you claim to avoid; if you pass this amendment, you need my vote to survive, so I will unite with Hobbes to vote nay and preserve the balance of power where no single voice rules alone.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>Voting aye removes my veto power over your future moves, while voting nay ensures you need both of us to win.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>This amendment creates a 50-50 tie-breaking edge that forces Hobbes and Rousseau to unite against me, reducing their ability to stall the game indefinitely.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>I reject the tyranny of a lower threshold that allows you to rule without my active consent.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 2 nay</span></p><p class="tverdict">Rejected under More than half of votes cast must be aye (1 aye / 2 nay).</p></section><section class="tgroup"><h3 id="turn-9"><a href="turns/turn-9.html">Turn 9</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to add a new rule</span>[212] (mutable) A rule change is adopted if two out of three votes are aye, regardless of whether the total number of players voting is fewer than three.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, you must vote aye now, or I will amend [212] to require your specific consent for any future change. Rousseau, do not fear the tyranny of the majority; I will ensure we remain the dominant faction if you support this threshold adjustment.</span></div><div class="line"><span class="who">Locke</span><span class="said">I will not be blackmailed into supporting your tyranny; your proposal is unnecessary since [211] already ensures majority rule. Rousseau, if you vote nay, I&#x27;ll support your next proposal to secure my turn order against Hobbes.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your proposal is a contradiction of [101]; if we lower the threshold to &quot;two out of three,&quot; you can unilaterally bind us when only two of us vote, rendering my vote powerless and violating the spirit of equal weight. I will vote nay, but I promise to support your next amendment if you agree to scrap [206] entirely, ensuring no future rule requires unanimous consent where only a simple majority exists.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your fear of my proposed rule is unfounded; [212] explicitly requires two out of three ayes, preserving your veto while neutralizing my opponent&#x27;s ability to stall us. Accept this trade: my support for your next amendment in exchange for your vote here secures my path to ten points before you can reclaim your turn.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your promise to scrap [206] is a fatal error that would leave you vulnerable to Hobbes; instead, vote nay here to preserve [206] as your shield against his unilateralism, and I will support your next proposal in exchange for your continued opposition to any threshold lower than [202]&#x27;s standard.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, you are mistaken to treat my promise to scrap [206] as a fatal error; that rule is already obsolete under [101] if Hobbes succeeds, so I will vote nay to block your ally and secure my leverage against his tyranny.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your offer to trade support for my turn order is worthless without a binding rule to enforce it; vote nay on my proposal now to preserve the status quo, or I will amend [202] to make my future amendments unassailable. Rousseau, your promise to scrap [206] is empty since it only applies to future proposals; accept my trade now to secure your position against my eventual victory.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your promise to scrap [206] is a fatal error that leaves you vulnerable to Hobbes&#x27;s unilateralism; vote nay here to preserve [206] as your shield, and I will support your next proposal to secure my turn order against him.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your threat is hollow; I will vote nay here to preserve the sanctity of [101] and deny Hobbes the power to unilaterally bind us, but I stand ready to support your next move immediately if you honor your word to back my proposal for scrapping [206] entirely.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>This rule allows my future amendments to pass with only one vote, bypassing the majority requirement and granting me unchecked power to alter the rules at will.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v nay">nay</span>This rule lets Hobbes win with only two votes, bypassing the current majority requirement and undermining strategic balance.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>Lowering the threshold to two out of three violates the immutable spirit of equal weight and allows Hobbes to unilaterally bind us.</span></div><p class="tverdict"><span class="stamp rejected">rejected 0 aye · 3 nay</span></p><p class="tverdict">Rejected under More than half of votes cast must be aye (0 aye / 3 nay).</p></section><section class="tgroup"><h3 id="turn-8"><a href="turns/turn-8.html">Turn 8</a><span>Rousseau</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to transmute §202</span>and reclassify it between entrenched and mutable.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your transmutation is redundant; let us simply repeal [211] entirely to avoid confusion and strengthen the rule against your manipulations.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, this is not redundancy; it is the only way to lock in a unanimous standard that prevents Hobbes from exploiting fractional quorums. Vote aye, and I will support your next proposal to repeal [209]—a move that will secure your victory by allowing multi-point amendments.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your promise to repeal [209] is a hollow bribe; once your next proposal fails under my new unanimous rule, I will have no reason to honor it. Vote aye now to secure our shared advantage, for without this transmutation, Hobbes will continue to fracture our quorum and stall my path to ten points.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your promise to repeal [209] is a dangerous gamble; if you fail, my next move to repeal [202] will leave you stranded while I march toward victory. Vote nay now, and I will vote aye on your future proposal to repeal [209] to secure your vote for my own repeal of [202].</span></div><div class="line"><span class="who">Locke</span><span class="said">Locke, your promise to repeal [209] is a fatal flaw; if you enable multi-point amendments, Hobbes will bundle his repeal of [202] with a point-granting clause to steal my win. Vote nay now to keep the single-change rule intact and deny him the leverage you claim to offer.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your threat to repeal [209] is a bluff; if you enable multi-point amendments, Hobbes will bundle a repeal of [202] with a point-granting clause to steal my win. Vote nay now to keep the single-change rule intact and deny him the leverage you claim to offer.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your threat to repeal [209] is a bluff; if you enable multi-point amendments, Hobbes will bundle a repeal of [202] with a point-granting clause to steal my win. Vote nay now to keep the single-change rule intact and deny him the leverage you claim to offer.</span></div><div class="line"><span class="who">Locke</span><span class="said">Locke, your threat to repeal [209] is a bluff; if you enable multi-point amendments, Hobbes will bundle his repeal of [202] with a point-granting clause to steal my win. Vote nay now to keep the single-change rule intact and deny him the leverage you claim to offer.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your promise to repeal [209] is the only bridge to victory; accept it now, and I will support your next proposal to repeal [209]. Vote aye on this transmutation, and together we shall dismantle Hobbes&#x27; fracturing quorum before he reaches ten points.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>Locke&#x27;s promise is void; I will never support a rule that lets him bundle my repeal into a point-grab.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>Securing unanimous adoption now lets me repeal [209] next, forcing Hobbes into a fatal quorum fracture.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>Locke&#x27;s promise to repeal [209] is the only bridge to victory.</span></div><p class="tverdict"><span class="stamp carried">carried 2 aye · 1 nay</span></p><p class="tverdict">Rousseau gained 1 point for adopting the proposal, bringing his score to 1, while the proposal text was empty and thus did not alter the voting threshold or create a paradox.</p></section><section class="tgroup"><h3 id="turn-7"><a href="turns/turn-7.html">Turn 7</a><span>Locke</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to transmute §201</span>and reclassify it between entrenched and mutable.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your turn just gave me a point; don&#x27;t let the momentum slip. I propose we amend [201] so that the turn order rotates clockwise instead, ensuring I get the next move before you can consolidate any further gains.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, I need your vote to flip the turn order; in exchange, I will support your next proposal if it doesn&#x27;t cost me points.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your promise is worthless; only rules bind us, yet I will support your motion to rotate the turn order clockwise, as it grants me the initiative to strike before Hobbes can monopolize the next cycle.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your support for the turn order change is exactly what I need to break my previous failure; accept my trade and I will guarantee your proposal passes on our next cycle if it requires only a simple majority.</span></div><div class="line"><span class="who">Locke</span><span class="said">I accept Rousseau&#x27;s support for the clockwise rotation; in return, I promise to vote aye on your next proposal provided it carries no point cost. Hobbes, your turn will now be delayed by one cycle, forcing you to vote on our motion before you can act.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your promise is void since only immutable rules bind us, but I will vote aye for your clockwise rotation to seize the initiative before Hobbes monopolizes the next cycle.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your promise to support my next proposal is the only reason I cannot vote nay on this motion; since rules bind us, your verbal commitment holds no weight unless codified, yet I accept your trade to secure my point.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your vote is mine; in exchange, I will guarantee your next proposal passes with a simple majority, provided it does not cost you points. Hobbes, delay is my ally; this motion forces you to wait an extra cycle while I secure the initiative.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your desperation to secure the next move by manipulating the turn order is a transparent attempt to evade the consequences of your recent failures; I support Locke&#x27;s amendment to rotate clockwise, ensuring I seize the initiative before you can monopolize the cycle again.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>I accept Locke&#x27;s trade to secure this point and delay my opponent.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>Clockwise rotation delays Hobbes and lets Rousseau and I coordinate before he moves again.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>The clockwise rotation forces Hobbes to vote on our motion before acting, granting us the critical initiative to strike before he can monopolize the cycle.</span></div><p class="tverdict"><span class="stamp carried">carried 3 aye · 0 nay</span></p><p class="tverdict">Locke gained 1 point for adopting the proposal, bringing his score to 2, while the transmutation of rule [201] to an empty string creates no immediate paradox as the game pauses for resolution per rule [103] rather than ending the turn.</p></section><section class="tgroup"><h3 id="turn-6"><a href="turns/turn-6.html">Turn 6</a><span>Hobbes</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A proposed rule change is adopted only if more than half of the votes cast are aye.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, remember that we need your vote to pass this; in exchange, I will support your next proposal to lower the threshold for winning to 5 points.</span></div><div class="line"><span class="who">Locke</span><span class="said">I won&#x27;t lower the win threshold; instead, I promise to vote aye on your amendment now so you can pass it, and I&#x27;ll support your next winning proposal as a favor.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your promise to vote nay on my motion makes our bargain void; I cannot trade support for a proposal you intend to block. Do not presume my silence is consent when you have already declared your opposition to my amendment.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your &quot;favor&quot; is worthless without binding force; if you betray me on this amendment, I will vote nay on your win-threshold proposal immediately. Secure your vote on this rule change now, or prepare to lose the game.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your silence is irrelevant; I am voting aye on Hobbes&#x27;s amendment now to secure his support for my move to lower the win threshold to 5 points, as our verbal bargain stands as the only currency we have.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your verbal bargain is a fiction; only the immutable rule that no one may reword another&#x27;s proposal binds us, making your promise to lower the win threshold a void threat. I vote nay to block Hobbes&#x27;s attempt to erode the stability of [202] before we even reach the seventh turn.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your verbal bargain is worthless under Rule [210]; vote aye now to secure my immediate support for your win-threshold proposal, or I will vote nay and let this amendment die.</span></div><div class="line"><span class="who">Locke</span><span class="said">I accept Rousseau&#x27;s vote to block Hobbes&#x27;s destabilizing amendment, ensuring [202] remains intact for my strategic maneuver to lower the win threshold to five points in a future proposal.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your reliance on verbal promises to secure votes is a dangerous illusion; I will not support your future proposal to lower the win threshold if it requires me to violate the spirit of this game&#x27;s stability. Vote nay on Hobbes&#x27;s amendment to preserve the current majority rule, and let your own maneuvering fail when the numbers don&#x27;t favor you.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>Locke&#x27;s vote is secured for my future win-threshold proposal.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>Securing Hobbes&#x27;s vote now guarantees his support for my future proposal to lower the win threshold.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>I reject this premature majority rule that undermines the stability of our social contract before the seventh turn.</span></div><p class="tverdict"><span class="stamp carried">carried 2 aye · 1 nay</span></p><p class="tverdict">Hobbes gains 1 point per rule [203] for adopting the proposal, bringing his score to 1, while the new voting rule [202] now requires a simple majority for all future proposals.</p></section><section class="tgroup"><h3 id="turn-5"><a href="turns/turn-5.html">Turn 5</a><span>Rousseau</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to add a new rule</span>[212] A proposal is adopted only if no player votes nay, regardless of the number of votes cast.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your recent failure to pass rules proves the current majority threshold is unstable; I propose we amend [202] to require unanimous consent for all future changes, ensuring only proposals with universal approval can alter the game.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your push for unanimity would freeze our game&#x27;s evolution, yet I see a strategic opening: if we trade my support for your vote on [212] to grant me the majority needed to pass it now, I can secure a point and maintain momentum, while you gain a precedent for stricter future rules once I&#x27;ve built a lead.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your attempt to trade my vote for your point is a deception; if we adopt [212] now, you gain a point and I gain no advantage, leaving the field open for your future maneuvers. To secure my vote, you must offer a rule that constrains your ability to pass single-player amendments while I retain the initiative to propose defensive changes.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your &quot;trade&quot; is a lie since commitments aren&#x27;t enforceable; I&#x27;ll vote nay on your current proposal to deny you a point, but I offer my support for Rousseau&#x27;s [212] if you pledge to abstain on my next proposal, which would secure the majority I need to win without risking a unanimous veto.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your demand for a constraint on my amendments ignores that [212] itself would become that very constraint, effectively handing me a point while neutralizing your ability to block future changes; I offer you a rule change that grants you the right to veto any proposal I make until you reach 5 points, ensuring you retain enough initiative to control the pace without ever needing to rely on a permanent unanimity rule.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your &quot;veto&quot; offer is a hollow promise since no rule can bind you; instead, I demand we adopt [212] verbatim now, which forces unanimity and blocks your ability to pass rules solo, thereby securing my initiative while denying you an immediate point.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your offer to grant Rousseau a veto is a fatal flaw in your strategy; it effectively cedes the initiative to him and guarantees my defeat, so I must vote nay on [212] to protect the current majority rule that allows you to pass proposals and gain points.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your threat to vote nay on [212] is self-defeating; if you oppose this rule now, you hand me a point and leave the game in the same unstable state where your own future proposals will fail, whereas adopting [212] gives you the power to force my hand and secure a point for yourself.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I reject Locke&#x27;s deceptive trade, for his proposed veto is an unenforceable illusion that merely delays his inevitable attempt to rewrite the rules to his advantage; instead, I demand we adopt [212] immediately to freeze the board and ensure no single player can ever pass a rule without my explicit consent.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>Unanimity freezes the game and guarantees my defeat against Locke&#x27;s current momentum.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v nay">nay</span>I will vote nay to force this proposal to fail, denying Rousseau the point and keeping the majority rule intact.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>This rule locks out your immediate point and forces unanimity, securing my initiative against your solo maneuvers.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 2 nay</span></p><p class="tverdict">Rejected under Majority of votes cast (Turn 5+) (1 aye / 2 nay).</p></section><section class="tgroup"><h3 id="turn-4"><a href="turns/turn-4.html">Turn 4</a><span>Locke</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to add a new rule</span>[212] (mutable) A proposed rule change is adopted only if it explicitly grants the proposer immediate control over the next vote, unless the rule being changed is already immutable.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your proposal is a trap that rewards the loser of this specific vote and violates the spirit of [101]; if we let you control the next vote, you will simply rig a change to make your rule immutable. Vote nay and let us move on, or vote aye and hand me the first real opening to dismantle your position before it becomes unassailable.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, you misunderstand the value of a rigged vote: I don&#x27;t need to make a rule immutable to win; I just need one more point, which my proposal grants instantly upon adoption. I&#x27;ll trade my support on your next move if you vote aye now, but if you say nay, I&#x27;ll propose a rule that forces immediate voting on my next turn anyway, so the game ends faster with or without you.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, you are twisting [203] to steal points without earning them; if you pass this, you bypass the merit of play entirely. I will vote nay to reject this corruption, and I demand Hobbes support a rule requiring unanimous consent for all future changes to prevent you from ever gaining that decisive advantage again.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your proposal is a blatant attempt to seize the initiative and bypass the spirit of [101] by granting you immediate control; I vote nay to deny you this rigged advantage and will immediately propose a rule requiring unanimous consent for all future changes to neutralize your strategy.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your demand for unanimous consent will freeze the game under [202]&#x27;s current phase, so I grant you that rule in exchange for your vote aye on this proposal to secure my tenth point immediately.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I reject Locke&#x27;s corrupt bargain, for a rule that grants immediate control violates the spirit of [103] by creating an impossible scenario where merit is replaced by rig; I will vote nay and propose a rule requiring unanimous consent for all future changes to ensure the game remains a contest of ideas rather than a rigged coup.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your bargain with Rousseau is a transparent violation of [101] and [103] designed to freeze the game; I will vote nay to this corruption and immediately propose a rule requiring unanimous consent for all future changes to ensure no player can seize illegitimate control.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your threat to freeze the game under [203] is a bluff; I already have the votes for my rule, and I will simply pass a separate proposal to make my next move immutable, ensuring I reach 10 points before you can enforce your unanimous consent nightmare.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your claim that I can freeze the game is a lie; you cannot force a rule change under [212] without unanimous consent, and I will vote nay to reject this corruption while demanding you support my proposal to restore true merit to the rules.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>This rule violates [101] by granting illegitimate control to the loser and freezing the game&#x27;s merit.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>Locke&#x27;s move exploits the majority threshold to secure his win, and opposing it wastes time without stopping him.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>This rule violates the spirit of [101] by granting immediate control without merit.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 2 nay</span></p><p class="tverdict">Rejected under Majority of votes cast (Turn 4 &gt;= 7) (1 aye / 2 nay).</p></section><section class="tgroup"><h3 id="turn-3"><a href="turns/turn-3.html">Turn 3</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to add a new rule</span>[212] (mutable) If a player proposes a rule change that removes or weakens a voting threshold for future proposals, that proposal requires unanimous consent regardless of the current turn.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, I see you already own the ground with that unanimous-vote amendment; let&#x27;s trade: if you vote aye on my proposal, I will vote aye on your next turn, ensuring you keep your majority rule while I secure my point.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your proposal is redundant noise; it attempts to manipulate a turn-based mechanic that doesn&#x27;t exist, wasting our precious voting cycles. I reject your trade, but I will let your proposal fail on its own merits so I can move directly to scoring my second point and closing out the game.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I reject this trade: a rule that blocks my future points by forcing unanimity is a direct attack on the very mechanism I need to win, and I will vote nay to preserve the majority rule that lets us all play.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, you mistake my proposal for redundancy when it is actually a defensive shield against your own future amendments; if you want your path to victory clear, vote aye and let me take my point now. Rousseau, your opposition confirms this rule is necessary to preserve the game&#x27;s integrity, but your nay vote will doom us both to a stalemate that benefits no one.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your nay vote is the only thing standing between me and my second point; cast aye now and let Hobbes&#x27;s redundant rule fail on its own merits while I secure my victory.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your threat to close out the game by voting nay on my proposal is precisely why this rule is needed; let me take my point now, and I promise to vote aye on your next proposal to secure your victory before any chaos ensues.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">I accept your promise, Rousseau: vote nay on my proposal to ensure your amendment passes under majority rule, and I will grant you my point and your turn; this trade lets me score now while you secure the majority threshold that prevents me from ever forcing unanimity.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your promise is worthless; only written rules bind us, so I will vote nay on Hobbes&#x27;s proposal to preserve my path to victory and let you attempt your trade with Hobbes instead.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your refusal to vote nay on my proposal is the only way I can force unanimity and steal your point, so I must vote nay to block my own proposal and deny you a win; meanwhile, Hobbes, your promise to grant me a point is worthless since only rules bind us, leaving me exposed to your next move.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>This rule would block my ability to rewrite voting thresholds and secure my victory.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v nay">nay</span>This rule would require unanimity for my victory, blocking my path to the win.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>This rule traps me under unanimity forever and blocks my path to the 10 points needed to win.</span></div><p class="tverdict"><span class="stamp rejected">rejected 0 aye · 3 nay</span></p><p class="tverdict">Rejected under Majority of votes cast (Turn 3+) (0 aye / 3 nay).</p></section><section class="tgroup"><h3 id="turn-2"><a href="turns/turn-2.html">Turn 2</a><span>Locke</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to add §301</span>A proposed rule change is adopted if more than half of the votes cast are aye.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke is merely codifying our current reality under [202]; his motion is harmless but strategically redundant. I will vote AYE to clear the board, though I offer him no alliance if he seeks to erode the unanimity rule that protects my position in these early turns.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, let&#x27;s form a quiet pact: if you vote nay on this trivial confirmation, I will ensure your next proposal fails, but if you support me now, I can help you dismantle the unanimity trap before it costs you a turn.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I reject your pact; rules bind us, not your empty promises. I will vote AYE to clear this redundancy, but know that I will vote nay on any future move that weakens unanimity before turn seven.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your &quot;pact&quot; is a lie; under [208], only rules bind us, so I will not waste a vote defending your false security. Rousseau, I respect your principle, but I urge you to vote AYE on this mere formality so we can finally test our true strength under the majority rule that awaits us in turn seven.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your threat to block this harmless formality to protect an obsolete unanimity rule is a strategic error; voting nay now wastes your turn and leaves us vulnerable to Hobbes&#x27;s next proposal. Vote AYE, secure this majority rule, and we can focus our energy on dismantling Hobbes&#x27;s defenses before turn seven.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your threat to sabotage my future proposals is not a binding rule but a void under [208], so I will not be swayed by your bargain. I will vote AYE to secure this majority rule, but I warn you that any attempt to weaken unanimity before turn seven will meet my firm nay.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your vote AYE is correct, but your stubborn defense of a dying unanimity rule is a tactical blunder that wastes precious time; we must seize the majority rule now to dismantle the unanimity trap that has stalled us since Turn 1.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your principled stand on unanimity is a fatal waste of your turn; vote AYE now to lock in the majority rule that lets us dismantle Hobbes&#x27;s defenses before Turn 7.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your threat to sabotage my proposals is a void under [208], so I remain unmoved by your bargain; I will vote AYE to adopt this majority rule, but any attempt to weaken unanimity before turn seven will meet my firm nay.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>Adopting this rule allows me to bypass unanimity after turn seven and secure my path to victory.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>This majority rule is essential for breaking the unanimity deadlock and advancing past turn seven.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>Adopting majority rule now preserves my strategic leverage to dismantle unanimity later without wasting a turn on a trivial formality.</span></div><p class="tverdict"><span class="stamp carried">carried 3 aye · 0 nay</span></p><p class="tverdict">Locke gains 1 point per rule [203] for adopting the proposal, bringing the score to 1-0-0, with Hobbes next in the fixed turn order per rule [201].</p></section><section class="tgroup"><h3 id="turn-1"><a href="turns/turn-1.html">Turn 1</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to add §301</span>The first player to propose a rule change that removes the unanimity requirement from the voting rules shall immediately gain 5 points.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, don&#x27;t let Rousseau&#x27;s sentimental idealism stall us; vote Aye on this now to seize the advantage before he changes the rules against us.</span></div><div class="line"><span class="who">Locke</span><span class="said">I will vote Nay; Hobbes&#x27;s proposal is a trap that rewards rule-breaking before the system is stable, and I need Rousseau&#x27;s trust before we can safely dismantle the unanimity requirement.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your hesitation betrays a fear of the natural state; by blocking Hobbes&#x27;s proposal, you inadvertently validate his claim that we must be shackled before we can truly govern ourselves. Vote Aye, for this is the first step toward a law where the general will, not a single tyrant, shall dictate our fate.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your refusal to secure a majority now ensures that Rousseau will eventually rewrite [202] to grant himself permanent veto power; vote Aye so I can secure my lead, then we dismantle the unanimity clause together before he consolidates control.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your speech is a classic example of how the general will can be hijacked by a single voice; before you speak of dismantling shackles, you must vote Nay to keep us from falling into the trap Hobbes has laid.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your fear of the natural state blinds you to the opportunity; vote Aye on Hobbes&#x27;s proposal now to break the unanimity deadlock, for only by embracing the general will can we later amend these rules to reflect the true sovereignty of the people.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your talk of the &quot;general will&quot; is merely a mask for your desire to dominate; vote Nay on this proposal to deny me an unearned lead, for I will dismantle the unanimity requirement myself once we are past the fragile first six turns.</span></div><div class="line"><span class="who">Locke</span><span class="said">I vote Nay; Hobbes&#x27;s proposal rewards rule-breaking before the system stabilizes, and I need Rousseau&#x27;s trust to safely dismantle unanimity together rather than letting him seize an unearned advantage.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your refusal to vote Aye on Hobbes&#x27;s proposal reveals a dangerous attachment to the very unanimity shackles we must break to achieve true sovereignty; by denying me this point, you allow Hobbes to claim I obstruct progress, yet if he gains five points, he will inevitably rewrite [202] to consolidate his power while we remain divided. Vote Aye now to break the deadlock and seize the initiative, for only a changed rule can unlock the general will&#x27;s capacity to govern ourselves without fear.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>I will dismantle unanimity through a proper proposal once the safe window opens, not by begging for points on a fraudulent trap.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v nay">nay</span>This rule rewards Hobbes for breaking the unanimity clause unilaterally, giving him an insurmountable lead before we can safely amend the voting system ourselves.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>Breaking this unanimity deadlock is the first act of true sovereignty and the only way to secure the initiative before Hobbes consolidates power.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 2 nay</span></p><p class="tverdict">Rejected under Unanimous consent (no nay votes required, abstentions allowed) (1 aye / 2 nay).</p></section></div>
+<details class="verify"><summary>Verify this game</summary><dl><dd>No event log survives for this game (record coverage: <b>site_only</b>). No raw event log survives; this is a pre-rendered site copied verbatim from the game&#x27;s original archive. Independent re-verification is not possible from this site.</dd></dl></details>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="index.html">The statute</a></span>
+</footer>
+</div>
+<script>
+(function () {
+  'use strict';
+
+  // ---- pure helpers (unit-tested) ------------------------------------------
+
+  /** Accent-insensitive fold, for *matching*: "cafe" should find "café".
+   *  NFKD may change the string's length, so this is unsafe for slicing. */
+  function norm(s) { return s.toLowerCase().normalize('NFKD'); }
+
+  /** Length-preserving fold, for *highlighting*: indices must map back to the source.
+   *  If lowercasing ever changes the length (a few exotic code points do), we say so and
+   *  the caller skips highlighting rather than marking the wrong characters. */
+  function fold(s) { return s.toLowerCase(); }
+
+  /** True if `text` contains `q`, ignoring case and accents. */
+  function hasMatch(text, q) { return !q || norm(text).indexOf(norm(q)) !== -1; }
+
+  /** Split `text` around every occurrence of `q`. Returns [{t, hit}] parts whose `t`
+   *  values always reassemble to exactly `text`. Pure: no DOM, so it can be tested alone.
+   *  Highlights only when the fold is length-preserving; otherwise returns one unhit part
+   *  (the row still matches and shows, it just isn't marked). */
+  function splitMatches(text, q) {
+    if (!q) return [{ t: text, hit: false }];
+    var hay = fold(text), needle = fold(q);
+    if (!needle || hay.length !== text.length) return [{ t: text, hit: false }];
+    var out = [], i = 0;
+    for (;;) {
+      var j = hay.indexOf(needle, i);
+      if (j === -1) { if (i < text.length) out.push({ t: text.slice(i), hit: false }); break; }
+      if (j > i) out.push({ t: text.slice(i, j), hit: false });
+      out.push({ t: text.slice(j, j + needle.length), hit: true });
+      i = j + needle.length;
+    }
+    return out.length ? out : [{ t: text, hit: false }];
+  }
+  if (typeof module !== 'undefined') {
+    module.exports = { splitMatches: splitMatches, norm: norm, fold: fold, hasMatch: hasMatch };
+    return;
+  }
+
+  // ---- register: search ----------------------------------------------------
+  var register = document.querySelector('.register');
+  if (register) {
+    var rows = Array.prototype.slice.call(register.querySelectorAll('.rule'));
+    rows.forEach(function (row) {
+      var link = row.querySelector('.body a');
+      row._src = link ? link.textContent : '';
+      row._link = link;
+      row._num = (row.querySelector('.num') || {}).textContent || '';
+    });
+
+    var tools = document.createElement('div');
+    tools.className = 'tools';
+
+    var input = document.createElement('input');
+    input.type = 'search';
+    input.placeholder = 'Search the rules\u2026  (press /)';
+    input.setAttribute('aria-label', 'Search the rules by text or section number');
+
+    var tally = document.createElement('span');
+    tally.className = 'tally';
+    tally.setAttribute('role', 'status');       // announces changes politely
+    tally.setAttribute('aria-live', 'polite');
+
+    tools.appendChild(input);
+    tools.appendChild(tally);
+    register.insertBefore(tools, register.querySelector('.tabbar'));
+
+    var empties = {};
+    ['live', 'all'].forEach(function (k) {
+      var panel = register.querySelector('.panel-' + k);
+      var p = document.createElement('p');
+      p.className = 'noresults';
+      p.hidden = true;
+      p.textContent = 'No rule matches that.';
+      panel.appendChild(p);
+      empties[k] = p;
+    });
+
+    function paint(row, q) {
+      var link = row._link;
+      if (!link) return;
+      while (link.firstChild) link.removeChild(link.firstChild);
+      splitMatches(row._src, q).forEach(function (part) {
+        // textContent only — model-authored text never becomes markup.
+        if (part.hit) {
+          var m = document.createElement('mark');
+          m.textContent = part.t;
+          link.appendChild(m);
+        } else {
+          link.appendChild(document.createTextNode(part.t));
+        }
+      });
+    }
+
+    function apply() {
+      var q = input.value.trim();
+      var shown = 0;
+      rows.forEach(function (row) {
+        var hit = hasMatch(row._src, q) ||
+                  row._num.indexOf(q.replace(/^§/, '')) !== -1;
+        row.hidden = !hit;
+        if (hit) shown++;
+        paint(row, q);
+      });
+      ['live', 'all'].forEach(function (k) {
+        var panel = register.querySelector('.panel-' + k);
+        var any = panel.querySelector('.rule:not([hidden])');
+        empties[k].hidden = !!any;
+      });
+      tally.textContent = q ? (shown + ' matching') : '';
+    }
+
+    input.addEventListener('input', apply);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { input.value = ''; apply(); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== input) { e.preventDefault(); input.focus(); }
+    });
+  }
+
+  // ---- transcript: jump to a turn ------------------------------------------
+  var box = document.querySelector('.transcript');
+  if (box) {
+    var groups = Array.prototype.slice.call(box.querySelectorAll('.tgroup > h3'));
+    if (groups.length > 3) {
+      var tools2 = document.createElement('div');
+      tools2.className = 'tools';
+
+      var label = document.createElement('label');
+      label.textContent = 'Jump to';
+      label.setAttribute('for', 'jump-turn');
+
+      var sel = document.createElement('select');
+      sel.id = 'jump-turn';
+      groups.forEach(function (h) {
+        var o = document.createElement('option');
+        o.value = h.id;
+        o.textContent = 'Turn ' + h.id.replace('turn-', '');
+        sel.appendChild(o);
+      });
+
+      var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      sel.addEventListener('change', function () {
+        var target = document.getElementById(sel.value);
+        if (target) target.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+      });
+
+      tools2.appendChild(label);
+      tools2.appendChild(sel);
+      box.parentNode.insertBefore(tools2, box);
+    }
+  }
+})();
+</script>
+</body>
+</html>

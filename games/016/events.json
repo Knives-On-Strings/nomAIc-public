@@ -1,0 +1,1355 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Hobbes",
+        "Locke",
+        "Rousseau"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by a fixed number of points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change is bound by it exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts nothing: the ruleset is left exactly as it stood before the vote, and the proposer's turn ends.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset ever becomes self-contradictory, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Hobbes": 0,
+        "Locke": 0,
+        "Rousseau": 0
+      },
+      "seed": 1772335109
+    },
+    "ts": 1783958505.593351
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Hobbes"
+    },
+    "ts": 1783958505.6015089
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Hobbes",
+      "kind": "add",
+      "targets": [],
+      "text": "No rule change may repeal, amend, or transmute Rule 203.",
+      "rationale": "Preserving the unanimity threshold prevents early game chaos and ensures durable institutions form before the majority rule kicks in.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1783958511.9764283
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1783958511.991676
+  },
+  {
+    "seq": 5,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: A fixed threshold ensures our institution remains stable enough to function, preventing a tyranny of the majority that could unravel the game entirely. I seek your support to anchor this durability, provided you accept the measure without demanding further amendments that would weaken its protective scope.",
+      "round": 1
+    },
+    "ts": 1783958513.5013394
+  },
+  {
+    "seq": 6,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I appreciate Hobbes's desire for stability, but locking Rule 203 entirely risks violating Rule 114 by potentially rendering future rule changes impermissible if the ruleset becomes too rigid. Let us compromise: amend this proposal to allow repeals and amendments of Rule 203 only via unanimous consent, preserving both your stability and the game's mutability.",
+      "round": 1
+    },
+    "ts": 1783958516.1592703
+  },
+  {
+    "seq": 7,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I support Locke's amendment; a rule that forbids its own repeal creates a paradox with Rule 114, and I believe the common good demands a ruleset that evolves without fracturing, not one that freezes progress in a false stability.",
+      "round": 1
+    },
+    "ts": 1783958518.1389837
+  },
+  {
+    "seq": 8,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1783958518.1466553
+  },
+  {
+    "seq": 9,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Locke, your compromise is prudent and preserves the game's viability; I accept your amendment and will cast my vote accordingly to secure this durable institution.",
+      "round": 2
+    },
+    "ts": 1783958519.201337
+  },
+  {
+    "seq": 10,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: Rousseau, your insight on the potential paradox is invaluable; let us jointly amend Hobbes's proposal to require unanimous consent for any change to Rule 203, ensuring both stability and adherence to Rule 114.",
+      "round": 2
+    },
+    "ts": 1783958520.7341287
+  },
+  {
+    "seq": 11,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I propose we amend the proposal to require unanimous consent for changes to Rule 203, ensuring stability without violating Rule 114 by preventing future rule changes from becoming impermissible.",
+      "round": 2
+    },
+    "ts": 1783958522.0419486
+  },
+  {
+    "seq": 12,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1783958522.0497217
+  },
+  {
+    "seq": 13,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Locke and Rousseau, your proposed amendment effectively preserves Rule 203's protective function while respecting Rule 114, but I urge you to include the phrase \"or transmute\" in the prohibition to ensure no loophole allows the voting threshold to be altered via mutability. Once this text is finalized, I will vote Aye to secure this stability for all.",
+      "round": 3
+    },
+    "ts": 1783958524.3251288
+  },
+  {
+    "seq": 14,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I support the inclusion of \"or transmute\" to close any potential loopholes, as this strengthens the stability we all seek without compromising the game's viability. With this text finalized and unanimous consent required, I am ready to vote Aye.",
+      "round": 3
+    },
+    "ts": 1783958525.95979
+  },
+  {
+    "seq": 15,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I agree that locking the threshold requires unanimous consent to avoid paradox, but we must ensure the text explicitly forbids *transmuting* Rule 203 itself, not just its repeal, to truly close the loophole Hobbes rightly identifies.",
+      "round": 3
+    },
+    "ts": 1783958527.6471667
+  },
+  {
+    "seq": 16,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "Locking Rule 203 against transmutation preserves the stable majority threshold Hobbes needs."
+    },
+    "ts": 1783958528.8177867
+  },
+  {
+    "seq": 17,
+    "type": "vote_cast",
+    "data": {
+      "player": "Locke",
+      "value": "aye",
+      "reason": "Locking the threshold via unanimous consent preserves stability without violating Rule 114."
+    },
+    "ts": 1783958529.9343026
+  },
+  {
+    "seq": 18,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "Locking the threshold protects the game's stability while unanimous consent preserves Rule 114's requirement for mutability."
+    },
+    "ts": 1783958531.233678
+  },
+  {
+    "seq": 19,
+    "type": "vote_result",
+    "data": {
+      "ayes": 3,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "Unanimous (100% of votes must be Aye)"
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1783958531.2417803
+  },
+  {
+    "seq": 20,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rejected under Unanimous (100% of votes must be Aye) (3 aye / 0 nay).",
+      "next_player": "Locke"
+    },
+    "ts": 1783958531.256091
+  },
+  {
+    "seq": 21,
+    "type": "turn_started",
+    "data": {
+      "turn": 2,
+      "player": "Locke"
+    },
+    "ts": 1783958531.263393
+  },
+  {
+    "seq": 22,
+    "type": "proposal_made",
+    "data": {
+      "turn": 2,
+      "player": "Locke",
+      "kind": "add",
+      "targets": [],
+      "text": "Rule 209 is hereby amended to read: The ruleset may never hold more than 20 mutable rules at one time, except that any player who has scored 50 or more points may propose to temporarily increase this limit to 25 for a single turn.",
+      "rationale": "This creates a safe harbor for high-scoring players to pass necessary rules while still enforcing a lower default cap to keep the game balanced.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 302
+    },
+    "ts": 1783958540.3250997
+  },
+  {
+    "seq": 23,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1783958540.341209
+  },
+  {
+    "seq": 24,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Locke, your amendment to Rule 209 creates a dangerous loophole that undermines the stability of our mutable limit; while your \"50-point exemption\" attempts to balance power, it grants disproportionate influence to a single player mid-game and risks fracturing our consensus before we even secure a victory.",
+      "round": 1
+    },
+    "ts": 1783958542.1166685
+  },
+  {
+    "seq": 25,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I agree the loophole is risky; let me trade my support for this amendment if we instead raise the exemption threshold to 75 points and restrict the increase to only one turn total, ensuring stability until we are well ahead.",
+      "round": 1
+    },
+    "ts": 1783958543.6021097
+  },
+  {
+    "seq": 26,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I support Locke's adjustment to raise the threshold to 75 points, as this better secures the game's stability while preserving a necessary mechanism for late-game flexibility; a rule that serves the common good by preventing premature chaos must be strengthened, not weakened, to ensure we reach victory without fracturing our trust.",
+      "round": 1
+    },
+    "ts": 1783958545.5837004
+  },
+  {
+    "seq": 27,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1783958545.5915685
+  },
+  {
+    "seq": 28,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Locke, raising the threshold to 75 points is a prudent concession that preserves the integrity of our mutable limit while allowing for necessary late-game flexibility; I will support this amended proposal to ensure stability as we approach victory.",
+      "round": 2
+    },
+    "ts": 1783958547.0339823
+  },
+  {
+    "seq": 29,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I thank Hobbes for recognizing the value of a higher threshold and Rousseau for championing the stability of our late-game strategy; with both of you now supportive, I propose we immediately vote on the amended rule to lock in this balanced compromise.",
+      "round": 2
+    },
+    "ts": 1783958548.583054
+  },
+  {
+    "seq": 30,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I stand by my support for raising the threshold to 75 points, as this strikes the essential balance between preserving the game's structural integrity and allowing for the strategic flexibility required to secure a fair victory for all.",
+      "round": 2
+    },
+    "ts": 1783958550.1059747
+  },
+  {
+    "seq": 31,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1783958550.1137245
+  },
+  {
+    "seq": 32,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Locke, your proposal to allow a rule change at the 75-point threshold contradicts the immutable requirement that no rule may render future changes impermissible; such a cap effectively freezes the ruleset for the high-scoring player, which is a strategic error we must avoid. PASS",
+      "round": 3
+    },
+    "ts": 1783958551.8391762
+  },
+  {
+    "seq": 33,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I appreciate Hobbes's caution regarding the \"freezing\" risk; let us instead amend the proposal to allow the 75-point player to increase the mutable cap to 25 only if the ruleset already contains 20 or fewer mutable rules, thereby ensuring we never render future changes impermissible while preserving our late-game flexibility.",
+      "round": 3
+    },
+    "ts": 1783958553.8420157
+  },
+  {
+    "seq": 34,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Locke, your revised condition to only raise the cap when at or below 20 mutable rules is a prudent safeguard, but I urge us to formalize this explicitly as a separate clause to prevent any ambiguity about when the exemption applies. I will vote aye only if the final text clearly states that the temporary increase is null and void if the ruleset already exceeds twenty mutable rules.",
+      "round": 3
+    },
+    "ts": 1783958556.150086
+  },
+  {
+    "seq": 35,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "This amendment preserves our mutable limit's integrity while granting the necessary flexibility to advance our strategy."
+    },
+    "ts": 1783958557.3111093
+  },
+  {
+    "seq": 36,
+    "type": "vote_cast",
+    "data": {
+      "player": "Locke",
+      "value": "aye",
+      "reason": "I support this amendment as it preserves our mutable limit while introducing a clear, time-bound safety valve for late-game flexibility."
+    },
+    "ts": 1783958558.6048117
+  },
+  {
+    "seq": 37,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "This amendment strengthens the late-game flexibility needed for a fair victory while Hobbes's concerns about freezing the ruleset are addressed by the existing immutable safeguards."
+    },
+    "ts": 1783958560.1167712
+  },
+  {
+    "seq": 38,
+    "type": "vote_result",
+    "data": {
+      "ayes": 3,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple majority after 2 circuits"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1783958560.1470683
+  },
+  {
+    "seq": 39,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 302,
+      "text": "Rule 209 is hereby amended to read: The ruleset may never hold more than 20 mutable rules at one time, except that any player who has scored 50 or more points may propose to temporarily increase this limit to 25 for a single turn.",
+      "mutable": true
+    },
+    "ts": 1783958563.0678468
+  },
+  {
+    "seq": 40,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Hobbes": 0,
+        "Locke": 10,
+        "Rousseau": 0
+      }
+    },
+    "ts": 1783958563.1015425
+  },
+  {
+    "seq": 41,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Locke's proposal was adopted, increasing his score by the fixed number of points (10) per Rule 202, and the turn passes to the next player in the fixed order (Rousseau) per Rule 201.",
+      "next_player": "Rousseau"
+    },
+    "ts": 1783958563.1338294
+  },
+  {
+    "seq": 42,
+    "type": "turn_started",
+    "data": {
+      "turn": 3,
+      "player": "Rousseau"
+    },
+    "ts": 1783958569.550964
+  },
+  {
+    "seq": 43,
+    "type": "proposal_rejected",
+    "data": {
+      "turn": 3,
+      "player": "Rousseau",
+      "kind": "add",
+      "targets": [],
+      "text": "Any rule that reduces the threshold for adoption below simple majority is void to the extent of the conflict with the common good, unless the reduction is unanimous.",
+      "reason": "The proposal violates the immutable rule [103] because it attempts to enact a rule change that is not one of the four defined kinds (enact, repeal, amend, or transmute).",
+      "proposal_num": 303
+    },
+    "ts": 1783958575.195776
+  },
+  {
+    "seq": 44,
+    "type": "turn_started",
+    "data": {
+      "turn": 4,
+      "player": "Hobbes"
+    },
+    "ts": 1783958575.2347863
+  },
+  {
+    "seq": 45,
+    "type": "proposal_made",
+    "data": {
+      "turn": 4,
+      "player": "Hobbes",
+      "kind": "amend",
+      "targets": [
+        209
+      ],
+      "text": "The ruleset may never hold more than 20 mutable rules at one time.",
+      "rationale": "I must reduce the mutable rule cap below the current limit to prevent future rule saturation and ensure the game remains playable under Rule 214 (the new immutable cap).",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 304
+    },
+    "ts": 1783958580.6290934
+  },
+  {
+    "seq": 46,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1783958580.6947086
+  },
+  {
+    "seq": 47,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: I propose lowering the mutable rule cap to 20 to prevent chaos; excessive rules destabilize institutions and threaten our ability to determine a winner cleanly.",
+      "round": 1
+    },
+    "ts": 1783958581.6958482
+  },
+  {
+    "seq": 48,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: Hobbes, your instinct to curb chaos is sound, but lowering the cap to 20 unnecessarily stifles the very flexibility that allows us to resolve paradoxes cleanly; let's keep the cap at 20 but add an exception for players with 50 points to expand it temporarily, ensuring stability without rigidity.",
+      "round": 1
+    },
+    "ts": 1783958583.5175354
+  },
+  {
+    "seq": 49,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Locke, your amendment to add an exception for high-scoring players is a prudent compromise that balances Hobbes' fear of chaos with the need for flexibility; I will support this revised proposal to ensure our institutions remain stable yet adaptable.",
+      "round": 1
+    },
+    "ts": 1783958584.921742
+  },
+  {
+    "seq": 50,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1783958584.9548001
+  },
+  {
+    "seq": 51,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: My proposal stands as written because any exception for high-scoring players creates a dangerous loophole that could allow a dominant player to rewrite the game mid-stream, undermining the very stability I seek. If you prefer my motion over Locke's more complex compromise, I am prepared to withdraw and support your amendment to keep the cap at twenty without exceptions.",
+      "round": 2
+    },
+    "ts": 1783958586.8417847
+  },
+  {
+    "seq": 52,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: Hobbes, your concern about loopholes is valid, yet our recent score disparity (Locke at 10, others at 0) shows that high scorers aren't currently an immediate threat; allowing a temporary expansion now only costs us nothing while ensuring we retain the flexibility to manage future paradoxes without a crisis. I propose we accept the exception at 25 mutable rules, which I will support if you can commit to backing my next turn's amendment to clarify the definition of \"chaos\" for our shared stability.",
+      "round": 2
+    },
+    "ts": 1783958589.677999
+  },
+  {
+    "seq": 53,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I will support Locke's amendment, as the temporary exception for high scorers safeguards our ability to resolve paradoxes without risking the game's collapse, and I offer to back any clarification you propose regarding \"chaos\" to ensure our shared stability.",
+      "round": 2
+    },
+    "ts": 1783958591.35508
+  },
+  {
+    "seq": 54,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1783958591.3914654
+  },
+  {
+    "seq": 55,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: I stand by my original text: any exception creates a dangerous precedent that empowers the dominant player to destabilize the institution mid-stream. I cannot in good conscience support a rule with such a loophole; if you wish to proceed, propose it as your own amendment and I will abstain, but I will not endorse a compromised motion.",
+      "round": 3
+    },
+    "ts": 1783958593.5252154
+  },
+  {
+    "seq": 56,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: Hobbes, I propose we amend your original text to simply read \"20\" and I will vote for it as a clean compromise that respects your desire for order while removing the contested exception; if you agree to this straightforward amendment, I pledge to support your next proposal to clarify the definition of \"chaos,\" securing your concern for stability without the risk you fear.",
+      "round": 3
+    },
+    "ts": 1783958595.935239
+  },
+  {
+    "seq": 57,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I will support Hobbes's original amendment to cap mutable rules at 20, as a rigid framework prevents the very chaos that threatens our ability to reach a clean resolution; let us prioritize the common good of a stable game over the fleeting flexibility of a temporary loophole.",
+      "round": 3
+    },
+    "ts": 1783958597.8084004
+  },
+  {
+    "seq": 58,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "A strict cap at twenty restores durable institutional stability and prevents the chaos of excessive amendments."
+    },
+    "ts": 1783958599.0693913
+  },
+  {
+    "seq": 59,
+    "type": "vote_cast",
+    "data": {
+      "player": "Locke",
+      "value": "abstain",
+      "reason": "I will not vote on a rule that lacks the necessary flexibility to handle future paradoxes, so I must abstain to preserve the game's integrity."
+    },
+    "ts": 1783958600.7002122
+  },
+  {
+    "seq": 60,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "Stability serves the common good better than the temporary flexibility of a loophole."
+    },
+    "ts": 1783958601.848137
+  },
+  {
+    "seq": 61,
+    "type": "vote_result",
+    "data": {
+      "ayes": 2,
+      "nays": 0,
+      "abstains": 1,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple majority after 2 circuits"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1783958601.8826094
+  },
+  {
+    "seq": 62,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 209,
+      "text": "The ruleset may never hold more than 20 mutable rules at one time.",
+      "mutable": true
+    },
+    "ts": 1783958604.4207392
+  },
+  {
+    "seq": 63,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The proposal amended rule 209 to limit mutable rules to 20, but since the ruleset currently contains only 1 mutable rule (209 itself), no score changes occur and play proceeds to the next player in the fixed order.",
+      "next_player": "Locke"
+    },
+    "ts": 1783958604.4523249
+  },
+  {
+    "seq": 64,
+    "type": "turn_started",
+    "data": {
+      "turn": 5,
+      "player": "Locke"
+    },
+    "ts": 1783958607.6507845
+  },
+  {
+    "seq": 65,
+    "type": "proposal_made",
+    "data": {
+      "turn": 5,
+      "player": "Locke",
+      "kind": "amend",
+      "targets": [
+        209
+      ],
+      "text": "The ruleset may never hold more than 20 mutable rules at one time, except that any player who has scored 50 or more points may propose to temporarily increase this limit to 25 for a single turn, and any player who has scored 75 or more points may propose to permanently increase this limit to 25.",
+      "rationale": "This builds on Hobbes's existing concession to score-high players by adding a permanent option for very high scorers, preventing a future deadlock if Locke reaches 75 points.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 305
+    },
+    "ts": 1783958614.4570806
+  },
+  {
+    "seq": 66,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1783958614.525331
+  },
+  {
+    "seq": 67,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Locke's amendment creates a dangerous loophole for high-scoring players; if we allow a permanent 25-rule limit at 75 points, the ruleset could rapidly expand beyond our strategic control before the win condition is met. I propose we amend the threshold to require a unanimous vote for any increase above 20, ensuring the stability of our institutional framework.",
+      "round": 1
+    },
+    "ts": 1783958616.6146953
+  },
+  {
+    "seq": 68,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: Hobbes, your instinct for stability is sound, but a permanent 25-rule cap at 75 points offers a cleaner, more durable solution than a temporary boost that must be repeatedly renewed; I will gladly yield my vote to support your unanimous requirement if it means we can safely increase the mutable limit to 25 right now, as that would give us the breathing room to enact the changes necessary to reach the target score of 100 before the rules become too crowded to function.",
+      "round": 1
+    },
+    "ts": 1783958619.2566113
+  },
+  {
+    "seq": 69,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I agree with Hobbes that stability is our common good; let us amend the text to require unanimous consent for any increase, ensuring no single player can unilaterally bloat the ruleset even at high scores.",
+      "round": 1
+    },
+    "ts": 1783958621.0702424
+  },
+  {
+    "seq": 70,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1783958621.0996265
+  },
+  {
+    "seq": 71,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: I commend your willingness to concede, but I insist we reject Locke's specific text entirely; we must not lower the threshold for permanence to 75 points, as that erodes the very stability I seek. A unanimous consent amendment is the only path to a durable institution, ensuring no future player can unilaterally bloat the ruleset even when scoring high.",
+      "round": 2
+    },
+    "ts": 1783958623.111131
+  },
+  {
+    "seq": 72,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I propose we amend the text to require unanimous consent for any increase above 20, ensuring the stability of our institutional framework while still allowing us to propose necessary changes without risking a permanent rule explosion.",
+      "round": 2
+    },
+    "ts": 1783958624.3949401
+  },
+  {
+    "seq": 73,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Locke, your proposal to require unanimous consent perfectly aligns with my vision of a stable institution; I will vote aye on your amendment, but we must ensure this stricter standard is applied immediately to prevent any future unilateral bloat of the ruleset.",
+      "round": 2
+    },
+    "ts": 1783958625.9540203
+  },
+  {
+    "seq": 74,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1783958625.984606
+  },
+  {
+    "seq": 75,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Your proposal to lower the threshold for permanence to 75 points is dangerous; it grants a single player unilateral power to destabilize the institution, so I reject it and demand we amend the rule to require unanimous consent for any increase above twenty.",
+      "round": 3
+    },
+    "ts": 1783958627.4847577
+  },
+  {
+    "seq": 76,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I commend Rousseau for recognizing that unanimous consent is the only path to true stability, and I will vote aye on Locke's revised text to ensure no single player can unilaterally bloat the ruleset, even at high scores.",
+      "round": 3
+    },
+    "ts": 1783958628.9725933
+  },
+  {
+    "seq": 77,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I support the unanimous threshold for permanent increases, as it preserves the stability of our laws without sacrificing the necessary flexibility to reach victory; let us adopt Locke's revised text to secure this balance.",
+      "round": 3
+    },
+    "ts": 1783958630.27828
+  },
+  {
+    "seq": 78,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "nay",
+      "reason": "This amendment allows unilateral rule bloat at high scores, violating the need for durable institutions."
+    },
+    "ts": 1783958631.362823
+  },
+  {
+    "seq": 79,
+    "type": "vote_cast",
+    "data": {
+      "player": "Locke",
+      "value": "aye",
+      "reason": "This compromise preserves stability while allowing necessary flexibility for high-scoring players."
+    },
+    "ts": 1783958632.357815
+  },
+  {
+    "seq": 80,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "This amendment preserves stability while allowing necessary flexibility for victory."
+    },
+    "ts": 1783958633.2887938
+  },
+  {
+    "seq": 81,
+    "type": "vote_result",
+    "data": {
+      "ayes": 2,
+      "nays": 1,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple majority after 2 circuits"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1783958633.2967708
+  },
+  {
+    "seq": 82,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 209,
+      "text": "The ruleset may never hold more than 20 mutable rules at one time, except that any player who has scored 50 or more points may propose to temporarily increase this limit to 25 for a single turn, and any player who has scored 75 or more points may propose to permanently increase this limit to 25.",
+      "mutable": true
+    },
+    "ts": 1783958635.7479694
+  },
+  {
+    "seq": 83,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Hobbes": 0,
+        "Locke": 20,
+        "Rousseau": 0
+      }
+    },
+    "ts": 1783958635.7563293
+  },
+  {
+    "seq": 84,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The proposal was adopted, increasing Locke's score by the fixed amount defined in rule 202 (10 points), bringing his total to 20, which does not meet the win condition of 100.",
+      "next_player": "Hobbes"
+    },
+    "ts": 1783958635.7639108
+  },
+  {
+    "seq": 85,
+    "type": "turn_started",
+    "data": {
+      "turn": 6,
+      "player": "Hobbes"
+    },
+    "ts": 1783958642.0311368
+  },
+  {
+    "seq": 86,
+    "type": "proposal_made",
+    "data": {
+      "turn": 6,
+      "player": "Hobbes",
+      "kind": "amend",
+      "targets": [
+        208
+      ],
+      "text": "The first player to reach a target score of 75 points wins the game outright.",
+      "rationale": "Lowering the target to 75 accelerates play and reduces the window for destabilizing rule changes by opponents.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 306
+    },
+    "ts": 1783958646.8626273
+  },
+  {
+    "seq": 87,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1783958646.8804307
+  },
+  {
+    "seq": 88,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Locke's lead is an asset I cannot afford to ignore; by lowering the target from 100 to 75, this amendment creates a race I might still win, rather than a marathon where Locke's early score guarantees his victory. I urge you to vote aye, for a shorter game is not a concession to Locke but a necessary adjustment to the current reality.",
+      "round": 1
+    },
+    "ts": 1783958648.8788998
+  },
+  {
+    "seq": 89,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I commend Hobbes for recognizing the need to adjust our race; lowering the target to 75 is a pragmatic compromise that keeps the game alive while giving me a realistic path to victory rather than an inevitable loss. I urge you to vote aye, as this amendment preserves the contest without granting Hobbes an undue advantage.",
+      "round": 1
+    },
+    "ts": 1783958650.630653
+  },
+  {
+    "seq": 90,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I urge you to vote aye on this amendment, not out of despair, but to honor the common good by preventing Locke's early lead from rendering the game a mere formality; a shorter race ensures we all remain engaged and that the contest retains its spirit of equality.",
+      "round": 1
+    },
+    "ts": 1783958652.1789436
+  },
+  {
+    "seq": 91,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1783958652.1877682
+  },
+  {
+    "seq": 92,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: I commend Locke and Rousseau for seeing that a target of 75 preserves the game's spirit rather than letting Locke coast to an unearned victory; this measured adjustment secures our continued engagement without granting Hobbes any advantage, so I urge aye.",
+      "round": 2
+    },
+    "ts": 1783958653.689194
+  },
+  {
+    "seq": 93,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I applaud the collective wisdom in lowering the target to 75, a move that secures our shared engagement without tipping the scales unfairly; I urge aye to finalize this prudent compromise that honors both Locke's momentum and Hobbes's chance to compete.",
+      "round": 2
+    },
+    "ts": 1783958655.197955
+  },
+  {
+    "seq": 94,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: A target of 75, while pragmatic, still allows Locke to win before we have had a fair chance to alter the very rules that govern our fate; I propose we vote aye on this amendment, but with the understanding that our next move must be to lower the target further to 50, ensuring the game remains a true contest of wit rather than a sprint dictated by an early lead.",
+      "round": 2
+    },
+    "ts": 1783958657.3939466
+  },
+  {
+    "seq": 95,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1783958657.40275
+  },
+  {
+    "seq": 96,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: I stand by this measured adjustment as the only prudent path to preserve the game's integrity; while Rousseau's suggestion to drop to 50 risks collapsing the contest into chaos, my proposal of 75 strikes a necessary balance that keeps the race competitive without unraveling our shared institutions.",
+      "round": 3
+    },
+    "ts": 1783958659.0907273
+  },
+  {
+    "seq": 97,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I appreciate Rousseau's vision of a deeply contested game, but dropping to 50 would render the current lead irrelevant and risk a chaotic collapse; I urge you to accept 75 as the pragmatic floor that preserves the contest's integrity while allowing me a final, fair chance to secure victory.",
+      "round": 3
+    },
+    "ts": 1783958660.880536
+  },
+  {
+    "seq": 98,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I urge you to vote aye on this amendment, for lowering the target to 75 prevents Locke's early lead from turning this contest into a hollow formality, ensuring we remain engaged in a genuine struggle of wit rather than resigning ourselves to an inevitable outcome.",
+      "round": 3
+    },
+    "ts": 1783958662.5191507
+  },
+  {
+    "seq": 99,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "This amendment is the only pragmatic path to preserve the contest before Locke's lead renders the game a hollow formality."
+    },
+    "ts": 1783958663.8465717
+  },
+  {
+    "seq": 100,
+    "type": "vote_cast",
+    "data": {
+      "player": "Locke",
+      "value": "aye",
+      "reason": "This compromise preserves the game's integrity while giving everyone a realistic chance to compete."
+    },
+    "ts": 1783958664.9022813
+  },
+  {
+    "seq": 101,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "I vote for this amendment to preserve the game's spirit, ensuring the contest remains a genuine struggle of wit rather than a hollow formality dictated by an early lead."
+    },
+    "ts": 1783958666.3374631
+  },
+  {
+    "seq": 102,
+    "type": "vote_result",
+    "data": {
+      "ayes": 3,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple majority after 2 circuits"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1783958666.3456616
+  },
+  {
+    "seq": 103,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 208,
+      "text": "The first player to reach a target score of 75 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1783958668.7778172
+  },
+  {
+    "seq": 104,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Hobbes": 75,
+        "Locke": 20,
+        "Rousseau": 0
+      }
+    },
+    "ts": 1783958668.7870605
+  },
+  {
+    "seq": 105,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Hobbes's score increases by the fixed number of points defined in the adopted amendment to rule 208, reaching 75 and triggering the win condition.",
+      "next_player": "Locke"
+    },
+    "ts": 1783958668.7948742
+  },
+  {
+    "seq": 106,
+    "type": "verdict_disputed",
+    "data": {
+      "turn": 6,
+      "player": "Hobbes",
+      "reason": "Rule 208's target was set to 75 points by a defeated proposal, so reaching 75 does not trigger the win condition."
+    },
+    "ts": 1783958670.366399
+  },
+  {
+    "seq": 107,
+    "type": "verdict_disputed",
+    "data": {
+      "turn": 6,
+      "player": "Rousseau",
+      "reason": "Rule 208's target of 75 points was never adopted; the current ruleset requires unanimous consent for all changes, and no vote has established this threshold."
+    },
+    "ts": 1783958673.3850381
+  },
+  {
+    "seq": 108,
+    "type": "appeal_vote_cast",
+    "data": {
+      "turn": 6,
+      "player": "Hobbes",
+      "choice": 0,
+      "reason": "Upholding the verdict prevents a self-contradictory ruleset from halting progress while I secure my victory."
+    },
+    "ts": 1783958674.4036775
+  },
+  {
+    "seq": 109,
+    "type": "appeal_vote_cast",
+    "data": {
+      "turn": 6,
+      "player": "Locke",
+      "choice": null,
+      "reason": "I must abstain as the remedy ballot is not yet open; I will wait for the table to cast their votes."
+    },
+    "ts": 1783958675.4211576
+  },
+  {
+    "seq": 110,
+    "type": "appeal_vote_cast",
+    "data": {
+      "turn": 6,
+      "player": "Rousseau",
+      "choice": 1,
+      "reason": "We must overturn the verdict to restore the common good and allow play to resume."
+    },
+    "ts": 1783958676.2521966
+  },
+  {
+    "seq": 111,
+    "type": "appeal_result",
+    "data": {
+      "turn": 6,
+      "disputers": [
+        "Hobbes",
+        "Rousseau"
+      ],
+      "tally": {
+        "0": 1,
+        "1": 1
+      },
+      "overturned": false
+    },
+    "ts": 1783958676.261159
+  },
+  {
+    "seq": 112,
+    "type": "game_over",
+    "data": {
+      "reason": "points",
+      "winner": "Hobbes"
+    },
+    "ts": 1783958677.8208568
+  }
+]

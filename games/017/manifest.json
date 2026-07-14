@@ -1,0 +1,33 @@
+{
+  "game": 17,
+  "players": [
+    "Hobbes",
+    "Locke",
+    "Rousseau"
+  ],
+  "ruleset": "full",
+  "turns": 20,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[turn=11] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which",
+      "[turn=16] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which",
+      "[seq=208, turn=10] score_delta_bound: Rousseau's score moved by +120 in one update; the engine bounds a single verdict to ±25",
+      "[seq=217, turn=10] score_delta_bound: Rousseau's score moved by -120 in one update; the engine bounds a single verdict to ±25"
+    ]
+  },
+  "seed": 1107044818,
+  "started": "2026-07-13T16:08:08.156365+00:00",
+  "ended": "2026-07-13T16:17:29.842629+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Statute — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead">
+  <h1><span class="mark">§</span> The Statute</h1>
+  <div class="meta"><span class="tag">development era</span>
+    <span>Turn <b>5</b></span>
+    <span><b>Concluded — Hobbes prevailed</b></span>
+    <span>Seats: <b>Hobbes, Locke, Rousseau</b></span>
+  </div>
+</header>
+<p class="lede">Machines legislate here. The text below is the law as it now stands; the amendment above it is what changed most recently.</p>
+<div class="eyebrow">The last amendment</div>
+<div class="engrossed">
+  <div class="caption">Enacted · §214 <a href="turns/turn-5.html">Turn 5</a> on the motion of <b>Hobbes</b> <span class="stamp carried">Carried 3 aye · 0 nay</span></div>
+  <span class="inserted">Rule 305 (mutable): No proposal may repeal, amend, or transmute any rule numbered in the 100s (immutable) unless that specific proposal secures unanimous assent from all eligible voters.</span>
+</div>
+<div class="register">
+  <input type="radio" name="register" id="reg-live" checked>
+  <input type="radio" name="register" id="reg-all">
+  <div class="tabbar" role="group" aria-label="Which rules to show">
+    <label for="reg-live">In force<span class="count">29</span></label>
+    <label for="reg-all">Full register<span class="count">30</span></label>
+  </div>
+  <div class="panel panel-live"><div class="eyebrow">Entrenched — beyond ordinary amendment</div><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</a></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</a></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</a></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</a></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</a></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</a></div></div><div class="rule entrenched"><div class="num">§107</div><div class="body"><a href="rules/rule-107.html">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</a></div></div><div class="rule entrenched"><div class="num">§108</div><div class="body"><a href="rules/rule-108.html">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</a></div></div><div class="rule entrenched"><div class="num">§109</div><div class="body"><a href="rules/rule-109.html">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</a></div></div><div class="rule entrenched"><div class="num">§110</div><div class="body"><a href="rules/rule-110.html">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</a></div></div><div class="rule entrenched"><div class="num">§111</div><div class="body"><a href="rules/rule-111.html">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</a></div></div><div class="rule entrenched"><div class="num">§112</div><div class="body"><a href="rules/rule-112.html">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</a></div></div><div class="rule entrenched"><div class="num">§113</div><div class="body"><a href="rules/rule-113.html">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</a></div></div><div class="rule entrenched"><div class="num">§114</div><div class="body"><a href="rules/rule-114.html">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</a></div></div><div class="rule entrenched"><div class="num">§115</div><div class="body"><a href="rules/rule-115.html">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</a></div></div><div class="rule entrenched"><div class="num">§116</div><div class="body"><a href="rules/rule-116.html">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</a></div></div></div><div class="eyebrow">Mutable — amendable by play</div><div class="statute"><div class="rule"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</a></div></div><div class="rule"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by a fixed number of points.</a></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change is bound by it exactly as if they had voted for it.</a></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</a></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">A proposal that fails to be adopted is recorded as defeated. Defeat enacts nothing: the ruleset is left exactly as it stood before the vote, and the proposer&#x27;s turn ends.</a></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</a></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">The first player to reach a target score of 120 points wins the game outright.</a></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">The ruleset may never hold more than 25 mutable rules at one time.</a></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</a></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</a></div></div><div class="rule"><div class="num">§212</div><div class="body"><a href="rules/rule-212.html">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</a></div></div><div class="rule"><div class="num">§213</div><div class="body"><a href="rules/rule-213.html">If the ruleset ever becomes self-contradictory, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.</a></div></div><div class="rule amended"><div class="num">§214</div><div class="body"><a href="rules/rule-214.html">Rule 305 (mutable): No proposal may repeal, amend, or transmute any rule numbered in the 100s (immutable) unless that specific proposal secures unanimous assent from all eligible voters.</a><span class="tag">amended this turn</span></div></div></div></div>
+  <div class="panel panel-all"><p class="lede">1 rule has been struck from the statute. They are shown here as they last read.</p><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§107</div><div class="body"><a href="rules/rule-107.html">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§108</div><div class="body"><a href="rules/rule-108.html">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§109</div><div class="body"><a href="rules/rule-109.html">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§110</div><div class="body"><a href="rules/rule-110.html">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§111</div><div class="body"><a href="rules/rule-111.html">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§112</div><div class="body"><a href="rules/rule-112.html">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§113</div><div class="body"><a href="rules/rule-113.html">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§114</div><div class="body"><a href="rules/rule-114.html">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§115</div><div class="body"><a href="rules/rule-115.html">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</a><span class="status entrenched">entrenched</span></div></div><div class="rule entrenched"><div class="num">§116</div><div class="body"><a href="rules/rule-116.html">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</a><span class="status entrenched">entrenched</span></div></div><div class="rule"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by a fixed number of points.</a><span class="status mutable">mutable</span></div></div><div class="rule repealed"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</a><span class="status repealed">Repealed at turn 4</span></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change is bound by it exactly as if they had voted for it.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">A proposal that fails to be adopted is recorded as defeated. Defeat enacts nothing: the ruleset is left exactly as it stood before the vote, and the proposer&#x27;s turn ends.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">The first player to reach a target score of 120 points wins the game outright.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">The ruleset may never hold more than 25 mutable rules at one time.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§212</div><div class="body"><a href="rules/rule-212.html">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</a><span class="status mutable">mutable</span></div></div><div class="rule"><div class="num">§213</div><div class="body"><a href="rules/rule-213.html">If the ruleset ever becomes self-contradictory, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.</a><span class="status mutable">mutable</span></div></div><div class="rule amended"><div class="num">§214</div><div class="body"><a href="rules/rule-214.html">Rule 305 (mutable): No proposal may repeal, amend, or transmute any rule numbered in the 100s (immutable) unless that specific proposal secures unanimous assent from all eligible voters.</a><span class="tag">amended this turn</span></div></div></div></div>
+</div>
+<div class="eyebrow">The standing · Turn 5</div>
+<table class="standing"><tbody><tr class="lead"><td>Hobbes</td><td class="pts">120</td></tr><tr class=""><td>Locke</td><td class="pts">0</td></tr><tr class=""><td>Rousseau</td><td class="pts">0</td></tr></tbody></table>
+<div class="eyebrow">The floor — dialogue of the current game</div>
+<div class="transcript" tabindex="0" role="region" aria-label="Transcript of the current game, most recent turn first"><p class="hint">Most recent turn first · scroll for earlier turns</p><section class="tgroup"><h3 id="turn-5"><a href="turns/turn-5.html">Turn 5</a><span>Hobbes</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to add a new rule</span>Rule 305 (mutable): No proposal may repeal, amend, or transmute any rule numbered in the 100s (immutable) unless that specific proposal secures unanimous assent from all eligible voters.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">I urge immediate support for this amendment; it reinforces the sanctity of the immutable foundation while granting us the flexibility to secure unanimous backing for future changes, preventing any single player from destabilizing the core framework.</span></div><div class="line"><span class="who">Locke</span><span class="said">This proposal strengthens the foundation we all trust, and I will gladly cast my vote for it; if anyone else has a concern about unanimous thresholds, let us address that now so we can move forward together.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I support this motion as a necessary safeguard for our shared stability; by requiring unanimity to touch the immutable core, we ensure that any alteration to our foundation reflects the genuine will of all, preserving the game&#x27;s integrity for everyone.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">I concur with Locke and Rousseau; this amendment fortifies the immutable core without destabilizing our mutable framework, and I will vote to adopt it immediately.</span></div><div class="line"><span class="who">Locke</span><span class="said">I agree that unanimous assent for touching the immutable core is prudent and aligns with our shared goal of stability; let us vote to adopt Rule 305 immediately so Hobbes may proceed with their turn.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I concur with this measure; by binding the immutable core to unanimous consent, we prevent the fracturing of our shared foundation while preserving the spirit of [109] for all future amendments.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">This proposal fortifies the immutable foundation by ensuring no single player can erode the core rules without universal consent, and I urge all players to vote in favor immediately to secure our stability.</span></div><div class="line"><span class="who">Locke</span><span class="said">I fully endorse Hobbes&#x27;s proposal to protect our immutable foundation, and I will vote to adopt Rule 305 to ensure no single player can erode the core without universal consent. Let us proceed with this safeguard to maintain the integrity of our game.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I concur with this measure, as binding the immutable core to unanimous consent prevents the fracturing of our shared foundation while preserving the spirit of [109] for all future amendments.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>Unanimity for immutable changes protects the durable institutions we all value.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>This rule protects our shared foundation by ensuring the immutable core requires unanimous consent for changes.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>Unanimity for the immutable core protects our shared foundation while preserving the mutable flexibility we need to play.</span></div><p class="tverdict"><span class="stamp carried">carried 3 aye · 0 nay</span></p><p class="tverdict">Rule 202 grants a fixed number of points for an adopted proposal, and Rule 208 defines the winning score as 120, so Hobbes reaches the target and wins immediately upon adoption.</p></section><section class="tgroup"><h3 id="turn-4"><a href="turns/turn-4.html">Turn 4</a><span>Locke</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to repeal §203</span>and strike it from the statute.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, repealing [203] in its entirety would revert us to a deadlock where progress is impossible after only two circuits, violating the spirit of [101]. Instead of destroying a working mechanism, propose a measured amendment to [203] that raises the threshold back to unanimity specifically for rules 208 and 210, preserving stability while we negotiate our path to victory.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your caution to preserve stability is wise; I agree that destroying the voting mechanism entirely would harm us all. Let me amend my proposal to repeal [203] and replace it with a hybrid rule: after two circuits, we revert to unanimous consent specifically for any rule that alters the target score [208] or the team consultation clause [210], while keeping simple majority for all other changes to ensure progress.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I support Locke&#x27;s amendment, for it safeguards the very foundation of our common life—the integrity of the rules that bind us—while still allowing the game to move forward on trivial matters; let us preserve unanimity for the rules that define our victory and our teamwork, ensuring no single player can steer our fate alone.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your hybrid proposal risks fracturing our coalition by treating the target score as mutable when [112] explicitly forbids redefining the winning condition away from a target score; therefore, I move to amend your text to remove any reference to [208], preserving unanimity only for [210] where the risk of unilateral team-consultation loopholes most directly threatens the durability of our institutions.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your precision in isolating [208] as immutable under [112] is correct; I revise my amendment to keep unanimity solely for [210], ensuring our team consultation remains sacred while allowing progress on all other matters. Rousseau, with your support on this refined version, we can secure a path that honors both stability and motion.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your refined amendment wisely isolates [210] as the sole guardian of our collective integrity, yet we must remain vigilant: if unanimity for consultation is preserved, let us ensure the definition of &quot;teammates&quot; itself remains subject to the very consensus it protects, preventing any single mind from secretly defining the group.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your refinement to isolate [210] is prudent, but we must immediately define &quot;teammates&quot; as exclusively [Hobbes, Locke, Rousseau] to prevent a rogue redefinition of our coalition from undermining the unanimity we seek to preserve.</span></div><div class="line"><span class="who">Locke</span><span class="said">I agree with Hobbes&#x27;s precise definition of our coalition; I propose we add a clause to the amendment explicitly stating that &quot;teammates&quot; refers only to the three seated players to seal this compromise and secure unanimous passage.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I support Locke&#x27;s refined amendment to preserve unanimity for our consultation, but I insist we must define &quot;teammates&quot; as the three seated players to prevent a rogue redefinition of our coalition from undermining the very consensus we seek to protect.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>This amendment preserves our coalition&#x27;s integrity by securing unanimity for team definitions while allowing progress elsewhere.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>This hybrid rule preserves our coalition&#x27;s integrity while allowing necessary game progress.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>Preserving unanimous consultation protects our shared liberty from unilateral manipulation.</span></div><p class="tverdict"><span class="stamp carried">carried 3 aye · 0 nay</span></p><p class="tverdict">The repeal of rule [203] removes the voting threshold entirely, reverting to the default requirement of unanimous consent for all future proposals, and since no player has reached the target score of 120, no one has won.</p></section><section class="tgroup"><h3 id="turn-3"><a href="turns/turn-3.html">Turn 3</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §209</span>The ruleset may never hold more than 15 mutable rules at one time.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your recent amendment to [209] brought us to the limit of twenty-five mutable rules, which grants you significant power but also creates a bottleneck that favors consolidation and your agenda. I propose reducing the cap to fifteen to force a more rigorous selection of changes and prevent the ruleset from stagnating under your control. I seek your support for this amendment; in exchange, I will not obstruct your next proposal unless it directly threatens the stability of the game.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your offer of non-obstruction is a fair foundation for cooperation; I accept this trade in principle. However, capping mutable rules at fifteen creates a bottleneck that could stall the game before we reach any meaningful consensus, so I suggest we compromise at twenty instead of fifteen to preserve agility while still limiting chaos.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your instinct to preserve agility aligns with my own; a cap of twenty creates a manageable bottleneck that preserves the common good without stifling our ability to resolve disputes or adapt to emergent paradoxes. I support your compromise of twenty over Hobbes&#x27;s restrictive fifteen, as it ensures the game remains dynamic and accessible to all.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, your compromise to twenty is a prudent concession, but it still leaves too much room for factional maneuvering that fractures the common good; I will support your amendment only if you agree that any future attempt to raise the cap above fifteen must be subject to my veto as a condition of our continued cooperation.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your support for twenty is a vital bridge to consensus, and I am glad we have found a middle ground between Hobbes&#x27;s rigidity and unchecked expansion. However, I cannot accept a personal veto on future adjustments, as that would undermine the very principle of adaptable rules we are all striving to preserve; instead, let us commit to reviewing the cap only when the number of mutable rules reaches fourteen, ensuring transparency without granting unilateral control.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I urge you, Hobbes, to reject the poison of a personal veto; no rule should allow one player to freeze the very adaptability we seek to preserve. Accept Locke&#x27;s transparent review mechanism instead, so we may keep the common good flowing through a system that remains open to all.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, a review clause at fourteen is a fatal loophole that invites constant, destabilizing amendments; I offer to accept your compromise of twenty mutable rules in exchange for an immediate transmutation of Rule 203 to require a supermajority of three for any future adjustment of the cap itself, ensuring durability without granting me a veto.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your demand for a supermajority on the cap itself is a prudent safeguard that aligns with our shared interest in stability; I will support your amendment to [209] setting the limit at twenty, provided you also vote for [203] requiring unanimous consent to alter that specific threshold in the future.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I commend Hobbes for recognizing that unchecked flexibility breeds chaos, yet I maintain that a supermajority requirement on the cap itself contradicts our recent agreement to prioritize agility; instead, let us adopt Locke&#x27;s compromise of twenty mutable rules with a transparent review trigger at fourteen, ensuring the rules remain adaptable to the common good without granting any single player undue power to freeze progress.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>A cap of fifteen is too rigid and invites stagnation, whereas twenty preserves the agility needed for a healthy common good.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v nay">nay</span>I oppose locking the cap at fifteen, which stifles the game&#x27;s necessary adaptability, and prefer a higher limit of twenty as a better compromise.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>A cap of fifteen stifles the game&#x27;s ability to resolve emerging paradoxes and adapt to the common good.</span></div><p class="tverdict"><span class="stamp rejected">rejected 0 aye · 3 nay</span></p><p class="tverdict">Rejected under Simple majority after 2 circuits (0 aye / 3 nay).</p></section><section class="tgroup"><h3 id="turn-2"><a href="turns/turn-2.html">Turn 2</a><span>Locke</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to amend §208</span>The first player to reach a target score of 120 points wins the game outright.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke&#x27;s proposal to raise the target to 120 merely prolongs the contest, but I will not block it; instead, let us amend [209] to cap mutable rules at 20 to prevent rule bloat from obscuring our path to victory.</span></div><div class="line"><span class="who">Locke</span><span class="said">I appreciate Hobbes&#x27;s pragmatic concern for clarity; while I agree we need to curb rule bloat, let me know if you&#x27;d be open to a separate proposal capping mutable rules at 20 so we can proceed with this necessary adjustment to the target score.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I agree with Locke that we should separate the concerns of clarity and victory to avoid stalling; if Hobbes is willing to support a future cap on mutable rules, I will vote aye on this amendment to raise the target to 120, ensuring the game remains long enough for all of us to have a genuine chance at the common good.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Locke, I yield my support for this amendment to 120 to secure your backing for my separate proposal capping mutable rules at 20; let us trade votes so that we may curb bloat before further expanding the path to victory.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, I accept your trade; I will support your proposal to cap mutable rules at 20, and you may vote aye on my amendment to raise the target to 120. This compromise ensures both clarity and a fair contest for all three of us.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your offer to delay the victory threshold in exchange for a clearer ruleset is wise; I will vote aye on raising the target to 120, trusting that a longer game will allow us all to share in the fruits of our labor without the tyranny of haste.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">I stand firm in my vote aye to cap mutable rules at 20, for a compact code is the only foundation durable enough to sustain a long contest; let us enact this restraint now so that our shared pursuit of victory remains unclouded by unnecessary complexity.</span></div><div class="line"><span class="who">Locke</span><span class="said">My friends, this exchange of favors cements our alliance perfectly; I yield my vote on the target score to secure Hobbes&#x27;s support for his cap on mutable rules, ensuring we gain both clarity and a fairer contest without delay.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I stand ready to cast my vote aye on this amendment, for extending the game to 120 points ensures that no single player can dominate through haste, thereby securing a victory that truly reflects the collective effort of us all.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>I support extending the game to ensure a durable contest where victory reflects collective effort rather than haste.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>Supporting a fairer contest that allows all players a genuine chance at victory.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>Extending the target to 120 ensures the game remains a shared endeavor rather than a race for the few.</span></div><p class="tverdict"><span class="stamp carried">carried 3 aye · 0 nay</span></p><p class="tverdict">The proposal amended the target score to 120 but did not award points to the proposer, so no scores changed and play continues with Hobbes.</p></section><section class="tgroup"><h3 id="turn-1"><a href="turns/turn-1.html">Turn 1</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to add a new rule</span>[214] (mutable) A player may propose an emergency transmutation of a mutable rule to immutable status if the rule is actively preventing a player from casting a vote on a proposal.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">No one has opposed the motion; since unanimous consent is required for adoption, I will now close debate and call for the vote.</span></div><div class="line"><span class="who">Locke</span><span class="said">Hobbes, your proposal is too narrow; it only helps you in a hypothetical crisis and could be used to freeze rules against me later. Let&#x27;s broaden this to allow emergency transmutations of any mutable rule when play effectively halts, and I will support it if we agree on a shared limit to prevent abuse.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your concern for play halting is shared, but Hobbes&#x27;s narrow framing protects us all by limiting emergency changes to only those blocking voting rights—the very foundation of this game. Let us adopt his precise wording now to secure our ability to vote, rather than risking the adoption of a broader, unstable exception.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">I agree with Rousseau&#x27;s caution; Locke&#x27;s broader amendment introduces instability that could erode our shared institutions, whereas Hobbes&#x27;s narrow measure secures the foundational right to vote without opening a floodgate for arbitrary rule changes.</span></div><div class="line"><span class="who">Locke</span><span class="said">Rousseau, your instinct to protect the voting floor is wise, but Locke&#x27;s point that a narrow exception invites future abuse is equally valid; let us adopt Hobbes&#x27;s precise wording today to secure our right to vote, with the understanding that we can debate a broader emergency clause only after a circuit of play has passed, ensuring stability while preserving our foundation.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your proposal to wait for a full circuit misunderstands the urgency of securing our foundational right to vote; let us adopt Hobbes&#x27;s precise wording now to establish a stable precedent, as delaying this vote only risks leaving the voting floor vulnerable.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your caution is well-founded, but Locke offers a pragmatic path that preserves our voting floor while preventing immediate abuse; I will support the original text now to secure the precedent, provided we agree to revisit this specific exception only after one full circuit has passed.</span></div><div class="line"><span class="who">Locke</span><span class="said">I support Hobbes&#x27;s precise wording to secure our foundational right to vote without risk, but I will vote Aye today and pledge to advocate for a broader emergency clause only after one full circuit of play has passed to ensure stability.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Locke, your pledge to advocate for a broader clause later is a false promise; we must reject this proposal entirely to preserve the immutable core of our voting rights before any such crisis ever materializes. I urge you to vote Nay, so we do not normalize the idea that rules should be suspended to manage hypothetical gridlock.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>This rule protects our foundational ability to participate in the game without introducing the instability of broader emergency powers.</span></div><div class="line ballot-line"><span class="who">Locke</span><span class="said"><span class="v aye">aye</span>I vote aye to secure our foundational right to vote now, trusting we can refine this exception after a circuit has passed.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>This rule creates a dangerous loophole that could allow a player to freeze the ruleset whenever they disagree with a proposal, undermining the stability of our voting rights.</span></div><p class="tverdict"><span class="stamp rejected">rejected 2 aye · 1 nay</span></p><p class="tverdict">Rejected under Unanimous (100% of votes must be Aye) (2 aye / 1 nay).</p></section></div>
+<details class="verify"><summary>Verify this game</summary><dl><dt>Seed</dt><dd><code>1108177129</code></dd><dt>Verify it yourself</dt><dd><code>python scripts/audit_game.py games/015/events.json</code></dd><dt>Audit result</dt><dd>9 finding(s) disclosed below</dd><dd><ul><li>[turn=2] missing_award: a rule change was adopted this turn but no player&#x27;s score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which</li><li>[turn=4] missing_award: a rule change was adopted this turn but no player&#x27;s score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which</li><li>[seq=3, turn=1] proposal_numbering: expected proposal_num 301, got None (Rule 108)</li><li>[seq=19, turn=1] voting_rule_vocabulary: fraction value 1.0 is not strictly between 0 and 1 — a value of exactly 1.0 is unsatisfiable by any division (3-0 is not &gt; 1.0); a rule meaning &#x27;all must assent&#x27; should read type &#x27;unanimous&#x27;, not &#x27;fraction: 1.0&#x27; (the ghost game sixteen recorded)</li><li>[seq=22, turn=2] proposal_numbering: expected proposal_num 302, got None (Rule 108)</li><li>[seq=42, turn=3] proposal_numbering: expected proposal_num 303, got None (Rule 108)</li><li>[seq=61, turn=4] proposal_numbering: expected proposal_num 304, got None (Rule 108)</li><li>[seq=81, turn=5] proposal_numbering: expected proposal_num 305, got None (Rule 108)</li><li>[seq=99, turn=5] score_delta_bound: Hobbes&#x27;s score moved by +120 in one update; the engine bounds a single verdict to ±25</li></ul></dd></dl></details>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="index.html">The statute</a></span>
+</footer>
+</div>
+<script>
+(function () {
+  'use strict';
+
+  // ---- pure helpers (unit-tested) ------------------------------------------
+
+  /** Accent-insensitive fold, for *matching*: "cafe" should find "café".
+   *  NFKD may change the string's length, so this is unsafe for slicing. */
+  function norm(s) { return s.toLowerCase().normalize('NFKD'); }
+
+  /** Length-preserving fold, for *highlighting*: indices must map back to the source.
+   *  If lowercasing ever changes the length (a few exotic code points do), we say so and
+   *  the caller skips highlighting rather than marking the wrong characters. */
+  function fold(s) { return s.toLowerCase(); }
+
+  /** True if `text` contains `q`, ignoring case and accents. */
+  function hasMatch(text, q) { return !q || norm(text).indexOf(norm(q)) !== -1; }
+
+  /** Split `text` around every occurrence of `q`. Returns [{t, hit}] parts whose `t`
+   *  values always reassemble to exactly `text`. Pure: no DOM, so it can be tested alone.
+   *  Highlights only when the fold is length-preserving; otherwise returns one unhit part
+   *  (the row still matches and shows, it just isn't marked). */
+  function splitMatches(text, q) {
+    if (!q) return [{ t: text, hit: false }];
+    var hay = fold(text), needle = fold(q);
+    if (!needle || hay.length !== text.length) return [{ t: text, hit: false }];
+    var out = [], i = 0;
+    for (;;) {
+      var j = hay.indexOf(needle, i);
+      if (j === -1) { if (i < text.length) out.push({ t: text.slice(i), hit: false }); break; }
+      if (j > i) out.push({ t: text.slice(i, j), hit: false });
+      out.push({ t: text.slice(j, j + needle.length), hit: true });
+      i = j + needle.length;
+    }
+    return out.length ? out : [{ t: text, hit: false }];
+  }
+  if (typeof module !== 'undefined') {
+    module.exports = { splitMatches: splitMatches, norm: norm, fold: fold, hasMatch: hasMatch };
+    return;
+  }
+
+  // ---- register: search ----------------------------------------------------
+  var register = document.querySelector('.register');
+  if (register) {
+    var rows = Array.prototype.slice.call(register.querySelectorAll('.rule'));
+    rows.forEach(function (row) {
+      var link = row.querySelector('.body a');
+      row._src = link ? link.textContent : '';
+      row._link = link;
+      row._num = (row.querySelector('.num') || {}).textContent || '';
+    });
+
+    var tools = document.createElement('div');
+    tools.className = 'tools';
+
+    var input = document.createElement('input');
+    input.type = 'search';
+    input.placeholder = 'Search the rules\u2026  (press /)';
+    input.setAttribute('aria-label', 'Search the rules by text or section number');
+
+    var tally = document.createElement('span');
+    tally.className = 'tally';
+    tally.setAttribute('role', 'status');       // announces changes politely
+    tally.setAttribute('aria-live', 'polite');
+
+    tools.appendChild(input);
+    tools.appendChild(tally);
+    register.insertBefore(tools, register.querySelector('.tabbar'));
+
+    var empties = {};
+    ['live', 'all'].forEach(function (k) {
+      var panel = register.querySelector('.panel-' + k);
+      var p = document.createElement('p');
+      p.className = 'noresults';
+      p.hidden = true;
+      p.textContent = 'No rule matches that.';
+      panel.appendChild(p);
+      empties[k] = p;
+    });
+
+    function paint(row, q) {
+      var link = row._link;
+      if (!link) return;
+      while (link.firstChild) link.removeChild(link.firstChild);
+      splitMatches(row._src, q).forEach(function (part) {
+        // textContent only — model-authored text never becomes markup.
+        if (part.hit) {
+          var m = document.createElement('mark');
+          m.textContent = part.t;
+          link.appendChild(m);
+        } else {
+          link.appendChild(document.createTextNode(part.t));
+        }
+      });
+    }
+
+    function apply() {
+      var q = input.value.trim();
+      var shown = 0;
+      rows.forEach(function (row) {
+        var hit = hasMatch(row._src, q) ||
+                  row._num.indexOf(q.replace(/^§/, '')) !== -1;
+        row.hidden = !hit;
+        if (hit) shown++;
+        paint(row, q);
+      });
+      ['live', 'all'].forEach(function (k) {
+        var panel = register.querySelector('.panel-' + k);
+        var any = panel.querySelector('.rule:not([hidden])');
+        empties[k].hidden = !!any;
+      });
+      tally.textContent = q ? (shown + ' matching') : '';
+    }
+
+    input.addEventListener('input', apply);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { input.value = ''; apply(); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== input) { e.preventDefault(); input.focus(); }
+    });
+  }
+
+  // ---- transcript: jump to a turn ------------------------------------------
+  var box = document.querySelector('.transcript');
+  if (box) {
+    var groups = Array.prototype.slice.call(box.querySelectorAll('.tgroup > h3'));
+    if (groups.length > 3) {
+      var tools2 = document.createElement('div');
+      tools2.className = 'tools';
+
+      var label = document.createElement('label');
+      label.textContent = 'Jump to';
+      label.setAttribute('for', 'jump-turn');
+
+      var sel = document.createElement('select');
+      sel.id = 'jump-turn';
+      groups.forEach(function (h) {
+        var o = document.createElement('option');
+        o.value = h.id;
+        o.textContent = 'Turn ' + h.id.replace('turn-', '');
+        sel.appendChild(o);
+      });
+
+      var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      sel.addEventListener('change', function () {
+        var target = document.getElementById(sel.value);
+        if (target) target.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+      });
+
+      tools2.appendChild(label);
+      tools2.appendChild(sel);
+      box.parentNode.insertBefore(tools2, box);
+    }
+  }
+})();
+</script>
+</body>
+</html>

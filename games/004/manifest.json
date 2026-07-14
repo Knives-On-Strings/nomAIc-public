@@ -1,0 +1,20 @@
+{
+  "game": 4,
+  "players": null,
+  "ruleset": null,
+  "turns": null,
+  "outcome": null,
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": null,
+  "started": null,
+  "ended": null,
+  "coverage": {
+    "tier": "no_record",
+    "note": "No record survives for this game."
+  },
+  "era": "development"
+}
