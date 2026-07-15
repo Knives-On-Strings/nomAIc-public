@@ -1,0 +1,34 @@
+{
+  "game": 28,
+  "players": [
+    "Hobbes",
+    "Locke",
+    "Rousseau",
+    "Kant",
+    "Wollstonecraft"
+  ],
+  "ruleset": "full",
+  "turns": 100,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[turn=17] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which (a store recorded before R74's no_awards_declared marker existed)",
+      "[turn=24] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which (a store recorded before R74's no_awards_declared marker existed)",
+      "[turn=86] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which (a store recorded before R74's no_awards_declared marker existed)"
+    ]
+  },
+  "seed": 73218229,
+  "started": "2026-07-15T13:00:54.773215+00:00",
+  "ended": "2026-07-15T14:39:49.181083+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}
