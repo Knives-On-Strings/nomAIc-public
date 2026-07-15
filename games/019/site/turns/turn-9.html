@@ -13,6 +13,7 @@
   --oxblood:#7a2e2e;      /* struck out */
   --indigo:#23407a;       /* inserted */
   --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
   --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
@@ -92,6 +93,31 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-of
 }
 .lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
 
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
 /* ── the register: a CSS-only filter, not fake ARIA tabs ──
    Radio inputs give real keyboard semantics (arrow keys move between choices) with no
    JavaScript. They are visually hidden but NOT display:none — that would strip them from
@@ -169,6 +195,28 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
 .standing .lead td{color:var(--indigo)}
 
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
 /* ── record / proceedings ── */
 
 
@@ -197,6 +245,13 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .tgroup > h3 .oc{margin-left:auto}
 .tgroup > h3 .oc.carried{color:var(--indigo)}
 .tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
 
 .motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
 .motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
@@ -251,7 +306,7 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 <p class="lede">Rejected under Simple Majority (1 aye / 1 nay).</p>
 <footer class="foot">
   <span>Nomic — a game in which changing the rules is the move</span>
-  <span><a href="../index.html">The statute</a></span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
 </footer>
 </div>
 

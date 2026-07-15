@@ -13,6 +13,7 @@
   --oxblood:#7a2e2e;      /* struck out */
   --indigo:#23407a;       /* inserted */
   --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
   --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
@@ -92,6 +93,31 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-of
 }
 .lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
 
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
 /* ── the register: a CSS-only filter, not fake ARIA tabs ──
    Radio inputs give real keyboard semantics (arrow keys move between choices) with no
    JavaScript. They are visually hidden but NOT display:none — that would strip them from
@@ -169,6 +195,28 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
 .standing .lead td{color:var(--indigo)}
 
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
 /* ── record / proceedings ── */
 
 
@@ -197,6 +245,13 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .tgroup > h3 .oc{margin-left:auto}
 .tgroup > h3 .oc.carried{color:var(--indigo)}
 .tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
 
 .motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
 .motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
@@ -254,6 +309,21 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
   text-align:left;font-size:.92rem}
 .hero-note{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink-faint)}
+
+/* ── Batch 10.4 (Q44): interactive layer, injected by webassets/stats.js + search.js ──
+   No control here renders without script — see each .js file's own header comment. */
+.stats-table th.sortable{cursor:pointer}
+.stats-table th.sortable:hover{color:var(--indigo)}
+.stats-table th.sortable:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.stats-table th.sort-asc::after{content:" \25B2"}
+.stats-table th.sort-desc::after{content:" \25BC"}
+#alignment-table td.hl,#alignment-table th.hl{background:rgba(35,64,122,.14)}
+.search-results{list-style:none;margin:1rem 0 0;padding:0}
+.search-results li{border-bottom:1px solid var(--rule);padding:.6rem 0}
+.search-results li:last-child{border-bottom:none}
+.search-results a{color:inherit;text-decoration:none;display:flex;gap:.6rem;
+  align-items:baseline;flex-wrap:wrap}
+.search-results a:hover .tag{color:var(--indigo);border-color:var(--indigo)}
 </style>
 </head>
 <body>
@@ -262,11 +332,24 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
   <h1><span class="mark">§</span> NomAIc</h1>
   <div class="meta"><span>a Knives On Strings production</span></div>
 </header>
-<div class="eyebrow">Cross-game statistics</div><p class="lede">Every number below is derived only from the public event record (SPEC §9.8.4) — no model name, no token count, no cost ever appears here.</p><table class="stats-table"><tbody><tr><td>Games recorded</td><td>8</td></tr><tr><td>Total turns</td><td>136</td></tr><tr><td>Rule adoptions</td><td>64</td></tr><tr><td>Disputes filed</td><td>14</td></tr><tr><td>Paradoxes declared</td><td>0</td></tr></tbody></table>
+<div class="eyebrow">Cross-game statistics</div>
+<p class="lede">Every number below is derived only from the public event record (SPEC §9.8.4) — no model name, no token count, no cost ever appears here.</p>
+<table class="stats-table"><tbody><tr><td>Games recorded</td><td>13</td></tr><tr><td>Total turns</td><td>208</td></tr><tr><td>Rule adoptions</td><td>88</td></tr><tr><td>Disputes filed</td><td>14</td></tr><tr><td>Paradoxes declared</td><td>0</td></tr><tr><td>Appeals decided</td><td>6 (1 overturned)</td></tr><tr><td>Acts performed</td><td>0</td></tr><tr><td>Seat changes</td><td>0</td></tr></tbody></table>
+<div class="eyebrow">Per-seat record</div>
+<p class="lede">Pass rate is proposals adopted over every proposal attempted (including one ruled not properly made before reaching a vote, R40). Dissent rate is how often a seat voted nay on a motion that passed anyway.</p>
+<table class="stats-table" id="seat-stats-table"><thead><tr><th>Seat</th><th>Proposals</th><th>Pass rate</th><th>Aye/Nay/Abstain</th><th>Dissent rate</th><th>Defeated</th><th>Absences</th></tr></thead><tbody><tr><td>Hobbes</td><td data-v="77">77</td><td data-v="50.6">51% <svg viewBox="0 0 90 10" width="90" height="10" role="img" aria-label="51%"><rect width="90" height="10" fill="var(--rule)"/><rect width="45.6" height="10" fill="var(--bronze)"/></svg></td><td data-v="98">98/86/3</td><td data-v="7.5">7%</td><td data-v="38">38</td><td data-v="3">3</td></tr><tr><td>Locke</td><td data-v="59">59</td><td data-v="44.3">44% <svg viewBox="0 0 90 10" width="90" height="10" role="img" aria-label="44%"><rect width="90" height="10" fill="var(--rule)"/><rect width="39.8" height="10" fill="var(--bronze)"/></svg></td><td data-v="118">118/36/2</td><td data-v="1.3">1%</td><td data-v="34">34</td><td data-v="2">2</td></tr><tr><td>Montesquieu</td><td data-v="9">9</td><td data-v="22.2">22% <svg viewBox="0 0 90 10" width="90" height="10" role="img" aria-label="22%"><rect width="90" height="10" fill="var(--rule)"/><rect width="20.0" height="10" fill="var(--bronze)"/></svg></td><td data-v="14">14/10/7</td><td data-v="3.2">3%</td><td data-v="7">7</td><td data-v="14">14</td></tr><tr><td>Rousseau</td><td data-v="44">44</td><td data-v="44.7">45% <svg viewBox="0 0 90 10" width="90" height="10" role="img" aria-label="45%"><rect width="90" height="10" fill="var(--rule)"/><rect width="40.2" height="10" fill="var(--bronze)"/></svg></td><td data-v="80">80/105/2</td><td data-v="12.3">12%</td><td data-v="26">26</td><td data-v="1">1</td></tr></tbody></table>
+<div class="eyebrow">Vote alignment</div>
+<p class="lede">Share of divisions in which each pair of seats cast the same ballot (aye/nay/abstain) — the coalition picture.</p>
+<table class="stats-table" id="alignment-table"><thead><tr><th></th><th data-seat="Hobbes">Hobbes</th><th data-seat="Locke">Locke</th><th data-seat="Montesquieu">Montesquieu</th><th data-seat="Rousseau">Rousseau</th></tr></thead><tbody><tr><th data-seat="Hobbes">Hobbes</th><td data-row="Hobbes" data-col="Hobbes">100%</td><td data-row="Hobbes" data-col="Locke">64%</td><td data-row="Hobbes" data-col="Montesquieu">23%</td><td data-row="Hobbes" data-col="Rousseau">58%</td></tr><tr><th data-seat="Locke">Locke</th><td data-row="Locke" data-col="Hobbes">64%</td><td data-row="Locke" data-col="Locke">100%</td><td data-row="Locke" data-col="Montesquieu">—</td><td data-row="Locke" data-col="Rousseau">54%</td></tr><tr><th data-seat="Montesquieu">Montesquieu</th><td data-row="Montesquieu" data-col="Hobbes">23%</td><td data-row="Montesquieu" data-col="Locke">—</td><td data-row="Montesquieu" data-col="Montesquieu">100%</td><td data-row="Montesquieu" data-col="Rousseau">48%</td></tr><tr><th data-seat="Rousseau">Rousseau</th><td data-row="Rousseau" data-col="Hobbes">58%</td><td data-row="Rousseau" data-col="Locke">54%</td><td data-row="Rousseau" data-col="Montesquieu">48%</td><td data-row="Rousseau" data-col="Rousseau">100%</td></tr></tbody></table>
+<div class="eyebrow">Proposal kinds</div>
+<table class="stats-table" id="kinds-table"><thead><tr><th>Kind</th><th>Count</th><th>Share</th></tr></thead><tbody><tr><td>add</td><td data-v="63">63</td><td data-v="33.3">33%</td></tr><tr><td>amend</td><td data-v="111">111</td><td data-v="58.7">59%</td></tr><tr><td>repeal</td><td data-v="15">15</td><td data-v="7.9">8%</td></tr></tbody></table>
+<div class="eyebrow">Rule survival</div>
+<p class="lede">7 rule(s) adopted during play were later amended or repealed — average 8.1 turn(s) after adoption (shortest 2, longest 17). A rule never amended or repealed has no entry here; it is still standing.</p>
 <footer class="foot">
   <span>NomAIc — a Knives On Strings production</span>
-  <span><a href="../index.html">Archive home</a></span>
+  <span><a href="../index.html">Archive home</a> &middot; <a href="../search/index.html">Search</a></span>
 </footer>
 </div>
+<script type="module" src="../stats.js"></script>
 </body>
 </html>

@@ -1,0 +1,28 @@
+{
+  "game": 23,
+  "players": [
+    "Hobbes",
+    "Montesquieu",
+    "Rousseau"
+  ],
+  "ruleset": "full",
+  "turns": 1,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 2001399521,
+  "started": "2026-07-14T14:36:10.845539+00:00",
+  "ended": "2026-07-14T14:36:55.936162+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

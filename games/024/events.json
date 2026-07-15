@@ -1,0 +1,316 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Hobbes",
+        "Montesquieu",
+        "Rousseau"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer's turn ends, and the proposer loses 10 points.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset ever becomes self-contradictory, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Hobbes": 0,
+        "Montesquieu": 0,
+        "Rousseau": 0
+      },
+      "seed": 691808748
+    },
+    "ts": 1784040524.077483
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Hobbes"
+    },
+    "ts": 1784040524.0844955
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Hobbes",
+      "kind": "amend",
+      "targets": [
+        203
+      ],
+      "text": "A rule change is adopted only when every eligible voter votes aye.",
+      "rationale": "Locking unanimity prevents rushed changes that could destabilize the fragile early order.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784040530.500359
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784040530.51521
+  },
+  {
+    "seq": 5,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Firmly opposed to any immediate drop in the threshold; stability is best preserved until we have fully tested the current unanimity requirement across two full circuits.",
+      "round": 1
+    },
+    "ts": 1784040531.3267314
+  },
+  {
+    "seq": 6,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "debate",
+      "turn": 1,
+      "reason": "connection_error",
+      "consecutive": 1
+    },
+    "ts": 1784040541.5249665
+  },
+  {
+    "seq": 7,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I propose amending Rule 203 to drop the unanimous consent threshold to a simple majority immediately, rather than waiting for two full circuits; this ensures the game remains fair and engaging for everyone from the start, preventing early deadlock that would stifle our progress toward the common good.",
+      "round": 1
+    },
+    "ts": 1784040543.2564647
+  },
+  {
+    "seq": 8,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784040543.2641034
+  },
+  {
+    "seq": 9,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your haste risks turning our deliberations into a mobocracy before we have even tested the stability of unanimity; let us wait the two circuits you claim will bring fairness, for only then can majority rule truly serve the durable institutions we seek.",
+      "round": 2
+    },
+    "ts": 1784040544.508928
+  },
+  {
+    "seq": 10,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "debate",
+      "turn": 1,
+      "reason": "connection_error",
+      "consecutive": 2
+    },
+    "ts": 1784040554.702878
+  },
+  {
+    "seq": 11,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Rousseau, I must correct the record: you are the one proposing to drop the threshold, yet you claim to care for the common good while risking a premature descent into the very mobocracy Hobbes rightly fears. Let us honor the spirit of [211] and the wisdom of time by respecting Hobbes's caution; if unanimity fails after two circuits, we shall then lower it with full eyes open. PASS",
+      "round": 2
+    },
+    "ts": 1784040557.059348
+  },
+  {
+    "seq": 12,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784040557.0663836
+  },
+  {
+    "seq": 13,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your proposal is not merely hasty but dangerous; it invites chaos before we have established the stability required for any durable institution to function. I urge you to withdraw this amendment and allow the current rule to govern our first two circuits, for only then can we lower the threshold with full eyes open to the consequences.",
+      "round": 3
+    },
+    "ts": 1784040558.6110334
+  },
+  {
+    "seq": 14,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "debate",
+      "turn": 1,
+      "reason": "connection_error",
+      "consecutive": 3
+    },
+    "ts": 1784040568.8001246
+  },
+  {
+    "seq": 15,
+    "type": "game_over",
+    "data": {
+      "reason": "seat Montesquieu was absent 3 consecutive times",
+      "winner": null
+    },
+    "ts": 1784040568.8084068
+  }
+]

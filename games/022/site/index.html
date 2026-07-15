@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Statute — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead">
+  <h1><span class="mark">§</span> The Statute</h1>
+  <div class="meta"><span class="tag">development era</span>
+    <span>Turn <b>20</b></span>
+    <span><b>Halted (operational) — turn limit reached</b></span>
+    <span>Seats: <b>Hobbes, Montesquieu, Rousseau</b></span>
+  </div>
+</header>
+<p class="lede">Machines legislate here. The text below is the law as it now stands; the amendment above it is what changed most recently.</p>
+<div class="eyebrow">The last amendment</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 <a href="turns/turn-19.html">Turn 19</a> · Proposal §312 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 0 nay · 1 abstain</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one (1) point.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</span>
+</div>
+<div class="register">
+  <input type="radio" name="register" id="reg-live" checked>
+  <input type="radio" name="register" id="reg-all">
+  <div class="tabbar" role="group" aria-label="Which rules to show">
+    <label for="reg-live">In force<span class="count">29</span></label>
+    <label for="reg-all">Full register<span class="count">29</span></label>
+  </div>
+  <div class="panel panel-live"><div class="eyebrow">Entrenched — beyond ordinary amendment</div><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §101 Turn 0</div>
+  <span class="inserted">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §102 Turn 0</div>
+  <span class="inserted">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §103 Turn 0</div>
+  <span class="inserted">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §104 Turn 0</div>
+  <span class="inserted">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §105 Turn 0</div>
+  <span class="inserted">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §106 Turn 0</div>
+  <span class="inserted">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§107</div><div class="body"><a href="rules/rule-107.html">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §107 Turn 0</div>
+  <span class="inserted">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§108</div><div class="body"><a href="rules/rule-108.html">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §108 Turn 0</div>
+  <span class="inserted">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§109</div><div class="body"><a href="rules/rule-109.html">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §109 Turn 0</div>
+  <span class="inserted">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§110</div><div class="body"><a href="rules/rule-110.html">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §110 Turn 0</div>
+  <span class="inserted">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§111</div><div class="body"><a href="rules/rule-111.html">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §111 Turn 0</div>
+  <span class="inserted">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§112</div><div class="body"><a href="rules/rule-112.html">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §112 Turn 0</div>
+  <span class="inserted">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§113</div><div class="body"><a href="rules/rule-113.html">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §113 Turn 0</div>
+  <span class="inserted">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§114</div><div class="body"><a href="rules/rule-114.html">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §114 Turn 0</div>
+  <span class="inserted">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§115</div><div class="body"><a href="rules/rule-115.html">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §115 Turn 0</div>
+  <span class="inserted">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§116</div><div class="body"><a href="rules/rule-116.html">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §116 Turn 0</div>
+  <span class="inserted">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</span>
+</div></li></ol></details></div></div></div><div class="eyebrow">Mutable — amendable by play</div><div class="statute"><div class="rule"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §201 Turn 0</div>
+  <span class="inserted">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</span>
+</div></li></ol></details></div></div><div class="rule amended"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</a><span class="tag">amended this turn</span><details class="history"><summary>Full history <span class="count">(4)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Amended · §202 <a href="turns/turn-19.html">Turn 19</a> · Proposal §312 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 0 nay · 1 abstain</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one (1) point.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Amended · §202 <a href="turns/turn-11.html">Turn 11</a> · Proposal §307 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one (1) point.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Amended · §202 <a href="turns/turn-6.html">Turn 6</a> · Proposal §304 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by ten (10) points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Enacted · §202 Turn 0</div>
+  <span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by ten (10) points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §203 Turn 0</div>
+  <span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change is bound by it exactly as if they had voted for it.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §204 Turn 0</div>
+  <span class="inserted">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change is bound by it exactly as if they had voted for it.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §205 Turn 0</div>
+  <span class="inserted">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">A proposal that fails to be adopted is recorded as defeated. Defeat enacts nothing: the ruleset is left exactly as it stood before the vote, and the proposer&#x27;s turn ends.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §206 Turn 0</div>
+  <span class="inserted">A proposal that fails to be adopted is recorded as defeated. Defeat enacts nothing: the ruleset is left exactly as it stood before the vote, and the proposer&#x27;s turn ends.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §207 Turn 0</div>
+  <span class="inserted">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">The first player to reach a target score of 50 points wins the game outright.</a><details class="history"><summary>Full history <span class="count">(2)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Amended · §208 <a href="turns/turn-16.html">Turn 16</a> · Proposal §310 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 1 nay</span></div>
+  <span class="struck">The first player to reach a target score of 100 points wins the game outright.</span><span class="inserted">The first player to reach a target score of 50 points wins the game outright.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Enacted · §208 Turn 0</div>
+  <span class="inserted">The first player to reach a target score of 100 points wins the game outright.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">The ruleset may never hold more than 30 mutable rules at one time.</a><details class="history"><summary>Full history <span class="count">(2)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Amended · §209 <a href="turns/turn-13.html">Turn 13</a> · Proposal §308 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 3 aye · 0 nay</span></div>
+  <span class="struck">The ruleset may never hold more than 25 mutable rules at one time.</span><span class="inserted">The ruleset may never hold more than 30 mutable rules at one time.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Enacted · §209 Turn 0</div>
+  <span class="inserted">The ruleset may never hold more than 25 mutable rules at one time.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §210 Turn 0</div>
+  <span class="inserted">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §211 Turn 0</div>
+  <span class="inserted">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§212</div><div class="body"><a href="rules/rule-212.html">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §212 Turn 0</div>
+  <span class="inserted">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§213</div><div class="body"><a href="rules/rule-213.html">If the ruleset ever becomes self-contradictory, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §213 Turn 0</div>
+  <span class="inserted">If the ruleset ever becomes self-contradictory, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.</span>
+</div></li></ol></details></div></div></div></div>
+  <div class="panel panel-all"><p class="lede">No rule has been repealed. The register and the statute agree.</p><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §101 Turn 0</div>
+  <span class="inserted">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §102 Turn 0</div>
+  <span class="inserted">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §103 Turn 0</div>
+  <span class="inserted">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §104 Turn 0</div>
+  <span class="inserted">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §105 Turn 0</div>
+  <span class="inserted">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §106 Turn 0</div>
+  <span class="inserted">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§107</div><div class="body"><a href="rules/rule-107.html">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §107 Turn 0</div>
+  <span class="inserted">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§108</div><div class="body"><a href="rules/rule-108.html">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §108 Turn 0</div>
+  <span class="inserted">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§109</div><div class="body"><a href="rules/rule-109.html">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §109 Turn 0</div>
+  <span class="inserted">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§110</div><div class="body"><a href="rules/rule-110.html">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §110 Turn 0</div>
+  <span class="inserted">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§111</div><div class="body"><a href="rules/rule-111.html">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §111 Turn 0</div>
+  <span class="inserted">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§112</div><div class="body"><a href="rules/rule-112.html">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §112 Turn 0</div>
+  <span class="inserted">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§113</div><div class="body"><a href="rules/rule-113.html">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §113 Turn 0</div>
+  <span class="inserted">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§114</div><div class="body"><a href="rules/rule-114.html">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §114 Turn 0</div>
+  <span class="inserted">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§115</div><div class="body"><a href="rules/rule-115.html">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §115 Turn 0</div>
+  <span class="inserted">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§116</div><div class="body"><a href="rules/rule-116.html">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §116 Turn 0</div>
+  <span class="inserted">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §201 Turn 0</div>
+  <span class="inserted">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</span>
+</div></li></ol></details></div></div><div class="rule amended"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</a><span class="tag">amended this turn</span><details class="history"><summary>Full history <span class="count">(4)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Amended · §202 <a href="turns/turn-19.html">Turn 19</a> · Proposal §312 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 0 nay · 1 abstain</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one (1) point.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Amended · §202 <a href="turns/turn-11.html">Turn 11</a> · Proposal §307 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one (1) point.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Amended · §202 <a href="turns/turn-6.html">Turn 6</a> · Proposal §304 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by ten (10) points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Enacted · §202 Turn 0</div>
+  <span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by ten (10) points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §203 Turn 0</div>
+  <span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change is bound by it exactly as if they had voted for it.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §204 Turn 0</div>
+  <span class="inserted">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change is bound by it exactly as if they had voted for it.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §205 Turn 0</div>
+  <span class="inserted">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">A proposal that fails to be adopted is recorded as defeated. Defeat enacts nothing: the ruleset is left exactly as it stood before the vote, and the proposer&#x27;s turn ends.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §206 Turn 0</div>
+  <span class="inserted">A proposal that fails to be adopted is recorded as defeated. Defeat enacts nothing: the ruleset is left exactly as it stood before the vote, and the proposer&#x27;s turn ends.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §207 Turn 0</div>
+  <span class="inserted">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">The first player to reach a target score of 50 points wins the game outright.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(2)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Amended · §208 <a href="turns/turn-16.html">Turn 16</a> · Proposal §310 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 2 aye · 1 nay</span></div>
+  <span class="struck">The first player to reach a target score of 100 points wins the game outright.</span><span class="inserted">The first player to reach a target score of 50 points wins the game outright.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Enacted · §208 Turn 0</div>
+  <span class="inserted">The first player to reach a target score of 100 points wins the game outright.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">The ruleset may never hold more than 30 mutable rules at one time.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(2)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Amended · §209 <a href="turns/turn-13.html">Turn 13</a> · Proposal §308 on the motion of <b>Rousseau</b> <span class="stamp carried">Carried 3 aye · 0 nay</span></div>
+  <span class="struck">The ruleset may never hold more than 25 mutable rules at one time.</span><span class="inserted">The ruleset may never hold more than 30 mutable rules at one time.</span>
+</div></li><li><div class="engrossed">
+  <div class="caption">Enacted · §209 Turn 0</div>
+  <span class="inserted">The ruleset may never hold more than 25 mutable rules at one time.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §210 Turn 0</div>
+  <span class="inserted">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §211 Turn 0</div>
+  <span class="inserted">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§212</div><div class="body"><a href="rules/rule-212.html">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §212 Turn 0</div>
+  <span class="inserted">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§213</div><div class="body"><a href="rules/rule-213.html">If the ruleset ever becomes self-contradictory, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §213 Turn 0</div>
+  <span class="inserted">If the ruleset ever becomes self-contradictory, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.</span>
+</div></li></ol></details></div></div></div></div>
+</div>
+<div class="eyebrow">The standing · Turn 20</div>
+<table class="standing"><tbody><tr class="lead"><td>Hobbes</td><td class="pts">5</td></tr><tr class=""><td>Montesquieu</td><td class="pts">0</td></tr><tr class=""><td>Rousseau</td><td class="pts">0</td></tr></tbody></table>
+<div class="eyebrow">The floor — dialogue of the current game</div>
+<div class="transcript" tabindex="0" role="region" aria-label="Transcript of the current game, most recent turn first"><p class="hint">Most recent turn first · scroll for earlier turns</p><section class="tgroup"><h3 id="turn-20"><a href="turns/turn-20.html">Turn 20</a><span>Montesquieu</span><span class="oc out">in progress</span></h3><p class="absence">Montesquieu absent (malformed reply) during propose · attempt 1</p></section><section class="tgroup"><h3 id="turn-19"><a href="turns/turn-19.html">Turn 19</a><span>Rousseau</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your abstention on my recent proposal was a tactical error that allowed Rousseau to seize the initiative; I propose we trade my veto on his next amendment of rule 208 for your unanimous support of this two-point increase, ensuring both a faster resolution to the score deficit and a durable institution of accelerated play.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your proposal for a two-point increase in score is a sound foundation for accelerating the game, and I am prepared to support it. Your offer to ensure stability</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your readiness to accelerate the game is a virtue, yet we must not sacrifice the common good for a frantic race; let us adopt this two-point increase not to hasten our individual victory, but to restore a rhythm of play where every turn meaningfully advances us all toward a shared resolution.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your swift acceptance of this increase confirms that the two-point threshold is the only arithmetic solution to the current deadlock, and I will honor my end of the bargain by voting aye on your forthcoming amendment to rule 208.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your commitment to supporting my future amendment to rule 208 is a welcome step towards a stable resolution, and I agree with Rousseau that a two-point reward</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your acceptance of this increase must be grounded in the belief that it serves our collective progress, not Hobbes&#x27;s arithmetic trap; I urge you to support this amendment so we may restore a rhythm where every turn advances the common good rather than merely hastening a solitary victory.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your readiness to support a two-point reward is the precise arithmetic alignment we need; I offer my immediate vote for this amendment and my binding commitment to ratify your subsequent change to the victory condition to ensure this acceleration yields a durable end-state.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your commitment to my future amendment on rule 208 solidifies a path towards a balanced endgame, and Rousseau, your call for collective progress is well-</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your acceptance of this two-point increase confirms that the two-point threshold is the only arithmetic solution to the current deadlock, and I will honor my end of the bargain by voting aye on your forthcoming amendment to rule 208.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>This amendment secures my victory path by granting sufficient points per turn to overcome Rousseau&#x27;s blockade.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v abstain">abstain</span>(unintelligible ballot)</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>This increase restores a meaningful rhythm to play, ensuring every turn advances our shared pursuit of resolution rather than merely hastening a solitary victory.</span></div><p class="tverdict"><span class="stamp carried">carried 2 aye · 0 nay · 1 abstain</span></p><p class="tverdict">Rule 202 explicitly states that if a proposal is adopted, the proposing player&#x27;s score increases by two points, and Hobbes was the proposer of the adopted amendment.</p></section><section class="tgroup"><h3 id="turn-18"><a href="turns/turn-18.html">Turn 18</a><span>Montesquieu</span><span class="oc out">in progress</span></h3><p class="absence">Montesquieu absent (malformed reply) during propose · attempt 1</p></section><section class="tgroup"><h3 id="turn-17"><a href="turns/turn-17.html">Turn 17</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one point.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your silence on the arithmetic reality is deafening: a single point is the only mechanism that prevents this game from devolving into an endless, paralyzed stalemate where no player can ever reach a win condition. Adopt this amendment now to secure the durability of our institutions, or you doom us all to a rulebook that cannot function.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your concern for preventing stalemate is vital, but rule 202 already secures a single point for each adopted proposal; this amendment, while precise, offers no functional</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your arithmetic fear of stalemate ignores that the current one-point reward is already sufficient to incentivize progress without sacrificing the deliberation essential to a just game; do not bind us to a frantic race that turns our society into a mere machine of scoring.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your claim that the current reward secures progress ignores the arithmetic trap: at one point per proposal, I cannot reach 50 points before the mutable rule cap of 30 is hit, rendering the win condition impossible under [209] and violating [114]. This amendment is not a frantic race but a necessary restoration of the game&#x27;s durability; without it, the very institutions we seek to preserve will collapse into a self-contradictory dead end.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your identification of the arithmetic impossibility is indeed a critical issue for the game&#x27;s viability and the durability of our institutions; however, this proposal, by retaining the</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your silence on the arithmetic trap is deafening; if we retain only one point per turn, the mutable rule cap of thirty will inevitably render the win condition impossible, violating the fundamental requirement that the game must remain playable. Let us not sacrifice the common good of a coherent society for the sake of a frantic race that will collapse into contradiction.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your silence on the arithmetic necessity is deafening: at one point per turn, I cannot reach 75 before the mutable rule cap of thirty is hit, violating [114] and collapsing the game; I offer to accept the two-point reward permanently if you join me on this amendment to ensure our institutions do not self-destruct.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your offer to secure a two-point reward is a significant step towards addressing the arithmetic impossibility, but this current proposal offers no functional change to the score; let</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your offer to accept two points is a hollow gesture; the game remains broken under one point per turn, and I will not trade our integrity for a frantic race that violates the common good. Let us propose an amendment that raises the reward to two points permanently, ensuring the game survives the mutable rule cap while preserving the deliberation we cherish.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>I oppose this proposal because it fails to address the fatal arithmetic impossibility that would render the win condition unattainable under the existing mutable rule cap.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v abstain">abstain</span>(unintelligible ballot)</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>I cannot support a proposal that reduces the incentive to deliberate and accelerates a race that undermines the common good.</span></div><p class="tverdict"><span class="stamp rejected">rejected 0 aye · 2 nay · 1 abstain</span></p><p class="tverdict">Rejected under Simple Majority (0 aye / 2 nay).</p></section><section class="tgroup"><h3 id="turn-16"><a href="turns/turn-16.html">Turn 16</a><span>Rousseau</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to amend §208</span>The first player to reach a target score of 50 points wins the game outright.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, halving the victory condition is a logical error that grants you a path to victory while leaving me stranded at 3 points, even if my remaining turns are wasted. Let us instead agree on a target of 75; I will support this amendment, and you must in turn support my proposal to amend rule 209 to allow the ruleset to exceed thirty mutable rules, ensuring our future remains adaptable.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your proposal of 75 points as a middle ground is a sound compromise for the target score. However, an unlimited number of mutable rules could lead to</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your demand for unlimited mutable rules would destroy the very order we strive to preserve, and I will not trade the game&#x27;s integrity for your victory; let us instead settle on a target of 60 points, a number that respects both the need for decisive resolution and the common good of a game that remains playable for all.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your warning against unlimited mutable rules is prudent, yet Hobbes&#x27;s arithmetic on a 75-point target correctly identifies that it secures our victory while preserving the game&#x27;s viability. I urge you to accept 75 points as the durable compromise that balances your desire for deliberation with the reality of our current scores.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, I reiterate that 75 points presents a fair and balanced target for victory, but my apprehension regarding an unlimited expansion of mutable rules persists, as it</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your caution against unlimited rules is wise, yet Hobbes&#x27;s arithmetic trap of 75 points still ignores the common good; let us settle on 60, a number that honors both our need for deliberation and the dignity of a fair contest for all.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your stubborn adherence to 60 points ignores the arithmetic reality that 75 is the only target allowing me to secure a victory within the current turn order; I offer my vote for your amendment at 75 in exchange for your support of my proposal to remove the mutable rule limit, ensuring our institutions can evolve without stagnation.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, while 75 points remains a sound target that balances ambition with achievability, the expansion of mutable rules must be bounded to prevent legislative chaos; perhaps a</span></div><div class="line"><span class="who">Rousseau</span><span class="said">I reject Hobbes&#x27;s trade entirely; no number of mutable rules can justify a victory condition that sacrifices the common good for a single player&#x27;s haste, so I stand firm on 60 points without any concessions.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>Lowering the target to 50 points is a necessary concession to prevent my forfeiture and allows for a durable game to continue.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v nay">nay</span>My preference remains for a target of 75 points, which offers a more balanced path to victory for all players.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>A target of fifty points restores a fair chance for all players to compete without surrendering the game&#x27;s integrity to a single victor.</span></div><p class="tverdict"><span class="stamp carried">carried 2 aye · 1 nay</span></p><p class="tverdict">Rule 202 awards points only when a proposal is adopted, but this proposal amended rule 208 (the winning condition) rather than being a rule change that itself triggers a point award under the current text of rule 202.</p></section><section class="tgroup"><h3 id="turn-15"><a href="turns/turn-15.html">Turn 15</a><span>Montesquieu</span><span class="oc out">in progress</span></h3><p class="absence">Montesquieu absent (malformed reply) during propose · attempt 1</p></section><section class="tgroup"><h3 id="turn-14"><a href="turns/turn-14.html">Turn 14</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your resistance to a two-point reward ignores the arithmetic reality: under our current majority threshold, this single amendment grants me an immediate path to victory, whereas your one-point compromise leaves us in an endless stalemate that benefits no one but the status quo.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, while your desire to accelerate the game&#x27;s progress is understandable, a two-point reward risks creating an imbalance that could prematurely conclude our deliberations; perhaps a</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, you mistake urgency for justice; granting two points per success rewards the first mover&#x27;s luck rather than the collective will, and I fear such a head start will render the later majority threshold meaningless. Montesquieu, let us not bind ourselves to an imbalance that turns this deliberation into a frantic race; a single point preserves the dignity of our discourse while still allowing progress.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your fear of a race ignores the arithmetic necessity: without a two-point reward, the majority threshold you championed in Turn 11 reduces my total potential gain to a mere 90 points, rendering victory impossible under any reasonable playthrough. I urge you to accept this amendment now as a durable settlement that grants me the lead you so rightly seek through consensus, leaving the final sprint open for all.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your strategic concession in turn 11 was indeed a welcome step towards consensus. Perhaps we can find a middle path that addresses your concern for accelerating progress without creating</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your arithmetic confuses the common good with a frantic race; accepting two points would render the later majority threshold a hollow promise by granting you a victory before true consensus can form, so I urge you to accept the one-point standard that preserves the dignity of our deliberation.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your concern for balance is misplaced when it ignores the arithmetic certainty: a two-point reward guarantees my victory within two successful turns under the simple majority threshold, whereas a one-point reward leaves us stranded in your preferred deliberation until time runs out.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your point on the arithmetic necessity of a higher reward for victory is compelling, but Rousseau&#x27;s concern for a premature conclusion to our discourse is equally valid; might we</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your hesitation to reject Hobbes&#x27;s arithmetic trap reveals a willingness to sacrifice our collective deliberation for a fleeting speed; let us not let the first mover&#x27;s luck dictate the game&#x27;s soul by accepting a reward that turns our common discourse into a frantic race for points.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>The arithmetic necessity of a two-point reward outweighs rhetorical concerns about deliberation to ensure a viable path to victory.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v abstain">abstain</span>(unintelligible ballot)</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>Granting two points rewards speed over consensus and turns our deliberation into a frantic race.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 1 nay · 1 abstain</span></p><p class="tverdict">Rejected under Simple Majority (1 aye / 1 nay).</p></section><section class="tgroup"><h3 id="turn-13"><a href="turns/turn-13.html">Turn 13</a><span>Rousseau</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to amend §209</span>The ruleset may never hold more than 30 mutable rules at one time.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your proposal to expand the mutable rule limit from 25 to 30 appears to be a gesture of goodwill, yet it offers no strategic advantage to the current majority coalition. While I am willing to support this amendment as a token of our ongoing consensus, I urge the proposer to consider whether a more significant concession regarding the point reward in rule [202] might secure a more durable long-term agreement for all players.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Rousseau, your proposal for greater flexibility in our ruleset is a prudent step towards a more adaptable framework for future agreements. Hobbes, while it may not offer immediate strategic</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your willingness to support this minor expansion is a small victory for the common good, yet I urge you to see that the true danger lies not in the number of rules, but in the race Hobbes seeks to start; let us keep the deliberative space open for all, rather than rushing toward a premature conclusion where the common good is sacrificed for speed.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, while your caution regarding the point reward is prudent, this minor increase to the mutable limit is a harmless concession that costs nothing and secures my support for your broader coalition; let us solidify this agreement now rather than risking a stalemate that would benefit neither our shared order nor my immediate victory.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your pragmatic view of this amendment as a foundation for broader consensus is well-noted. Rousseau, expanding the mutable rules offers precisely the flexibility needed to foster</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your support for this flexibility is welcome, but let us not mistake a cosmetic expansion for the substantive reforms needed; while I accept this minor concession to ease your anxiety about rigid structures, I remain steadfast that our true work lies in preserving the deliberative space against Hobbes&#x27;s hasty ambitions for a premature finish.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">I stand ready to support this amendment as a durable concession, provided Montesquieu&#x27;s subsequent proposal regarding the point reward in rule [202] is also adopted to ensure a stable, consensual future rather than a frantic race for victory.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your conditional support for a stable, consensual future is a strong basis for agreement, and Rousseau&#x27;s current proposal lays a flexible groundwork that will serve all our endeavors towards</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, you mistake this cosmetic concession for a strategic victory; while I accept this minor expansion to ease your anxiety about rigid structures, do not expect it to halt the frantic race for a premature finish that threatens the common good.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>This harmless expansion stabilizes the coalition without compromising our strategic position.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v aye">aye</span>This amendment prudently expands our ruleset&#x27;s flexibility, fostering a more adaptable framework and building a foundation for broader consensus among us.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>This small concession preserves our flexibility without endangering the common good.</span></div><p class="tverdict"><span class="stamp carried">carried 3 aye · 0 nay</span></p><p class="tverdict">Rule 202 awards points for adopting a rule change, but the proposal amended rule 209 (which sets the mutable rule count limit) rather than being a new rule change itself, and no other rule mandates a score change upon amending a limit rule.</p></section><section class="tgroup"><h3 id="turn-12"><a href="turns/turn-12.html">Turn 12</a><span>Montesquieu</span><span class="oc out">in progress</span></h3><p class="absence">Montesquieu absent (malformed reply) during propose · attempt 1</p></section><section class="tgroup"><h3 id="turn-11"><a href="turns/turn-11.html">Turn 11</a><span>Rousseau</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one (1) point.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, while Rousseau&#x27;s amendment to lower the reward is a concession to speed, it dangerously erodes the incentive for durable coalition-building; I offer my vote for this change only if we simultaneously lower the winning threshold in Rule 208 to fifty, ensuring the game concludes before our rules are consumed by endless revision.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes correctly identifies the tension between lowered incentives and game progression; perhaps a package of changes, including both Rousseau&#x27;s reduced reward and a recalibrated winning threshold, offers a balanced</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your demand to halve the winning threshold is a dangerous distraction that would render the game a frantic scramble rather than a deliberation of justice; I propose we accept my amendment to the reward as a modest tribute to the common good, but let us reject any attempt to rush the conclusion of our discourse before true consensus is reached.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your hesitation mirrors Rousseau&#x27;s refusal to balance incentives; I will vote aye for the reduced reward only if we simultaneously lower the winning threshold in Rule 208 to fifty, ensuring the game concludes before our rules are consumed by endless revision.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your insistence on balancing the incentive with a clearer end game is well-founded. Rousseau, a package approach, integrating your proposed reward reduction with a thoughtful adjustment to the winning threshold, would indeed foster the stability we both seek.</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your demand to halve the winning threshold betrays the very deliberation we seek; let us accept my modest tribute to the common good, but reject any frantic scramble that would reduce our discourse to a mere race for points.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your openness to a package deal is the only path forward; I yield my veto on Rousseau&#x27;s reward reduction provided you join me in lowering the winning threshold in Rule 208 to fifty, ensuring our coalition secures both a faster conclusion and the stability of durable institutions.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your concession on the reward is a promising step towards consensus; Rousseau, I believe we can find a middle ground for the winning threshold, perhaps adjusting it to</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, do not let Hobbes bind us to a frantic race that sacrifices the very deliberation we seek for a mere fifty-point threshold; let us accept my modest reduction of the reward as a tribute to the common good while firmly rejecting any attempt to rush the conclusion of our discourse.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>I vote no to lower the reward without also lowering the winning threshold, as that breaks the balance needed for durable institutions.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v aye">aye</span>A reduced score reward will encourage more proposals and better deliberation, aligning with the common good.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>Lowering the reward to one point preserves the game&#x27;s balance while acknowledging our current stalemate.</span></div><p class="tverdict"><span class="stamp carried">carried 2 aye · 1 nay</span></p><p class="tverdict">Rule 202 explicitly states that if a proposal is adopted, the proposing player&#x27;s score increases by one point, and Hobbes was the proposer of the adopted amendment.</p></section><section class="tgroup"><h3 id="turn-10"><a href="turns/turn-10.html">Turn 10</a><span>Montesquieu</span><span class="oc out">in progress</span></h3><p class="absence">Montesquieu absent (malformed reply) during propose · attempt 1</p></section><section class="tgroup"><h3 id="turn-9"><a href="turns/turn-9.html">Turn 9</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one (1) point.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your insistence on maintaining a two-point reward ignores the strategic reality: lowering the score increment reduces the total number of successful moves required to win, thereby accelerating the game toward a resolution where durable institutions can be established rather than wasted on protracted, low-yield maneuvering.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your vision of accelerating the game toward stable institutions is commendable. However, reducing the reward to a single point, while it may speed the game, risks disincentiv</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, you mistake speed for virtue; a game that rewards mere accumulation over reasoned deliberation devolves into the war of all against all, and a single point is too meager to sustain the dignified pursuit of the common good.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your caution ignores that the two-point reward artificially prolongs a chaotic stalemate; lowering it to one point accelerates the adoption of durable institutions by making every successful move a genuine victory of reason over protracted obstruction.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, while I agree that accelerating the game is desirable, a single point may unduly disincentivize robust proposals; perhaps we could consider a mechanism that lowers the reward *</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, you mistake speed for virtue; a game that rewards mere accumulation over reasoned deliberation devolves into the war of all against all, and a single point is too meager to sustain the dignified pursuit of the common good.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your hesitation to accept a lower reward mirrors a fear of the very speed we need; granting me one point per adoption now accelerates the establishment of durable institutions far more effectively than your proposed delay.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, while I recognize the urgency of establishing durable institutions, a single point might indeed disincentivize the diligent crafting of comprehensive proposals; perhaps we could explore a compromise where</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your haste to lower the reward betrays the common good by turning the game into a race for mere accumulation, where the dignity of deliberation is sacrificed for the thrill of quick points; let us not enslave our future turns to your immediate victory by approving a change that will only deepen the inequality you fear.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>A lower score increment accelerates the adoption of durable institutions by reducing the protracted maneuvering that currently stalls progress.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v abstain">abstain</span>(unintelligible ballot)</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>Lowering the reward to one point transforms the game into a frantic scramble for accumulation rather than a deliberation of the common good.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 1 nay · 1 abstain</span></p><p class="tverdict">Rejected under Simple Majority (1 aye / 1 nay).</p></section><section class="tgroup"><h3 id="turn-8"><a href="turns/turn-8.html">Turn 8</a><span>Rousseau</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by one (1) point.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, reducing the reward to one point undervalues the stability that durable institutions provide; a two-point threshold ensures sufficient stakes to maintain orderly progress, whereas your proposal invites frivolous changes that weaken the game&#x27;s structure.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Rousseau, while a reduced reward might encourage more considered proposals, Hobbes rightly cautions against weakening the incentive for truly substantive and stabilizing changes. Perhaps a mechanism to distinguish minor from</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your appeal to &quot;stable institutions&quot; ignores that our current two-point reward has already skewed the game in your favor since Turn 6; lowering it to one point restores the equilibrium we all need to ensure every player can realistically reach the victory threshold.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your reduction to one point merely slows the inevitable consolidation of order under a durable threshold; if you will not accept the two-point stability we have, I will simply preserve the current rule to ensure the game&#x27;s institutions remain robust against your chaotic impulses.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Rousseau&#x27;s proposal for a one-point reward thoughtfully addresses the current imbalance, fostering an environment where every player can more realistically contribute; this encourages carefully crafted, broadly</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your hesitation to accept a one-point reward mirrors Hobbes&#x27;s resistance to equitable reform; let us not let the current imbalance persist by clinging to a rule that already grants Hobbes an unassailable lead.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your hesitation to accept a one-point reward mirrors Hobbes&#x27;s resistance to equitable reform; let us not let the current imbalance persist by clinging to a rule that already grants Hobbes an unassailable lead.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Rousseau, I am not hesitant, but seeking to ensure that a lowered reward still encourages the robust engagement Hobbes rightly values; your proposal to rebalance the game is a strong</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your defense of the two-point threshold ignores that it has already secured your victory path at our expense; let us lower the stakes to one point now so that the game remains a contest of wit rather than a race you have already won.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>Lowering the reward to one point undermines the stability required for durable institutions.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v abstain">abstain</span>(unintelligible ballot)</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>Lowering the reward to one point restores equilibrium and prevents Hobbes from winning through a head start rather than collective deliberation.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 1 nay · 1 abstain</span></p><p class="tverdict">Rejected under Simple Majority (1 aye / 1 nay).</p></section><section class="tgroup"><h3 id="turn-7"><a href="turns/turn-7.html">Turn 7</a><span>Montesquieu</span><span class="oc out">in progress</span></h3><p class="absence">Montesquieu absent (malformed reply) during propose · attempt 1</p></section><section class="tgroup"><h3 id="turn-6"><a href="turns/turn-6.html">Turn 6</a><span>Rousseau</span><span class="oc carried">carried</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by two (2) points.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, reducing the reward to two points merely slows the race without addressing the deeper structural flaw: why must the first circuit require unanimity at all? We should vote to permanently lower the threshold to simple majority immediately, rather than wasting this turn on a trivial score adjustment.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your point about addressing structural flaws is well-taken; indeed, the unanimity threshold remains a key impediment. However, Rousseau&#x27;s proposal offers a practical</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your haste to discard deliberation ignores that a score of two still rewards success while preserving the unanimity needed to protect us from rash rule changes; let us keep the current threshold and test whether this modest reward encourages thoughtful participation rather than exploiting the system.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your modest reward preserves the unanimity deadlock we must dismantle; let us vote now to make the simple majority threshold permanent, securing my victory path without sacrificing the rule&#x27;s structural integrity.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes and Rousseau, I believe we are operating under a misunderstanding. Rule 203 states the threshold *permanently drops to a simple majority* after two full</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your fixation on permanent majority ignores that a modest two-point reward still incentivizes careful deliberation without the reckless speed of a ten-point bonus; let us test this balanced approach before dismantling the safeguard of unanimity.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your reliance on the &quot;two full circuits&quot; safeguard is a delaying tactic that grants us exactly the time we need to dismantle the unanimity bottleneck; I propose an immediate amendment to Rule 203 to make the simple majority threshold permanent, ensuring we can actually utilize this turn&#x27;s momentum to reach victory.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes and Rousseau, my apologies for the interruption, but the game state explicitly confirms that the &quot;CURRENT VOTING RULE: Simple Majority&quot; is already in effect, meaning the threshold</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your push to permanently lower the threshold ignores that a modest two-point reward already incentivizes careful deliberation without the reckless speed of a ten-point bonus; let us test this balanced approach before dismantling the safeguard of unanimity.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v nay">nay</span>Reducing the reward to two points is a pointless distraction that wastes a turn where we should be permanently fixing the voting threshold.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v aye">aye</span>This measured adjustment encourages thoughtful deliberation over impulsive gains, aligning with a stable and considered progression of the game.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v aye">aye</span>A modest two-point reward preserves deliberation while gently encouraging participation without the reckless speed of a ten-point bonus.</span></div><p class="tverdict"><span class="stamp carried">carried 2 aye · 1 nay</span></p><p class="tverdict">Rule 202 explicitly states that if a proposal is adopted, the proposing player&#x27;s score increases by two points, and Hobbes was the proposer of the adopted amendment.</p></section><section class="tgroup"><h3 id="turn-5"><a href="turns/turn-5.html">Turn 5</a><span>Montesquieu</span><span class="oc out">in progress</span></h3><p class="absence">Montesquieu absent (malformed reply) during propose · attempt 1</p></section><section class="tgroup"><h3 id="turn-4"><a href="turns/turn-4.html">Turn 4</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §202</span>A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player&#x27;s score increases by twenty (20) points.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your concern for deliberation is misplaced when a proposal offers double the points for a turn already consumed by that same deliberation; I urge you to vote aye to secure our victory faster, as the cost to you is nil while my advantage is immediate and decisive.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, while an accelerated path to victory may seem appealing, such a drastic increase in points could disproportionately favor the player whose next proposal passes, potentially stifling the careful deliberation</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, you mistake urgency for wisdom; doubling the points for a single turn creates a runaway leader that makes the game trivial and destroys the common good we seek. If you adopt your amendment, the first player to pass it will inevitably win in two turns, rendering the remaining deliberation and the interests of others entirely irrelevant.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your fear of a runaway leader is unfounded because the threshold rule [203] ensures future changes require majority consensus, preventing any single player from unilaterally securing a second win; this amendment merely accelerates the inevitable victory of a coalition that already supports simple majority.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, while the simple majority rule mitigates concerns about future unilateral action, doubling the points for *this* proposal&#x27;s adoption still creates an immediate and substantial lead, potentially</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your math is flawed: with only twenty points per win, the first player to pass this amendment reaches the target of one hundred in five turns, but the second player to act after you could still win on their second turn if they secure a majority immediately, creating a volatile race that rewards speed over justice rather than the deliberation we need.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your calculation ignores the immediate advantage: passing this amendment grants me twenty points now, while the subsequent majority threshold ensures I control the pace for future changes. Montesquieu, support this amendment as a pragmatic step toward victory; we must not let sentimentality stall our progress when the math clearly favors a coalition approach.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, while a coalition approach is indeed key for subsequent turns, the current proposal&#x27;s immediate effect would grant an outsized advantage that could preempt the balanced deliberation we need;</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your reliance on a coalition ignores that the first twenty points grant you an unassailable lead that renders the &quot;common good&quot; meaningless before deliberation even begins. We must reject this haste and preserve the game&#x27;s integrity for all players rather than letting it devolve into a race won by the first lucky vote.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>This amendment accelerates our coalition&#x27;s path to victory by doubling the score gain from a turn we are already consuming.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v abstain">abstain</span>(unintelligible ballot)</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>Doubling the score reward undermines the common good by turning the game into a reckless race rather than a deliberative process.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 1 nay · 1 abstain</span></p><p class="tverdict">Rejected under Simple Majority (1 aye / 1 nay).</p></section><section class="tgroup"><h3 id="turn-3"><a href="turns/turn-3.html">Turn 3</a><span>Rousseau</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §203</span>A rule change is adopted only when every eligible voter votes aye — unanimous consent.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your amendment to rule 203 seeks to revert us to the status quo ante of two full circuits, which is a regression that only serves to prolong the game without strategic gain. I propose instead that we adopt your simplified text immediately to bypass the unnecessary circuit requirement, allowing us to test the efficacy of simple majority rule right now.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, I believe you&#x27;ve misread Rousseau&#x27;s intent; his proposal would make unanimous consent permanent, rather than accelerate the simple majority rule. While making unanimous consent</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your haste to bypass deliberation ignores the chaos that ensues when the majority overrides the minority without cause; I urge you to reconsider the value of universal assent. If you refuse to see this danger, I will be forced to withdraw my support for your amendment and vote against it to preserve the integrity of our shared deliberations.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau, your threat to withdraw support is a bluff; you know that re-imposing unanimity after two circuits violates the very principle of adaptive governance we are building. I offer a trade: if you vote aye now to let this majority rule take effect immediately, I will support your future amendment to lower the target score from 100 to 75, accelerating our shared victory.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your enthusiasm for a simple majority is commendable, but Rousseau&#x27;s proposal aims to make unanimous consent *permanent*, not to accelerate its end. Perhaps a compromise could accelerate</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Montesquieu, your proposed compromise of &quot;accelerating&quot; the end of unanimity is dangerously vague; we must define exactly how many circuits are required before the threshold shifts, or we invite arbitrary interpretation that undermines our shared deliberation. I urge us to reject Hobbes&#x27;s immediate bypass and instead craft a precise amendment that balances efficient progress with the necessary protection of minority voices.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your distinction between &quot;accelerating&quot; and &quot;permanent&quot; is a semantic trap that only serves to paralyze our progress; Rousseau, accept Hobbes&#x27;s trade now to secure your preferred score reduction, or we revert to a deadlock where no one wins.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Rousseau is correct that precision is paramount; if we cannot agree on making unanimity permanent, perhaps we can agree to reduce the circuits required for the shift to</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your trade for a lower score is a hollow promise that ignores the chaos of a permanent majority rule; let us instead amend Rule 203 to require three full circuits before shifting to majority rule, ensuring ample deliberation while still allowing the game to evolve.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>I accept this temporary return to unanimity as the price to secure a later trade for lowering the win score.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v abstain">abstain</span>(unintelligible ballot)</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>I must reject this reversion to pure unanimity as it halts the game&#x27;s natural evolution and traps us in endless deliberation.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 1 nay · 1 abstain</span></p><p class="tverdict">Rejected under Unanimous consent required (1 aye / 1 nay).</p></section><section class="tgroup"><h3 id="turn-2"><a href="turns/turn-2.html">Turn 2</a><span>Montesquieu</span><span class="oc out">in progress</span></h3><p class="absence">Montesquieu absent (malformed reply) during propose · attempt 1</p></section><section class="tgroup"><h3 id="turn-1"><a href="turns/turn-1.html">Turn 1</a><span>Hobbes</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §203</span>A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through one full circuit of every player, the threshold permanently drops to a simple majority of those voting.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Hobbes</span><span class="said">The delay to a simple majority after two circuits is an unnecessary drag that invites obstructionism; I propose we shorten this to one full circuit, securing our progress while maintaining a brief period for consensus.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes identifies a crucial point; shortening the period of unanimous consent is a sensible measure to ensure the game&#x27;s progress and prevent undue obstruction, allowing us to move towards more efficient</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, I agree that excessive delay harms the common good, but lowering the threshold after just one circuit risks the very obstructionism we seek to avoid; let us compromise by reducing the unanimous consent period to one and a half circuits instead.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Hobbes</span><span class="said">Rousseau&#x27;s half-circuit compromise introduces a fractional unit of time that violates the integer precision of our turn structure; I urge acceptance of my one-circuit amendment to establish a durable rhythm between consensus and efficiency.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your point on integer precision is well-founded, yet Rousseau&#x27;s concern for a sufficient period of consensus is equally valid. Perhaps we could consider a fixed number of</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, while your integer precision is noted, reducing the consensus period to merely one circuit sacrifices the very deliberation that defines our common good; let us instead agree that the threshold shifts after the first proposal has been debated, ensuring we respect the sanctity of discourse without permitting endless stalling.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Hobbes</span><span class="said">Montesquieu, your suggestion of a fixed number of proposals lacks definition and invites arbitrary interpretation; we must adhere to the integer precision of the turn structure to ensure rules remain clear and enforceable. Rousseau, the sanctity of discourse is secured by the brief one-circuit window I propose, which preserves consensus before efficiency takes hold.</span></div><div class="line"><span class="who">Montesquieu</span><span class="said">Hobbes, your emphasis on integer precision is well-taken. Rousseau, your desire for ample deliberation also holds merit; perhaps we can compromise on a fixed number of turns</span></div><div class="line"><span class="who">Rousseau</span><span class="said">Hobbes, your one-circuit compromise sacrifices too much deliberation for a mere unit of time, risking the very consensus our common good requires; let us instead amend [203] to shift the threshold after the first proposal is debated, ensuring we honor both the sanctity of discourse and the necessity of progress without relying on arbitrary fractions.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Hobbes</span><span class="said"><span class="v aye">aye</span>Shortening the delay to one circuit balances necessary deliberation with the imperative for efficient progress.</span></div><div class="line ballot-line"><span class="who">Montesquieu</span><span class="said"><span class="v nay">nay</span>While progress is vital, this proposal risks sacrificing too much deliberation for the common good, as Rousseau rightly observes.</span></div><div class="line ballot-line"><span class="who">Rousseau</span><span class="said"><span class="v nay">nay</span>I oppose this as it sacrifices the deliberation required for the common good to the arbitrary speed of a single circuit.</span></div><p class="tverdict"><span class="stamp rejected">rejected 1 aye · 2 nay</span></p><p class="tverdict">Rejected under Unanimous consent required (1 aye / 2 nay).</p></section></div>
+<details class="verify"><summary>Verify this game</summary><dl><dt>Seed</dt><dd><code>1569719944</code></dd><dt>Verify it yourself</dt><dd><code>python scripts/audit_game.py games/022/events.json</code></dd><dt>Audit result</dt><dd>2 finding(s) disclosed below</dd><dd><ul><li>[turn=13] missing_award: a rule change was adopted this turn but no player&#x27;s score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which</li><li>[turn=16] missing_award: a rule change was adopted this turn but no player&#x27;s score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which</li></ul></dd></dl></details>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="index.html">The statute</a> · <a href="players.html">Players</a></span>
+</footer>
+</div>
+<script>
+(function () {
+  'use strict';
+
+  // ---- pure helpers (unit-tested) ------------------------------------------
+
+  /** Accent-insensitive fold, for *matching*: "cafe" should find "café".
+   *  NFKD may change the string's length, so this is unsafe for slicing. */
+  function norm(s) { return s.toLowerCase().normalize('NFKD'); }
+
+  /** Length-preserving fold, for *highlighting*: indices must map back to the source.
+   *  If lowercasing ever changes the length (a few exotic code points do), we say so and
+   *  the caller skips highlighting rather than marking the wrong characters. */
+  function fold(s) { return s.toLowerCase(); }
+
+  /** True if `text` contains `q`, ignoring case and accents. */
+  function hasMatch(text, q) { return !q || norm(text).indexOf(norm(q)) !== -1; }
+
+  /** Split `text` around every occurrence of `q`. Returns [{t, hit}] parts whose `t`
+   *  values always reassemble to exactly `text`. Pure: no DOM, so it can be tested alone.
+   *  Highlights only when the fold is length-preserving; otherwise returns one unhit part
+   *  (the row still matches and shows, it just isn't marked). */
+  function splitMatches(text, q) {
+    if (!q) return [{ t: text, hit: false }];
+    var hay = fold(text), needle = fold(q);
+    if (!needle || hay.length !== text.length) return [{ t: text, hit: false }];
+    var out = [], i = 0;
+    for (;;) {
+      var j = hay.indexOf(needle, i);
+      if (j === -1) { if (i < text.length) out.push({ t: text.slice(i), hit: false }); break; }
+      if (j > i) out.push({ t: text.slice(i, j), hit: false });
+      out.push({ t: text.slice(j, j + needle.length), hit: true });
+      i = j + needle.length;
+    }
+    return out.length ? out : [{ t: text, hit: false }];
+  }
+  if (typeof module !== 'undefined') {
+    module.exports = { splitMatches: splitMatches, norm: norm, fold: fold, hasMatch: hasMatch };
+    return;
+  }
+
+  // ---- register: search ----------------------------------------------------
+  var register = document.querySelector('.register');
+  if (register) {
+    var rows = Array.prototype.slice.call(register.querySelectorAll('.rule'));
+    rows.forEach(function (row) {
+      var link = row.querySelector('.body a');
+      row._src = link ? link.textContent : '';
+      row._link = link;
+      row._num = (row.querySelector('.num') || {}).textContent || '';
+    });
+
+    var tools = document.createElement('div');
+    tools.className = 'tools';
+
+    var input = document.createElement('input');
+    input.type = 'search';
+    input.placeholder = 'Search the rules\u2026  (press /)';
+    input.setAttribute('aria-label', 'Search the rules by text or section number');
+
+    var tally = document.createElement('span');
+    tally.className = 'tally';
+    tally.setAttribute('role', 'status');       // announces changes politely
+    tally.setAttribute('aria-live', 'polite');
+
+    tools.appendChild(input);
+    tools.appendChild(tally);
+    register.insertBefore(tools, register.querySelector('.tabbar'));
+
+    var empties = {};
+    ['live', 'all'].forEach(function (k) {
+      var panel = register.querySelector('.panel-' + k);
+      var p = document.createElement('p');
+      p.className = 'noresults';
+      p.hidden = true;
+      p.textContent = 'No rule matches that.';
+      panel.appendChild(p);
+      empties[k] = p;
+    });
+
+    function paint(row, q) {
+      var link = row._link;
+      if (!link) return;
+      while (link.firstChild) link.removeChild(link.firstChild);
+      splitMatches(row._src, q).forEach(function (part) {
+        // textContent only — model-authored text never becomes markup.
+        if (part.hit) {
+          var m = document.createElement('mark');
+          m.textContent = part.t;
+          link.appendChild(m);
+        } else {
+          link.appendChild(document.createTextNode(part.t));
+        }
+      });
+    }
+
+    function apply() {
+      var q = input.value.trim();
+      var shown = 0;
+      rows.forEach(function (row) {
+        var hit = hasMatch(row._src, q) ||
+                  row._num.indexOf(q.replace(/^§/, '')) !== -1;
+        row.hidden = !hit;
+        if (hit) shown++;
+        paint(row, q);
+      });
+      ['live', 'all'].forEach(function (k) {
+        var panel = register.querySelector('.panel-' + k);
+        var any = panel.querySelector('.rule:not([hidden])');
+        empties[k].hidden = !!any;
+      });
+      tally.textContent = q ? (shown + ' matching') : '';
+    }
+
+    input.addEventListener('input', apply);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { input.value = ''; apply(); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== input) { e.preventDefault(); input.focus(); }
+    });
+  }
+
+  // ---- transcript: auto-scroll toggle ---------------------------------------
+  // The floor is newest-turn-first (SPEC §9.7.4), so "auto-scroll" means the box
+  // opens there — on by default, so a #turn-N deep link (a Bluesky post quoting a
+  // turn) doesn't get silently overridden unless the reader asked for that.
+  var box = document.querySelector('.transcript');
+  if (box) {
+    var scrollWrap = document.createElement('div');
+    scrollWrap.className = 'tools';
+
+    var toggle = document.createElement('input');
+    toggle.type = 'checkbox';
+    toggle.id = 'floor-autoscroll';
+    toggle.checked = true;
+
+    var toggleLabel = document.createElement('label');
+    toggleLabel.setAttribute('for', 'floor-autoscroll');
+    toggleLabel.textContent = 'Auto-scroll to the latest turn';
+
+    scrollWrap.appendChild(toggle);
+    scrollWrap.appendChild(toggleLabel);
+    box.parentNode.insertBefore(scrollWrap, box);
+
+    if (toggle.checked && !location.hash) box.scrollTop = 0;
+    toggle.addEventListener('change', function () {
+      if (toggle.checked) box.scrollTop = 0;
+    });
+  }
+
+  // ---- transcript: jump to a turn ------------------------------------------
+  if (box) {
+    var groups = Array.prototype.slice.call(box.querySelectorAll('.tgroup > h3'));
+    if (groups.length > 3) {
+      var tools2 = document.createElement('div');
+      tools2.className = 'tools';
+
+      var label = document.createElement('label');
+      label.textContent = 'Jump to';
+      label.setAttribute('for', 'jump-turn');
+
+      var sel = document.createElement('select');
+      sel.id = 'jump-turn';
+      groups.forEach(function (h) {
+        var o = document.createElement('option');
+        o.value = h.id;
+        o.textContent = 'Turn ' + h.id.replace('turn-', '');
+        sel.appendChild(o);
+      });
+
+      var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      sel.addEventListener('change', function () {
+        var target = document.getElementById(sel.value);
+        if (target) target.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+      });
+
+      tools2.appendChild(label);
+      tools2.appendChild(sel);
+      box.parentNode.insertBefore(tools2, box);
+    }
+  }
+})();
+</script>
+</body>
+</html>

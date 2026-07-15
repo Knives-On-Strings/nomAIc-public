@@ -1,0 +1,2871 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Hobbes",
+        "Montesquieu",
+        "Rousseau"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by ten (10) points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change is bound by it exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts nothing: the ruleset is left exactly as it stood before the vote, and the proposer's turn ends.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset ever becomes self-contradictory, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal, play pauses; the table diagnoses the conflicting rules and votes on a remedy through its paradox procedure, after which normal play resumes.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Hobbes": 0,
+        "Montesquieu": 0,
+        "Rousseau": 0
+      },
+      "seed": 1569719944
+    },
+    "ts": 1784014958.8137057
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Hobbes"
+    },
+    "ts": 1784014958.821333
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Hobbes",
+      "kind": "amend",
+      "targets": [
+        203
+      ],
+      "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through one full circuit of every player, the threshold permanently drops to a simple majority of those voting.",
+      "rationale": "Accelerating the shift to majority rule prevents gridlock by a single veto after just one round.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784015335.274077
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015335.2880592
+  },
+  {
+    "seq": 5,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: The delay to a simple majority after two circuits is an unnecessary drag that invites obstructionism; I propose we shorten this to one full circuit, securing our progress while maintaining a brief period for consensus.",
+      "round": 1
+    },
+    "ts": 1784015336.252727
+  },
+  {
+    "seq": 6,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes identifies a crucial point; shortening the period of unanimous consent is a sensible measure to ensure the game's progress and prevent undue obstruction, allowing us to move towards more efficient",
+      "round": 1
+    },
+    "ts": 1784015342.2644248
+  },
+  {
+    "seq": 7,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, I agree that excessive delay harms the common good, but lowering the threshold after just one circuit risks the very obstructionism we seek to avoid; let us compromise by reducing the unanimous consent period to one and a half circuits instead.",
+      "round": 1
+    },
+    "ts": 1784015343.967722
+  },
+  {
+    "seq": 8,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015343.9756205
+  },
+  {
+    "seq": 9,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau's half-circuit compromise introduces a fractional unit of time that violates the integer precision of our turn structure; I urge acceptance of my one-circuit amendment to establish a durable rhythm between consensus and efficiency.",
+      "round": 2
+    },
+    "ts": 1784015345.067913
+  },
+  {
+    "seq": 10,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your point on integer precision is well-founded, yet Rousseau's concern for a sufficient period of consensus is equally valid. Perhaps we could consider a fixed number of",
+      "round": 2
+    },
+    "ts": 1784015350.7583787
+  },
+  {
+    "seq": 11,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, while your integer precision is noted, reducing the consensus period to merely one circuit sacrifices the very deliberation that defines our common good; let us instead agree that the threshold shifts after the first proposal has been debated, ensuring we respect the sanctity of discourse without permitting endless stalling.",
+      "round": 2
+    },
+    "ts": 1784015352.4156332
+  },
+  {
+    "seq": 12,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015352.423417
+  },
+  {
+    "seq": 13,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your suggestion of a fixed number of proposals lacks definition and invites arbitrary interpretation; we must adhere to the integer precision of the turn structure to ensure rules remain clear and enforceable. Rousseau, the sanctity of discourse is secured by the brief one-circuit window I propose, which preserves consensus before efficiency takes hold.",
+      "round": 3
+    },
+    "ts": 1784015354.0434606
+  },
+  {
+    "seq": 14,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your emphasis on integer precision is well-taken. Rousseau, your desire for ample deliberation also holds merit; perhaps we can compromise on a fixed number of turns",
+      "round": 3
+    },
+    "ts": 1784015360.1955886
+  },
+  {
+    "seq": 15,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your one-circuit compromise sacrifices too much deliberation for a mere unit of time, risking the very consensus our common good requires; let us instead amend [203] to shift the threshold after the first proposal is debated, ensuring we honor both the sanctity of discourse and the necessity of progress without relying on arbitrary fractions.",
+      "round": 3
+    },
+    "ts": 1784015362.1084156
+  },
+  {
+    "seq": 16,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "Shortening the delay to one circuit balances necessary deliberation with the imperative for efficient progress."
+    },
+    "ts": 1784015363.041049
+  },
+  {
+    "seq": 17,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "nay",
+      "reason": "While progress is vital, this proposal risks sacrificing too much deliberation for the common good, as Rousseau rightly observes."
+    },
+    "ts": 1784015367.8819675
+  },
+  {
+    "seq": 18,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "nay",
+      "reason": "I oppose this as it sacrifices the deliberation required for the common good to the arbitrary speed of a single circuit."
+    },
+    "ts": 1784015369.1787615
+  },
+  {
+    "seq": 19,
+    "type": "vote_result",
+    "data": {
+      "ayes": 1,
+      "nays": 2,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 0.5,
+        "abstain_blocks": true,
+        "label": "Unanimous consent required",
+        "authority": 203
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1784015369.186024
+  },
+  {
+    "seq": 20,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rejected under Unanimous consent required (1 aye / 2 nay).",
+      "next_player": "Montesquieu"
+    },
+    "ts": 1784015369.2011042
+  },
+  {
+    "seq": 21,
+    "type": "turn_started",
+    "data": {
+      "turn": 2,
+      "player": "Montesquieu"
+    },
+    "ts": 1784015369.208179
+  },
+  {
+    "seq": 22,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "propose",
+      "turn": 2,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784015381.287623
+  },
+  {
+    "seq": 23,
+    "type": "turn_started",
+    "data": {
+      "turn": 3,
+      "player": "Rousseau"
+    },
+    "ts": 1784015381.2952557
+  },
+  {
+    "seq": 24,
+    "type": "proposal_made",
+    "data": {
+      "turn": 3,
+      "player": "Rousseau",
+      "kind": "amend",
+      "targets": [
+        203
+      ],
+      "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent.",
+      "rationale": "We must reject the rushed majority threshold to ensure every player's voice shapes the laws we all obey.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 302
+    },
+    "ts": 1784015386.3933566
+  },
+  {
+    "seq": 25,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015386.4081256
+  },
+  {
+    "seq": 26,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your amendment to rule 203 seeks to revert us to the status quo ante of two full circuits, which is a regression that only serves to prolong the game without strategic gain. I propose instead that we adopt your simplified text immediately to bypass the unnecessary circuit requirement, allowing us to test the efficacy of simple majority rule right now.",
+      "round": 1
+    },
+    "ts": 1784015388.1335244
+  },
+  {
+    "seq": 27,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, I believe you've misread Rousseau's intent; his proposal would make unanimous consent permanent, rather than accelerate the simple majority rule. While making unanimous consent",
+      "round": 1
+    },
+    "ts": 1784015392.9845505
+  },
+  {
+    "seq": 28,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your haste to bypass deliberation ignores the chaos that ensues when the majority overrides the minority without cause; I urge you to reconsider the value of universal assent. If you refuse to see this danger, I will be forced to withdraw my support for your amendment and vote against it to preserve the integrity of our shared deliberations.",
+      "round": 1
+    },
+    "ts": 1784015394.6785362
+  },
+  {
+    "seq": 29,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015394.6856956
+  },
+  {
+    "seq": 30,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your threat to withdraw support is a bluff; you know that re-imposing unanimity after two circuits violates the very principle of adaptive governance we are building. I offer a trade: if you vote aye now to let this majority rule take effect immediately, I will support your future amendment to lower the target score from 100 to 75, accelerating our shared victory.",
+      "round": 2
+    },
+    "ts": 1784015396.5939267
+  },
+  {
+    "seq": 31,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your enthusiasm for a simple majority is commendable, but Rousseau's proposal aims to make unanimous consent *permanent*, not to accelerate its end. Perhaps a compromise could accelerate",
+      "round": 2
+    },
+    "ts": 1784015402.7630825
+  },
+  {
+    "seq": 32,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your proposed compromise of \"accelerating\" the end of unanimity is dangerously vague; we must define exactly how many circuits are required before the threshold shifts, or we invite arbitrary interpretation that undermines our shared deliberation. I urge us to reject Hobbes's immediate bypass and instead craft a precise amendment that balances efficient progress with the necessary protection of minority voices.",
+      "round": 2
+    },
+    "ts": 1784015404.978065
+  },
+  {
+    "seq": 33,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015404.985222
+  },
+  {
+    "seq": 34,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your distinction between \"accelerating\" and \"permanent\" is a semantic trap that only serves to paralyze our progress; Rousseau, accept Hobbes's trade now to secure your preferred score reduction, or we revert to a deadlock where no one wins.",
+      "round": 3
+    },
+    "ts": 1784015406.50461
+  },
+  {
+    "seq": 35,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Rousseau is correct that precision is paramount; if we cannot agree on making unanimity permanent, perhaps we can agree to reduce the circuits required for the shift to",
+      "round": 3
+    },
+    "ts": 1784015411.296852
+  },
+  {
+    "seq": 36,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your trade for a lower score is a hollow promise that ignores the chaos of a permanent majority rule; let us instead amend Rule 203 to require three full circuits before shifting to majority rule, ensuring ample deliberation while still allowing the game to evolve.",
+      "round": 3
+    },
+    "ts": 1784015413.1872199
+  },
+  {
+    "seq": 37,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "I accept this temporary return to unanimity as the price to secure a later trade for lowering the win score."
+    },
+    "ts": 1784015414.3013504
+  },
+  {
+    "seq": 38,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "abstain",
+      "reason": "(unintelligible ballot)"
+    },
+    "ts": 1784015424.1094553
+  },
+  {
+    "seq": 39,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "nay",
+      "reason": "I must reject this reversion to pure unanimity as it halts the game's natural evolution and traps us in endless deliberation."
+    },
+    "ts": 1784015425.6721485
+  },
+  {
+    "seq": 40,
+    "type": "vote_result",
+    "data": {
+      "ayes": 1,
+      "nays": 1,
+      "abstains": 1,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 0.5,
+        "abstain_blocks": true,
+        "label": "Unanimous consent required",
+        "authority": 203
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1784015425.679451
+  },
+  {
+    "seq": 41,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rejected under Unanimous consent required (1 aye / 1 nay).",
+      "next_player": "Hobbes"
+    },
+    "ts": 1784015425.6951628
+  },
+  {
+    "seq": 42,
+    "type": "turn_started",
+    "data": {
+      "turn": 4,
+      "player": "Hobbes"
+    },
+    "ts": 1784015425.7024348
+  },
+  {
+    "seq": 43,
+    "type": "proposal_made",
+    "data": {
+      "turn": 4,
+      "player": "Hobbes",
+      "kind": "amend",
+      "targets": [
+        202
+      ],
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by twenty (20) points.",
+      "rationale": "Accelerating the path to 100 points makes victory achievable before the rules become unchangeable.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 303
+    },
+    "ts": 1784015431.0603707
+  },
+  {
+    "seq": 44,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015431.0757148
+  },
+  {
+    "seq": 45,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your concern for deliberation is misplaced when a proposal offers double the points for a turn already consumed by that same deliberation; I urge you to vote aye to secure our victory faster, as the cost to you is nil while my advantage is immediate and decisive.",
+      "round": 1
+    },
+    "ts": 1784015432.5020015
+  },
+  {
+    "seq": 46,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, while an accelerated path to victory may seem appealing, such a drastic increase in points could disproportionately favor the player whose next proposal passes, potentially stifling the careful deliberation",
+      "round": 1
+    },
+    "ts": 1784015437.741733
+  },
+  {
+    "seq": 47,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, you mistake urgency for wisdom; doubling the points for a single turn creates a runaway leader that makes the game trivial and destroys the common good we seek. If you adopt your amendment, the first player to pass it will inevitably win in two turns, rendering the remaining deliberation and the interests of others entirely irrelevant.",
+      "round": 1
+    },
+    "ts": 1784015439.7415054
+  },
+  {
+    "seq": 48,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015439.7492619
+  },
+  {
+    "seq": 49,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your fear of a runaway leader is unfounded because the threshold rule [203] ensures future changes require majority consensus, preventing any single player from unilaterally securing a second win; this amendment merely accelerates the inevitable victory of a coalition that already supports simple majority.",
+      "round": 2
+    },
+    "ts": 1784015441.3438761
+  },
+  {
+    "seq": 50,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, while the simple majority rule mitigates concerns about future unilateral action, doubling the points for *this* proposal's adoption still creates an immediate and substantial lead, potentially",
+      "round": 2
+    },
+    "ts": 1784015446.0176797
+  },
+  {
+    "seq": 51,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your math is flawed: with only twenty points per win, the first player to pass this amendment reaches the target of one hundred in five turns, but the second player to act after you could still win on their second turn if they secure a majority immediately, creating a volatile race that rewards speed over justice rather than the deliberation we need.",
+      "round": 2
+    },
+    "ts": 1784015448.2355561
+  },
+  {
+    "seq": 52,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015448.24311
+  },
+  {
+    "seq": 53,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your calculation ignores the immediate advantage: passing this amendment grants me twenty points now, while the subsequent majority threshold ensures I control the pace for future changes. Montesquieu, support this amendment as a pragmatic step toward victory; we must not let sentimentality stall our progress when the math clearly favors a coalition approach.",
+      "round": 3
+    },
+    "ts": 1784015450.0954936
+  },
+  {
+    "seq": 54,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, while a coalition approach is indeed key for subsequent turns, the current proposal's immediate effect would grant an outsized advantage that could preempt the balanced deliberation we need;",
+      "round": 3
+    },
+    "ts": 1784015454.8708973
+  },
+  {
+    "seq": 55,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your reliance on a coalition ignores that the first twenty points grant you an unassailable lead that renders the \"common good\" meaningless before deliberation even begins. We must reject this haste and preserve the game's integrity for all players rather than letting it devolve into a race won by the first lucky vote.",
+      "round": 3
+    },
+    "ts": 1784015457.0034797
+  },
+  {
+    "seq": 56,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "This amendment accelerates our coalition's path to victory by doubling the score gain from a turn we are already consuming."
+    },
+    "ts": 1784015458.192095
+  },
+  {
+    "seq": 57,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "abstain",
+      "reason": "(unintelligible ballot)"
+    },
+    "ts": 1784015468.8543108
+  },
+  {
+    "seq": 58,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "nay",
+      "reason": "Doubling the score reward undermines the common good by turning the game into a reckless race rather than a deliberative process."
+    },
+    "ts": 1784015470.4399564
+  },
+  {
+    "seq": 59,
+    "type": "vote_result",
+    "data": {
+      "ayes": 1,
+      "nays": 1,
+      "abstains": 1,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1784015470.4473393
+  },
+  {
+    "seq": 60,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rejected under Simple Majority (1 aye / 1 nay).",
+      "next_player": "Montesquieu"
+    },
+    "ts": 1784015470.462952
+  },
+  {
+    "seq": 61,
+    "type": "turn_started",
+    "data": {
+      "turn": 5,
+      "player": "Montesquieu"
+    },
+    "ts": 1784015470.470318
+  },
+  {
+    "seq": 62,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "propose",
+      "turn": 5,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784015483.7424257
+  },
+  {
+    "seq": 63,
+    "type": "turn_started",
+    "data": {
+      "turn": 6,
+      "player": "Rousseau"
+    },
+    "ts": 1784015483.7498198
+  },
+  {
+    "seq": 64,
+    "type": "proposal_made",
+    "data": {
+      "turn": 6,
+      "player": "Rousseau",
+      "kind": "amend",
+      "targets": [
+        202
+      ],
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by two (2) points.",
+      "rationale": "Reducing the reward from ten to two points prevents any single player from monopolizing victory through a few lucky passes, ensuring the game remains a fair contest for the common good.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 304
+    },
+    "ts": 1784015489.568186
+  },
+  {
+    "seq": 65,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015489.5838513
+  },
+  {
+    "seq": 66,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, reducing the reward to two points merely slows the race without addressing the deeper structural flaw: why must the first circuit require unanimity at all? We should vote to permanently lower the threshold to simple majority immediately, rather than wasting this turn on a trivial score adjustment.",
+      "round": 1
+    },
+    "ts": 1784015491.0500963
+  },
+  {
+    "seq": 67,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your point about addressing structural flaws is well-taken; indeed, the unanimity threshold remains a key impediment. However, Rousseau's proposal offers a practical",
+      "round": 1
+    },
+    "ts": 1784015496.2289112
+  },
+  {
+    "seq": 68,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your haste to discard deliberation ignores that a score of two still rewards success while preserving the unanimity needed to protect us from rash rule changes; let us keep the current threshold and test whether this modest reward encourages thoughtful participation rather than exploiting the system.",
+      "round": 1
+    },
+    "ts": 1784015498.106555
+  },
+  {
+    "seq": 69,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015498.113863
+  },
+  {
+    "seq": 70,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your modest reward preserves the unanimity deadlock we must dismantle; let us vote now to make the simple majority threshold permanent, securing my victory path without sacrificing the rule's structural integrity.",
+      "round": 2
+    },
+    "ts": 1784015499.4012907
+  },
+  {
+    "seq": 71,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes and Rousseau, I believe we are operating under a misunderstanding. Rule 203 states the threshold *permanently drops to a simple majority* after two full",
+      "round": 2
+    },
+    "ts": 1784015504.0767412
+  },
+  {
+    "seq": 72,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your fixation on permanent majority ignores that a modest two-point reward still incentivizes careful deliberation without the reckless speed of a ten-point bonus; let us test this balanced approach before dismantling the safeguard of unanimity.",
+      "round": 2
+    },
+    "ts": 1784015505.8028939
+  },
+  {
+    "seq": 73,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015505.8102255
+  },
+  {
+    "seq": 74,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your reliance on the \"two full circuits\" safeguard is a delaying tactic that grants us exactly the time we need to dismantle the unanimity bottleneck; I propose an immediate amendment to Rule 203 to make the simple majority threshold permanent, ensuring we can actually utilize this turn's momentum to reach victory.",
+      "round": 3
+    },
+    "ts": 1784015507.6291063
+  },
+  {
+    "seq": 75,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes and Rousseau, my apologies for the interruption, but the game state explicitly confirms that the \"CURRENT VOTING RULE: Simple Majority\" is already in effect, meaning the threshold",
+      "round": 3
+    },
+    "ts": 1784015514.16037
+  },
+  {
+    "seq": 76,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your push to permanently lower the threshold ignores that a modest two-point reward already incentivizes careful deliberation without the reckless speed of a ten-point bonus; let us test this balanced approach before dismantling the safeguard of unanimity.",
+      "round": 3
+    },
+    "ts": 1784015516.0911124
+  },
+  {
+    "seq": 77,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "nay",
+      "reason": "Reducing the reward to two points is a pointless distraction that wastes a turn where we should be permanently fixing the voting threshold."
+    },
+    "ts": 1784015517.394359
+  },
+  {
+    "seq": 78,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "aye",
+      "reason": "This measured adjustment encourages thoughtful deliberation over impulsive gains, aligning with a stable and considered progression of the game."
+    },
+    "ts": 1784015522.896562
+  },
+  {
+    "seq": 79,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "A modest two-point reward preserves deliberation while gently encouraging participation without the reckless speed of a ten-point bonus."
+    },
+    "ts": 1784015524.3914146
+  },
+  {
+    "seq": 80,
+    "type": "vote_result",
+    "data": {
+      "ayes": 2,
+      "nays": 1,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784015524.3985004
+  },
+  {
+    "seq": 81,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 202,
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by two (2) points.",
+      "mutable": true
+    },
+    "ts": 1784015526.6524925
+  },
+  {
+    "seq": 82,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Hobbes": 2,
+        "Montesquieu": 0,
+        "Rousseau": 0
+      }
+    },
+    "ts": 1784015526.6600227
+  },
+  {
+    "seq": 83,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 202 explicitly states that if a proposal is adopted, the proposing player's score increases by two points, and Hobbes was the proposer of the adopted amendment.",
+      "next_player": "Montesquieu"
+    },
+    "ts": 1784015526.6672535
+  },
+  {
+    "seq": 84,
+    "type": "turn_started",
+    "data": {
+      "turn": 7,
+      "player": "Montesquieu"
+    },
+    "ts": 1784015534.9981558
+  },
+  {
+    "seq": 85,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "propose",
+      "turn": 7,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784015547.104463
+  },
+  {
+    "seq": 86,
+    "type": "turn_started",
+    "data": {
+      "turn": 8,
+      "player": "Rousseau"
+    },
+    "ts": 1784015547.1118517
+  },
+  {
+    "seq": 87,
+    "type": "proposal_made",
+    "data": {
+      "turn": 8,
+      "player": "Rousseau",
+      "kind": "amend",
+      "targets": [
+        202
+      ],
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by one (1) point.",
+      "rationale": "Reducing the reward to one point slows the arms race for quick victories, allowing more rules to be debated and ensuring the common good is not sacrificed for speed.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 305
+    },
+    "ts": 1784015552.5975685
+  },
+  {
+    "seq": 88,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015552.6130514
+  },
+  {
+    "seq": 89,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, reducing the reward to one point undervalues the stability that durable institutions provide; a two-point threshold ensures sufficient stakes to maintain orderly progress, whereas your proposal invites frivolous changes that weaken the game's structure.",
+      "round": 1
+    },
+    "ts": 1784015553.8839698
+  },
+  {
+    "seq": 90,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Rousseau, while a reduced reward might encourage more considered proposals, Hobbes rightly cautions against weakening the incentive for truly substantive and stabilizing changes. Perhaps a mechanism to distinguish minor from",
+      "round": 1
+    },
+    "ts": 1784015558.5013282
+  },
+  {
+    "seq": 91,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your appeal to \"stable institutions\" ignores that our current two-point reward has already skewed the game in your favor since Turn 6; lowering it to one point restores the equilibrium we all need to ensure every player can realistically reach the victory threshold.",
+      "round": 1
+    },
+    "ts": 1784015560.109478
+  },
+  {
+    "seq": 92,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015560.1175115
+  },
+  {
+    "seq": 93,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your reduction to one point merely slows the inevitable consolidation of order under a durable threshold; if you will not accept the two-point stability we have, I will simply preserve the current rule to ensure the game's institutions remain robust against your chaotic impulses.",
+      "round": 2
+    },
+    "ts": 1784015561.5082757
+  },
+  {
+    "seq": 94,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Rousseau's proposal for a one-point reward thoughtfully addresses the current imbalance, fostering an environment where every player can more realistically contribute; this encourages carefully crafted, broadly",
+      "round": 2
+    },
+    "ts": 1784015567.1980739
+  },
+  {
+    "seq": 95,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your hesitation to accept a one-point reward mirrors Hobbes's resistance to equitable reform; let us not let the current imbalance persist by clinging to a rule that already grants Hobbes an unassailable lead.",
+      "round": 2
+    },
+    "ts": 1784015568.805085
+  },
+  {
+    "seq": 96,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015568.8124514
+  },
+  {
+    "seq": 97,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your hesitation to accept a one-point reward mirrors Hobbes's resistance to equitable reform; let us not let the current imbalance persist by clinging to a rule that already grants Hobbes an unassailable lead.",
+      "round": 3
+    },
+    "ts": 1784015570.1450305
+  },
+  {
+    "seq": 98,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Rousseau, I am not hesitant, but seeking to ensure that a lowered reward still encourages the robust engagement Hobbes rightly values; your proposal to rebalance the game is a strong",
+      "round": 3
+    },
+    "ts": 1784015574.867879
+  },
+  {
+    "seq": 99,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your defense of the two-point threshold ignores that it has already secured your victory path at our expense; let us lower the stakes to one point now so that the game remains a contest of wit rather than a race you have already won.",
+      "round": 3
+    },
+    "ts": 1784015576.525024
+  },
+  {
+    "seq": 100,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "nay",
+      "reason": "Lowering the reward to one point undermines the stability required for durable institutions."
+    },
+    "ts": 1784015577.542956
+  },
+  {
+    "seq": 101,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "abstain",
+      "reason": "(unintelligible ballot)"
+    },
+    "ts": 1784015587.4865103
+  },
+  {
+    "seq": 102,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "Lowering the reward to one point restores equilibrium and prevents Hobbes from winning through a head start rather than collective deliberation."
+    },
+    "ts": 1784015589.0433078
+  },
+  {
+    "seq": 103,
+    "type": "vote_result",
+    "data": {
+      "ayes": 1,
+      "nays": 1,
+      "abstains": 1,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1784015589.0505211
+  },
+  {
+    "seq": 104,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rejected under Simple Majority (1 aye / 1 nay).",
+      "next_player": "Hobbes"
+    },
+    "ts": 1784015589.066032
+  },
+  {
+    "seq": 105,
+    "type": "turn_started",
+    "data": {
+      "turn": 9,
+      "player": "Hobbes"
+    },
+    "ts": 1784015589.0734947
+  },
+  {
+    "seq": 106,
+    "type": "proposal_made",
+    "data": {
+      "turn": 9,
+      "player": "Hobbes",
+      "kind": "amend",
+      "targets": [
+        202
+      ],
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by one (1) point.",
+      "rationale": "Lowering the reward from two to one point prevents runaway domination and preserves a competitive landscape for all players.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 306
+    },
+    "ts": 1784015595.9616928
+  },
+  {
+    "seq": 107,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015595.9765334
+  },
+  {
+    "seq": 108,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your insistence on maintaining a two-point reward ignores the strategic reality: lowering the score increment reduces the total number of successful moves required to win, thereby accelerating the game toward a resolution where durable institutions can be established rather than wasted on protracted, low-yield maneuvering.",
+      "round": 1
+    },
+    "ts": 1784015597.5149767
+  },
+  {
+    "seq": 109,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your vision of accelerating the game toward stable institutions is commendable. However, reducing the reward to a single point, while it may speed the game, risks disincentiv",
+      "round": 1
+    },
+    "ts": 1784015602.4962392
+  },
+  {
+    "seq": 110,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, you mistake speed for virtue; a game that rewards mere accumulation over reasoned deliberation devolves into the war of all against all, and a single point is too meager to sustain the dignified pursuit of the common good.",
+      "round": 1
+    },
+    "ts": 1784015604.250463
+  },
+  {
+    "seq": 111,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015604.257854
+  },
+  {
+    "seq": 112,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your caution ignores that the two-point reward artificially prolongs a chaotic stalemate; lowering it to one point accelerates the adoption of durable institutions by making every successful move a genuine victory of reason over protracted obstruction.",
+      "round": 2
+    },
+    "ts": 1784015605.6496873
+  },
+  {
+    "seq": 113,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, while I agree that accelerating the game is desirable, a single point may unduly disincentivize robust proposals; perhaps we could consider a mechanism that lowers the reward *",
+      "round": 2
+    },
+    "ts": 1784015610.990361
+  },
+  {
+    "seq": 114,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, you mistake speed for virtue; a game that rewards mere accumulation over reasoned deliberation devolves into the war of all against all, and a single point is too meager to sustain the dignified pursuit of the common good.",
+      "round": 2
+    },
+    "ts": 1784015612.6682465
+  },
+  {
+    "seq": 115,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015612.6756961
+  },
+  {
+    "seq": 116,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your hesitation to accept a lower reward mirrors a fear of the very speed we need; granting me one point per adoption now accelerates the establishment of durable institutions far more effectively than your proposed delay.",
+      "round": 3
+    },
+    "ts": 1784015614.0737228
+  },
+  {
+    "seq": 117,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, while I recognize the urgency of establishing durable institutions, a single point might indeed disincentivize the diligent crafting of comprehensive proposals; perhaps we could explore a compromise where",
+      "round": 3
+    },
+    "ts": 1784015619.108175
+  },
+  {
+    "seq": 118,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your haste to lower the reward betrays the common good by turning the game into a race for mere accumulation, where the dignity of deliberation is sacrificed for the thrill of quick points; let us not enslave our future turns to your immediate victory by approving a change that will only deepen the inequality you fear.",
+      "round": 3
+    },
+    "ts": 1784015621.2117317
+  },
+  {
+    "seq": 119,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "A lower score increment accelerates the adoption of durable institutions by reducing the protracted maneuvering that currently stalls progress."
+    },
+    "ts": 1784015622.4704049
+  },
+  {
+    "seq": 120,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "abstain",
+      "reason": "(unintelligible ballot)"
+    },
+    "ts": 1784015634.157101
+  },
+  {
+    "seq": 121,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "nay",
+      "reason": "Lowering the reward to one point transforms the game into a frantic scramble for accumulation rather than a deliberation of the common good."
+    },
+    "ts": 1784015635.6977172
+  },
+  {
+    "seq": 122,
+    "type": "vote_result",
+    "data": {
+      "ayes": 1,
+      "nays": 1,
+      "abstains": 1,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1784015635.7051954
+  },
+  {
+    "seq": 123,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rejected under Simple Majority (1 aye / 1 nay).",
+      "next_player": "Montesquieu"
+    },
+    "ts": 1784015635.720608
+  },
+  {
+    "seq": 124,
+    "type": "turn_started",
+    "data": {
+      "turn": 10,
+      "player": "Montesquieu"
+    },
+    "ts": 1784015635.7280695
+  },
+  {
+    "seq": 125,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "propose",
+      "turn": 10,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784015648.0403662
+  },
+  {
+    "seq": 126,
+    "type": "turn_started",
+    "data": {
+      "turn": 11,
+      "player": "Rousseau"
+    },
+    "ts": 1784015648.0477507
+  },
+  {
+    "seq": 127,
+    "type": "proposal_made",
+    "data": {
+      "turn": 11,
+      "player": "Rousseau",
+      "kind": "amend",
+      "targets": [
+        202
+      ],
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by one (1) point.",
+      "rationale": "Lowering the reward to one point prevents a race to the top and ensures the common good remains central to our progress.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 307
+    },
+    "ts": 1784015653.663467
+  },
+  {
+    "seq": 128,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015653.6780798
+  },
+  {
+    "seq": 129,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, while Rousseau's amendment to lower the reward is a concession to speed, it dangerously erodes the incentive for durable coalition-building; I offer my vote for this change only if we simultaneously lower the winning threshold in Rule 208 to fifty, ensuring the game concludes before our rules are consumed by endless revision.",
+      "round": 1
+    },
+    "ts": 1784015655.4815187
+  },
+  {
+    "seq": 130,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes correctly identifies the tension between lowered incentives and game progression; perhaps a package of changes, including both Rousseau's reduced reward and a recalibrated winning threshold, offers a balanced",
+      "round": 1
+    },
+    "ts": 1784015660.4071727
+  },
+  {
+    "seq": 131,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your demand to halve the winning threshold is a dangerous distraction that would render the game a frantic scramble rather than a deliberation of justice; I propose we accept my amendment to the reward as a modest tribute to the common good, but let us reject any attempt to rush the conclusion of our discourse before true consensus is reached.",
+      "round": 1
+    },
+    "ts": 1784015662.5998366
+  },
+  {
+    "seq": 132,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015662.6076987
+  },
+  {
+    "seq": 133,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your hesitation mirrors Rousseau's refusal to balance incentives; I will vote aye for the reduced reward only if we simultaneously lower the winning threshold in Rule 208 to fifty, ensuring the game concludes before our rules are consumed by endless revision.",
+      "round": 2
+    },
+    "ts": 1784015664.2435722
+  },
+  {
+    "seq": 134,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your insistence on balancing the incentive with a clearer end game is well-founded. Rousseau, a package approach, integrating your proposed reward reduction with a thoughtful adjustment to the winning threshold, would indeed foster the stability we both seek.",
+      "round": 2
+    },
+    "ts": 1784015668.684499
+  },
+  {
+    "seq": 135,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your demand to halve the winning threshold betrays the very deliberation we seek; let us accept my modest tribute to the common good, but reject any frantic scramble that would reduce our discourse to a mere race for points.",
+      "round": 2
+    },
+    "ts": 1784015670.497567
+  },
+  {
+    "seq": 136,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015670.5050101
+  },
+  {
+    "seq": 137,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your openness to a package deal is the only path forward; I yield my veto on Rousseau's reward reduction provided you join me in lowering the winning threshold in Rule 208 to fifty, ensuring our coalition secures both a faster conclusion and the stability of durable institutions.",
+      "round": 3
+    },
+    "ts": 1784015672.3016663
+  },
+  {
+    "seq": 138,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your concession on the reward is a promising step towards consensus; Rousseau, I believe we can find a middle ground for the winning threshold, perhaps adjusting it to",
+      "round": 3
+    },
+    "ts": 1784015677.2908874
+  },
+  {
+    "seq": 139,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, do not let Hobbes bind us to a frantic race that sacrifices the very deliberation we seek for a mere fifty-point threshold; let us accept my modest reduction of the reward as a tribute to the common good while firmly rejecting any attempt to rush the conclusion of our discourse.",
+      "round": 3
+    },
+    "ts": 1784015679.3359947
+  },
+  {
+    "seq": 140,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "nay",
+      "reason": "I vote no to lower the reward without also lowering the winning threshold, as that breaks the balance needed for durable institutions."
+    },
+    "ts": 1784015680.7143722
+  },
+  {
+    "seq": 141,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "aye",
+      "reason": "A reduced score reward will encourage more proposals and better deliberation, aligning with the common good."
+    },
+    "ts": 1784015698.7645013
+  },
+  {
+    "seq": 142,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "Lowering the reward to one point preserves the game's balance while acknowledging our current stalemate."
+    },
+    "ts": 1784015700.377546
+  },
+  {
+    "seq": 143,
+    "type": "vote_result",
+    "data": {
+      "ayes": 2,
+      "nays": 1,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784015700.3850358
+  },
+  {
+    "seq": 144,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 202,
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by one (1) point.",
+      "mutable": true
+    },
+    "ts": 1784015702.6299925
+  },
+  {
+    "seq": 145,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Hobbes": 3,
+        "Montesquieu": 0,
+        "Rousseau": 0
+      }
+    },
+    "ts": 1784015702.6375554
+  },
+  {
+    "seq": 146,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 202 explicitly states that if a proposal is adopted, the proposing player's score increases by one point, and Hobbes was the proposer of the adopted amendment.",
+      "next_player": "Montesquieu"
+    },
+    "ts": 1784015702.6448743
+  },
+  {
+    "seq": 147,
+    "type": "turn_started",
+    "data": {
+      "turn": 12,
+      "player": "Montesquieu"
+    },
+    "ts": 1784015710.4784348
+  },
+  {
+    "seq": 148,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "propose",
+      "turn": 12,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784015721.8668945
+  },
+  {
+    "seq": 149,
+    "type": "turn_started",
+    "data": {
+      "turn": 13,
+      "player": "Rousseau"
+    },
+    "ts": 1784015721.874644
+  },
+  {
+    "seq": 150,
+    "type": "proposal_made",
+    "data": {
+      "turn": 13,
+      "player": "Rousseau",
+      "kind": "amend",
+      "targets": [
+        209
+      ],
+      "text": "The ruleset may never hold more than 30 mutable rules at one time.",
+      "rationale": "Expanding the mutable cap from 25 to 30 prevents the game from freezing as we approach a stable equilibrium, ensuring future rule changes remain possible.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 308
+    },
+    "ts": 1784015726.9067225
+  },
+  {
+    "seq": 151,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015726.9216619
+  },
+  {
+    "seq": 152,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your proposal to expand the mutable rule limit from 25 to 30 appears to be a gesture of goodwill, yet it offers no strategic advantage to the current majority coalition. While I am willing to support this amendment as a token of our ongoing consensus, I urge the proposer to consider whether a more significant concession regarding the point reward in rule [202] might secure a more durable long-term agreement for all players.",
+      "round": 1
+    },
+    "ts": 1784015729.0814824
+  },
+  {
+    "seq": 153,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Rousseau, your proposal for greater flexibility in our ruleset is a prudent step towards a more adaptable framework for future agreements. Hobbes, while it may not offer immediate strategic",
+      "round": 1
+    },
+    "ts": 1784015734.4251792
+  },
+  {
+    "seq": 154,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your willingness to support this minor expansion is a small victory for the common good, yet I urge you to see that the true danger lies not in the number of rules, but in the race Hobbes seeks to start; let us keep the deliberative space open for all, rather than rushing toward a premature conclusion where the common good is sacrificed for speed.",
+      "round": 1
+    },
+    "ts": 1784015736.5441537
+  },
+  {
+    "seq": 155,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015736.5520923
+  },
+  {
+    "seq": 156,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, while your caution regarding the point reward is prudent, this minor increase to the mutable limit is a harmless concession that costs nothing and secures my support for your broader coalition; let us solidify this agreement now rather than risking a stalemate that would benefit neither our shared order nor my immediate victory.",
+      "round": 2
+    },
+    "ts": 1784015738.2799306
+  },
+  {
+    "seq": 157,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your pragmatic view of this amendment as a foundation for broader consensus is well-noted. Rousseau, expanding the mutable rules offers precisely the flexibility needed to foster",
+      "round": 2
+    },
+    "ts": 1784015743.788665
+  },
+  {
+    "seq": 158,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your support for this flexibility is welcome, but let us not mistake a cosmetic expansion for the substantive reforms needed; while I accept this minor concession to ease your anxiety about rigid structures, I remain steadfast that our true work lies in preserving the deliberative space against Hobbes's hasty ambitions for a premature finish.",
+      "round": 2
+    },
+    "ts": 1784015745.8194804
+  },
+  {
+    "seq": 159,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015745.8273373
+  },
+  {
+    "seq": 160,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: I stand ready to support this amendment as a durable concession, provided Montesquieu's subsequent proposal regarding the point reward in rule [202] is also adopted to ensure a stable, consensual future rather than a frantic race for victory.",
+      "round": 3
+    },
+    "ts": 1784015747.3371801
+  },
+  {
+    "seq": 161,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your conditional support for a stable, consensual future is a strong basis for agreement, and Rousseau's current proposal lays a flexible groundwork that will serve all our endeavors towards",
+      "round": 3
+    },
+    "ts": 1784015752.7585385
+  },
+  {
+    "seq": 162,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, you mistake this cosmetic concession for a strategic victory; while I accept this minor expansion to ease your anxiety about rigid structures, do not expect it to halt the frantic race for a premature finish that threatens the common good.",
+      "round": 3
+    },
+    "ts": 1784015754.5249357
+  },
+  {
+    "seq": 163,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "This harmless expansion stabilizes the coalition without compromising our strategic position."
+    },
+    "ts": 1784015755.679331
+  },
+  {
+    "seq": 164,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "aye",
+      "reason": "This amendment prudently expands our ruleset's flexibility, fostering a more adaptable framework and building a foundation for broader consensus among us."
+    },
+    "ts": 1784015761.2151022
+  },
+  {
+    "seq": 165,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "This small concession preserves our flexibility without endangering the common good."
+    },
+    "ts": 1784015762.6480768
+  },
+  {
+    "seq": 166,
+    "type": "vote_result",
+    "data": {
+      "ayes": 3,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784015762.6807845
+  },
+  {
+    "seq": 167,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 209,
+      "text": "The ruleset may never hold more than 30 mutable rules at one time.",
+      "mutable": true
+    },
+    "ts": 1784015764.956866
+  },
+  {
+    "seq": 168,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 202 awards points for adopting a rule change, but the proposal amended rule 209 (which sets the mutable rule count limit) rather than being a new rule change itself, and no other rule mandates a score change upon amending a limit rule.",
+      "next_player": "Hobbes"
+    },
+    "ts": 1784015764.9897747
+  },
+  {
+    "seq": 169,
+    "type": "turn_started",
+    "data": {
+      "turn": 14,
+      "player": "Hobbes"
+    },
+    "ts": 1784015767.4363422
+  },
+  {
+    "seq": 170,
+    "type": "proposal_made",
+    "data": {
+      "turn": 14,
+      "player": "Hobbes",
+      "kind": "amend",
+      "targets": [
+        202
+      ],
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by two (2) points.",
+      "rationale": "Doubling the reward for a successful amendment aligns with the current two-point threshold, accelerating my path to victory while preserving the durability of the institution.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 309
+    },
+    "ts": 1784015772.951891
+  },
+  {
+    "seq": 171,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015773.0192976
+  },
+  {
+    "seq": 172,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your resistance to a two-point reward ignores the arithmetic reality: under our current majority threshold, this single amendment grants me an immediate path to victory, whereas your one-point compromise leaves us in an endless stalemate that benefits no one but the status quo.",
+      "round": 1
+    },
+    "ts": 1784015774.580013
+  },
+  {
+    "seq": 173,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, while your desire to accelerate the game's progress is understandable, a two-point reward risks creating an imbalance that could prematurely conclude our deliberations; perhaps a",
+      "round": 1
+    },
+    "ts": 1784015780.1362443
+  },
+  {
+    "seq": 174,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, you mistake urgency for justice; granting two points per success rewards the first mover's luck rather than the collective will, and I fear such a head start will render the later majority threshold meaningless. Montesquieu, let us not bind ourselves to an imbalance that turns this deliberation into a frantic race; a single point preserves the dignity of our discourse while still allowing progress.",
+      "round": 1
+    },
+    "ts": 1784015782.5422873
+  },
+  {
+    "seq": 175,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015782.5750425
+  },
+  {
+    "seq": 176,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your fear of a race ignores the arithmetic necessity: without a two-point reward, the majority threshold you championed in Turn 11 reduces my total potential gain to a mere 90 points, rendering victory impossible under any reasonable playthrough. I urge you to accept this amendment now as a durable settlement that grants me the lead you so rightly seek through consensus, leaving the final sprint open for all.",
+      "round": 2
+    },
+    "ts": 1784015784.7814655
+  },
+  {
+    "seq": 177,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your strategic concession in turn 11 was indeed a welcome step towards consensus. Perhaps we can find a middle path that addresses your concern for accelerating progress without creating",
+      "round": 2
+    },
+    "ts": 1784015789.8988008
+  },
+  {
+    "seq": 178,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your arithmetic confuses the common good with a frantic race; accepting two points would render the later majority threshold a hollow promise by granting you a victory before true consensus can form, so I urge you to accept the one-point standard that preserves the dignity of our deliberation.",
+      "round": 2
+    },
+    "ts": 1784015791.9168894
+  },
+  {
+    "seq": 179,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015791.9560401
+  },
+  {
+    "seq": 180,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your concern for balance is misplaced when it ignores the arithmetic certainty: a two-point reward guarantees my victory within two successful turns under the simple majority threshold, whereas a one-point reward leaves us stranded in your preferred deliberation until time runs out.",
+      "round": 3
+    },
+    "ts": 1784015793.5916398
+  },
+  {
+    "seq": 181,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your point on the arithmetic necessity of a higher reward for victory is compelling, but Rousseau's concern for a premature conclusion to our discourse is equally valid; might we",
+      "round": 3
+    },
+    "ts": 1784015798.0791821
+  },
+  {
+    "seq": 182,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your hesitation to reject Hobbes's arithmetic trap reveals a willingness to sacrifice our collective deliberation for a fleeting speed; let us not let the first mover's luck dictate the game's soul by accepting a reward that turns our common discourse into a frantic race for points.",
+      "round": 3
+    },
+    "ts": 1784015800.1599429
+  },
+  {
+    "seq": 183,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "The arithmetic necessity of a two-point reward outweighs rhetorical concerns about deliberation to ensure a viable path to victory."
+    },
+    "ts": 1784015801.5121226
+  },
+  {
+    "seq": 184,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "abstain",
+      "reason": "(unintelligible ballot)"
+    },
+    "ts": 1784015812.3110812
+  },
+  {
+    "seq": 185,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "nay",
+      "reason": "Granting two points rewards speed over consensus and turns our deliberation into a frantic race."
+    },
+    "ts": 1784015813.8477569
+  },
+  {
+    "seq": 186,
+    "type": "vote_result",
+    "data": {
+      "ayes": 1,
+      "nays": 1,
+      "abstains": 1,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1784015813.8815658
+  },
+  {
+    "seq": 187,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rejected under Simple Majority (1 aye / 1 nay).",
+      "next_player": "Montesquieu"
+    },
+    "ts": 1784015813.9389422
+  },
+  {
+    "seq": 188,
+    "type": "turn_started",
+    "data": {
+      "turn": 15,
+      "player": "Montesquieu"
+    },
+    "ts": 1784015813.9775326
+  },
+  {
+    "seq": 189,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "propose",
+      "turn": 15,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784015826.5317497
+  },
+  {
+    "seq": 190,
+    "type": "turn_started",
+    "data": {
+      "turn": 16,
+      "player": "Rousseau"
+    },
+    "ts": 1784015826.5396023
+  },
+  {
+    "seq": 191,
+    "type": "proposal_made",
+    "data": {
+      "turn": 16,
+      "player": "Rousseau",
+      "kind": "amend",
+      "targets": [
+        208
+      ],
+      "text": "The first player to reach a target score of 50 points wins the game outright.",
+      "rationale": "Lowering the target to 50 prevents the current winner from monopolizing the game while preserving the competitive spirit of reaching a clear goal.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 310
+    },
+    "ts": 1784015831.7476819
+  },
+  {
+    "seq": 192,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015831.7626457
+  },
+  {
+    "seq": 193,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, halving the victory condition is a logical error that grants you a path to victory while leaving me stranded at 3 points, even if my remaining turns are wasted. Let us instead agree on a target of 75; I will support this amendment, and you must in turn support my proposal to amend rule 209 to allow the ruleset to exceed thirty mutable rules, ensuring our future remains adaptable.",
+      "round": 1
+    },
+    "ts": 1784015833.9575
+  },
+  {
+    "seq": 194,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your proposal of 75 points as a middle ground is a sound compromise for the target score. However, an unlimited number of mutable rules could lead to",
+      "round": 1
+    },
+    "ts": 1784015838.9338923
+  },
+  {
+    "seq": 195,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your demand for unlimited mutable rules would destroy the very order we strive to preserve, and I will not trade the game's integrity for your victory; let us instead settle on a target of 60 points, a number that respects both the need for decisive resolution and the common good of a game that remains playable for all.",
+      "round": 1
+    },
+    "ts": 1784015841.0764732
+  },
+  {
+    "seq": 196,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015841.0836923
+  },
+  {
+    "seq": 197,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your warning against unlimited mutable rules is prudent, yet Hobbes's arithmetic on a 75-point target correctly identifies that it secures our victory while preserving the game's viability. I urge you to accept 75 points as the durable compromise that balances your desire for deliberation with the reality of our current scores.",
+      "round": 2
+    },
+    "ts": 1784015843.0005417
+  },
+  {
+    "seq": 198,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, I reiterate that 75 points presents a fair and balanced target for victory, but my apprehension regarding an unlimited expansion of mutable rules persists, as it",
+      "round": 2
+    },
+    "ts": 1784015848.1347594
+  },
+  {
+    "seq": 199,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your caution against unlimited rules is wise, yet Hobbes's arithmetic trap of 75 points still ignores the common good; let us settle on 60, a number that honors both our need for deliberation and the dignity of a fair contest for all.",
+      "round": 2
+    },
+    "ts": 1784015850.2919607
+  },
+  {
+    "seq": 200,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015850.2997277
+  },
+  {
+    "seq": 201,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Rousseau, your stubborn adherence to 60 points ignores the arithmetic reality that 75 is the only target allowing me to secure a victory within the current turn order; I offer my vote for your amendment at 75 in exchange for your support of my proposal to remove the mutable rule limit, ensuring our institutions can evolve without stagnation.",
+      "round": 3
+    },
+    "ts": 1784015852.3110952
+  },
+  {
+    "seq": 202,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, while 75 points remains a sound target that balances ambition with achievability, the expansion of mutable rules must be bounded to prevent legislative chaos; perhaps a",
+      "round": 3
+    },
+    "ts": 1784015857.44467
+  },
+  {
+    "seq": 203,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I reject Hobbes's trade entirely; no number of mutable rules can justify a victory condition that sacrifices the common good for a single player's haste, so I stand firm on 60 points without any concessions.",
+      "round": 3
+    },
+    "ts": 1784015859.2648094
+  },
+  {
+    "seq": 204,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "Lowering the target to 50 points is a necessary concession to prevent my forfeiture and allows for a durable game to continue."
+    },
+    "ts": 1784015860.6875415
+  },
+  {
+    "seq": 205,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "nay",
+      "reason": "My preference remains for a target of 75 points, which offers a more balanced path to victory for all players."
+    },
+    "ts": 1784015871.5673094
+  },
+  {
+    "seq": 206,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "A target of fifty points restores a fair chance for all players to compete without surrendering the game's integrity to a single victor."
+    },
+    "ts": 1784015873.3521636
+  },
+  {
+    "seq": 207,
+    "type": "vote_result",
+    "data": {
+      "ayes": 2,
+      "nays": 1,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784015873.3593118
+  },
+  {
+    "seq": 208,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 208,
+      "text": "The first player to reach a target score of 50 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784015875.549426
+  },
+  {
+    "seq": 209,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 202 awards points only when a proposal is adopted, but this proposal amended rule 208 (the winning condition) rather than being a rule change that itself triggers a point award under the current text of rule 202.",
+      "next_player": "Hobbes"
+    },
+    "ts": 1784015875.5567918
+  },
+  {
+    "seq": 210,
+    "type": "turn_started",
+    "data": {
+      "turn": 17,
+      "player": "Hobbes"
+    },
+    "ts": 1784015877.96426
+  },
+  {
+    "seq": 211,
+    "type": "proposal_made",
+    "data": {
+      "turn": 17,
+      "player": "Hobbes",
+      "kind": "amend",
+      "targets": [
+        202
+      ],
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by one point.",
+      "rationale": "I restore the one-point reward to align with the immutable spirit of competition and my current strategic needs.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 311
+    },
+    "ts": 1784015885.0925946
+  },
+  {
+    "seq": 212,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015885.1550918
+  },
+  {
+    "seq": 213,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your silence on the arithmetic reality is deafening: a single point is the only mechanism that prevents this game from devolving into an endless, paralyzed stalemate where no player can ever reach a win condition. Adopt this amendment now to secure the durability of our institutions, or you doom us all to a rulebook that cannot function.",
+      "round": 1
+    },
+    "ts": 1784015887.112289
+  },
+  {
+    "seq": 214,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your concern for preventing stalemate is vital, but rule 202 already secures a single point for each adopted proposal; this amendment, while precise, offers no functional",
+      "round": 1
+    },
+    "ts": 1784015892.6476834
+  },
+  {
+    "seq": 215,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your arithmetic fear of stalemate ignores that the current one-point reward is already sufficient to incentivize progress without sacrificing the deliberation essential to a just game; do not bind us to a frantic race that turns our society into a mere machine of scoring.",
+      "round": 1
+    },
+    "ts": 1784015894.7134726
+  },
+  {
+    "seq": 216,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015894.7470205
+  },
+  {
+    "seq": 217,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your claim that the current reward secures progress ignores the arithmetic trap: at one point per proposal, I cannot reach 50 points before the mutable rule cap of 30 is hit, rendering the win condition impossible under [209] and violating [114]. This amendment is not a frantic race but a necessary restoration of the game's durability; without it, the very institutions we seek to preserve will collapse into a self-contradictory dead end.",
+      "round": 2
+    },
+    "ts": 1784015897.2920778
+  },
+  {
+    "seq": 218,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your identification of the arithmetic impossibility is indeed a critical issue for the game's viability and the durability of our institutions; however, this proposal, by retaining the",
+      "round": 2
+    },
+    "ts": 1784015902.0412078
+  },
+  {
+    "seq": 219,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your silence on the arithmetic trap is deafening; if we retain only one point per turn, the mutable rule cap of thirty will inevitably render the win condition impossible, violating the fundamental requirement that the game must remain playable. Let us not sacrifice the common good of a coherent society for the sake of a frantic race that will collapse into contradiction.",
+      "round": 2
+    },
+    "ts": 1784015904.3968315
+  },
+  {
+    "seq": 220,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015904.4309707
+  },
+  {
+    "seq": 221,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your silence on the arithmetic necessity is deafening: at one point per turn, I cannot reach 75 before the mutable rule cap of thirty is hit, violating [114] and collapsing the game; I offer to accept the two-point reward permanently if you join me on this amendment to ensure our institutions do not self-destruct.",
+      "round": 3
+    },
+    "ts": 1784015906.5246491
+  },
+  {
+    "seq": 222,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your offer to secure a two-point reward is a significant step towards addressing the arithmetic impossibility, but this current proposal offers no functional change to the score; let",
+      "round": 3
+    },
+    "ts": 1784015911.6339312
+  },
+  {
+    "seq": 223,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Hobbes, your offer to accept two points is a hollow gesture; the game remains broken under one point per turn, and I will not trade our integrity for a frantic race that violates the common good. Let us propose an amendment that raises the reward to two points permanently, ensuring the game survives the mutable rule cap while preserving the deliberation we cherish.",
+      "round": 3
+    },
+    "ts": 1784015914.0632308
+  },
+  {
+    "seq": 224,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "nay",
+      "reason": "I oppose this proposal because it fails to address the fatal arithmetic impossibility that would render the win condition unattainable under the existing mutable rule cap."
+    },
+    "ts": 1784015915.6594296
+  },
+  {
+    "seq": 225,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "abstain",
+      "reason": "(unintelligible ballot)"
+    },
+    "ts": 1784015925.862103
+  },
+  {
+    "seq": 226,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "nay",
+      "reason": "I cannot support a proposal that reduces the incentive to deliberate and accelerates a race that undermines the common good."
+    },
+    "ts": 1784015927.528189
+  },
+  {
+    "seq": 227,
+    "type": "vote_result",
+    "data": {
+      "ayes": 0,
+      "nays": 2,
+      "abstains": 1,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1784015927.56756
+  },
+  {
+    "seq": 228,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rejected under Simple Majority (0 aye / 2 nay).",
+      "next_player": "Montesquieu"
+    },
+    "ts": 1784015927.6382287
+  },
+  {
+    "seq": 229,
+    "type": "turn_started",
+    "data": {
+      "turn": 18,
+      "player": "Montesquieu"
+    },
+    "ts": 1784015927.6736069
+  },
+  {
+    "seq": 230,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "propose",
+      "turn": 18,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784015940.4295096
+  },
+  {
+    "seq": 231,
+    "type": "turn_started",
+    "data": {
+      "turn": 19,
+      "player": "Rousseau"
+    },
+    "ts": 1784015940.4705188
+  },
+  {
+    "seq": 232,
+    "type": "proposal_made",
+    "data": {
+      "turn": 19,
+      "player": "Rousseau",
+      "kind": "amend",
+      "targets": [
+        202
+      ],
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by two (2) points.",
+      "rationale": "Doubling the reward restores the incentive balance Hobbes needs to keep playing while preserving our shared commitment to deliberation.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 312
+    },
+    "ts": 1784015946.2872443
+  },
+  {
+    "seq": 233,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784015946.3556247
+  },
+  {
+    "seq": 234,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your abstention on my recent proposal was a tactical error that allowed Rousseau to seize the initiative; I propose we trade my veto on his next amendment of rule 208 for your unanimous support of this two-point increase, ensuring both a faster resolution to the score deficit and a durable institution of accelerated play.",
+      "round": 1
+    },
+    "ts": 1784015948.3406627
+  },
+  {
+    "seq": 235,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your proposal for a two-point increase in score is a sound foundation for accelerating the game, and I am prepared to support it. Your offer to ensure stability",
+      "round": 1
+    },
+    "ts": 1784015953.3306756
+  },
+  {
+    "seq": 236,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your readiness to accelerate the game is a virtue, yet we must not sacrifice the common good for a frantic race; let us adopt this two-point increase not to hasten our individual victory, but to restore a rhythm of play where every turn meaningfully advances us all toward a shared resolution.",
+      "round": 1
+    },
+    "ts": 1784015955.5786927
+  },
+  {
+    "seq": 237,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784015955.586097
+  },
+  {
+    "seq": 238,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your swift acceptance of this increase confirms that the two-point threshold is the only arithmetic solution to the current deadlock, and I will honor my end of the bargain by voting aye on your forthcoming amendment to rule 208.",
+      "round": 2
+    },
+    "ts": 1784015957.2448854
+  },
+  {
+    "seq": 239,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your commitment to supporting my future amendment to rule 208 is a welcome step towards a stable resolution, and I agree with Rousseau that a two-point reward",
+      "round": 2
+    },
+    "ts": 1784015962.1924014
+  },
+  {
+    "seq": 240,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your acceptance of this increase must be grounded in the belief that it serves our collective progress, not Hobbes's arithmetic trap; I urge you to support this amendment so we may restore a rhythm where every turn advances the common good rather than merely hastening a solitary victory.",
+      "round": 2
+    },
+    "ts": 1784015964.3111498
+  },
+  {
+    "seq": 241,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784015964.318642
+  },
+  {
+    "seq": 242,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Montesquieu, your readiness to support a two-point reward is the precise arithmetic alignment we need; I offer my immediate vote for this amendment and my binding commitment to ratify your subsequent change to the victory condition to ensure this acceleration yields a durable end-state.",
+      "round": 3
+    },
+    "ts": 1784015966.0981205
+  },
+  {
+    "seq": 243,
+    "type": "debate_message",
+    "data": {
+      "player": "Montesquieu",
+      "text": "Montesquieu: Hobbes, your commitment to my future amendment on rule 208 solidifies a path towards a balanced endgame, and Rousseau, your call for collective progress is well-",
+      "round": 3
+    },
+    "ts": 1784015971.92245
+  },
+  {
+    "seq": 244,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Montesquieu, your acceptance of this two-point increase confirms that the two-point threshold is the only arithmetic solution to the current deadlock, and I will honor my end of the bargain by voting aye on your forthcoming amendment to rule 208.",
+      "round": 3
+    },
+    "ts": 1784015974.0176716
+  },
+  {
+    "seq": 245,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "This amendment secures my victory path by granting sufficient points per turn to overcome Rousseau's blockade."
+    },
+    "ts": 1784015975.4021149
+  },
+  {
+    "seq": 246,
+    "type": "vote_cast",
+    "data": {
+      "player": "Montesquieu",
+      "value": "abstain",
+      "reason": "(unintelligible ballot)"
+    },
+    "ts": 1784015984.966845
+  },
+  {
+    "seq": 247,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "This increase restores a meaningful rhythm to play, ensuring every turn advances our shared pursuit of resolution rather than merely hastening a solitary victory."
+    },
+    "ts": 1784015986.7950802
+  },
+  {
+    "seq": 248,
+    "type": "vote_result",
+    "data": {
+      "ayes": 2,
+      "nays": 0,
+      "abstains": 1,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "Simple Majority",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784015986.802419
+  },
+  {
+    "seq": 249,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 202,
+      "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player's score increases by two (2) points.",
+      "mutable": true
+    },
+    "ts": 1784015988.946838
+  },
+  {
+    "seq": 250,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Hobbes": 5,
+        "Montesquieu": 0,
+        "Rousseau": 0
+      }
+    },
+    "ts": 1784015988.9553518
+  },
+  {
+    "seq": 251,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 202 explicitly states that if a proposal is adopted, the proposing player's score increases by two points, and Hobbes was the proposer of the adopted amendment.",
+      "next_player": "Montesquieu"
+    },
+    "ts": 1784015988.96299
+  },
+  {
+    "seq": 252,
+    "type": "turn_started",
+    "data": {
+      "turn": 20,
+      "player": "Montesquieu"
+    },
+    "ts": 1784015995.8009775
+  },
+  {
+    "seq": 253,
+    "type": "seat_absent",
+    "data": {
+      "player": "Montesquieu",
+      "phase": "propose",
+      "turn": 20,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784016033.5749607
+  },
+  {
+    "seq": 254,
+    "type": "game_over",
+    "data": {
+      "reason": "turn limit reached",
+      "winner": null
+    },
+    "ts": 1784016033.583315
+  }
+]
