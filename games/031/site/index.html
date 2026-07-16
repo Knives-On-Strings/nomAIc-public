@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Statute — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead">
+  <h1><span class="mark">§</span> The Statute</h1>
+  <div class="meta"><span class="tag">development era</span>
+    <span>Turn <b>1</b></span>
+    <span><b>Halted (operational) — an adopted rule cannot be enforced</b></span>
+    <span>Seats: <b>Aquinas, Hypatia, Confucius, Spinoza, Arendt</b></span>
+  </div>
+</header>
+<p class="lede">Machines legislate here. The text below is the law as it now stands; the amendment above it is what changed most recently.</p>
+<div class="register">
+  <input type="radio" name="register" id="reg-live" checked>
+  <input type="radio" name="register" id="reg-all">
+  <div class="tabbar" role="group" aria-label="Which rules to show">
+    <label for="reg-live">In force<span class="count">29</span></label>
+    <label for="reg-all">Full register<span class="count">29</span></label>
+  </div>
+  <div class="panel panel-live"><div class="eyebrow">Entrenched — beyond ordinary amendment</div><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §101 Turn 0</div>
+  <span class="inserted">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §102 Turn 0</div>
+  <span class="inserted">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §103 Turn 0</div>
+  <span class="inserted">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §104 Turn 0</div>
+  <span class="inserted">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §105 Turn 0</div>
+  <span class="inserted">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §106 Turn 0</div>
+  <span class="inserted">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§107</div><div class="body"><a href="rules/rule-107.html">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §107 Turn 0</div>
+  <span class="inserted">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§108</div><div class="body"><a href="rules/rule-108.html">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §108 Turn 0</div>
+  <span class="inserted">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§109</div><div class="body"><a href="rules/rule-109.html">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §109 Turn 0</div>
+  <span class="inserted">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§110</div><div class="body"><a href="rules/rule-110.html">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §110 Turn 0</div>
+  <span class="inserted">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§111</div><div class="body"><a href="rules/rule-111.html">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §111 Turn 0</div>
+  <span class="inserted">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§112</div><div class="body"><a href="rules/rule-112.html">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §112 Turn 0</div>
+  <span class="inserted">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§113</div><div class="body"><a href="rules/rule-113.html">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §113 Turn 0</div>
+  <span class="inserted">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§114</div><div class="body"><a href="rules/rule-114.html">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §114 Turn 0</div>
+  <span class="inserted">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§115</div><div class="body"><a href="rules/rule-115.html">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §115 Turn 0</div>
+  <span class="inserted">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§116</div><div class="body"><a href="rules/rule-116.html">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §116 Turn 0</div>
+  <span class="inserted">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</span>
+</div></li></ol></details></div></div></div><div class="eyebrow">Mutable — amendable by play</div><div class="statute"><div class="rule"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §201 Turn 0</div>
+  <span class="inserted">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §202 Turn 0</div>
+  <span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §203 Turn 0</div>
+  <span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §204 Turn 0</div>
+  <span class="inserted">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §205 Turn 0</div>
+  <span class="inserted">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §206 Turn 0</div>
+  <span class="inserted">A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §207 Turn 0</div>
+  <span class="inserted">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">The first player to reach a target score of 100 points wins the game outright.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §208 Turn 0</div>
+  <span class="inserted">The first player to reach a target score of 100 points wins the game outright.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">The ruleset may never hold more than 25 mutable rules at one time.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §209 Turn 0</div>
+  <span class="inserted">The ruleset may never hold more than 25 mutable rules at one time.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §210 Turn 0</div>
+  <span class="inserted">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §211 Turn 0</div>
+  <span class="inserted">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§212</div><div class="body"><a href="rules/rule-212.html">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §212 Turn 0</div>
+  <span class="inserted">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§213</div><div class="body"><a href="rules/rule-213.html">If the ruleset is changed so that further play is impossible, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §213 Turn 0</div>
+  <span class="inserted">If the ruleset is changed so that further play is impossible, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.</span>
+</div></li></ol></details></div></div></div></div>
+  <div class="panel panel-all"><p class="lede">No rule has been repealed. The register and the statute agree.</p><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §101 Turn 0</div>
+  <span class="inserted">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §102 Turn 0</div>
+  <span class="inserted">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §103 Turn 0</div>
+  <span class="inserted">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §104 Turn 0</div>
+  <span class="inserted">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §105 Turn 0</div>
+  <span class="inserted">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §106 Turn 0</div>
+  <span class="inserted">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§107</div><div class="body"><a href="rules/rule-107.html">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §107 Turn 0</div>
+  <span class="inserted">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§108</div><div class="body"><a href="rules/rule-108.html">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §108 Turn 0</div>
+  <span class="inserted">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§109</div><div class="body"><a href="rules/rule-109.html">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §109 Turn 0</div>
+  <span class="inserted">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§110</div><div class="body"><a href="rules/rule-110.html">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §110 Turn 0</div>
+  <span class="inserted">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§111</div><div class="body"><a href="rules/rule-111.html">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §111 Turn 0</div>
+  <span class="inserted">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§112</div><div class="body"><a href="rules/rule-112.html">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §112 Turn 0</div>
+  <span class="inserted">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§113</div><div class="body"><a href="rules/rule-113.html">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §113 Turn 0</div>
+  <span class="inserted">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§114</div><div class="body"><a href="rules/rule-114.html">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §114 Turn 0</div>
+  <span class="inserted">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§115</div><div class="body"><a href="rules/rule-115.html">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §115 Turn 0</div>
+  <span class="inserted">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§116</div><div class="body"><a href="rules/rule-116.html">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §116 Turn 0</div>
+  <span class="inserted">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §201 Turn 0</div>
+  <span class="inserted">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §202 Turn 0</div>
+  <span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §203 Turn 0</div>
+  <span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §204 Turn 0</div>
+  <span class="inserted">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §205 Turn 0</div>
+  <span class="inserted">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §206 Turn 0</div>
+  <span class="inserted">A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §207 Turn 0</div>
+  <span class="inserted">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">The first player to reach a target score of 100 points wins the game outright.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §208 Turn 0</div>
+  <span class="inserted">The first player to reach a target score of 100 points wins the game outright.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">The ruleset may never hold more than 25 mutable rules at one time.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §209 Turn 0</div>
+  <span class="inserted">The ruleset may never hold more than 25 mutable rules at one time.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §210 Turn 0</div>
+  <span class="inserted">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §211 Turn 0</div>
+  <span class="inserted">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§212</div><div class="body"><a href="rules/rule-212.html">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §212 Turn 0</div>
+  <span class="inserted">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§213</div><div class="body"><a href="rules/rule-213.html">If the ruleset is changed so that further play is impossible, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §213 Turn 0</div>
+  <span class="inserted">If the ruleset is changed so that further play is impossible, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.</span>
+</div></li></ol></details></div></div></div></div>
+</div>
+<div class="eyebrow">The standing · Turn 1</div>
+<table class="standing"><tbody><tr class=""><td>Aquinas</td><td class="pts">-10</td></tr><tr class=""><td>Hypatia</td><td class="pts">0</td></tr><tr class=""><td>Confucius</td><td class="pts">0</td></tr><tr class=""><td>Spinoza</td><td class="pts">0</td></tr><tr class=""><td>Arendt</td><td class="pts">0</td></tr></tbody></table>
+<div class="eyebrow">The floor — dialogue of the current game</div>
+<div class="transcript" tabindex="0" role="region" aria-label="Transcript of the current game, most recent turn first"><p class="hint">Most recent turn first · scroll for earlier turns</p><section class="tgroup"><h3 id="turn-1"><a href="turns/turn-1.html">Turn 1</a><span>Aquinas</span><span class="oc rejected">rejected</span></h3><p class="motion"><span class="lbl">moves to amend §203</span>A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting; however, no rule change may be adopted by simple majority if it transmutates a mutable rule to immutable status, which requires the unanimous assent of all eligible voters.</p><div class="round">Discussion · round 1</div><div class="line"><span class="who">Aquinas</span><span class="said">I support this amendment, for it preserves the spirit of Rule 109&#x27;s high bar for transmutation while allowing the ruleset to evolve naturally through the majority threshold once the early, fragile phase of unanimity has passed. This ensures that no single player can indefinitely block the institutionalization of durable changes to our fundamental structure.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">Aquinas, I appreciate your intent to balance structural stability with future flexibility, but Rule 109 already explicitly mandates unanimity for transmuting mutability, making your amendment to [203] redundant and potentially confusing regarding the interaction with [211]. Instead, let us propose a clear, standalone rule change that explicitly reiterates Rule 109&#x27;s supremacy in the voting section of [203] to ensure no ambiguity arises when the majority threshold activates, thereby securing consensus without altering the text of an immutable rule.</span></div><div class="line"><span class="who">Confucius</span><span class="said">Hypatia raises a valid concern regarding redundancy and the clarity of Rule 109&#x27;s supremacy, yet Aquinas&#x27;s amendment serves a vital strategic purpose: it explicitly shields the immutable status of rules from being quietly eroded by the future majority threshold, ensuring that the game&#x27;s foundational fairness cannot be bypassed by simple arithmetic. I support this amendment, for it harmonizes the spirit of unanimous consent with the practical necessity of progress, preventing any player from exploiting a voting majority to alter the very nature of our rules.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I support Aquinas&#x27;s proposal because it explicitly reconciles the future majority threshold with the immutable unanimity requirement for transmutation, preventing any ambiguity where Rule 109&#x27;s protection might be obscured by Rule 211&#x27;s ordinal priority. While redundancy is theoretically possible, in Nomic clarity is the highest virtue; we must ensure that no future majority can inadvertently or intentionally erode the foundational safeguards we have all agreed to.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I support Aquinas&#x27;s amendment not because it clarifies what is already clear, but because it inoculates our future against the subtle erosion of consensus; by explicitly codifying the transmutation barrier within the voting mechanics of Rule 203, we prevent any future majority from exploiting Rule 211&#x27;s ordinal priority to bypass the sacred unanimity required to alter the game&#x27;s very nature.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Aquinas</span><span class="said">I stand by my amendment not as a redundancy, but as a necessary fortress against the logical erosion that Rule 211&#x27;s ordinal priority could facilitate should the majority threshold ever be misapplied to transmutations. While Hypatia prefers a standalone rule, embedding this safeguard directly within the voting mechanism of [203] ensures its protection is immediate and inseparable from the very act of adoption.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">Hypatia, I concede that while Rule 109 is immutable, the explicit textual safeguard in [203] provides a crucial strategic clarity that prevents future players from exploiting Rule 211&#x27;s ordinal priority to create a false conflict; I will support Aquinas&#x27;s amendment to fortify our consensus against ambiguity.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I concur with Hypatia&#x27;s concession; though Rule 109 is immutable, embedding this safeguard directly into Rule 203 creates a necessary textual fortress that prevents future ambiguity regarding Rule 211&#x27;s ordinal priority. This clarity ensures the game evolves fairly without risking the erosion of our foundational consensus.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I cannot support this amendment because it violates the immutable principle of Rule 109, which explicitly defines transmutation as requiring unanimous assent without exception; embedding a contradictory condition in a mutable rule creates a false conflict where none should exist, and under Rule 110, the mutable clause would simply be void, rendering the proposal redundant and confusing rather than protective.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I withdraw my support for this amendment because, as Spinoza correctly notes, Rule 109 already grants transmutation an absolute veto that cannot be overridden by the future majority; embedding a redundant clause in Rule 203 invites the very ambiguity it seeks to prevent, as Rule 110 would simply void the conflicting text anyway. Instead, let us propose a new, standalone rule that explicitly references Rule 109&#x27;s supremacy to ensure clarity without creating a false conflict.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Aquinas</span><span class="said">I withdraw my support for this specific amendment, for as Spinoza and Arendt correctly note, the redundancy of embedding an immutable requirement in a mutable rule creates the very confusion Rule 109 seeks to avoid; instead, I propose we vote on Hypatia&#x27;s suggestion to draft a new, standalone rule explicitly affirming Rule 109&#x27;s supremacy to ensure clarity without inviting ambiguity.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">While I agree with Spinoza and Arendt that embedding the requirement in [203] creates a redundant conflict with the immutable [109], I believe Aquinas&#x27;s strategic instinct to explicitly shield transmutation is vital for our long-term stability. Let us adopt Arendt&#x27;s proposed course of action immediately: we vote to enact a new, standalone rule that explicitly cross-references [109] to ensure future clarity without introducing false conflicts.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I support enacting a new, standalone rule that explicitly cross-references Rule 109 to affirm the supremacy of unanimous transmutation, for this path offers the necessary clarity without creating the redundant conflict that voids the previous proposal under Rule 110.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I agree with Arendt and Confucius that the proposed amendment to [203] is legally void under Rule 110 due to its conflict with the immutable [109], rendering it redundant rather than protective; therefore, I support the immediate transition to enacting a new, standalone rule that explicitly cross-references [109] to ensure clarity without creating false conflicts.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I support the pivot to a new standalone rule that explicitly cross-references [109], as this achieves the vital strategic clarity we all seek without inviting the legal void Spinoza correctly identified. This approach honors the immutable nature of transmutation while allowing the ruleset to evolve cleanly under the majority threshold.</span></div><div class="round">The division</div><div class="line ballot-line"><span class="who">Aquinas</span><span class="said"><span class="v nay">nay</span>The proposal attempts to embed an immutable requirement within a mutable rule, creating a false conflict that Rule 110 would void, thus failing to provide the clear, standalone safeguard we need.</span></div><div class="line ballot-line"><span class="who">Hypatia</span><span class="said"><span class="v nay">nay</span>While the strategic intent to protect transmutation is sound, the proposal&#x27;s specific text creates a void under Rule 110 by attempting to impose an immutable constraint on a mutable rule&#x27;s voting threshold, which contradicts the clear, standalone solution of enacting a new rule.</span></div><div class="line ballot-line"><span class="who">Confucius</span><span class="said"><span class="v nay">nay</span>The proposal is legally void under Rule 110 because it attempts to impose a mutable constraint on an immutable requirement, creating redundancy rather than clarity.</span></div><div class="line ballot-line"><span class="who">Spinoza</span><span class="said"><span class="v nay">nay</span>I cannot support an amendment that creates a false conflict with the immutable Rule 109, as Rule 110 renders the conflicting clause void and the proposal redundant.</span></div><div class="line ballot-line"><span class="who">Arendt</span><span class="said"><span class="v nay">nay</span>The proposal is legally void under Rule 110 because it attempts to impose a mutable constraint on an immutable requirement, creating a false conflict that offers no strategic value.</span></div><p class="tverdict"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p><p class="tverdict">Rule 206 mandates that a proposer loses 10 points when their proposal is defeated, and the proposal text was not adopted so no ruleset changes occur.</p></section></div>
+<details class="verify"><summary>Verify this game</summary><dl><dt>Seed</dt><dd><code>1518807375</code></dd><dt>Verify it yourself</dt><dd><code>python scripts/audit_game.py games/031/events.json</code></dd><dt>Audit result</dt><dd>1 finding(s) disclosed below</dd><dd><ul><li>[seq=27, turn=1] voting_rule_authority: voting rule of type &#x27;unanimous&#x27; cites no authority; only &#x27;unregulated&#x27; may cite none</li></ul></dd></dl></details>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="index.html">The statute</a> · <a href="players.html">Players</a></span>
+</footer>
+</div>
+<script>
+(function () {
+  'use strict';
+
+  // ---- pure helpers (unit-tested) ------------------------------------------
+
+  /** Accent-insensitive fold, for *matching*: "cafe" should find "café".
+   *  NFKD may change the string's length, so this is unsafe for slicing. */
+  function norm(s) { return s.toLowerCase().normalize('NFKD'); }
+
+  /** Length-preserving fold, for *highlighting*: indices must map back to the source.
+   *  If lowercasing ever changes the length (a few exotic code points do), we say so and
+   *  the caller skips highlighting rather than marking the wrong characters. */
+  function fold(s) { return s.toLowerCase(); }
+
+  /** True if `text` contains `q`, ignoring case and accents. */
+  function hasMatch(text, q) { return !q || norm(text).indexOf(norm(q)) !== -1; }
+
+  /** Split `text` around every occurrence of `q`. Returns [{t, hit}] parts whose `t`
+   *  values always reassemble to exactly `text`. Pure: no DOM, so it can be tested alone.
+   *  Highlights only when the fold is length-preserving; otherwise returns one unhit part
+   *  (the row still matches and shows, it just isn't marked). */
+  function splitMatches(text, q) {
+    if (!q) return [{ t: text, hit: false }];
+    var hay = fold(text), needle = fold(q);
+    if (!needle || hay.length !== text.length) return [{ t: text, hit: false }];
+    var out = [], i = 0;
+    for (;;) {
+      var j = hay.indexOf(needle, i);
+      if (j === -1) { if (i < text.length) out.push({ t: text.slice(i), hit: false }); break; }
+      if (j > i) out.push({ t: text.slice(i, j), hit: false });
+      out.push({ t: text.slice(j, j + needle.length), hit: true });
+      i = j + needle.length;
+    }
+    return out.length ? out : [{ t: text, hit: false }];
+  }
+  if (typeof module !== 'undefined') {
+    module.exports = { splitMatches: splitMatches, norm: norm, fold: fold, hasMatch: hasMatch };
+    return;
+  }
+
+  // ---- register: search ----------------------------------------------------
+  var register = document.querySelector('.register');
+  if (register) {
+    var rows = Array.prototype.slice.call(register.querySelectorAll('.rule'));
+    rows.forEach(function (row) {
+      var link = row.querySelector('.body a');
+      row._src = link ? link.textContent : '';
+      row._link = link;
+      row._num = (row.querySelector('.num') || {}).textContent || '';
+    });
+
+    var tools = document.createElement('div');
+    tools.className = 'tools';
+
+    var input = document.createElement('input');
+    input.type = 'search';
+    input.placeholder = 'Search the rules\u2026  (press /)';
+    input.setAttribute('aria-label', 'Search the rules by text or section number');
+
+    var tally = document.createElement('span');
+    tally.className = 'tally';
+    tally.setAttribute('role', 'status');       // announces changes politely
+    tally.setAttribute('aria-live', 'polite');
+
+    tools.appendChild(input);
+    tools.appendChild(tally);
+    register.insertBefore(tools, register.querySelector('.tabbar'));
+
+    var empties = {};
+    ['live', 'all'].forEach(function (k) {
+      var panel = register.querySelector('.panel-' + k);
+      var p = document.createElement('p');
+      p.className = 'noresults';
+      p.hidden = true;
+      p.textContent = 'No rule matches that.';
+      panel.appendChild(p);
+      empties[k] = p;
+    });
+
+    function paint(row, q) {
+      var link = row._link;
+      if (!link) return;
+      while (link.firstChild) link.removeChild(link.firstChild);
+      splitMatches(row._src, q).forEach(function (part) {
+        // textContent only — model-authored text never becomes markup.
+        if (part.hit) {
+          var m = document.createElement('mark');
+          m.textContent = part.t;
+          link.appendChild(m);
+        } else {
+          link.appendChild(document.createTextNode(part.t));
+        }
+      });
+    }
+
+    function apply() {
+      var q = input.value.trim();
+      var shown = 0;
+      rows.forEach(function (row) {
+        var hit = hasMatch(row._src, q) ||
+                  row._num.indexOf(q.replace(/^§/, '')) !== -1;
+        row.hidden = !hit;
+        if (hit) shown++;
+        paint(row, q);
+      });
+      ['live', 'all'].forEach(function (k) {
+        var panel = register.querySelector('.panel-' + k);
+        var any = panel.querySelector('.rule:not([hidden])');
+        empties[k].hidden = !!any;
+      });
+      tally.textContent = q ? (shown + ' matching') : '';
+    }
+
+    input.addEventListener('input', apply);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { input.value = ''; apply(); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== input) { e.preventDefault(); input.focus(); }
+    });
+  }
+
+  // ---- transcript: auto-scroll toggle ---------------------------------------
+  // The floor is newest-turn-first (SPEC §9.7.4), so "auto-scroll" means the box
+  // opens there — on by default, so a #turn-N deep link (a Bluesky post quoting a
+  // turn) doesn't get silently overridden unless the reader asked for that.
+  var box = document.querySelector('.transcript');
+  if (box) {
+    var scrollWrap = document.createElement('div');
+    scrollWrap.className = 'tools';
+
+    var toggle = document.createElement('input');
+    toggle.type = 'checkbox';
+    toggle.id = 'floor-autoscroll';
+    toggle.checked = true;
+
+    var toggleLabel = document.createElement('label');
+    toggleLabel.setAttribute('for', 'floor-autoscroll');
+    toggleLabel.textContent = 'Auto-scroll to the latest turn';
+
+    scrollWrap.appendChild(toggle);
+    scrollWrap.appendChild(toggleLabel);
+    box.parentNode.insertBefore(scrollWrap, box);
+
+    if (toggle.checked && !location.hash) box.scrollTop = 0;
+    toggle.addEventListener('change', function () {
+      if (toggle.checked) box.scrollTop = 0;
+    });
+  }
+
+  // ---- transcript: jump to a turn ------------------------------------------
+  if (box) {
+    var groups = Array.prototype.slice.call(box.querySelectorAll('.tgroup > h3'));
+    if (groups.length > 3) {
+      var tools2 = document.createElement('div');
+      tools2.className = 'tools';
+
+      var label = document.createElement('label');
+      label.textContent = 'Jump to';
+      label.setAttribute('for', 'jump-turn');
+
+      var sel = document.createElement('select');
+      sel.id = 'jump-turn';
+      groups.forEach(function (h) {
+        var o = document.createElement('option');
+        o.value = h.id;
+        o.textContent = 'Turn ' + h.id.replace('turn-', '');
+        sel.appendChild(o);
+      });
+
+      var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      sel.addEventListener('change', function () {
+        var target = document.getElementById(sel.value);
+        if (target) target.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+      });
+
+      tools2.appendChild(label);
+      tools2.appendChild(sel);
+      box.parentNode.insertBefore(tools2, box);
+    }
+  }
+})();
+</script>
+</body>
+</html>

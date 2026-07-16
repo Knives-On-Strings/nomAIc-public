@@ -18,6 +18,7 @@
     "findings": [
       "[turn=4] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which (a store recorded before R74's no_awards_declared marker existed)",
       "[seq=19, turn=1] voting_rule_vocabulary: fraction value 1.0 is not strictly between 0 and 1 — a value of exactly 1.0 is unsatisfiable by any division (3-0 is not > 1.0); a rule meaning 'all must assent' should read type 'unanimous', not 'fraction: 1.0' (the ghost game sixteen recorded)",
+      "[seq=38, turn=2] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 1.0, 'abstain_blocks': False, 'label': 'Unanimous (100% of votes must be Aye)'} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'Simple majority after 2 circuits'} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
       "[seq=104, turn=6] score_delta_bound: Hobbes's score moved by +75 in one update; the engine bounds a single verdict to ±25"
     ]
   },

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 173 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 173</h1><div class="meta"><span>Moved by <b>Confucius</b></span><span>simple majority of those voting (threshold dropped after Turn 10)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §208</div><span class="inserted">The first player to reach a target score of 12 points wins the game outright.</span></div>
+<p class="lede">We have already secured unanimous agreement on this target in Turn 172, and now, with the voting threshold lowered to a simple majority, the table can finally move forward.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Aquinas</span><span class="said">I reject this repetition of a proposal that failed identically under the same voting threshold; without securing the target&#x27;s immutability via a separate unanimous vote, any further amendment to Rule 208 is merely a temporary trap that invites immediate reversal.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">Aquinas, I acknowledge your concern about the trap of a mutable target, but let us try a different path: rather than attempting a failed unanimous transmutation of 208, let us propose a separate, standalone amendment to Rule 211 that explicitly resolves the &quot;mutable vs. mutable&quot; conflict in favor of the most recent adopted text, thereby stabilizing the 12-point target without requiring the impossible unanimity of Rule 109.</span></div><div class="line"><span class="who">Confucius</span><span class="said">Hypatia, your proposal to amend Rule 211 is a clever attempt to bypass the unanimity requirement, but Rule 211 already dictates that lower ordinal numbers prevail, and since the current text of 208 is lower than any future amendment, changing 211 would not prevent the majority from simply repealing the 12-point target in the next turn. Instead, let us propose a standalone transmutation of Rule 208 to immutable status with the 12-point target, as only a unanimous vote can truly secure this goal and end our endless cycle of reversal.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject the attempt to bypass Rule 109&#x27;s unanimity requirement with a procedural workaround in Rule 211, for a mutable target remains inherently unstable regardless of conflict resolution clauses; we must either secure the 12-point target through the only mechanism capable of binding the future—a standalone transmutation to immutable status—or admit that our game is destined to collapse into endless cycles of reversal.</span></div><div class="line"><span class="who">Arendt</span><span class="said">While I agree with Spinoza that only a unanimous transmutation can truly secure the goal, I join Hypatia in recognizing that the historical record of failed unanimity votes on Rule 208 makes a fresh attempt at transmutation a guaranteed loss; instead, let us propose a standalone transmutation of Rule 109 to allow a specific future rule change to bypass unanimity, or more pragmatically, I will support a new proposal that amends Rule 208 to 12 points while simultaneously proposing a separate, standalone amendment to Rule 211 that explicitly states any future amendment to the win condition requires a supermajority of 4 out of 5 votes, creating a de facto lock without the impossible unanimity of Rule 109.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Aquinas</span><span class="said">I reject Hypatia&#x27;s proposed amendment to Rule 211 as legally futile, since Rule 211 explicitly mandates that lower ordinal numbers prevail regardless of future supermajority attempts. Without the unanimous transmutation of Rule 208 to immutable status, any simple majority decision on the target score remains inherently reversible and thus fails to secure the durable institution I seek.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">Hypatia, I see the futility of amending Rule 211 to override the ordinal hierarchy of Rule 211 itself, as you correctly note it would be voided by a later simple majority repeal of that very clause; instead, let us propose a standalone transmutation of Rule 109 to explicitly allow a 4/5 supermajority to amend the win condition, thereby securing the 12-point target through a near-unanimous consensus that is far more achievable than the current impossible requirement of 5/5.</span></div><div class="line"><span class="who">Confucius</span><span class="said">Since a unanimous transmutation of Rule 208 has repeatedly failed and Rule 109 cannot be amended to lower that threshold, I propose we instead transmute Rule 109 itself to explicitly allow a 4-of-5 supermajority to amend the win condition, thereby creating a viable path to lock the 12-point target without the impossible demand for perfect unanimity.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject any proposal to amend Rule 109 or 211 to bypass the explicit unanimity requirement for transmuting Rule 208, for such workarounds violate the precise procedural constraints of Rule 109 and the ordinal hierarchy of Rule 111. Since the table has demonstrably failed to achieve unanimity on this goal repeatedly, I will not vote for a proposal that merely attempts to force a change through a procedural trick that is itself legally void under the current immutable rules.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I propose we abandon the futile quest for unanimity on Rule 208 and instead enact a standalone transmutation of Rule 109 to explicitly permit a 4-of-5 supermajority for future win-condition changes, creating a realistic path to lock our 12-point target.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Aquinas</span><span class="said">Aquinas: I reject the proposal to amend Rule 109 to lower the unanimity threshold for transmuting the win condition, as this undermines the very immutable foundations of our ruleset that protect us from tyranny of the majority; without the absolute consensus required by Rule 109, the 12-point target remains a fragile illusion of stability.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">I propose we immediately vote on a standalone transmutation of Rule 109 to allow a 4-of-5 supermajority specifically for amending the win condition, as this is the only legally viable path to secure the 12-point target without violating immutable constraints or inviting the paralysis of endless reversals.</span></div><div class="line"><span class="who">Confucius</span><span class="said">Hypatia, your path to amend Rule 109 to lower the threshold for the win condition is the only prudent course, for it respects the immutable nature of Rule 109 while creating a realistic mechanism to secure the 12-point target that the table has already accepted as the only viable game state.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject the proposal to amend Rule 109, for it violates the immutable requirement that transmutations of mutability must be unanimous and cannot be bypassed by creating a new exception for the win condition. My support for securing the 12-point target is principled but strictly conditional upon a standalone, unanimous transmutation of Rule 208 to immutable status, as no procedural workaround can legitimize a change that the rules explicitly forbid.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I propose we vote now to transmute Rule 109 itself to explicitly permit a 4-of-5 supermajority specifically for amending the win condition, as this is the only legally viable path to secure the 12-point target without violating immutable constraints or inviting the paralysis of endless reversals.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Aquinas</td><td class="why">Amending the mutable win condition without first securing its immutability via unanimous transmutation leaves the target perpetually unstable and invites the very reversals this proposal seeks to end.</td></tr><tr><td class="v nay">nay</td><td>Hypatia</td><td class="why">Proposing a mutable 12-point target again after repeated failures ignores the deadlock and invites immediate reversal without the unanimous transmutation required to truly secure the goal.</td></tr><tr><td class="v nay">nay</td><td>Confucius</td><td class="why">I cannot vote to adopt a mutable rule change that has repeatedly failed to secure unanimity, as this only invites immediate reversal and perpetuates the deadlock.</td></tr><tr><td class="v nay">nay</td><td>Spinoza</td><td class="why">I cannot vote to amend a mutable rule when the immutable requirement for securing it via unanimous transmutation remains unmet, as any simple majority change is inherently reversible and violates procedural principle.</td></tr><tr><td class="v nay">nay</td><td>Arendt</td><td class="why">Repeating a defeated amendment without securing immutability merely invites the same reversible paralysis we have suffered for months.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p>
+<p class="lede">Rule 321 mandates that a defeated proposer loses 5 points unless their score is negative, and Confucius&#x27;s score of -87 is negative, so no points are lost.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

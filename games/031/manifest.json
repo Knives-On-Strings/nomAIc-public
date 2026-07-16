@@ -1,0 +1,32 @@
+{
+  "game": 31,
+  "players": [
+    "Aquinas",
+    "Hypatia",
+    "Confucius",
+    "Spinoza",
+    "Arendt"
+  ],
+  "ruleset": "full",
+  "turns": 1,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[seq=27, turn=1] voting_rule_authority: voting rule of type 'unanimous' cites no authority; only 'unregulated' may cite none"
+    ]
+  },
+  "seed": 1518807375,
+  "started": "2026-07-15T21:00:22.510682+00:00",
+  "ended": "2026-07-15T21:02:38.618451+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

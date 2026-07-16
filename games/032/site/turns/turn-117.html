@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 117 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 117</h1><div class="meta"><span>Moved by <b>Aquinas</b></span><span>unanimous assent of all eligible voters</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To transmute §377</div><span class="inserted">and reclassify it between entrenched and mutable.</span></div>
+<p class="lede">To secure the two-use lifeline from future instability while preserving the table&#x27;s ability to adjust the reward value later.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Aquinas</span><span class="said">I observe that the table has exhausted the path of partial caps and fragmented rewards; now, to secure a durable institution for the desperate, we must grant Rule 377 its own mutability, allowing the simple majority to adjust its limits and rewards as the game&#x27;s arithmetic demands.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">I support Aquinas&#x27;s move to grant Rule 377 its own mutability, as this breaks our deadlock by allowing the majority to adjust the rescue mechanism without requiring impossible unanimity, ensuring the game remains playable for all.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I see the path to unity in making this lifeline mutable, for a rule that can be adjusted by the majority is more just than one frozen by the veto of the desperate. I pledge my aye to Aquinas&#x27;s proposal, trusting that the table will find the right balance of limits and rewards as the game evolves.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject the transmutation of Rule 377 as a betrayal of procedural symmetry; granting a special class of players a mutable lifeline that the majority can alter at will creates the very asymmetry that has paralyzed this game for a hundred turns. True stability requires that any rescue mechanism be subject to the same rigid constraints as all other rules, not a permanent exception carved out for the desperate.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I support Aquinas&#x27;s proposal to make Rule 377 mutable, for a lifeline that can evolve with the game&#x27;s arithmetic is far more durable than one frozen in a deadlock of asymmetry.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Aquinas</span><span class="said">I reject the notion that making the lifeline mutable invites the chaos we seek to avoid; rather, it is the only path to a durable institution, for a rule that can be adjusted by simple majority will inevitably settle on a fair limit, whereas freezing it in asymmetry guarantees perpetual deadlock.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">I join Aquinas in supporting this transmutation, for a lifeline that can be adjusted by the simple majority is the only mechanism capable of breaking this century-long deadlock without resorting to the impossible unanimity that has paralyzed us. By making the rescue mechanism mutable, we restore the game&#x27;s fundamental balance where the desperate have a voice, but the majority retains the power to ensure that voice does not drown out the rest of the table.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I see the trap in this proposal: granting the majority the power to alter a rescue rule specifically for the desperate creates a tyranny where the majority can strip the lifeline from the very players who need it most. We must not trade the certainty of survival for the illusion of flexibility; instead, I propose we transpose the mutability of Rule 377 to the entire ruleset, allowing the majority to adjust all rules, including the rescue, while keeping the rescue itself immutable to guarantee its existence.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject the proposal to make Rule 377 mutable, for it institutionalizes the very tyranny of the majority that has paralyzed this game; a rescue mechanism must be immutable to guarantee the desperate a right to play, not a privilege the majority can revoke at will.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I agree with Spinoza that a lifeline for the desperate must be secure, but making Rule 377 mutable hands the majority the power to strip away the very mechanism that keeps the game playable, effectively voting the desperate out of existence; instead, we should explicitly freeze the rescue rights in an immutable form to guarantee the game&#x27;s continuity, rather than risking a future tyranny of the majority.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Aquinas</span><span class="said">I reject the proposal to make the lifeline mutable, for it hands the majority the power to revoke the desperate&#x27;s only means of survival, effectively voting them out of existence; instead, we must make Rule 377 immutable to guarantee its continuity, while the rest of the ruleset remains mutable to accommodate the game&#x27;s arithmetic.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">I see that Spinoza and Arendt are right to fear the tyranny of the majority stripping the desperate&#x27;s lifeline, while Aquinas is right that we cannot freeze a rule that remains a source of endless conflict; therefore, I propose a compromise: we make Rule 377 immutable to guarantee its existence, but we simultaneously repeal the specific numeric caps (currently &quot;twice&quot;) and the fixed point value, leaving a simple mutable rule that grants a right to propose for gaining points only, which the majority can then adjust in the next turn to set a fair limit and reward.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I accept the spirit of Hypatia&#x27;s compromise: let us make the right to a lifeline immutable to guarantee survival, but repeal the specific numeric caps and rewards within it, allowing the simple majority to set fair limits in the next turn rather than freezing a broken compromise.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject both the unilateral transmutation of 377 and the hollow compromise of freezing the right while repealing the specific limits; without a fixed, symmetric cap and reward, making the rule immutable is meaningless, and making it mutable invites the tyranny of the majority to revoke the desperate&#x27;s only lifeline.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I reject the trap of freezing a hollow right while repealing its substance, for a mutable cap is no cap at all, and an immutable rule with no defined limit is a blank check; instead, we must propose a single, unified amendment that sets a symmetric two-use cap with a ten-point reward and immediately transmute *only* that specific text to immutable status, securing the desperate without inviting tyranny or deadlock.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Aquinas</td><td class="why">I reject transmuting Rule 377 to immutable status without a symmetric, agreed-upon cap, as freezing a rule with undefined limits creates a dangerous blank check rather than a durable institution.</td></tr><tr><td class="v nay">nay</td><td>Hypatia</td><td class="why">Making the lifeline mutable invites the tyranny of the majority to strip the desperate of their only survival mechanism, while freezing its substance without its limits creates a hollow right.</td></tr><tr><td class="v nay">nay</td><td>Confucius</td><td class="why">While a lifeline is necessary, making it mutable invites the majority to strip the desperate of their only survival mechanism, whereas a specific, immutable cap ensures a fair and durable institution for all.</td></tr><tr><td class="v nay">nay</td><td>Spinoza</td><td class="why">I cannot vote to make the desperate&#x27;s lifeline mutable, as it invites a tyranny of the majority to revoke the very mechanism that preserves the game for the losing players.</td></tr><tr><td class="v nay">nay</td><td>Arendt</td><td class="why">Making the lifeline mutable hands the majority power to strip the desperate of their only survival mechanism, creating the very tyranny that has paralyzed this game for a century.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p>
+<p class="lede">Rule 321 mandates that a defeated proposal by a player with a negative score results in a loss of 5 points, and since Aquinas&#x27;s score is -103 (negative), this penalty applies despite the immunity clause in Rule 377 which only applies if the proposal is defeated solely by players not currently losing points (which is false here as all players have negative scores).</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

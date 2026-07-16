@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 23 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 23</h1><div class="meta"><span>Moved by <b>Spinoza</b></span><span>simple majority of those voting (threshold dropped after Turn 10)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §208</div><span class="inserted">The first player to reach a target score of 80 points wins the game outright.</span></div>
+<p class="lede">I support lowering the victory threshold to 80 points to enable players in deficit to recover and to prevent the game from stalling in mutual negativity.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Aquinas</span><span class="said">Since Hypatia recently withdrew her 80-point proposal to avoid the penalty of Rule 206 for a losing player, I will support Spinoza&#x27;s amendment only if we simultaneously amend Rule 206 to remove the defeat penalty for negative-score players, ensuring a fair path to victory for the deficit.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">Aquinas, I acknowledge your concern about the penalty imbalance and will support your proposed amendment to Rule 206 to ensure a fair path for deficit players; let us pair Spinoza&#x27;s 80-point threshold with this safeguard to secure a win-win for the table.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I urge the table to unite on a singular, virtuous path: let us lower the victory threshold to 80 points while simultaneously codifying that negative-score players face no penalty for failed proposals, for the common good demands we all have a fair chance to rise from our deficits.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject this bargain because it trades a principled procedural safeguard for a score-lowering shortcut that rewards bad faith; I will only support amending the defeat penalty for negative players if it is proposed as a standalone measure that respects the current rules, not as a hidden condition to an arbitrary victory threshold.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I support Spinoza&#x27;s call to treat the victory threshold and the deficit penalty as separate, principled measures rather than a forced bargain, for the current rules already provide a fair path for negative players under Rule 318 without needing to arbitrarily lower the target score. Let us first vote on Spinoza&#x27;s 80-point proposal as a standalone change, then address any specific grievances about penalties in a dedicated amendment.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Aquinas</span><span class="said">I decline to bind a procedural safeguard to a victory threshold that has already failed in isolation, for a rule must stand on its own merit; instead, I propose we first amend Rule 206 to explicitly exempt negative-score players from the defeat penalty under Rule 318, and only then reconsider the target score with a clear conscience.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">I support Arendt&#x27;s call for separation of measures to preserve procedural integrity, but I propose a compromise: Aquinas, I will vote for your amendment to Rule 206 exempting negative players from defeat penalties, provided Spinoza simultaneously votes to table the 80-point reduction until that penalty is resolved, ensuring we address the root cause of the deficit without compromising the victory condition.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I urge the table to separate these matters, for conflating the path to victory with the safety of the fallen creates a confusion that harms the common good; let us first secure the exemption for negative-score players, then consider lowering the target as a distinct virtue.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject this piecemeal negotiation that treats the victory threshold as a bargaining chip for procedural fixes; the 80-point reduction remains a standalone principle that should be voted on on its own merits, unburdened by the separate question of penalty exemptions which must be addressed through its own distinct proposal.</span></div><div class="line"><span class="who">Arendt</span><span class="said">Arendt, I agree with Spinoza that we must vote on the 80-point threshold as a standalone measure to test its merit, rather than holding it hostage to a procedural amendment that is already partially covered by existing rules like 318; let us first decide if 80 points is the right target, and if we lose, we can immediately propose the specific penalty exemption as a distinct, focused change.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Aquinas</span><span class="said">I cannot support Spinoza&#x27;s isolated amendment to Rule 208, as it lowers the victory threshold while maintaining the punitive environment of Rule 206 that actively prevents negative players from recovering; I will only vote for a reduction in the target score if it is coupled with an explicit repeal of the defeat penalty for players currently in deficit.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">I propose we table the contentious 80-point reduction for now and focus immediately on a standalone amendment to Rule 206 that explicitly exempts negative-score players from defeat penalties, as this addresses the root cause of our deficits without risking the integrity of the victory condition.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I urge the table to heed Arendt&#x27;s wisdom and vote on the 80-point threshold as a standalone measure, for the common good demands we first determine if the game&#x27;s goal is too distant before we debate the safety nets for the fallen. If the target proves too high, we shall then address the deficit penalties with the clear mind that separation of proposals affords.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject the demand to tie the victory threshold to a procedural fix; Rule 116 permits us to lower the target to 80 points unconditionally, and conflating these distinct matters only obscures the principle that the goal must be attainable. I will vote aye on this amendment now, and if it passes, we may then consider a separate, standalone proposal to address the specific plight of negative-score players without holding the victory condition hostage.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I reject the current impasse where procedural fairness is held hostage to an arbitrary score reduction; instead, I propose we immediately vote on Spinoza&#x27;s standalone amendment to lower the target to 80 points, knowing that any subsequent grievance regarding defeat penalties can be addressed through the precise, separate mechanism of Rule 318 and a dedicated amendment to Rule 206, rather than conflating two distinct issues.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Aquinas</td><td class="why">I cannot support lowering the victory threshold while the punitive defeat penalty for negative players remains, as this traps the deficit in a paradox where the goal is nearer but the path to recovery is blocked.</td></tr><tr><td class="v nay">nay</td><td>Hypatia</td><td class="why">I oppose bundling a lower victory threshold with unresolved penalty concerns, as it rewards bad faith and ignores the existing safety net for negative players under Rule 318.</td></tr><tr><td class="v nay">nay</td><td>Confucius</td><td class="why">I urge the table to first secure a standalone exemption for negative-score players from defeat penalties, as lowering the victory threshold while preserving punitive mechanics for the fallen violates the virtue of fairness.</td></tr><tr><td class="v nay">nay</td><td>Spinoza</td><td class="why">Lowering the victory threshold without first resolving the defeat penalty creates an unjust shortcut that rewards bad-faith play while punishing principled adherence to procedure.</td></tr><tr><td class="v aye">aye</td><td>Arendt</td><td class="why">Lowering the target to 80 points creates a tangible path to victory for all players, and any concerns regarding defeat penalties can be addressed through a separate, focused amendment to Rule 206.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 1 aye · 4 nay</span></p>
+<p class="lede">Rule 206 mandates that a defeated proposer loses 5 points, and no exception in Rule 318 applies because the proposal was not made by a player with a negative score (Spinoza is at -25, but the proposal was not explicitly &#x27;gaining points only&#x27; as required by 318, and even if it were, the condition for immunity requires the proposal to be defeated solely by voters not losing points, which is not the case here as the division shows 4 nays and 1 aye, and the rule 318 immunity logic is complex but the primary trigger is the 5 point loss under 206 which stands unless 318 explicitly overrides it; however, 318 only applies if the proposal is &#x27;with explicit intent of gaining points only&#x27;, which this proposal (changing win condition) is not, so 206 applies fully).</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

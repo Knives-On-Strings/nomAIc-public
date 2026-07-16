@@ -1,0 +1,30 @@
+{
+  "game": 29,
+  "players": [
+    "Hobbes",
+    "Locke",
+    "Rousseau",
+    "Kant",
+    "Wollstonecraft"
+  ],
+  "ruleset": "full",
+  "turns": 1,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1872680710,
+  "started": "2026-07-15T16:55:21.376422+00:00",
+  "ended": "2026-07-15T16:56:20.565197+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

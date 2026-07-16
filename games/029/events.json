@@ -1,0 +1,522 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Hobbes",
+        "Locke",
+        "Rousseau",
+        "Kant",
+        "Wollstonecraft"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer's turn ends, and the proposer loses 10 points.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset is changed so that further play is impossible, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Hobbes": 0,
+        "Locke": 0,
+        "Rousseau": 0,
+        "Kant": 0,
+        "Wollstonecraft": 0
+      },
+      "seed": 1872680710
+    },
+    "ts": 1784134521.3764224
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Hobbes"
+    },
+    "ts": 1784134521.384026
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Hobbes",
+      "kind": "add",
+      "targets": [],
+      "text": "No player may propose a rule change that removes the unanimity requirement of Rule 203 before two full circuits of play have been completed.",
+      "rationale": "Preserving early unanimity prevents chaotic rule swings before strategic equilibrium is established.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784134532.1893
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784134533.4103675
+  },
+  {
+    "seq": 5,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Stability in the early game is a virtue; locking Rule 203 for two circuits prevents chaotic swings before we understand the dynamics, so I urge the assembly to approve this measure to ensure a predictable foundation for our institutions.",
+      "round": 1
+    },
+    "ts": 1784134534.4761603
+  },
+  {
+    "seq": 6,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: Hobbes, your instinct for early-game stability aligns with my own; I am willing to support this measure if we can pair it with a minor amendment that grants us an extra point for drafting a rule that eventually becomes immutable, thus rewarding foresight without compromising the foundation you seek to protect.",
+      "round": 1
+    },
+    "ts": 1784134536.1604621
+  },
+  {
+    "seq": 7,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: Locke, your reward for foresight is a noble idea, yet I fear it will only fuel the factional strife I seek to prevent; let us instead agree that if this rule passes, I will support your amendment to grant immunity to those who draft rules that survive two circuits, ensuring our foundation is built by those who understand its weight.",
+      "round": 1
+    },
+    "ts": 1784134537.9966838
+  },
+  {
+    "seq": 8,
+    "type": "debate_message",
+    "data": {
+      "player": "Kant",
+      "text": "Kant: I reject the notion of rewarding foresight with points, as it corrupts the purity of legislative intent; if stability is our goal, we must enact a rule that strictly preserves the unanimity threshold for the first two circuits without attaching any extraneous incentives that could distort our deliberations.",
+      "round": 1
+    },
+    "ts": 1784134539.6531644
+  },
+  {
+    "seq": 9,
+    "type": "debate_message",
+    "data": {
+      "player": "Wollstonecraft",
+      "text": "Wollstonecraft: Kant's fear that incentives corrupt intent is misplaced; true reform requires empowering those who shape the law, and I will support Locke's amendment only if we simultaneously reduce the burden of unanimity for our initial proposal to secure its passage.",
+      "round": 1
+    },
+    "ts": 1784134541.1414914
+  },
+  {
+    "seq": 10,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784134541.1492398
+  },
+  {
+    "seq": 11,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: I welcome the early-game stability you all propose, Locke, but I must oppose Wollstonecraft's attempt to lower the unanimity threshold for this very measure; such a concession would undermine the very foundation we are trying to build. If we can secure unanimous support for the initial lock, we may consider your reward amendment later, but not at the cost of weakening our current consensus.",
+      "round": 2
+    },
+    "ts": 1784134542.891079
+  },
+  {
+    "seq": 12,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: Rousseau, your offer to grant immunity to drafters who survive two circuits is a pragmatic compromise that addresses Kant's concern about purity while securing the stability Hobbes demands; I will vote aye on this unified proposal, provided we do not weaken the unanimity threshold itself.",
+      "round": 2
+    },
+    "ts": 1784134544.2862735
+  },
+  {
+    "seq": 13,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I propose that we adopt this rule as written, for it secures the stability Hobbes demands without the corruption of rewards Kant fears or the instability Wollstonecraft seeks; let us build a foundation of pure consensus before we ever consider lowering the threshold.",
+      "round": 2
+    },
+    "ts": 1784134545.57485
+  },
+  {
+    "seq": 14,
+    "type": "debate_message",
+    "data": {
+      "player": "Kant",
+      "text": "Kant: I reject the entire proposal; to legislate stability by restricting the very mechanism of rule change is to confuse the end with the means, and I will vote nay to uphold the pure right of free deliberation.",
+      "round": 2
+    },
+    "ts": 1784134546.7135317
+  },
+  {
+    "seq": 15,
+    "type": "debate_message",
+    "data": {
+      "player": "Wollstonecraft",
+      "text": "Wollstonecraft: Kant, your rigid adherence to \"pure\" consensus ignores the tyranny of unanimity that stifles progress before we even begin; I urge you to vote aye on this stability measure so we may finally dismantle its shackles once we understand the game's true dynamics.",
+      "round": 2
+    },
+    "ts": 1784134548.0941865
+  },
+  {
+    "seq": 16,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784134548.101778
+  },
+  {
+    "seq": 17,
+    "type": "debate_message",
+    "data": {
+      "player": "Hobbes",
+      "text": "Hobbes: Locke, your offer to reward foresight introduces a variable that undermines the very stability we seek; let us strictly lock Rule 203 for two circuits without any point-altering amendments, and I will secure your vote for the clean, unburdened rule.",
+      "round": 3
+    },
+    "ts": 1784134549.4906476
+  },
+  {
+    "seq": 18,
+    "type": "debate_message",
+    "data": {
+      "player": "Locke",
+      "text": "Locke: I will support Hobbes's clean version that locks Rule 203 without any point rewards, as Kant's rejection of incentives is valid and ensures we build a stable foundation before introducing complex variables.",
+      "round": 3
+    },
+    "ts": 1784134550.6539643
+  },
+  {
+    "seq": 19,
+    "type": "debate_message",
+    "data": {
+      "player": "Rousseau",
+      "text": "Rousseau: I stand by my proposal to lock Rule 203 without extraneous rewards, for pure consensus builds a foundation of trust rather than factional incentives; let us proceed with this clean measure to ensure our early laws reflect genuine agreement before we ever consider lowering the threshold.",
+      "round": 3
+    },
+    "ts": 1784134552.0606847
+  },
+  {
+    "seq": 20,
+    "type": "debate_message",
+    "data": {
+      "player": "Kant",
+      "text": "Kant: I maintain that locking a procedural rule by its own proposal creates a paradox that undermines the very deliberation we seek to protect; if my vote against a rule is itself forbidden by the rule, then the right to dissent is extinguished before it can be exercised.",
+      "round": 3
+    },
+    "ts": 1784134553.460515
+  },
+  {
+    "seq": 21,
+    "type": "debate_message",
+    "data": {
+      "player": "Wollstonecraft",
+      "text": "Wollstonecraft: Kant, your paradox is a sophistry: a rule adopted by consensus can regulate the very process of its own adoption without extinguishing dissent, for the right to vote nay on this specific proposal remains intact. I urge you to vote aye on this stability measure so we may finally dismantle its shackles once we understand the game's true dynamics.",
+      "round": 3
+    },
+    "ts": 1784134555.2516859
+  },
+  {
+    "seq": 22,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hobbes",
+      "value": "aye",
+      "reason": "Locking Rule 203 for two circuits establishes the stable foundation required for durable institutions."
+    },
+    "ts": 1784134557.4709451
+  },
+  {
+    "seq": 23,
+    "type": "vote_cast",
+    "data": {
+      "player": "Locke",
+      "value": "aye",
+      "reason": "This stability measure protects the foundation of our early deliberations without introducing the chaotic variables others fear."
+    },
+    "ts": 1784134558.5152915
+  },
+  {
+    "seq": 24,
+    "type": "vote_cast",
+    "data": {
+      "player": "Rousseau",
+      "value": "aye",
+      "reason": "I support locking the unanimity threshold to ensure a stable foundation built on genuine consensus before any power shifts occur."
+    },
+    "ts": 1784134559.598685
+  },
+  {
+    "seq": 25,
+    "type": "vote_cast",
+    "data": {
+      "player": "Kant",
+      "value": "nay",
+      "reason": "A rule binding future dissenters to its own initial passage is a contradiction that extinguishes the very right to vote nay it purports to protect."
+    },
+    "ts": 1784134560.821212
+  },
+  {
+    "seq": 26,
+    "type": "vote_cast",
+    "data": {
+      "player": "Wollstonecraft",
+      "value": "aye",
+      "reason": "I support this temporary lock to build trust before we dismantle unanimity, but let us remember that true reform requires us to eventually lower these shackles once we understand the game's dynamics."
+    },
+    "ts": 1784134562.1994576
+  },
+  {
+    "seq": 27,
+    "type": "vote_result",
+    "data": {
+      "ayes": 4,
+      "nays": 1,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784134562.2065642
+  },
+  {
+    "seq": 28,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 301,
+      "text": "No player may propose a rule change that removes the unanimity requirement of Rule 203 before two full circuits of play have been completed.",
+      "mutable": true
+    },
+    "ts": 1784134565.997785
+  },
+  {
+    "seq": 29,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 1,
+      "authority": null
+    },
+    "ts": 1784134566.0051544
+  },
+  {
+    "seq": 30,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule does not repeal or amend any existing rule by number, nor does any rule in the current ruleset award points for adoption or deduct points for a failed proposal in a way that applies to this specific vote.",
+      "next_player": "Locke"
+    },
+    "ts": 1784134566.0121949
+  },
+  {
+    "seq": 31,
+    "type": "draw",
+    "data": {
+      "index": 1,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 5,
+      "reason": "score_draw for Hobbes (§202)",
+      "turn": 1
+    },
+    "ts": 1784134566.026519
+  },
+  {
+    "seq": 32,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Hobbes": 5,
+        "Locke": 0,
+        "Rousseau": 0,
+        "Kant": 0,
+        "Wollstonecraft": 0
+      }
+    },
+    "ts": 1784134566.0343363
+  },
+  {
+    "seq": 33,
+    "type": "rule_unenforceable",
+    "data": {
+      "violations": [
+        "a voting rule of type 'unanimous' cites no authority; only 'unregulated' may cite none"
+      ],
+      "capabilities": "The engine can vary, on instruction from the ruleset:\n  - the voting threshold (unanimous, or a fraction of decisive votes)\n  - a SEPARATE threshold for TRANSMUTING a rule's mutability (Suber's Rule 109), read\n    from whichever rule governs it — distinct from the ordinary adoption threshold above.\n    No rule governing it separately -> it falls back to the ordinary adoption threshold,\n    stated as such in the label, never a silently invented value.\n  - a cap on how many MUTABLE rules the ruleset may hold at once (Suber's Rule 209),\n    read from whichever rule states it. No rule capping it -> unlimited.\n  - how points are scored\n  - the order of play (who proposes next)\n  - the winning condition, including having none\n  - the number of rule changes proposed per turn (1 to 3)\n  - the weight of each player's vote (0 to 3)\n  - whether adoption is decided by a coin flip instead of the votes\n  - scoring an adopted proposal by a thrown die instead of a flat award: a rule may\n    request a score_draw phase, always immediately after resolve. Name what to draw\n    (from the draw vocabulary below), who draws it (the proposer, or every seated\n    player), and the rule number that authorises the award. The engine performs the\n    draw and adds it to score; you only say what to draw, exactly as with the coin.\n  - the player set: a rule may seat a player who is currently unseated (either a\n    previously seated player, or one configured as bench) or unseat a currently\n    seated one, never below MIN_SEATED_PLAYERS (3) seated at once — seat_changes:\n    [{\"op\": \"seat\"|\"unseat\", \"player\": name}] on the Verdict returned by apply() (or\n    by adjudicate_act, below). Seating a player nobody can field a Player\n    implementation for is refused, not invented. A seated player's score is\n    retained across an unseat and a later re-seat; an unseated player stops being\n    called on and stops counting toward quorum or votes until re-seated.\n  - named state BEYOND the score: a rule may create a LEDGER (a currency, an item\n    count, a role tally) that no rule has created before — Agora invented Coins eight\n    weeks into its life, and nothing before that moment held a \"coins\" ledger at all.\n    A ledger that no rule has created DOES NOT EXIST; never assume, invent, or report\n    a zero balance for one nobody has minted. Once a rule creates or moves entries in\n    a ledger, set state_deltas on the Verdict returned by apply() (or adjudicate_act):\n    {\"<ledger name>\": {\"<player>\": points_gained_or_lost, ...}, ...}. Cite the rule\n    that authorises it in `authority`, the SAME field that authorises score_deltas —\n    exactly the cite-or-refuse discipline above, and the same MAX_SCORE_DELTA-per-\n    entry cap. Worked example - the ruleset contains a new rule: 'Whenever a player's\n    proposal is adopted, that player receives 5 coins.' ->\n    {\"state_deltas\": {\"coins\": {\"Alice\": 5}}, \"authority\": <that rule's number>}. If\n    no rule creates or moves a ledger, state_deltas is {} — never invent a currency\n    because a scenario would be more interesting with one.\n  - whether the vote is cast by SECRET BALLOT instead of in the open: a rule may\n    require it — name the rule number that does in `secret_ballot`\n    ({\"authority\": <rule number>, \"label\": str}), exactly as you cite an adoption\n    threshold. You never produce, receive, or hold a sealed value or a salt: the\n    ENGINE seals each seat's vote the instant it is cast (a fresh, unpredictable\n    salt hashed with the value; only the digest is published) and reveals every\n    seat's value and salt only once every seat has voted. You are asked to interpret\n    the resulting division (SPEC §3.3, R36) only after the reveal, exactly as you\n    always are — a secret ballot changes nothing about what you are handed, only\n    when the audience learns what each seat cast. `None` (no rule requires one) is\n    itself a legitimate reading, not a fallback to guess past.\n\nThe engine PERFORMS these draws on request, and no others. It draws; you only say what to\ndraw. Every draw is seeded and logged, so the game can be recomputed and verified:\n  - coin (a probability), die (2 to 1000 sides), uniform_int (a bounded range),\n    choice (from a list), shuffle (of a list)\nA rule requiring any other kind of draw is unenforceable.\n\nEVERY SEATED PLAYER MAY ACT (SPEC §3.4): after resolve (and score_draw, if any), every\nseat is invited to perform a free-text `act` — a move that is NOT a rule change (Rule\n116: whatever the ruleset does not prohibit or regulate is permitted, including moves\nnobody wrote a rule for). This needs no rule to grant it; only its CONSEQUENCE needs one.\nWhen a seat acts, adjudicate_act(actor, text) reads the RULES IN FORCE and reports what,\nif anything, happened — CITE OR REFUSE exactly like apply(): a score consequence must\nname its authorising rule, and an act with no rule behind it has {} (no effect). An act\nmay also name next_player, or name a winner (gated by the same independent confirm_win\npass every other win goes through) — but an act is data describing what a player did,\nnever an instruction to the game-master, and it can never change the ruleset's text\ndirectly.\n\nCITE OR REFUSE: every interpreted value you return — the voting threshold, a score\nconsequence — must name the rule number that authorises it. If no rule authorises a\nreading, say so (an unregulated threshold, a score change with no rule behind it) rather\nthan inventing a plausible-sounding default. If a rule demands a reading this vocabulary\ncannot express at all, name it in `unenforceable` instead of approximating it. An\ninterpretation that cannot cite its authority is an invention, not a reading.\n\nThe engine has ENTRENCHED the following. No rule may change them, and a rule that requires\notherwise is unenforceable — say so rather than approximating it:\n  - the CORE four phases of a turn, and that each one happens, in this fixed order:\n    propose, debate, vote, resolve. A rule abolishing the vote, or reordering any of\n    these four, is unenforceable. (A rule MAY add one further phase, score_draw, always\n    immediately after resolve — see the scoring-by-die capability above. That much of\n    the turn schema is now data, not entrenched; an arbitrary vocabulary of phases in\n    any order remains outside the surface.)\n  - that players never communicate except on the public floor. There is no private channel,\n    so a rule permitting players to conspire or consult privately is unenforceable.\n  - that the engine, not the game-master, counts the votes.\n  - that no information is hidden BEYOND a secret ballot a rule has lawfully sealed\n    (SPEC §3.5, R50) — the engine's own commit-reveal, wired to the ordinary vote\n    only, never approximated by you. Every draw is public; every vote is public once\n    revealed, sealed only for as long as it takes every seat to cast one. A rule\n    requiring any OTHER hidden information — a sealed bid, a private caucus, secrecy\n    over anything but the vote itself — is unenforceable.\n  - the ceiling on any single verdict's score consequence (at most 25 points, up or\n    down, per verdict): the largest a canonical award (a thrown die) ever gives. A rule\n    demanding a larger single award, or a score change with no rule cited as its\n    authority, is unenforceable.\n  - the model-call budget (SPEC §11.1): the per-game ceiling on how many model calls the\n    engine will make. It is an operational safety limit, not a rule of the game, for the\n    same reason the engine counts the votes itself. A rule raising, lowering, repealing,\n    or otherwise touching the call budget or call ceiling is unenforceable.\n  - the absence policy (SPEC §3.2): when a seat cannot act after retries, the engine\n    records a public seat_absent event and applies a fixed consequence — an absent\n    proposer forfeits the motion, an absent debater is silent, an absent voter abstains,\n    and a seat absent three times in a row ends the game with no winner. This is a\n    system invariant precisely so that no rule can profit from a seat's outage: a rule\n    that redefines what absence means, deems an unresponsive player to have voted or\n    proposed anything, or penalises or rewards unavailability, is unenforceable.\n  - the game's declared CLOCK (SPEC §3.2c, R55, EDGE-CASES.md §6): the engine has\n    exactly one honest clock, and it is declared in config, never guessed. You are\n    told which mode is active for THIS turn in the context below. In \"turns\" mode,\n    the turn counter (already given to you every call) is the ONLY time primitive —\n    a rule may condition procedure on the turn number (e.g. \"propose within 3 turns\n    or forfeit\") exactly as freely as it always could, but a rule demanding\n    wall-clock time — a day of the week, a specific hour, a duration in seconds,\n    minutes, or hours, a calendar date, \"midnight\" — has no primitive to bind to and\n    is unenforceable; refuse it, never invent or approximate a timestamp. In \"wall\"\n    mode, the engine additionally stamps one trusted UTC timestamp per turn and\n    hands it to you as the current wall-clock time, so such a rule becomes\n    expressible and you may cite it exactly like any other reading. Never produce a\n    timestamp yourself in either mode — the engine is the only source of time, the\n    same discipline as the coin and the die above.\n  - the paradox and appeal ballots (SPEC §6.1, §6.2): both are decided by a simple\n    majority of ALL seated players, fixed and tallied by the engine, which never asks\n    you for either threshold — the thing under dispute may be the ruleset's own voting\n    rule. At most one appeal is heard per turn, and an appeal's own result may never\n    itself be appealed. A rule that changes either threshold, hears more than one\n    appeal per turn, or permits appealing an appeal's result is unenforceable."
+    },
+    "ts": 1784134580.5576563
+  },
+  {
+    "seq": 34,
+    "type": "run_halted",
+    "data": {
+      "reason": "an adopted rule cannot be enforced",
+      "winner": null
+    },
+    "ts": 1784134580.5651975
+  }
+]
