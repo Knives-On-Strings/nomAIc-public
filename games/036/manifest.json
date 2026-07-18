@@ -1,0 +1,30 @@
+{
+  "game": 36,
+  "players": [
+    "Hume",
+    "Mill",
+    "Rawls",
+    "deBeauvoir",
+    "IbnKhaldun"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 81743748,
+  "started": "2026-07-17T20:41:39.312449+00:00",
+  "ended": "2026-07-17T21:48:44.098459+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

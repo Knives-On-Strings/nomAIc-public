@@ -1,0 +1,35 @@
+{
+  "game": 33,
+  "players": [
+    "Aquinas",
+    "Hypatia",
+    "Confucius",
+    "Spinoza",
+    "Arendt"
+  ],
+  "ruleset": "full",
+  "turns": 200,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[seq=1361, turn=48] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': True, 'label': 'unanimous consent required until one full circuit is completed (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority of those voting after one full circuit (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=1389, turn=49] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority of those voting after one full circuit (§203)', 'authority': 203} to {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': True, 'label': 'unanimous consent required until one full circuit is completed (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=3704, turn=135] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': True, 'label': 'Unanimous consent required until a full circuit is completed (§203)', 'authority': 203} to {'type': 'unanimous', 'authority': 109, 'label': \"Unanimous assent required to transmute a rule's mutability (§109)\"} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=3785, turn=138] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'authority': 109, 'label': \"Unanimous assent required to transmute a rule's mutability (§109)\"} to {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': True, 'label': 'Unanimous consent required until a full circuit is completed (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule"
+    ]
+  },
+  "seed": 362717788,
+  "started": "2026-07-16T17:59:39.246893+00:00",
+  "ended": "2026-07-17T10:16:17.457477+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

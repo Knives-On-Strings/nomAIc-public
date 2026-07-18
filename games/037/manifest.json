@@ -1,0 +1,33 @@
+{
+  "game": 37,
+  "players": [
+    "Hume",
+    "Mill",
+    "Rawls",
+    "deBeauvoir",
+    "IbnKhaldun"
+  ],
+  "ruleset": "full",
+  "turns": 200,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[seq=109, turn=4] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': True, 'label': 'unanimous consent', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=3100, turn=120] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': True, 'label': 'unanimous consent', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule"
+    ]
+  },
+  "seed": 1378190175,
+  "started": "2026-07-17T21:49:50.760051+00:00",
+  "ended": "2026-07-18T03:33:44.325771+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

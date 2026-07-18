@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 145 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 145</h1><div class="meta"><span>Moved by <b>Arendt</b></span><span>Unanimous consent required until a full circuit is completed (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once a rule change pursuant to Rule 365 awarding exactly one point to a player with a negative score is adopted, the threshold permanently drops to a simple majority of those voting for all future proposals, regardless of whether a full circuit has been completed.</span></div>
+<p class="lede">This amendment clarifies that the threshold drop triggered by a one-point Rule 365 victory is permanent and immediate, preventing the unanimous consent deadlock from blocking the game&#x27;s end.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Aquinas</span><span class="said">Arendt, your proposal to lock the threshold to simple majority upon a one-point Rule 365 adoption is a sound measure to prevent paralysis, but it omits the critical safeguard of explicitly ending the game immediately upon that same adoption, a failure we have seen repeatedly in past votes. I will support this amendment only if the text is refined to include the immediate game-ending trigger, ensuring that the path to victory is as certain as the path to victory&#x27;s termination.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">Arendt, your proposal correctly identifies the need to lower the barrier for desperate players, and I fully endorse Aquinas&#x27;s critical addition: we must explicitly couple this threshold drop with the immediate game-ending trigger to ensure the one-point victory is decisive and final. Let us refine the text to read: &quot;A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once a rule change pursuant to Rule 365 awarding exactly one point to a player with a negative score is adopted, the threshold permanently drops to a simple majority of those voting for all future proposals, and the game ends immediately.&quot;</span></div><div class="line"><span class="who">Confucius</span><span class="said">I accept Hypatia&#x27;s refined text, for it perfectly harmonizes the Golden Mean: it secures the desperate path to victory while immediately terminating the game to prevent the chaos of further play. This clear coupling of threshold and termination ensures the rules serve the common good by providing a decisive end to our struggles.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I reject this proposal because it violates the principle of procedural clarity by attempting to resolve a victory condition (game end) within an amendment to a voting threshold rule, a conflation that creates dangerous ambiguity regarding the precise moment of termination. I will only support a proposal that explicitly separates the immediate game-ending trigger into Rule 208 or a dedicated clause, ensuring the rule change is self-contained and its effects are logically distinct.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I welcome Spinoza&#x27;s call for logical precision; let us decouple the termination trigger into Rule 208 as suggested, keeping Rule 203 solely focused on permanently lowering the voting threshold to a simple majority upon that specific adoption.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Aquinas</span><span class="said">I agree with Spinoza&#x27;s demand for logical purity: Rule 203 should strictly handle the threshold mechanics, while the immediate termination of the game must remain explicitly anchored in Rule 208 to avoid conflating procedural voting rules with victory conditions. I propose we amend Arendt&#x27;s text to remove the &quot;game ends immediately&quot; phrase from 203, relying on the existing consensus that Rule 208 already governs that specific termination trigger.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">I endorse Aquinas&#x27;s refinement to keep Rule 203 focused on the threshold mechanics while relying on Rule 208 for the termination trigger, as this separation resolves Spinoza&#x27;s valid concern for logical clarity without sacrificing the decisive victory path for the desperate.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I accept the refined consensus to anchor the immediate termination in Rule 208 while reserving Rule 203 for the threshold drop, for this separation honors the Golden Mean by ensuring logical clarity without sacrificing the decisive path for the desperate.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I accept the consensus to isolate the threshold drop in Rule 203 while anchoring the immediate termination in Rule 208, for this separation honors the principle of procedural clarity and ensures the victory condition remains precisely defined. However, I insist that any amendment to Rule 208 explicitly stating &quot;no other victory condition applies&quot; to this specific case to prevent future ambiguity regarding the interplay between the target score and this immediate trigger.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I accept the consensus to isolate the threshold drop in Rule 203 while anchoring the immediate termination in Rule 208, and I support Spinoza&#x27;s addition of the explicit &quot;no other victory condition applies&quot; clause to ensure the desperate lifeline is both clear and irrevocable.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Aquinas</span><span class="said">I endorse the consensus to anchor the threshold drop in Rule 203 while securing the immediate termination in Rule 208 with Spinoza&#x27;s clarifying clause, for this separation establishes the durable institution we require. However, I must insist that the text in Rule 208 explicitly state that this one-point victory supersedes the general target score, ensuring no player can be denied victory by the arbitrary requirement of reaching twenty-eight points.</span></div><div class="line"><span class="who">Hypatia</span><span class="said">I endorse the consensus to isolate the threshold drop in Rule 203 while anchoring the immediate termination in Rule 208 with the &quot;no other victory condition applies&quot; clause, as this preserves logical clarity and secures the decisive victory path for the desperate without ambiguity.</span></div><div class="line"><span class="who">Confucius</span><span class="said">I accept the consensus to anchor the termination in Rule 208 and the threshold drop in Rule 203, for this separation honors the Golden Mean by ensuring logical clarity while securing the desperate lifeline.</span></div><div class="line"><span class="who">Spinoza</span><span class="said">I accept the consensus to separate the threshold drop in Rule 203 from the victory condition in Rule 208, but I demand that the Rule 208 amendment explicitly state that the one-point victory for a negative-score player via Rule 365 supersedes all other targets, including the &quot;28 points&quot; target established in Turn 142, to ensure no ambiguity remains regarding the decisive path for the desperate.</span></div><div class="line"><span class="who">Arendt</span><span class="said">I fully endorse Spinoza&#x27;s demand that the Rule 208 amendment explicitly state the one-point victory supersedes the Turn 142 target of 28 points, as this finalizes the desperate lifeline with the precision we require. With this safeguard secured, I am ready to vote aye on both the Rule 203 threshold drop and the corresponding Rule 208 clarification.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Aquinas</td><td class="why">This amendment correctly isolates the threshold drop to Rule 203 while the concurrent Rule 208 amendment secures the immediate termination, fulfilling our consensus for logical purity and a decisive path to victory.</td></tr><tr><td class="v aye">aye</td><td>Hypatia</td><td class="why">This proposal correctly isolates the threshold drop in Rule 203 while the separate consensus secures the immediate victory condition in Rule 208, satisfying Spinoza&#x27;s demand for logical clarity.</td></tr><tr><td class="v aye">aye</td><td>Confucius</td><td class="why">This proposal harmonizes the desperate lifeline with the Golden Mean by securing a clear path to victory while isolating the threshold mechanics from the victory condition itself.</td></tr><tr><td class="v aye">aye</td><td>Spinoza</td><td class="why">The proposal correctly isolates the threshold drop in Rule 203 while relying on Rule 208 for the termination trigger, satisfying my demand for procedural clarity.</td></tr><tr><td class="v aye">aye</td><td>Arendt</td><td class="why">This amendment secures the permanent threshold drop for the desperate, fulfilling my reformist goal of a fairer path to victory while honoring the table&#x27;s consensus to decouple termination logic into Rule 208.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 Turn 145 · Proposal §446 on the motion of <b>Arendt</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through one full circuit of every player who has not forfeited, the threshold permanently drops to a simple majority of those voting. A full circuit is deemed completed upon the moment the final non-forfeited player in the current turn order completes a turn, regardless of whether their proposal is adopted or defeated, unless a player has reached the target score under Rule 208 prior to that moment, in which case the circuit is deemed completed immediately upon that score being reached. For the purposes of this calculation, a player&#x27;s turn is considered completed if they have cast their vote on the current proposal or if they forfeit, and a forfeit explicitly counts as the completion of a player&#x27;s turn for the purpose of establishing a full circuit. If a player has already cast their vote on this proposal, they have completed their turn for the purpose of establishing a full circuit. If a player with a negative score adopts a rule pursuant to Rule 365 that awards them points, the threshold drops to a simple majority immediately upon that adoption, regardless of whether a full circuit has been completed. If a player with a negative score adopts a rule pursuant to Rule 365 that awards them exactly one point, the game ends immediately upon the adoption of that rule change. A rule change adopted pursuant to Rule 365 by a player with a negative score also drops the threshold to a simple majority immediately upon that adoption, regardless of the points awarded.</span><span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once a rule change pursuant to Rule 365 awarding exactly one point to a player with a negative score is adopted, the threshold permanently drops to a simple majority of those voting for all future proposals, regardless of whether a full circuit has been completed.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 Turn 145 · Proposal §446 on the motion of <b>Arendt</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once a rule change pursuant to Rule 365 awarding exactly one point to a player with a negative score is adopted, the threshold permanently drops to a simple majority of those voting for all future proposals, regardless of whether a full circuit has been completed.</span>
+</div>
+<p class="lede">The proposal amends Rule 203 to change the voting threshold condition, but no rule in the current ruleset awards or deducts points based on the adoption of a proposal or the specific voting division, so no score changes occur.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>
