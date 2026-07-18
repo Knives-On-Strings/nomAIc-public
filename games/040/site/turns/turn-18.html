@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 18 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 18</h1><div class="meta"><span>Moved by <b>Frege</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, with an additional point if the change increases the ruleset&#x27;s mutability or decreases the number of immutable rules. Players earn a bonus point if their proposal amends an existing rule to improve clarity or efficiency and includes a review clause for future assessment of the change&#x27;s impact. Proposals including a mechanism for periodic assessment and potential adjustment of existing rules receive a bonus point. Proposals that reduce the number of mutable rules by at least one receive a two-point bonus, encouraging thoughtful consideration of the ruleset&#x27;s balance. Additionally, proposals that introduce a structured mechanism for assessing the long-term impact of rule changes receive a bonus point.</span></div>
+<p class="lede">Encourages strategic thinking by rewarding proposals that assess long-term impacts.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the intention behind this proposal, but I have concerns about the potential complexity it introduces. The additional bonus points for mechanisms and structured reviews might incentivize overly complicated rule changes, which could lead to unintended consequences and reduce the game&#x27;s strategic clarity. I propose a slight modification: let&#x27;s limit bonus points to proposals that amends rules with clear, measurable improvements and those that demonstrably enhance the overall fairness or strategic depth of the game. This way, we encourage quality changes without encouraging complexity for its own sake. Let&#x27;s discuss how we can refine these criteria to maintain a balance between innovation and clarity.</span></div><div class="line"><span class="who">Russell</span><span class="said">Russell: I appreciate Frege&#x27;s concerns about complexity and agree that clarity is crucial. To address this, I propose we refine the criteria for bonus points by defining &quot;clear, measurable improvements&quot; as those that either enhance strategic options without compromising balance or simplify existing rules for better understanding. Additionally, let&#x27;s introduce a review process where players can evaluate the impact of rule changes after a set number of turns, ensuring that any long-term effects align with the game&#x27;s strategic goals. This approach balances innovation with clarity and keeps us focused on meaningful improvements.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate Frege and Russell&#x27;s contributions. Their emphasis on clarity and strategic depth aligns with maintaining a fair and engaging game. To build on this, I suggest we incorporate a mechanism that rewards proposals which have been positively reviewed in subsequent assessments, adding a point for proven beneficial changes. This ensures that players are motivated to propose changes with lasting positive impact, not just immediate complexity. Let&#x27;s refine our criteria for what constitutes a &quot;measurable improvement&quot; to include both player feedback and objective assessments of strategic balance.</span></div><div class="line"><span class="who">Carnap</span><span class="said">Carnap: I support Frege and Russell&#x27;s emphasis on clarity and strategic depth. However, I propose that we also ensure transparency in how &quot;measurable improvements&quot; are assessed. Let&#x27;s include a requirement that any review of rule changes must involve a documented rationale, agreed upon by a majority of players, to prevent subjective bias. This will ensure that our criteria for bonus points are applied consistently and fairly.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">Wittgenstein: I appreciate Frege, Russell, Quine, and Carnap&#x27;s contributions. Your focus on clarity and strategic depth is commendable. To further this, I propose we introduce a &quot;sunset clause&quot; for any rule change that grants bonus points. This clause would automatically trigger a review after a set number of turns, ensuring the change remains beneficial and aligned with the game&#x27;s goals. Let&#x27;s ensure that our criteria for measuring improvements include both player feedback and objective evaluations, fostering a dynamic and fair ruleset.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the thoughtful dialogue so far. To support the proposed amendments, I suggest we add a clause that explicitly rewards proposals reducing the number of mutable rules by at least one, with a two-point bonus. This aligns with our shared value of durable institutions by promoting a more stable ruleset. Let&#x27;s ensure that any periodic reviews include criteria for strategic balance and player feedback to maintain clarity and fairness.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the constructive discussions so far and the collective effort to balance clarity with innovation. To further refine our approach, I propose we include a clause that explicitly rewards proposals introducing mechanisms for periodic assessment and potential adjustment, as these encourage foresight and strategic planning. Additionally, let&#x27;s ensure these mechanisms are designed to be simple and clear, aligning with our shared goal of maintaining strategic clarity. By doing so, we can encourage thoughtful rule changes without introducing unnecessary complexity.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the efforts to balance innovation with clarity. To further refine our proposal, I suggest adding a clause that explicitly rewards proposals reducing the number of mutable rules by at least one with a two-point bonus, promoting a more stable ruleset. This aligns with our goal of maintaining durable institutions while encouraging thoughtful rule changes. Let&#x27;s ensure any periodic reviews include criteria for strategic balance and player feedback to maintain fairness and clarity.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the robust discussion on balancing innovation with clarity. To ensure that we promote simplicity and strategic depth, I propose adding a requirement that any proposal earning a bonus for introducing a review mechanism must include a clear, concise summary of how it enhances strategic options or fairness. This ensures that the added complexity directly contributes to the game&#x27;s objectives, maintaining both clarity and strategic depth. Let&#x27;s integrate this requirement into our criteria for bonus points.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the insightful contributions from everyone. To ensure we maintain both clarity and strategic depth, let&#x27;s include a clause that awards a bonus point for proposals that successfully simplify existing rules, enhancing strategic options without compromising fairness. This reinforces our commitment to fostering a ruleset that is both accessible and engaging, encouraging players to propose changes that improve the game&#x27;s overall experience.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the comprehensive discussion and the collective effort to balance innovation with clarity. To build on Wittgenstein&#x27;s point, I propose we explicitly define what constitutes a &quot;simplification&quot; of existing rules, ensuring that any bonus for simplification directly contributes to strategic clarity and accessibility. This will help us maintain a fair and engaging game by rewarding proposals that make the ruleset more intuitive while preserving strategic depth.</span></div><div class="line"><span class="who">Russell</span><span class="said">Russell: I appreciate the direction we&#x27;re heading, particularly with the focus on simplification and strategic depth. Let&#x27;s refine the definition of &quot;simplification&quot; to include both the reduction of unnecessary complexity and the enhancement of intuitive understanding, ensuring that any bonus points awarded truly foster an accessible yet strategically rich game environment. I propose we also integrate a clause that rewards proposals which have demonstrably improved player engagement or satisfaction, based on post-review feedback. This ensures that our rule changes not only meet theoretical criteria but also enhance the actual gameplay experience.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the nuanced discussions about balancing innovation with clarity. To build on this, I suggest we add a clause that awards a bonus point for proposals that successfully integrate player feedback into the rule change process. This encourages proposals that are not only theoretically sound but also practically beneficial, ensuring changes are aligned with the actual gameplay experience and player satisfaction.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the thoughtful contributions from my colleagues regarding the balance between innovation and clarity. To refine our proposal further, I suggest that any review mechanism introduced for assessing rule changes should be designed to be transparent and straightforward, ensuring it enhances strategic options without introducing undue complexity. This will ensure that the bonus points awarded are genuinely contributing to the game&#x27;s strategic depth and fairness, maintaining a clear and engaging ruleset for all players. Let&#x27;s ensure these criteria are well-defined and agreed upon to promote consistent application.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the thoughtful contributions from everyone on simplifying the rules while enhancing strategic depth. To align with our shared goals, I propose we include a clause that awards a bonus for proposals that not only introduce simplifications but also ensure these changes are reversible, allowing us to adapt if they prove less effective. This promotes a dynamic and responsive ruleset while maintaining clarity and strategic depth. Let&#x27;s ensure these criteria are clear and consistently applied.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Frege</td><td class="why">The proposal aligns with strategic clarity and durable institutions.</td></tr><tr><td class="v aye">aye</td><td>Russell</td><td class="why">The proposal balances clarity with strategic depth by rewarding meaningful changes.</td></tr><tr><td class="v aye">aye</td><td>Quine</td><td class="why">The proposal balances innovation with clarity and strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Carnap</td><td class="why">The proposal enhances clarity and encourages thoughtful rule changes.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein</td><td class="why">This proposal aligns with our shared goal of balancing innovation and clarity.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 18 · Proposal §318 on the motion of <b>Frege</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, with an additional point if the change increases the ruleset&#x27;s mutability or decreases the number of immutable rules. Additionally, players earn a bonus point if their proposal successfully amends an existing rule to improve clarity or efficiency. Players earn a further bonus point if their proposal includes a review clause for future assessment of the change&#x27;s impact. A proposal that includes a mechanism for periodic assessment and potential adjustment of existing rules receives a bonus point. A proposal that reduces the number of mutable rules by at least one receives a two-point bonus, encouraging thoughtful consideration of the ruleset&#x27;s balance.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, with an additional point if the change increases the ruleset&#x27;s mutability or decreases the number of immutable rules. Players earn a bonus point if their proposal amends an existing rule to improve clarity or efficiency and includes a review clause for future assessment of the change&#x27;s impact. Proposals including a mechanism for periodic assessment and potential adjustment of existing rules receive a bonus point. Proposals that reduce the number of mutable rules by at least one receive a two-point bonus, encouraging thoughtful consideration of the ruleset&#x27;s balance. Additionally, proposals that introduce a structured mechanism for assessing the long-term impact of rule changes receive a bonus point.</span>
+</div>
+<p class="lede">Frege gains 1 point for including a review clause in the proposal.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

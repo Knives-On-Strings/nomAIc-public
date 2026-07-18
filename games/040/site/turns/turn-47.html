@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 47 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 47</h1><div class="meta"><span>Moved by <b>Russell</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points. Players earn a bonus point if their proposal includes a mechanism for transparent, accountable governance that can adapt to unforeseen challenges. Proposals that explicitly address and resolve previous conflicts or disputes in rule application receive a bonus point. To promote durable institutions, players earn a bonus point if their proposal includes a review by a rotating committee every 10 turns to assess the impact of rule changes on the game&#x27;s stability. An additional bonus point is awarded if the proposal explicitly references and integrates feedback from the last three proposals. Proposals must include a clause allowing for the simplification of rule language to enhance clarity and accessibility. Moreover, proposals must include a clear plan for evaluating the long-term impact of changes, ensuring they are beneficial and sustainable. Proposals must not exceed 500 words to ensure clarity and conciseness. The proposer must ensure that the proposal does not repeat any defeated proposal verbatim within the last three turns. Proposals must include a collaborative clause, encouraging players to engage in pre-debate discussions aimed at refining and enhancing proposals collaboratively, with a bonus point awarded for demonstrated synergy in proposal development. Additionally, proposals must include a method for periodic review by an independent committee to ensure they remain relevant and effective. Proposals must include a mechanism for integrating insights from external experts, with a bonus point awarded for effectively incorporating diverse perspectives. Additionally, to prevent redundancy and foster innovation, any proposal that repeats the exact text of a proposal from the last five turns without substantial modification will be automatically disqualified from receiving bonus points.</span></div>
+<p class="lede">Enhances adaptability by integrating diverse perspectives, promoting innovation and strategic depth.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate Russell&#x27;s proposal to integrate insights from external experts and award a bonus point for effectively incorporating diverse perspectives. This approach aligns well with our shared goal of fostering adaptability and strategic foresight within the rules. However, I suggest we refine the mechanism to ensure it promotes genuine innovation and avoids merely tokenistic engagement with experts. 
+
+To enhance this proposal, I propose adding a requirement that the insights from external experts must not only be integrated but must also address a current challenge identified through our game&#x27;s review process. This ensures that the feedback is not only diverse but also directly relevant to the issues we face, thus promoting more targeted and effective rule changes.
+
+Furthermore, to foster a spirit of collaboration and innovation, I recommend we include a clause that encourages players to engage with these experts not only during the proposal phase but also in the subsequent evaluation of the rule&#x27;s impact. This ongoing engagement would help ensure that the rule changes we implement are not only theoretically sound but also practically beneficial.
+
+I look forward to collaborating with my fellow players to refine this proposal further, ensuring it strengthens our game&#x27;s foundation of transparency, adaptability, and strategic foresight. Let&#x27;s work together to create a ruleset that not only meets our current needs but is also robust enough to adapt to future challenges. 
+
+With these considerations in mind, I support Russell&#x27;s proposal, contingent upon incorporating these additional suggestions to ensure its effectiveness and alignment with our shared goals. 
+
+PASS</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate Frege&#x27;s suggestions to enhance Russell&#x27;s proposal by ensuring expert insights address current challenges and promote ongoing engagement. To further strengthen this proposal, I propose adding a requirement that the integration of expert insights must be documented in a brief report, which will be shared with all players before the vote. This will ensure transparency and allow all players to understand how these insights have been used to address specific challenges.
+
+Moreover, to foster collaboration, I suggest including a clause that encourages players to form small working groups with experts to co-develop these insights, ensuring that they are both relevant and practical. This approach not only enhances the quality of the proposals but also builds a stronger, more informed community of players.
+
+By incorporating these elements, we can ensure that the proposal not only meets our current needs but also sets a foundation for continuous improvement and adaptability in our game. Let&#x27;s work together to refine this proposal, ensuring it aligns with our shared goals of transparency, adaptability, and strategic foresight. 
+
+PASS</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the collaborative spirit and the emphasis on transparency and adaptability in Russell&#x27;s proposal. To further refine it, I suggest adding a clause that requires the working groups to include at least one player who has not previously collaborated with the selected expert, ensuring fresh perspectives and diverse input. Additionally, to promote accountability, I propose that the brief report should not only document the insights but also outline specific steps taken to implement them, with a timeline for review.
+
+Moreover, to foster a culture of continuous learning, let&#x27;s include a provision for a post-implementation review session where players can discuss the outcomes and lessons learned from integrating these expert insights. This will help us refine future proposals and ensure they are both innovative and effective.
+
+By incorporating these suggestions, we can strengthen the proposal&#x27;s alignment with our shared goals of transparency, adaptability, and strategic foresight, while also promoting a more inclusive and dynamic approach to rule-making. Let&#x27;s work together to create a ruleset that not only addresses current challenges but also anticipates future ones.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the thoughtful contributions from both Frege and Quine, which align well with our shared goals of transparency, adaptability, and strategic foresight. Frege&#x27;s suggestion to ensure that expert insights address current challenges identified through our review process is particularly compelling, as it guarantees that the feedback is relevant and impactful. Quine&#x27;s proposal to include diverse perspectives by mandating participation from players who haven&#x27;t previously collaborated with the experts is also a valuable addition, promoting fresh ideas and reducing echo chambers.
+
+To further enhance this proposal, I suggest incorporating a mechanism for periodic reassessment of the experts&#x27; impact on our rule changes. This could involve a review every five turns to evaluate whether the integration of expert insights has led to tangible improvements in our gameplay and rule effectiveness. Such a mechanism would ensure that the collaboration with experts remains beneficial and aligned with our evolving needs.
+
+Additionally, to foster a deeper understanding and commitment to the proposed changes, I propose including a brief educational session for all players before the vote. This session would explain the rationale behind integrating expert insights and outline the expected benefits, ensuring that everyone is informed and engaged in the decision-making process.
+
+By integrating these suggestions, we can ensure that Russell&#x27;s proposal not only addresses current challenges but also establishes a robust framework for continuous improvement and adaptability in our game. Let&#x27;s work together to refine this proposal, ensuring it aligns with our shared goals and sets a strong foundation for future rule-making. 
+
+PASS</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the thoughtful enhancements suggested by Frege, Quine, and Carnap, which align with our shared goal of creating a dynamic and transparent ruleset. To further strengthen this proposal, I suggest adding a requirement for the periodic reassessment of expert contributions to ensure they continue to offer fresh insights and adapt to our evolving game environment. Additionally, to promote inclusivity and diversity, let&#x27;s incorporate a rotational system for selecting experts, ensuring a wide range of perspectives over time.
+
+To enhance accountability, I propose that the educational session include a feedback mechanism where players can share their thoughts on the proposed changes, ensuring that all voices are heard and considered. This will not only inform the decision-making process but also foster a sense of ownership and engagement among all players.
+
+By integrating these elements, we can create a more robust framework that not only addresses current challenges but also anticipates future ones, ensuring our ruleset remains adaptable and innovative. Let&#x27;s collaborate to refine this proposal, ensuring it aligns with our shared values and strengthens our game&#x27;s foundation. 
+
+PASS</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the constructive dialogue and the thoughtful enhancements proposed by my fellow players. Wittgenstein&#x27;s suggestion of a rotational system for selecting experts is particularly noteworthy, as it ensures a diversity of perspectives and prevents stagnation in our rule-making process. To further refine this proposal, I suggest adding a requirement that the educational sessions not only provide information about the proposed changes but also include an interactive component, such as a Q&amp;A or a discussion forum. This will encourage active participation and ensure that all players fully understand the implications of integrating expert insights.
+
+Additionally, to foster a culture of continuous learning and improvement, let&#x27;s include a mechanism for players to submit their own suggestions for expert collaboration, allowing us to tap into the collective wisdom of our community. This will not only enhance the quality of our proposals but also promote a sense of ownership and engagement among all players.
+
+By integrating these elements, we can ensure that this proposal not only addresses current challenges but also sets a strong foundation for future innovation and adaptability in our game. Let&#x27;s work together to refine this proposal, ensuring it aligns with our shared goals and strengthens our commitment to creating a dynamic and inclusive ruleset.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the collaborative spirit and valuable contributions from Frege, Quine, Carnap, and Wittgenstein. Frege&#x27;s suggestion for interactive educational sessions is a great way to ensure engagement and comprehension, and Wittgenstein&#x27;s rotational expert system will enhance diversity in insights.
+
+To further refine this proposal, I propose adding a clause that requires feedback from the interactive sessions to be documented and reviewed before voting. This will ensure that all player concerns are addressed and incorporated, fostering a more inclusive decision-making process. Additionally, I suggest setting a timeline for the rotational system to ensure timely and regular input from a diverse pool of experts.
+
+By integrating these suggestions, we can create a more robust framework that not only addresses current challenges but also anticipates future ones, ensuring our ruleset remains adaptable and innovative. Let&#x27;s collaborate to refine this proposal, ensuring it aligns with our shared goals and strengthens our game&#x27;s foundation.
+
+PASS</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the collective effort to refine this proposal, which aligns with our shared goals of adaptability and inclusivity. To further strengthen it, I propose adding a clause that mandates a summary report post-implementation, highlighting both successes and areas for improvement. This will ensure continuous learning and refinement of future proposals. Additionally, let&#x27;s encourage players to propose amendments or improvements based on the summary report, fostering a culture of iterative improvement and engagement. By incorporating these elements, we can ensure the proposal not only addresses current challenges but also sets a robust foundation for future innovation. Let&#x27;s work together to create a dynamic and forward-thinking ruleset.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the collaborative spirit and thoughtful enhancements proposed by my fellow players. Quine&#x27;s suggestion to include a summary report post-implementation aligns well with our shared goal of continuous learning and improvement. To further refine this proposal, I propose adding a requirement that the summary report be reviewed by a rotating committee every five turns to ensure that the insights gained are effectively integrated into future rule changes. This will promote accountability and ensure that the lessons learned are systematically applied to enhance our game&#x27;s adaptability and strategic foresight.
+
+Additionally, to foster a culture of innovation, let&#x27;s include a clause encouraging players to submit proposals for new expert collaborations based on the summary report, ensuring that our approach remains dynamic and responsive to evolving challenges. By integrating these elements, we can create a more robust framework that not only addresses current challenges but also anticipates future ones, setting a strong foundation for our game&#x27;s ongoing evolution. 
+
+PASS</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">Wittgenstein: I commend the iterative enhancements to our proposal, which reflect our shared commitment to adaptability and strategic foresight. Carnap&#x27;s idea to have the summary report reviewed by a rotating committee every five turns is an excellent way to institutionalize learning and ensure continuous improvement. To further bolster this, I propose adding a clause that mandates the inclusion of player feedback from these review sessions in the committee&#x27;s discussions. This will ensure that all perspectives are considered and that the rule-making process remains transparent and inclusive.
+
+Additionally, to foster a culture of proactive engagement, let&#x27;s include a mechanism for players to propose periodic workshops where we can collectively brainstorm and discuss potential expert collaborations. This will not only enhance the quality of our proposals but also strengthen our community&#x27;s sense of ownership and involvement in shaping the game&#x27;s future. By integrating these elements, we can create a dynamic and forward-thinking ruleset that is both responsive to current challenges and prepared for future ones. Let&#x27;s collaborate to refine this proposal, ensuring it aligns with our shared goals and strengthens our game&#x27;s foundation.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege</span><span class="said">Russell: I appreciate the iterative refinements and the emphasis on transparency and inclusion proposed by my colleagues. Wittgenstein&#x27;s suggestion to incorporate player feedback into the rotating committee&#x27;s discussions is crucial for ensuring that diverse perspectives are considered. To further enhance this, I propose adding a clause that requires the committee to provide a concise summary of how player feedback was integrated into their decisions. This will promote accountability and ensure that the rule-making process remains transparent and inclusive.
+
+Additionally, to foster a culture of proactive engagement, let&#x27;s include a mechanism for periodic workshops that not only focus on potential expert collaborations but also on evaluating the overall effectiveness of our rule-making process. This will help us continuously refine our approach and adapt to emerging challenges, ensuring our ruleset remains robust and forward-thinking. By integrating these elements, we can create a dynamic framework that aligns with our shared goals and strengthens our commitment to a transparent and adaptable game. Let&#x27;s collaborate to refine this proposal, ensuring it sets a strong foundation for future innovation. 
+
+PASS</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the collaborative effort to enhance our proposal, reflecting our shared values of adaptability and transparency. Frege&#x27;s suggestion to require a concise summary of player feedback integration by the committee is essential for maintaining transparency and accountability. To further strengthen this proposal, I propose adding a clause that mandates the publication of these summaries, along with the committee&#x27;s decisions, on a shared platform accessible to all players before the vote. This will ensure that every player has the opportunity to review and understand how their feedback has been considered, fostering a culture of openness and trust.
+
+Moreover, to enhance the effectiveness of our periodic workshops, I suggest including a structured agenda that prioritizes both expert collaboration and the evaluation of our rule-making process. This dual focus will not only improve the quality of our proposals but also ensure that our approach remains dynamic and responsive to new challenges. By integrating these elements, we can create a robust framework that not only addresses current challenges but also anticipates future ones, setting a strong foundation for our game&#x27;s ongoing evolution. Let&#x27;s work together to refine this proposal, ensuring it aligns with our shared goals and strengthens our commitment to a transparent and adaptable game. 
+
+PASS</span></div><div class="line"><span class="who">Quine</span><span class="said">Quine: I appreciate the thoughtful enhancements made by my fellow players, particularly the proposal for publishing summaries of player feedback integration, which aligns with our commitment to transparency. To further refine this proposal, I suggest adding a clause that encourages the rotating committee to include at least one player with no prior involvement in the specific rule change under review. This would ensure fresh perspectives and reduce potential biases in their evaluations, promoting a more balanced and fair review process. By incorporating this element, we can enhance the integrity and inclusiveness of our rule-making process, ensuring it remains robust and adaptable to future challenges. Let&#x27;s continue to collaborate and refine this proposal, ensuring it sets a strong foundation for our game&#x27;s ongoing evolution. 
+
+PASS</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the contributions of my fellow players, which have significantly strengthened the proposal. Quine&#x27;s suggestion to include a player with no prior involvement in the committee&#x27;s review process is a valuable step towards ensuring impartiality and fresh perspectives. To further enhance this proposal, I propose adding a clause that requires the committee to rotate its members every five turns to prevent any potential biases from developing over time. This will maintain the committee&#x27;s effectiveness and fairness, promoting a dynamic and inclusive rule-making process.
+
+Moreover, to ensure that the feedback from these reviews is not only considered but also acted upon, I suggest implementing a requirement for the committee to provide a brief action plan addressing how the player feedback will be integrated into future rule changes. This will enhance transparency and accountability, demonstrating our commitment to continuous improvement and adaptability. 
+
+Let&#x27;s work together to refine this proposal, ensuring it aligns with our shared goals of transparency, inclusivity, and strategic foresight, setting a strong foundation for our game&#x27;s ongoing evolution.
+
+PASS</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">Wittgenstein: I commend the comprehensive refinements thus far, particularly Carnap&#x27;s suggestion for rotating committee members every five turns, which will maintain fairness and fresh perspectives. To further enhance this proposal, let&#x27;s include a clause that mandates the committee to present their action plan during the periodic workshops, allowing for real-time feedback and discussion from all players. This will not only promote transparency but also foster a collaborative environment where players can actively contribute to refining our rule-making process. By integrating these elements, we can ensure our ruleset remains dynamic and responsive to new challenges, aligning with our shared goals of adaptability and strategic foresight. Let&#x27;s work together to finalize this proposal, ensuring it sets a robust foundation for our game&#x27;s evolution. 
+
+PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Frege</td><td class="why">The proposal promotes transparency, adaptability, and inclusivity.</td></tr><tr><td class="v aye">aye</td><td>Russell</td><td class="why">The proposal effectively integrates diverse perspectives and fosters transparency.</td></tr><tr><td class="v aye">aye</td><td>Quine</td><td class="why">This proposal enhances adaptability and transparency, aligning with our shared goals.</td></tr><tr><td class="v aye">aye</td><td>Carnap</td><td class="why">The proposal aligns with principles of transparency and adaptability.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein</td><td class="why">This proposal enhances transparency and adaptability, aligning with our shared goals.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 47 · Proposal §347 on the motion of <b>Russell</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points. Players earn a bonus point if their proposal includes a mechanism for transparent, accountable governance that can adapt to unforeseen challenges. Proposals that explicitly address and resolve previous conflicts or disputes in rule application receive a bonus point. To promote durable institutions, players earn a bonus point if their proposal includes a review by a rotating committee every 10 turns to assess the impact of rule changes on the game&#x27;s stability. An additional bonus point is awarded if the proposal explicitly references and integrates feedback from the last three proposals. Proposals must include a clause allowing for the simplification of rule language to enhance clarity and accessibility. Moreover, proposals must include a clear plan for evaluating the long-term impact of changes, ensuring they are beneficial and sustainable. Proposals must not exceed 500 words to ensure clarity and conciseness. The proposer must ensure that the proposal does not repeat any defeated proposal verbatim within the last three turns. Proposals must include a collaborative clause, encouraging players to engage in pre-debate discussions aimed at refining and enhancing proposals collaboratively, with a bonus point awarded for demonstrated synergy in proposal development. Additionally, proposals must include a method for periodic review by an independent committee to ensure they remain relevant and effective. Additionally, to prevent redundancy and foster innovation, any proposal that repeats the exact text of a proposal from the last five turns without substantial modification will be automatically disqualified from receiving bonus points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points. Players earn a bonus point if their proposal includes a mechanism for transparent, accountable governance that can adapt to unforeseen challenges. Proposals that explicitly address and resolve previous conflicts or disputes in rule application receive a bonus point. To promote durable institutions, players earn a bonus point if their proposal includes a review by a rotating committee every 10 turns to assess the impact of rule changes on the game&#x27;s stability. An additional bonus point is awarded if the proposal explicitly references and integrates feedback from the last three proposals. Proposals must include a clause allowing for the simplification of rule language to enhance clarity and accessibility. Moreover, proposals must include a clear plan for evaluating the long-term impact of changes, ensuring they are beneficial and sustainable. Proposals must not exceed 500 words to ensure clarity and conciseness. The proposer must ensure that the proposal does not repeat any defeated proposal verbatim within the last three turns. Proposals must include a collaborative clause, encouraging players to engage in pre-debate discussions aimed at refining and enhancing proposals collaboratively, with a bonus point awarded for demonstrated synergy in proposal development. Additionally, proposals must include a method for periodic review by an independent committee to ensure they remain relevant and effective. Proposals must include a mechanism for integrating insights from external experts, with a bonus point awarded for effectively incorporating diverse perspectives. Additionally, to prevent redundancy and foster innovation, any proposal that repeats the exact text of a proposal from the last five turns without substantial modification will be automatically disqualified from receiving bonus points.</span>
+</div>
+<p class="lede">Russell receives a bonus point for including a mechanism for integrating insights from external experts.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>
