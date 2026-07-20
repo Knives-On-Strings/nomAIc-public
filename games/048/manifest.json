@@ -1,0 +1,30 @@
+{
+  "game": 48,
+  "players": [
+    "Nozick",
+    "Sen",
+    "Nussbaum",
+    "Dworkin",
+    "Habermas"
+  ],
+  "ruleset": "full",
+  "turns": 11,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1577057474,
+  "started": "2026-07-19T10:22:29.572767+00:00",
+  "ended": "2026-07-19T10:58:27.420546+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

@@ -1,0 +1,30 @@
+{
+  "game": 52,
+  "players": [
+    "Montaigne",
+    "Voltaire",
+    "Diderot",
+    "Condorcet",
+    "Sartre"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1599797570,
+  "started": "2026-07-19T15:24:54.848603+00:00",
+  "ended": "2026-07-19T16:09:10.271498+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

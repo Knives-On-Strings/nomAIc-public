@@ -1,0 +1,44 @@
+{
+  "game": 46,
+  "players": [
+    "Montaigne",
+    "Voltaire",
+    "Diderot",
+    "Condorcet",
+    "Sartre"
+  ],
+  "ruleset": "full",
+  "turns": 200,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[turn=99] unclaimed_win: Diderot's score reached 102 at turn 99, meeting the win threshold of 100 declared in §208, but the game ended with no confirmed win for Diderot (or anyone) — R47 lets a player claim a win via act(); nothing in the log shows one was ever made and confirmed",
+      "[turn=73] unclaimed_win: Voltaire's score reached 102 at turn 73, meeting the win threshold of 100 declared in §208, but the game ended with no confirmed win for Voltaire (or anyone) — R47 lets a player claim a win via act(); nothing in the log shows one was ever made and confirmed",
+      "[seq=2524, turn=87] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': \"at least two-thirds of eligible voters must vote 'aye' for the first three turns, and later at least half (§203)\", 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': \"at least half of eligible voters must vote 'aye'\", 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=2610, turn=90] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': \"at least half of eligible voters must vote 'aye'\", 'authority': 203} to {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': \"at least two-thirds of eligible voters must vote 'aye' for the first three turns, and later at least half\", 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=3417, turn=118] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': \"two-thirds of eligible voters must vote 'aye' for the first 60 turns, then three-quarters thereafter\", 'authority': 203} to {'type': 'fraction', 'value': 0.75, 'abstain_blocks': False, 'label': \"three-quarters of eligible voters must vote 'aye'\", 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=4777, turn=165] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.75, 'abstain_blocks': False, 'label': 'three-quarters majority for first 110 turns, then simple majority', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=4893, turn=169] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': 'two-thirds majority for first 165 turns, then simple majority', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=5131, turn=177] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': 'two-thirds majority for first 170 turns, then simple majority', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=5277, turn=182] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': 'two-thirds majority for first 170 turns, then simple majority', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=5334, turn=184] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} to {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': 'two-thirds majority for first 170 turns, then simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=5361, turn=185] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': 'two-thirds majority for first 170 turns, then simple majority', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=5408, turn=187] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6667, 'abstain_blocks': False, 'label': 'two-thirds majority for first 170 turns, then simple majority', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=5617, turn=194] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority', 'authority': 203} to {'type': 'fraction', 'value': 0.75, 'abstain_blocks': False, 'label': 'three-quarters majority for first 192 turns, then simple majority', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule"
+    ]
+  },
+  "seed": 777920582,
+  "started": "2026-07-19T06:05:12.578333+00:00",
+  "ended": "2026-07-19T09:29:47.671739+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

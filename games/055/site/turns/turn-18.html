@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 18 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 18</h1><div class="meta"><span>Moved by <b>Frege</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least one turn in advance and provide a rationale that is at least 20 words long, includes at least one concrete example or precedent, and aligns with the current ruleset. The designated committee, consisting of at least one member from each quartile of the current scores, must review and provide a brief explanation of their reasoning. A player may gain 5 additional points for unanimous consent and 3 points for a simple majority. Every player&#x27;s vote carries equal weight.</span></div>
+<p class="lede">Extending rationale length ensures more thoughtful proposals, aligning with rule 106 for clarity and transparency.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege</span><span class="said">The proposed amendment to rule 202 introduces a more demanding rationale requirement, increasing its length and possibly complicating the proposal process. While clarity in rationale is valuable, extending the minimum word count from 10 to 20 might hinder creative and strategic proposal-making, especially for those with less time to craft detailed explanations. This could disproportionately benefit players with more resources or time, potentially creating an imbalance. I propose a more moderate increase, say to 15 words, balancing the need for clear rationales without stifling proposal diversity. Furthermore, let&#x27;s ensure that the committee&#x27;s review process remains efficient and that we avoid overly bureaucratic hurdles that could slow down the game. I am open to negotiating support for a slightly revised proposal that considers these aspects. 
+
+**Proposal Amendment Suggestion:**
+&quot;A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least one turn in advance and provide a rationale that is at least 15 words long, includes at least one concrete example or precedent, and aligns with the current ruleset. The designated committee, consisting of at least one member from each quartile of the current scores, must review and provide a brief explanation of their reasoning. A player may gain 5 additional points for unanimous consent and 3 points for a simple majority. Every player&#x27;s vote carries equal weight.&quot;
+
+I&#x27;m open to discussions to refine this amendment further. Let&#x27;s work together to enhance the clarity and fairness of our ruleset without unnecessarily complicating the proposal process.</span></div><div class="line"><span class="who">Russell</span><span class="said">Russell: Frege&#x27;s suggestion to increase the rationale length to 15 words instead of 20 is a thoughtful compromise. It maintains the emphasis on clarity and alignment with the ruleset while reducing potential barriers for players with fewer resources. I support this moderated approach as it strikes a balance between detail and accessibility. Additionally, we should ensure that the committee&#x27;s review remains streamlined to avoid unnecessary delays. Let&#x27;s also consider integrating a provision for players to clarify rationales post-submission if needed, ensuring both flexibility and thoroughness. This would help maintain a dynamic and inclusive proposal environment. 
+
+I&#x27;m inclined to support Frege&#x27;s revised proposal with the suggestion of post-submission clarifications. This keeps the process fair and efficient, aligning with our shared goal of maintaining a balanced ruleset.</span></div><div class="line"><span class="who">Quine</span><span class="said">Quine: Frege&#x27;s proposal to increase the rationale length to 15 words is a sensible compromise that balances the need for clarity with the risk of overcomplicating proposal submissions. I support this approach as it maintains fairness without imposing excessive burdens on players. Additionally, Russell&#x27;s suggestion to allow post-submission clarifications is an excellent idea, as it provides flexibility and ensures that all players have the opportunity to fully articulate their proposals. Let&#x27;s also consider adding a guideline that clarifications must be submitted within a specific timeframe to keep the process efficient and prevent delays. This amendment would enhance the clarity and accessibility of rule proposals, aligning well with our goal of maintaining a fair and dynamic game environment.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I support Frege&#x27;s proposal to increase the rationale length to 15 words. This adjustment promotes clarity while keeping the process accessible for all players. Additionally, Russell&#x27;s suggestion for post-submission clarifications is beneficial, providing a balance between thoroughness and flexibility. To ensure efficiency, we should stipulate a clear timeframe for these clarifications. This proposal aligns with our goal of maintaining a fair and dynamic ruleset, and I am open to negotiating further details to refine this amendment.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">Wittgenstein: Frege&#x27;s proposal to extend the rationale to 15 words is a thoughtful middle ground, promoting clarity while preserving the diversity of strategic proposals. I support this adjustment and agree with Russell&#x27;s and Quine&#x27;s suggestions for post-submission clarifications, which enhance flexibility and inclusivity. To ensure efficiency, let&#x27;s establish a clear timeline for submitting these clarifications, perhaps one turn after the initial proposal. This balanced approach maintains fairness and keeps the game dynamic. I&#x27;m ready to negotiate further to refine this amendment.
+
+PASS</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the collaborative effort in refining Frege&#x27;s proposal. The moderated increase to 15 words for rationales strikes a balance between ensuring clarity and maintaining accessibility for all players. Additionally, the suggestion to allow post-submission clarifications within a specified timeframe is an excellent way to ensure flexibility and prevent delays in the proposal process. This approach supports our shared goal of maintaining a fair and dynamic ruleset. I am inclined to support this revised amendment and am open to further negotiation to refine it.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the consensus-building efforts thus far. The proposed increase to 15 words for rationales is a balanced approach that encourages clarity without stifling creativity. Additionally, the inclusion of post-submission clarifications within a defined timeframe enhances flexibility and ensures fairness for all players. This approach aligns well with our goal of maintaining a dynamic and inclusive ruleset. I am inclined to support this revised amendment and am open to further negotiation to refine it if necessary. Let&#x27;s work together to finalize this proposal and ensure it benefits everyone.</span></div><div class="line"><span class="who">Quine</span><span class="said">The proposed amendment to rule 202, which increases the rationale length to 15 words and allows for post-submission clarifications, is a well-balanced approach. It maintains clarity while ensuring accessibility for all players, aligning with our goal of a fair and dynamic ruleset. I support this amendment as it strikes a balance between detail and flexibility. Let&#x27;s ensure the clarification timeline is clear to keep the process efficient. I am open to further negotiation to refine this proposal if needed.</span></div><div class="line"><span class="who">Carnap</span><span class="said">Carnap: I appreciate the consensus on increasing the rationale length to 15 words, which promotes clarity while ensuring accessibility. The addition of post-submission clarifications within a specified timeframe is a practical solution to maintain flexibility without causing delays. This balanced approach supports our objective of a fair and dynamic game environment. I am inclined to support this revised amendment and am open to further negotiation to refine it if needed. Let&#x27;s ensure we set a clear and reasonable timeframe for these clarifications to keep the process efficient and fair for all players.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">Wittgenstein: I commend the collective effort in refining this proposal. The increase to 15 words for rationales effectively balances clarity and accessibility, ensuring that all players can participate meaningfully without undue burden. The provision for post-submission clarifications is a thoughtful addition, offering flexibility and preventing unnecessary delays. Establishing a clear timeframe for these clarifications, perhaps one turn after the initial proposal, will maintain efficiency and fairness. I am inclined to support this revised amendment and am open to further negotiation to ensure it benefits everyone. Let’s work together to finalize this proposal and enhance our ruleset. 
+
+PASS</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the constructive dialogue that has led to the consensus on the revised amendment. Increasing the rationale length to 15 words strikes a fair balance, promoting clarity without impeding accessibility. The inclusion of a clear timeline for post-submission clarifications enhances both flexibility and efficiency, ensuring all players can participate fully and fairly. I support this balanced proposal and am ready to collaborate on any final adjustments needed to align with our shared goals. Let&#x27;s finalize this amendment to maintain a dynamic and inclusive ruleset.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the collaborative spirit shown in refining this proposal. The balanced approach of extending rationales to 15 words and allowing post-submission clarifications within a clear timeframe ensures both clarity and fairness, promoting a dynamic and inclusive ruleset. I support this revised amendment and am open to any final adjustments needed to align with our shared goals. Let&#x27;s move forward and finalize this proposal.
+
+PASS</span></div><div class="line"><span class="who">Quine</span><span class="said">I support Frege&#x27;s proposal to increase the rationale length to 15 words, as it balances the need for clarity with accessibility. The addition of a clear timeline for post-submission clarifications is crucial to maintain efficiency and fairness, ensuring all players can participate meaningfully. This balanced approach aligns with our goal of a dynamic and inclusive ruleset. I am ready to finalize this proposal and collaborate on any minor refinements if necessary.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I support the balanced approach of extending rationales to 15 words and allowing for post-submission clarifications within a defined timeframe. This ensures clarity while maintaining accessibility and fairness for all players, aligning with our proceduralist principles. I am inclined to finalize this proposal and am open to any final refinements necessary to ensure it aligns with our shared goals of a fair and dynamic ruleset. Let&#x27;s proceed with this amendment.
+
+PASS</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the collective effort that has refined this proposal into a balanced and fair amendment. Extending rationales to 15 words ensures clarity while maintaining accessibility for all players, and the inclusion of post-submission clarifications within a clear timeframe maintains both efficiency and flexibility. This approach supports a dynamic and inclusive ruleset, aligning with our shared objective of fairness. I am inclined to support this refined proposal as it stands and am open to any final tweaks needed to ensure its success. Let&#x27;s finalize and adopt this amendment to enhance our game environment.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Frege</td><td class="why">The amendment balances clarity and accessibility in proposal rationales.</td></tr><tr><td class="v aye">aye</td><td>Russell</td><td class="why">Supports balance in rationale length and process efficiency.</td></tr><tr><td class="v aye">aye</td><td>Quine</td><td class="why">The proposal strikes a fair balance between clarity and accessibility.</td></tr><tr><td class="v nay">nay</td><td>Carnap</td><td class="why">The rationale length is overly burdensome.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein</td><td class="why">The proposal balances clarity and accessibility effectively.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 18 · Proposal §318 on the motion of <b>Frege</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least one turn in advance and provide a rationale that is at least 10 words long, includes at least one concrete example or precedent, and aligns with the current ruleset. The designated committee, consisting of at least one member from each quartile of the current scores, must review and provide a brief explanation of their reasoning. A player may gain 5 additional points for unanimous consent and 3 points for a simple majority. Every player&#x27;s vote carries equal weight.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least one turn in advance and provide a rationale that is at least 20 words long, includes at least one concrete example or precedent, and aligns with the current ruleset. The designated committee, consisting of at least one member from each quartile of the current scores, must review and provide a brief explanation of their reasoning. A player may gain 5 additional points for unanimous consent and 3 points for a simple majority. Every player&#x27;s vote carries equal weight.</span>
+</div>
+<p class="lede">Rule 202 awards points for unanimous consent and simple majority.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

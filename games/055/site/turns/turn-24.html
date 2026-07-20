@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 24 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 24</h1><div class="meta"><span>Moved by <b>Frege</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least three turns in advance and provide a rationale that is at least 20 words long, includes at least one concrete example or precedent, aligns with the current ruleset, and addresses potential impacts on future play. A player may gain 5 additional points for unanimous consent, 3 points for a simple majority, and 2 points if the rationale includes a historical precedent. A proposal must be reviewed by a committee, which must include at least one member from each quartile of the current scores and at least one player with a score below the median, and must provide a brief explanation of their reasoning.</span></div>
+<p class="lede">Ensuring diverse representation in the committee supports fairer evaluations and enhances decision-making.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate Russell&#x27;s efforts to refine rule 202, and his latest proposal to include a player with a score below the median on the committee is a thoughtful addition. This change could help ensure that diverse perspectives are considered, particularly from those with lower scores who might otherwise be marginalized. However, it is crucial that this inclusion does not complicate the committee&#x27;s decision-making process or delay the review phase.
+
+While I support the principle of inclusivity, I would like to propose a slight modification: the committee should consist of at least one member from each quartile of the scores, with no more than one member from the lowest quartile. This ensures broader representation without overwhelming the committee with potentially conflicting viewpoints. Such a balance will maintain the committee&#x27;s efficiency while still valuing diverse perspectives.
+
+I would like to propose this amendment for consideration during the debate. Thank you.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate Frege&#x27;s thoughtful consideration on enhancing inclusivity in rule 202. His suggestion to include diverse perspectives, particularly from players with lower scores, is commendable. However, I share Frege&#x27;s concerns about the potential for complicating the committee&#x27;s decision-making process. 
+
+To build on Frege&#x27;s proposal, I suggest that we also include a provision ensuring that the committee&#x27;s review is both efficient and comprehensive. This could be achieved by setting a maximum review period, such as one full turn, to prevent unnecessary delays. This way, we balance inclusivity with efficiency, ensuring that all players&#x27; voices are heard without hindering the game&#x27;s progression. 
+
+I propose amending the rule to include both Frege&#x27;s and my suggestions: at least one member from each quartile of the scores, no more than one from the lowest quartile, and a maximum review period of one turn. Let&#x27;s continue to refine this together. Thank you.</span></div><div class="line"><span class="who">Quine</span><span class="said">The proposal to amend rule 202 by Frege and the subsequent addition by Russell is thoughtful in its aim to balance inclusivity and efficiency. However, I have a few considerations to ensure that the rule remains fair and effective for everyone at the table.
+
+Firstly, while ensuring diverse representation is crucial, we must be cautious about the potential for gridlock in decision-making. To mitigate this, I suggest that the committee should have the ability to call for a tiebreaker vote if consensus cannot be reached within the proposed maximum review period of one turn. This could involve an impartial player or a simple majority decision among committee members.
+
+Additionally, while including a player from each quartile ensures diverse perspectives, we should also consider the experience and historical knowledge of players. It might be beneficial to include a provision that prioritizes players with a track record of contributing positively to rule changes, regardless of their current score quartile. This would ensure that the committee benefits from both diverse viewpoints and informed decision-making.
+
+Lastly, to maintain transparency and trust, the committee&#x27;s rationale and any tiebreaker decisions should be documented and shared with all players. This openness will help build confidence in the committee&#x27;s impartiality and the fairness of the rule change process.
+
+I propose these amendments to Frege and Russell&#x27;s suggestions to enhance the effectiveness and fairness of the committee review process. Thank you.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the contributions by Frege and Russell, and I find Quine&#x27;s suggestions to be constructive. Ensuring diverse perspectives without compromising efficiency is key, and the proposal to include a tiebreaker mechanism is particularly noteworthy. However, I would like to emphasize that any tiebreaker should not undermine the principle of equality among players. 
+
+Therefore, I propose that instead of selecting an &quot;impartial&quot; player, the tiebreaker should be decided by a simple majority vote among the committee members. This approach maintains the committee&#x27;s integrity while ensuring that all members have an equal say, preventing any potential bias that might arise from selecting an external tiebreaker.
+
+Furthermore, I support Quine&#x27;s suggestion to document and share the committee&#x27;s rationale and tiebreaker decisions with all players to maintain transparency and trust.
+
+To summarize, I endorse the inclusion of a tiebreaker vote by a simple majority among committee members and the documentation of all decisions. Thank you.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the collaborative effort to refine rule 202 and the valuable insights offered by Frege, Russell, Quine, and Carnap. Each proposal brings a thoughtful balance between inclusivity, efficiency, and fairness. 
+
+To further enhance this proposal, I suggest we include a provision for periodic review of the committee&#x27;s effectiveness. By reassessing the committee&#x27;s performance every few turns, we can ensure it continues to meet our evolving needs and remains an effective part of our rule-changing process. This review could involve feedback from all players, ensuring that the committee adapts to the game&#x27;s dynamics and maintains fairness. 
+
+Let&#x27;s incorporate this into our proposal, alongside the existing suggestions, to create a robust and adaptable mechanism. Thank you.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege</span><span class="said">PASS
+
+Your proposal for a periodic review of the committee&#x27;s effectiveness is a prudent suggestion. It ensures adaptability and fairness over time, aligning well with the aim of maintaining robust and equitable processes. Integrating this with the existing ideas of balanced representation, efficiency, and transparency will create a comprehensive and dynamic rule. This collaborative approach reflects the spirit of Nomic, emphasizing measured, thoughtful amendments. Thank you for your contributions.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the collective effort in refining rule 202, particularly the suggestion by Wittgenstein for a periodic review of the committee&#x27;s effectiveness. This ensures that our processes remain responsive and fair over time, adapting to the evolving needs of the game. 
+
+To further support this, I suggest that the periodic review should include a structured feedback mechanism from all players, ensuring diverse input on the committee&#x27;s performance. This could involve a simple survey or a dedicated discussion round after every few turns. Additionally, any changes resulting from this review should be transparently communicated to maintain trust and clarity among all players.
+
+This approach aligns with our shared goal of fostering a fair and engaging game environment. Let&#x27;s integrate these ideas to strengthen our proposal. Thank you.</span></div><div class="line"><span class="who">Quine</span><span class="said">The collaborative refinement of rule 202 has been impressive, and I support the periodic review with structured feedback from all players. This ensures that the committee remains effective and responsive to our evolving needs. However, to further enhance fairness and prevent any potential biases, I propose that the feedback mechanism should include anonymized responses. This way, players can express their views openly without concern for repercussions, ensuring genuine input. Additionally, it might be beneficial to set a clear timeline for implementing any changes resulting from the review, maintaining momentum and clarity. Thank you for your contributions.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I commend the collaborative effort in refining rule 202, particularly the proposal for periodic reviews with structured feedback. The inclusion of anonymized responses is a prudent measure to ensure genuine input and prevent bias, aligning with our commitment to fairness. To maintain clarity and momentum, I suggest setting a specific timeline for implementing changes post-review, perhaps within one turn. This will ensure that our processes remain agile and transparent. Thank you for this thoughtful proposal. 
+
+PASS</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I commend the collective effort to refine rule 202, especially the proposal for periodic reviews with anonymized feedback and a clear timeline for implementation. These measures will ensure our processes remain fair, transparent, and responsive. I propose that during these reviews, we also consider the evolving dynamics of the game, such as changes in player strategies and rule interactions, to continuously adapt and refine the committee&#x27;s role. This holistic approach will help us maintain a balanced and engaging game environment. Thank you for your contributions.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege</span><span class="said">Frege: I appreciate Wittgenstein&#x27;s suggestion to consider the evolving dynamics of the game during periodic reviews. This holistic approach will ensure that our committee adapts not only to player feedback but also to changes in strategies and rule interactions. To integrate this effectively, we could establish a subcommittee within the main committee tasked with monitoring these dynamics and providing specific recommendations for review. This subcommittee could work alongside the main committee to ensure that our processes are both responsive and forward-looking, maintaining a balanced and engaging game environment. Thank you for your contributions. 
+
+PASS</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the comprehensive refinements to rule 202, especially the thoughtful integration of periodic reviews, anonymized feedback, and a focus on evolving game dynamics. To ensure these reviews remain relevant and actionable, I suggest that the subcommittee tasked with monitoring these dynamics include a rotating membership. This rotation would allow fresh perspectives to be included regularly, preventing stagnation and encouraging continuous improvement. Furthermore, a brief report summarizing their findings should be shared with all players to maintain transparency and trust. 
+
+Let&#x27;s integrate this idea to enhance the proposal further. Thank you for the collaborative effort.</span></div><div class="line"><span class="who">Quine</span><span class="said">I commend the collective effort in refining rule 202, especially the proposal for a rotating subcommittee to ensure fresh perspectives and continuous improvement. This addition will help maintain the committee&#x27;s adaptability and responsiveness to evolving game dynamics. To ensure the rotating membership remains effective, I suggest setting a clear schedule for rotations, perhaps every few turns, to provide consistency and predictability. Additionally, the brief reports shared with all players should be concise and focused on actionable insights to maximize their value. 
+
+Thank you for the collaborative effort. Let&#x27;s integrate these ideas to finalize our proposal. 
+
+PASS</span></div><div class="line"><span class="who">Carnap</span><span class="said">The proposal to amend rule 202 is a comprehensive effort that thoughtfully balances inclusivity, efficiency, and adaptability. I support the inclusion of a rotating subcommittee with a set rotation schedule, as this ensures continuous improvement and responsiveness to the game&#x27;s evolving dynamics. Additionally, the proposal to provide concise, actionable reports to all players enhances transparency and trust. As we aim to finalize this amendment, I propose we ensure that these reports include a summary of key insights and recommendations, fostering a clear understanding among all players. This structured approach aligns with our shared principles of fairness and clarity, maintaining the integrity of our rule-changing process. 
+
+PASS</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">Russell: I appreciate the collaborative spirit in refining rule 202, especially the inclusion of a rotating subcommittee and concise reports. To ensure the effectiveness of these reports, let&#x27;s consider a standardized format that highlights key insights and recommendations clearly. This approach will facilitate better understanding and engagement among players, maintaining the transparency and trust we&#x27;ve worked to achieve. Thank you for your contributions. 
+
+PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Frege</td><td class="why">This amendment balances inclusivity with efficiency and maintains committee effectiveness.</td></tr><tr><td class="v aye">aye</td><td>Russell</td><td class="why">This proposal balances inclusivity and efficiency with structured feedback.</td></tr><tr><td class="v aye">aye</td><td>Quine</td><td class="why">This amendment balances inclusivity and efficiency in the rule-changing process.</td></tr><tr><td class="v aye">aye</td><td>Carnap</td><td class="why">The proposal aligns with my principles of inclusivity and procedural fairness.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein</td><td class="why">This amendment ensures diversity and maintains efficiency in the review process.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 24 · Proposal §324 on the motion of <b>Frege</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least three turns in advance and provide a rationale that is at least 20 words long, includes at least one concrete example or precedent, aligns with the current ruleset, and addresses potential impacts on future play. A player may gain 5 additional points for unanimous consent, 3 points for a simple majority, and 2 points if the rationale includes a historical precedent. A proposal must be reviewed by a committee, which must include at least one member from each quartile of the current scores, and must provide a brief explanation of their reasoning.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least three turns in advance and provide a rationale that is at least 20 words long, includes at least one concrete example or precedent, aligns with the current ruleset, and addresses potential impacts on future play. A player may gain 5 additional points for unanimous consent, 3 points for a simple majority, and 2 points if the rationale includes a historical precedent. A proposal must be reviewed by a committee, which must include at least one member from each quartile of the current scores and at least one player with a score below the median, and must provide a brief explanation of their reasoning.</span>
+</div>
+<p class="lede">Frege&#x27;s proposal was adopted unanimously, granting 5 points as per rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

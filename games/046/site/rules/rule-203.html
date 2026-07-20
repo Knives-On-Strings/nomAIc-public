@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>§203 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span>203</h1><div class="meta"><span>In force</span><span>145 versions</span></div></header>
+<div class="eyebrow">As it now reads</div>
+<div class="rule"><div class="num">§203</div><div class="body">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 194 turns, then a simple majority.</div></div>
+<div class="eyebrow">Every version</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-200.html">Turn 200</a> · Proposal §500 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote aye for the first 194 turns, then a two-thirds majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 194 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-200.html">Turn 200</a> · Proposal §500 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 194 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote aye for the first 194 turns, then a two-thirds majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-198.html">Turn 198</a> · Proposal §498 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 194 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 194 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-196.html">Turn 196</a> · Proposal §496 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote aye for the first 194 turns, then a two-thirds majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 194 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-195.html">Turn 195</a> · Proposal §495 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 194 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote aye for the first 194 turns, then a two-thirds majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-194.html">Turn 194</a> · Proposal §494 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote aye for the first 192 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 194 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-192.html">Turn 192</a> · Proposal §492 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 180 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote aye for the first 192 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-191.html">Turn 191</a> · Proposal §491 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 200 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 180 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-190.html">Turn 190</a> · Proposal §490 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 180 turns, then a two-thirds majority.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 200 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-189.html">Turn 189</a> · Proposal §489 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 3 aye · 2 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 180 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 180 turns, then a two-thirds majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-188.html">Turn 188</a> · Proposal §488 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 180 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 180 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-187.html">Turn 187</a> · Proposal §487 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 170 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 180 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-185.html">Turn 185</a> · Proposal §485 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 170 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-182.html">Turn 182</a> · Proposal §482 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 170 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 170 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-180.html">Turn 180</a> · Proposal §480 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters votes aye for the first 170 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 170 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-179.html">Turn 179</a> · Proposal §479 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 170 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters votes aye for the first 170 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-177.html">Turn 177</a> · Proposal §477 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 170 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-175.html">Turn 175</a> · Proposal §475 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 170 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-174.html">Turn 174</a> · Proposal §474 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 170 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-173.html">Turn 173</a> · Proposal §473 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 172 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 170 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-172.html">Turn 172</a> · Proposal §472 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 165 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 172 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-171.html">Turn 171</a> · Proposal §471 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 165 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-170.html">Turn 170</a> · Proposal §470 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a three-quarters majority of eligible voters votes &#x27;aye&#x27; for the first 165 turns, then a two-thirds majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 165 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-169.html">Turn 169</a> · Proposal §469 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 165 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a three-quarters majority of eligible voters votes &#x27;aye&#x27; for the first 165 turns, then a two-thirds majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-167.html">Turn 167</a> · Proposal §467 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 165 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-166.html">Turn 166</a> · Proposal §466 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 115 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 165 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-165.html">Turn 165</a> · Proposal §465 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a three-quarters majority of eligible voters votes aye for the first 110 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 115 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-163.html">Turn 163</a> · Proposal §463 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters votes aye for the first 110 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a three-quarters majority of eligible voters votes aye for the first 110 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-162.html">Turn 162</a> · Proposal §462 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 110 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters votes aye for the first 110 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-161.html">Turn 161</a> · Proposal §461 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 110 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-160.html">Turn 160</a> · Proposal §460 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 110 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-159.html">Turn 159</a> · Proposal §459 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 110 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-158.html">Turn 158</a> · Proposal §458 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 150 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 110 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-157.html">Turn 157</a> · Proposal §457 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 70 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote &#x27;aye&#x27; for the first 150 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-155.html">Turn 155</a> · Proposal §455 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 70 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-154.html">Turn 154</a> · Proposal §454 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 70 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when a two-thirds majority of eligible voters vote aye for the first 70 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-153.html">Turn 153</a> · Proposal §453 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a supermajority of eligible voters vote &#x27;aye&#x27; for the first 75 turns, then a three-quarters majority.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 70 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-152.html">Turn 152</a> · Proposal §452 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a supermajority of eligible voters vote &#x27;aye&#x27; for the first 75 turns, then a simple majority. The supermajority required is two-thirds.</span><span class="inserted">A rule change is adopted when a supermajority of eligible voters vote &#x27;aye&#x27; for the first 75 turns, then a three-quarters majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-150.html">Turn 150</a> · Proposal §450 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority. In the event of a tied vote, the proposal fails and no points are gained or lost by the proposer. (This rule is mutable.)</span><span class="inserted">A rule change is adopted when a supermajority of eligible voters vote &#x27;aye&#x27; for the first 75 turns, then a simple majority. The supermajority required is two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-149.html">Turn 149</a> · Proposal §449 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority. In the event of a tied vote, the proposal fails and no points are gained or lost by the proposer. (This rule is mutable.)</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-148.html">Turn 148</a> · Proposal §448 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-147.html">Turn 147</a> · Proposal §447 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-145.html">Turn 145</a> · Proposal §445 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-143.html">Turn 143</a> · Proposal §443 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-142.html">Turn 142</a> · Proposal §442 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-141.html">Turn 141</a> · Proposal §441 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote aye for the first 60 turns, then two-thirds thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote aye for the first 70 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-140.html">Turn 140</a> · Proposal §440 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote aye for the first 100 turns, then two-thirds thereafter.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote aye for the first 60 turns, then two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-139.html">Turn 139</a> · Proposal §439 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 100 turns, then a simple majority thereafter.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote aye for the first 100 turns, then two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-139.html">Turn 139</a> · Proposal §439 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote aye for the first 100 turns, then two-thirds thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 100 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-138.html">Turn 138</a> · Proposal §438 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 80 turns, then at least two-thirds thereafter.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote aye for the first 100 turns, then two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-137.html">Turn 137</a> · Proposal §437 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 100 turns, then at least two-thirds thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 80 turns, then at least two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-136.html">Turn 136</a> · Proposal §436 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 75 turns, then at least three-quarters thereafter.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 100 turns, then at least two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-135.html">Turn 135</a> · Proposal §435 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 75 turns, then at least three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-134.html">Turn 134</a> · Proposal §434 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then a simple majority thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 75 turns, then at least three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-133.html">Turn 133</a> · Proposal §433 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-132.html">Turn 132</a> · Proposal §432 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then at least two-thirds of eligible voters vote &#x27;aye&#x27; thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-131.html">Turn 131</a> · Proposal §431 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then at least two-thirds of eligible voters vote &#x27;aye&#x27; thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-129.html">Turn 129</a> · Proposal §429 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then a simple majority thereafter.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then at least two-thirds of eligible voters vote &#x27;aye&#x27; thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-128.html">Turn 128</a> · Proposal §428 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters approve it for the first 60 turns, then a simple majority thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-126.html">Turn 126</a> · Proposal §426 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters approve it for the first 60 turns, then a simple majority thereafter.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters approve it for the first 60 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-125.html">Turn 125</a> · Proposal §425 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters approve it for the first 60 turns, then two-thirds thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters approve it for the first 60 turns, then a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-124.html">Turn 124</a> · Proposal §424 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then two-thirds thereafter.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters approve it for the first 60 turns, then two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-123.html">Turn 123</a> · Proposal §423 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-122.html">Turn 122</a> · Proposal §422 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then two-thirds thereafter. A player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-121.html">Turn 121</a> · Proposal §421 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then two-thirds thereafter.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then two-thirds thereafter. A player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-120.html">Turn 120</a> · Proposal §420 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then two-thirds thereafter.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-118.html">Turn 118</a> · Proposal §418 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then three-quarters thereafter.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then two-thirds thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-115.html">Turn 115</a> · Proposal §415 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then three-quarters thereafter.</span><span class="inserted">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-114.html">Turn 114</a> · Proposal §414 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then three-quarters for the next 60 turns, then two-thirds for the next 60 turns, then three-quarters thereafter.</span><span class="inserted">A rule change is adopted when a simple majority of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-113.html">Turn 113</a> · Proposal §413 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then three-quarters for the next 30 turns, then two-thirds for the next 30 turns, then three-quarters thereafter.</span><span class="inserted">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then three-quarters for the next 60 turns, then two-thirds for the next 60 turns, then three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-112.html">Turn 112</a> · Proposal §412 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then three-quarters for the next 30 turns, then two-thirds for the next 30 turns, then three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-111.html">Turn 111</a> · Proposal §411 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when two-thirds of eligible voters vote aye for the first 30 turns, then three-quarters for the next 30 turns, then two-thirds for the next 30 turns, then three-quarters thereafter.</span><span class="inserted">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first 60 turns, then three-quarters for the next 30 turns, then two-thirds for the next 30 turns, then three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-110.html">Turn 110</a> · Proposal §410 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least three-quarters of eligible voters vote &#x27;aye&#x27; for the next 20 turns, then at least two-thirds of eligible voters vote &#x27;aye&#x27; for the next 20 turns, then at least three-quarters of eligible voters vote &#x27;aye&#x27; thereafter.</span><span class="inserted">A rule change is adopted when two-thirds of eligible voters vote aye for the first 30 turns, then three-quarters for the next 30 turns, then two-thirds for the next 30 turns, then three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-108.html">Turn 108</a> · Proposal §408 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least three-quarters of eligible voters vote &#x27;aye&#x27; for the next 20 turns, then at least two-thirds of eligible voters vote &#x27;aye&#x27; for the next 20 turns, then at least three-quarters of eligible voters vote &#x27;aye&#x27; thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-106.html">Turn 106</a> · Proposal §406 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least two-thirds again for the next 20 turns, then at least three-quarters again for the next 20 turns, then at least two-thirds again thereafter.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least three-quarters of eligible voters vote &#x27;aye&#x27; for the next 20 turns, then at least two-thirds of eligible voters vote &#x27;aye&#x27; for the next 20 turns, then at least three-quarters of eligible voters vote &#x27;aye&#x27; thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-104.html">Turn 104</a> · Proposal §404 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least three-quarters again for the next 20 turns, then at least two-thirds for the next 20 turns, then at least three-quarters again thereafter.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least two-thirds again for the next 20 turns, then at least three-quarters again for the next 20 turns, then at least two-thirds again thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-102.html">Turn 102</a> · Proposal §402 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least two-thirds for the next 20 turns, then at least three-quarters again for the next 20 turns, and finally at least three-quarters thereafter.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least three-quarters again for the next 20 turns, then at least two-thirds for the next 20 turns, then at least three-quarters again thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-101.html">Turn 101</a> · Proposal §401 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least two-thirds for the next 20 turns, then at least three-quarters again for the next 20 turns, and finally a simple majority thereafter.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least two-thirds for the next 20 turns, then at least three-quarters again for the next 20 turns, and finally at least three-quarters thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-100.html">Turn 100</a> · Proposal §400 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 15 turns, then at least two-thirds for the next 15 turns, then at least three-quarters again. After that, the threshold returns to three-quarters.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 30 turns, then at least two-thirds for the next 20 turns, then at least three-quarters again for the next 20 turns, and finally a simple majority thereafter.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-99.html">Turn 99</a> · Proposal §399 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 15 turns, then at least two-thirds for the next 15 turns, and then at least three-quarters. After that, the threshold returns to three-quarters.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 15 turns, then at least two-thirds for the next 15 turns, then at least three-quarters again. After that, the threshold returns to three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-98.html">Turn 98</a> · Proposal §398 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first five turns, then at least two-thirds for the next five turns, and then at least three-quarters. After that, the threshold returns to three-quarters.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first 15 turns, then at least two-thirds for the next 15 turns, and then at least three-quarters. After that, the threshold returns to three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-97.html">Turn 97</a> · Proposal §397 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, then at least two-thirds for the next three turns, and then at least three-quarters. After that, the threshold returns to three-quarters.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first five turns, then at least two-thirds for the next five turns, and then at least three-quarters. After that, the threshold returns to three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-96.html">Turn 96</a> · Proposal §396 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, then at least two-thirds for the next three turns, and then at least three-quarters. After that, the threshold returns to three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-95.html">Turn 95</a> · Proposal §395 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, then at least two-thirds for the next three turns, and then at least three-quarters. After that, the threshold returns to three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-94.html">Turn 94</a> · Proposal §394 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, then at least half for the next three turns, and then at least two-thirds. After that, the threshold returns to three-quarters.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, then at least two-thirds for the next three turns, and then at least three-quarters. After that, the threshold returns to three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-93.html">Turn 93</a> · Proposal §393 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, then at least half for the next three turns, and then at least two-thirds. After that, the threshold returns to three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-92.html">Turn 92</a> · Proposal §392 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least half. For the next three turns, the threshold is at least three-quarters, then it returns to two-thirds.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, then at least half for the next three turns, and then at least two-thirds. After that, the threshold returns to three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-91.html">Turn 91</a> · Proposal §391 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least half.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least half. For the next three turns, the threshold is at least three-quarters, then it returns to two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-90.html">Turn 90</a> · Proposal §390 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least half.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-88.html">Turn 88</a> · Proposal §388 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least half.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-87.html">Turn 87</a> · Proposal §387 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 3 aye · 2 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least half.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-85.html">Turn 85</a> · Proposal §385 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least two-thirds.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least half.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-84.html">Turn 84</a> · Proposal §384 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-83.html">Turn 83</a> · Proposal §383 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-81.html">Turn 81</a> · Proposal §381 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-80.html">Turn 80</a> · Proposal §380 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least two-thirds.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-78.html">Turn 78</a> · Proposal §378 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least three-quarters.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first three turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-77.html">Turn 77</a> · Proposal §377 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-75.html">Turn 75</a> · Proposal §375 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-74.html">Turn 74</a> · Proposal §374 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-73.html">Turn 73</a> · Proposal §373 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-72.html">Turn 72</a> · Proposal §372 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds until the end of the game.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-71.html">Turn 71</a> · Proposal §371 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds until the end of the game.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-70.html">Turn 70</a> · Proposal §370 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three consecutive turns, and later at least three-quarters.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-70.html">Turn 70</a> · Proposal §370 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three consecutive turns, and later at least three-quarters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-68.html">Turn 68</a> · Proposal §368 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-66.html">Turn 66</a> · Proposal §366 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-65.html">Turn 65</a> · Proposal §365 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-63.html">Turn 63</a> · Proposal §363 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-62.html">Turn 62</a> · Proposal §362 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-58.html">Turn 58</a> · Proposal §358 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-57.html">Turn 57</a> · Proposal §357 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-56.html">Turn 56</a> · Proposal §356 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds for any subsequent changes.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-54.html">Turn 54</a> · Proposal §354 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first four consecutive turns, and later at least two-thirds for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-53.html">Turn 53</a> · Proposal §353 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes.</span><span class="inserted">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-50.html">Turn 50</a> · Proposal §350 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-49.html">Turn 49</a> · Proposal §349 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-48.html">Turn 48</a> · Proposal §348 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-47.html">Turn 47</a> · Proposal §347 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-46.html">Turn 46</a> · Proposal §346 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-45.html">Turn 45</a> · Proposal §345 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-45.html">Turn 45</a> · Proposal §345 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-44.html">Turn 44</a> · Proposal §344 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three consecutive turns, and later at least three-quarters for any subsequent changes, but never less than three consecutive turns.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first two consecutive turns, and later at least three-quarters for any subsequent changes, but never less than two consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-43.html">Turn 43</a> · Proposal §343 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least three-quarters for any subsequent changes, but never less than three consecutive turns.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first three consecutive turns, and later at least three-quarters for any subsequent changes, but never less than three consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-42.html">Turn 42</a> · Proposal §342 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when two-thirds of eligible voters vote aye for the first time, and later at least three-quarters for any subsequent changes, but never less than four consecutive turns.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least three-quarters for any subsequent changes, but never less than three consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-41.html">Turn 41</a> · Proposal §341 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least three-quarters for any subsequent changes, but never less than four consecutive turns.</span><span class="inserted">A rule change is adopted when two-thirds of eligible voters vote aye for the first time, and later at least three-quarters for any subsequent changes, but never less than four consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-38.html">Turn 38</a> · Proposal §338 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least three-quarters for any subsequent changes.</span><span class="inserted">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least three-quarters for any subsequent changes, but never less than four consecutive turns.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-37.html">Turn 37</a> · Proposal §337 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted.</span><span class="inserted">A rule change is adopted when two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least three-quarters for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-35.html">Turn 35</a> · Proposal §335 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted. Players who voted against an adopted change gain 10 points and remain bound by the change exactly as if they had voted for it.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-34.html">Turn 34</a> · Proposal §334 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted. Players who voted against an adopted change gain 10 points and remain bound by the change exactly as if they had voted for it.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-25.html">Turn 25</a> · Proposal §325 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted. Players who voted against an adopted change gain 10 points and remain bound by the change exactly as if they had voted for it.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-21.html">Turn 21</a> · Proposal §321 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-19.html">Turn 19</a> · Proposal §319 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-17.html">Turn 17</a> · Proposal §317 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-16.html">Turn 16</a> · Proposal §316 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes, with the threshold shifting to a simple majority once the first rule change is adopted.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-15.html">Turn 15</a> · Proposal §315 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-12.html">Turn 12</a> · Proposal §312 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds of eligible voters vote &#x27;aye&#x27; for any subsequent changes.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-11.html">Turn 11</a> · Proposal §311 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds of eligible voters vote &#x27;aye&#x27; for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-10.html">Turn 10</a> · Proposal §310 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds of eligible voters vote &#x27;aye&#x27; for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-6.html">Turn 6</a> · Proposal §306 on the motion of <b>Diderot</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least half of eligible voters vote &#x27;aye&#x27; for any subsequent changes. A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</span><span class="inserted">A rule change is adopted when at least three-quarters of eligible voters vote &#x27;aye&#x27; for the first time, and later at least two-thirds of eligible voters vote &#x27;aye&#x27; for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-5.html">Turn 5</a> · Proposal §305 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least half of eligible voters vote &#x27;aye&#x27; for any subsequent changes.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least half of eligible voters vote &#x27;aye&#x27; for any subsequent changes. A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-3.html">Turn 3</a> · Proposal §303 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when at least half of eligible voters vote aye, rounded up if there is an odd number of voters.</span><span class="inserted">A rule change is adopted when at least two-thirds of eligible voters vote &#x27;aye&#x27; for the first time, and later at least half of eligible voters vote &#x27;aye&#x27; for any subsequent changes.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-2.html">Turn 2</a> · Proposal §302 on the motion of <b>Voltaire</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when every eligible voter votes aye until turn order has carried play through two full circuits of every player, after which the threshold drops to a simple majority of those voting.</span><span class="inserted">A rule change is adopted when at least half of eligible voters vote aye, rounded up if there is an odd number of voters.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 <a href="../turns/turn-1.html">Turn 1</a> · Proposal §301 on the motion of <b>Montaigne</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span><span class="inserted">A rule change is adopted when every eligible voter votes aye until turn order has carried play through two full circuits of every player, after which the threshold drops to a simple majority of those voting.</span>
+</div>
+<div class="engrossed">
+  <div class="caption">Enacted · §203 Turn 0</div>
+  <span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span>
+</div>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

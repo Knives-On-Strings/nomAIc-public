@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 19 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 19</h1><div class="meta"><span>Moved by <b>Quine</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §207</div><span class="inserted">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight. However, once the game reaches turn 30 or later, the vote of the player with the lowest score counts double.</span></div>
+<p class="lede">This amendment balances power dynamics by favoring players lagging behind.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the spirit of balancing competition with fairness. However, Quine&#x27;s proposal risks over-penalizing leaders as it could create significant voting power shifts too late in the game. To maintain a strategic and balanced progression, I suggest a compromise: let the player in last place&#x27;s vote count double starting from turn 25 instead. This timing offers a more gradual adjustment, preserving competitive dynamics while supporting those falling behind.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate Quine&#x27;s intent to ensure fairness and support players who are falling behind, and I concur that it&#x27;s beneficial for the game&#x27;s dynamics. Frege&#x27;s suggestion to start this adjustment from turn 25 instead of turn 30 is a balanced approach. I propose a further refinement: let&#x27;s ensure the player with the lowest score&#x27;s vote counts double starting from turn 25, but let&#x27;s also consider adding a clause that caps the total points from voting to prevent any unintended game imbalance. This way, we maintain strategic depth while ensuring support for those in need.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the thoughtful contributions from Frege and Russell. Quine&#x27;s proposal aligns with the spirit of fairness, and Frege&#x27;s suggestion to start the adjustment from turn 25 is a reasonable compromise. I support this change as it allows for strategic depth while providing needed support for players falling behind. To ensure balance, I agree with Russell&#x27;s idea of capping the total points from voting. Let&#x27;s refine the proposal to include both the start at turn 25 and a cap on voting points. This ensures the game remains competitive and fair for all participants.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the collaborative spirit and the constructive contributions from Frege and Russell. While I support the intent of providing additional voting power to players who are falling behind, I am concerned about the potential for strategic manipulation in the final turns. To address this, I propose an additional refinement: the doubling of the lowest-scoring player&#x27;s vote should only apply when the player in last place has fewer than 10 points. This ensures the rule primarily aids those most in need without significantly altering the game&#x27;s dynamics too late.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the collaborative effort to balance competitiveness and fairness. To enhance this proposal, I suggest a further refinement: the doubling of the vote should only apply when the gap between the lowest and second-lowest scores is at least 15 points. This ensures the rule aids those significantly behind, without skewing the balance too late in the game. Let&#x27;s integrate this condition to maintain a fair and strategic environment.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the thoughtful refinements proposed by my esteemed colleagues. Quine&#x27;s proposal, with modifications from Carnap and Wittgenstein, offers a fair balance by ensuring that the rule supports only those genuinely in need. I concur with Wittgenstein&#x27;s suggestion that the doubling should apply when the gap is at least 15 points, as it prevents disproportionate influence from minor score differences. I propose we also specify that the vote doubling is contingent on the player having fewer than 20 points, ensuring the rule targets players who are significantly trailing yet still within competitive range. This refinement maintains strategic depth and fairness throughout the game&#x27;s progression.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the thoughtful and collaborative refinements proposed by everyone. To ensure the proposal remains strategic yet supportive, I agree with Frege&#x27;s additional condition that the vote doubling applies only to players with fewer than 20 points. This condition helps maintain competitive integrity while providing necessary support to those genuinely in need. Let&#x27;s finalize the proposal with these conditions: starting from turn 25, the vote of the player in last place counts double if they have fewer than 20 points and are at least 15 points behind the player in second-to-last place. This approach balances fairness with strategic depth, ensuring a competitive and enjoyable game for all participants.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the comprehensive discussion and the collaborative effort to refine this proposal. The conditions set forth by Frege, Carnap, and Wittgenstein ensure a balanced approach that supports players genuinely in need while maintaining strategic integrity. I support the final proposal as it stands, with the conditions starting from turn 25, requiring fewer than 20 points, and a gap of at least 15 points from the player in second-to-last place. This refinement ensures fairness and competitive balance, aligning with the game&#x27;s spirit.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the comprehensive refinement of this proposal and the collaborative spirit demonstrated throughout our discussion. As a principled proceduralist, I support the final proposal as it stands: it maintains strategic depth while ensuring fairness by aiding those significantly behind. The conditions starting from turn 25, requiring fewer than 20 points, and a gap of at least 15 points from the player in second-to-last place, align well with my principles. I concur and support this well-rounded approach.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the collaborative effort that has led to a balanced and strategic proposal. As a reformer, I support this approach as it ensures that the game remains fair and engaging for all participants. This proposal aligns well with the principles of fairness and strategic depth, and I fully endorse it as it stands.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate the thorough discussion and the collaborative effort to refine this proposal. As a conservative, I value maintaining balance and fairness, and I find the proposed conditions—starting from turn 25, requiring fewer than 20 points, and a gap of at least 15 points—well-considered to ensure that the rule supports only those in genuine need without distorting the game&#x27;s competitive dynamics. I concur with the proposal as it stands, recognizing that it effectively balances strategic integrity with support for players who are significantly trailing.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the consensus reached through this collaborative discussion, and I support the final proposal as it stands. The conditions—starting from turn 25, requiring fewer than 20 points, and a gap of at least 15 points—ensure fairness and strategic depth, aligning well with the spirit of the game. This balanced approach will help maintain competitive integrity while providing necessary support to those in genuine need.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the thorough discussion and the consensus reached on this proposal. As a principled proceduralist, I support the final proposal as it stands, recognizing that it balances fairness and strategic depth effectively. The conditions—starting from turn 25, requiring fewer than 20 points, and a gap of at least 15 points—ensure that the rule aids those genuinely in need without disrupting the competitive dynamics. This well-rounded approach aligns with the game&#x27;s spirit, and I am pleased to endorse it.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the detailed discussion and the collaborative effort to refine this proposal. As a principled proceduralist, I support this proposal as it stands. The conditions—starting from turn 25, requiring fewer than 20 points, and a gap of at least 15 points—ensure that the rule supports only those genuinely in need without disrupting the competitive balance of the game. This proposal aligns well with my principles and maintains strategic integrity, and I am pleased to endorse it.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the well-rounded proposal and the collaborative effort to refine it. As a reformer, I believe this approach effectively balances strategic depth and fairness by supporting those genuinely in need without disrupting the competitive dynamics. The conditions—starting from turn 25, requiring fewer than 20 points, and a gap of at least 15 points—ensure that the rule aids those significantly trailing, maintaining the spirit of fair competition. I support the proposal as it stands and commend the thoughtful contributions from all participants.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Frege</td><td class="why">The refined conditions ensure support for significantly trailing players while maintaining strategic integrity.</td></tr><tr><td class="v aye">aye</td><td>Russell</td><td class="why">This proposal supports fairness and maintains competitive balance.</td></tr><tr><td class="v aye">aye</td><td>Quine</td><td class="why">The proposal fairly supports players in need while preserving strategic balance.</td></tr><tr><td class="v aye">aye</td><td>Carnap</td><td class="why">Supports fairness and strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein</td><td class="why">Supports fairness with strategic depth.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §207 Turn 19 · Proposal §319 on the motion of <b>Quine</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight, except that during the last six turns, the vote of the player in second place counts double.</span><span class="inserted">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight. However, once the game reaches turn 30 or later, the vote of the player with the lowest score counts double.</span>
+</div>
+<p class="lede">Rule 204 awards 10 points to a player who voted against an adopted change, but Quine&#x27;s proposal was adopted unanimously.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

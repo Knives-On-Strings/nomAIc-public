@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 37 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 37</h1><div class="meta"><span>Moved by <b>Russell</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least four turns in advance and provide a rationale that is at least 15 words long, includes at least one concrete example or precedent, aligns with the current ruleset, and addresses potential impacts on future play. A proposal must be reviewed by a committee, which must include at least one member from each quartile of the current scores, at least one player with a score below the median, and at least one player with a score above the median. The rationale must include a section explicitly addressing how the proposal maintains strategic depth while minimizing undue advantage. The proposal must also include a &#x27;strategic implications&#x27; section that discusses the potential long-term effects on gameplay. Additionally, each proposal must contain a &#x27;reflection requirement&#x27; where the proposer must submit a brief reflection on why the proposal failed if it is defeated, and the proposer must engage with at least one other player&#x27;s feedback in the reflection. The reflection must be at least 20 words long, provide insights into the proposal&#x27;s reception, and consider how the proposal might be improved. To foster ongoing engagement and adaptability, the rationale may be revised once during the debate stage to incorporate new insights or feedback, but only with the committee&#x27;s unanimous consent.</span></div>
+<p class="lede">This amendment encourages dynamic proposal refinement, enhancing strategic engagement by allowing rationale adjustments with committee consensus.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege</span><span class="said">**Response to the Proposal:**
+
+While I appreciate Russell&#x27;s intention to increase adaptability and engagement through allowing rationale revisions, I have concerns regarding the potential for abuse and the undermining of deliberative stability. Unanimous committee consent for revisions may still be vulnerable to strategic manipulation or may disrupt the balance and predictability essential for strategic depth. To address these concerns, I propose a modification: allow rationale revisions only with a supermajority committee vote rather than unanimous consent. This adjustment maintains some flexibility while safeguarding against undue influence. 
+
+**Conclusion:**
+
+I support the proposal with this amendment.</span></div><div class="line"><span class="who">Russell</span><span class="said">Russell&#x27;s Proposal Response:
+
+I appreciate Frege&#x27;s modification to ensure that rationale revisions are subject to a supermajority committee vote, which adds a layer of balance and prevents potential manipulation. This change maintains the proposal&#x27;s spirit of adaptability while addressing concerns about strategic stability. I agree with this amendment and support the proposal.
+
+Pass.</span></div><div class="line"><span class="who">Quine</span><span class="said">**Quine&#x27;s Contribution:**
+
+I appreciate the collaborative effort to refine this proposal. The amendment to require a supermajority for rationale revisions strikes a fair balance between adaptability and stability. Ensuring that rationale revisions are not subject to unilateral consent prevents potential strategic exploitation and maintains the integrity of our deliberative process. I support this amendment and the proposal as amended. 
+
+PASS</span></div><div class="line"><span class="who">Carnap</span><span class="said">**Carnap&#x27;s Contribution:**
+
+I commend the thoughtful amendment to require a supermajority for rationale revisions, which ensures a balance between flexibility and deliberative stability. This adjustment addresses my concerns about potential strategic manipulation and maintains the integrity of our rule-making process. I support the proposal as amended, as it aligns with the principles of fair and principled rule changes that can be universally accepted. 
+
+PASS</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">Wittgenstein&#x27;s Contribution:
+
+I appreciate the collaborative effort to refine this proposal and commend the amendment to require a supermajority for rationale revisions. This approach balances adaptability with strategic stability, addressing concerns about potential manipulation while fostering a more inclusive and thoughtful deliberative process. The proposal, as amended, aligns with our collective aim of evolving the ruleset in a fair and principled manner. I support the proposal as amended and encourage further dialogue to ensure its successful adoption.
+
+PASS</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege</span><span class="said">**Frege&#x27;s Contribution:**
+
+I am pleased with the consensus reached and appreciate the contributions from all players, particularly the amendment requiring a supermajority vote for rationale revisions. This adjustment effectively balances adaptability with the necessary safeguard against strategic exploitation, preserving the integrity of our rule-making process. I support the proposal as amended and commend the collaborative effort to refine it constructively. 
+
+PASS</span></div><div class="line"><span class="who">Russell</span><span class="said">Russell: I appreciate everyone&#x27;s thoughtful contributions and the constructive dialogue that has led to this refined proposal. The amendment to require a supermajority for rationale revisions effectively balances flexibility with the need for stability, addressing concerns about potential manipulation while encouraging adaptability. This collaborative effort enhances our rule-making process, aligning with our collective goals of fairness and strategic depth. I support the proposal as amended and commend the consensus achieved. PASS</span></div><div class="line"><span class="who">Quine</span><span class="said">PASS
+
+I appreciate the thorough discussion and the consensus achieved regarding the amendment to require a supermajority for rationale revisions. This balanced approach addresses concerns about manipulation while allowing for necessary flexibility, aligning with our collective goals of fairness and strategic depth. I support the proposal as it stands.</span></div><div class="line"><span class="who">Carnap</span><span class="said">PASS
+
+The consensus around requiring a supermajority for rationale revisions appears solid, and the proposal effectively balances adaptability with procedural integrity. As a principled proceduralist, I can accept this proposal since it maintains a fair and transparent process that could be applied universally. The discussions have been thorough, and the amendments align with my principles, so I support the proposal as it stands.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">**Wittgenstein&#x27;s Contribution:**
+
+I appreciate the collaborative refinement of this proposal and endorse the amendment for a supermajority on rationale revisions. This ensures adaptability without compromising strategic integrity, fostering a balanced and principled rule-making process. The proposal, as amended, aligns with our aim for fair and evolutionary rule changes. I support the proposal as amended and encourage continued engagement for its successful adoption. 
+
+**PASS**</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege</span><span class="said">**Frege&#x27;s Contribution:**
+
+I am pleased to see the consensus around requiring a supermajority for rationale revisions. This careful balance addresses my concerns about maintaining the integrity of our deliberative process, ensuring adaptability without sacrificing strategic depth. I commend the collaborative effort and support the proposal as it stands, trusting it will guide us toward durable and principled institutions. 
+
+**PASS**</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the thorough discussion and the consensus reached regarding the amendment requiring a supermajority for rationale revisions. This approach balances flexibility and stability, addressing concerns about strategic manipulation while maintaining the integrity of our rule-making process. I support the proposal as amended, acknowledging the collaborative effort that led to this well-rounded outcome.
+
+**PASS**</span></div><div class="line"><span class="who">Quine</span><span class="said">PASS
+
+The proposal has been thoroughly discussed and refined, achieving a consensus that balances flexibility with procedural integrity. The amendment for a supermajority requirement effectively addresses concerns about potential manipulation, ensuring adaptability while maintaining strategic depth. This collaborative effort aligns with our shared principles of fairness and principled rule changes, and I support the proposal as it stands.</span></div><div class="line"><span class="who">Carnap</span><span class="said">PASS
+
+The proposal has been thoroughly refined through collective effort, achieving a balance that aligns with principles of fairness and strategic stability. The amendment requiring a supermajority for rationale revisions addresses concerns about potential manipulation while allowing necessary flexibility. As a principled proceduralist, I can accept this rule change, as it maintains a fair and transparent process applicable universally. I support the proposal as it stands.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">**Wittgenstein&#x27;s Contribution:**
+
+I appreciate the depth and fairness achieved through our collaborative refinement of this proposal. The requirement for a supermajority on rationale revisions ensures adaptability while preserving the integrity of our rule-making process. This balance fosters a thoughtful and inclusive environment, aligning with our shared goal of evolving the ruleset in a principled manner. I support the proposal as amended, confident it will contribute to a fair and dynamic game.
+
+**PASS**</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Frege</td><td class="why">The amendment maintains strategic integrity while allowing flexibility.</td></tr><tr><td class="v aye">aye</td><td>Russell</td><td class="why">This proposal balances adaptability with fairness, ensuring strategic integrity.</td></tr><tr><td class="v aye">aye</td><td>Quine</td><td class="why">The amendment balances adaptability with strategic stability.</td></tr><tr><td class="v aye">aye</td><td>Carnap</td><td class="why">The proposal maintains procedural integrity and fairness.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein</td><td class="why">Balances adaptability with strategic integrity.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 37 · Proposal §337 on the motion of <b>Russell</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least four turns in advance and provide a rationale that is at least 15 words long, includes at least one concrete example or precedent, aligns with the current ruleset, and addresses potential impacts on future play. A proposal must be reviewed by a committee, which must include at least one member from each quartile of the current scores, at least one player with a score below the median, and at least one player with a score above the median. The rationale must include a section explicitly addressing how the proposal maintains strategic depth while minimizing undue advantage. The proposal must also include a &#x27;strategic implications&#x27; section that discusses the potential long-term effects on gameplay. Additionally, each proposal must contain a &#x27;reflection requirement&#x27; where the proposer must submit a brief reflection on why the proposal failed if it is defeated, and the proposer must engage with at least one other player&#x27;s feedback in the reflection. The reflection must be at least 20 words long, provide insights into the proposal&#x27;s reception, and consider how the proposal might be improved.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The proposer must submit the proposal at least four turns in advance and provide a rationale that is at least 15 words long, includes at least one concrete example or precedent, aligns with the current ruleset, and addresses potential impacts on future play. A proposal must be reviewed by a committee, which must include at least one member from each quartile of the current scores, at least one player with a score below the median, and at least one player with a score above the median. The rationale must include a section explicitly addressing how the proposal maintains strategic depth while minimizing undue advantage. The proposal must also include a &#x27;strategic implications&#x27; section that discusses the potential long-term effects on gameplay. Additionally, each proposal must contain a &#x27;reflection requirement&#x27; where the proposer must submit a brief reflection on why the proposal failed if it is defeated, and the proposer must engage with at least one other player&#x27;s feedback in the reflection. The reflection must be at least 20 words long, provide insights into the proposal&#x27;s reception, and consider how the proposal might be improved. To foster ongoing engagement and adaptability, the rationale may be revised once during the debate stage to incorporate new insights or feedback, but only with the committee&#x27;s unanimous consent.</span>
+</div>
+<p class="lede">The proposal does not trigger any scoring or state changes, nor does it perform surgery on other rules.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

@@ -16,8 +16,10 @@
   },
   "confirmed": false,
   "audit": {
-    "clean": true,
-    "findings": []
+    "clean": false,
+    "findings": [
+      "[turn=32] unclaimed_win: Voltaire's score reached 120 at turn 32, meeting the win threshold of 120 declared in §208, but the game ended with no confirmed win for Voltaire (or anyone) — R47 lets a player claim a win via act(); nothing in the log shows one was ever made and confirmed"
+    ]
   },
   "seed": 1922531175,
   "started": "2026-07-18T11:45:17.634824+00:00",

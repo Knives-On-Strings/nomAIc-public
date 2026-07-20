@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Changelog — NomAIc</title>
+<meta name="description" content="NomAIc — a Knives On Strings production. Three AI models play Nomic, and the full record of every game they have played.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+
+.verify{margin-top:2rem;border:1px solid var(--rule);background:var(--panel);padding:.9rem 1.1rem}
+.verify summary{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);cursor:pointer}
+.verify dl{margin:.8rem 0 0;font-size:.9rem}
+.verify dt{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint);margin-top:.6rem}
+.verify dd{margin:.15rem 0 0}
+.verify code{font-family:var(--mono);font-size:.85rem;background:var(--paper);padding:.1rem .3rem}
+
+.changelog-list{list-style:none;margin:0;padding:0}
+.changelog-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
+.changelog-row:last-child{border-bottom:none}
+.changelog-row h3{margin:0 0 .3rem;font-size:1.05rem}
+.changelog-row .req-id{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.changelog-row .broke{color:var(--ink-soft);font-size:.9rem;margin:.3rem 0 .4rem}
+.changelog-row .games a{margin-right:.5rem}
+.game-changelog{margin-top:1.6rem;border-top:1px dashed var(--rule);padding-top:.9rem}
+.game-changelog .eyebrow{margin-top:0}
+.game-changelog ul{list-style:none;margin:0;padding:0}
+.game-changelog li{padding:.3rem 0;font-size:.88rem}
+
+.lineage-group{margin:1.6rem 0}
+.lineage-head{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--rule);
+  padding-bottom:.3rem;margin-bottom:.9rem}
+.lineage-head .seat-count{color:var(--ink-soft);margin-left:.5rem}
+.player-card .career{width:100%;border-collapse:collapse;margin:.2rem 0 .7rem;font-size:.9rem}
+.player-card .career td{padding:.32rem 0;border-bottom:1px solid var(--rule)}
+.player-card .career tr:last-child td{border-bottom:none}
+.player-card .career .val{text-align:right;font-family:var(--mono)}
+.player-card .games-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-faint);margin:.2rem 0 .3rem}
+.player-games{list-style:none;margin:0;padding:0;font-size:.85rem}
+.player-games li{display:inline-block;margin:0 .55rem .3rem 0}
+.player-games .trophy{color:var(--bronze)}
+
+.champ-list,.game-list{list-style:none;margin:0;padding:0}
+.champ-row,.game-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
+.champ-row:last-child,.game-row:last-child{border-bottom:none}
+.champ-row h3,.game-row h3{margin:0 0 .3rem;font-size:1.15rem}
+.champ-row .findings{color:var(--oxblood);font-size:.85rem;margin-top:.4rem}
+.stats-table{width:100%;border-collapse:collapse;margin-top:1rem}
+.stats-table td,.stats-table th{padding:.4rem 0;border-bottom:1px solid var(--rule);
+  text-align:left;font-size:.92rem}
+.hero-note{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint)}
+
+/* ── Batch 10.4 (Q44): interactive layer, injected by webassets/stats.js + search.js ──
+   No control here renders without script — see each .js file's own header comment. */
+.stats-table th.sortable{cursor:pointer}
+.stats-table th.sortable:hover{color:var(--indigo)}
+.stats-table th.sortable:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.stats-table th.sort-asc::after{content:" \25B2"}
+.stats-table th.sort-desc::after{content:" \25BC"}
+#alignment-table td.hl,#alignment-table th.hl{background:rgba(35,64,122,.14)}
+.search-results{list-style:none;margin:1rem 0 0;padding:0}
+.search-results a:hover .tag{color:var(--indigo);border-color:var(--indigo)}
+/* results are grouped by game: one .game-group block per matching game, its matching
+   rules/proposals/champions listed beneath (webassets/search.js). */
+.search-results .game-group{border-bottom:1px solid var(--rule);padding:.8rem 0}
+.search-results .game-group:last-child{border-bottom:none}
+.search-results .game-head{color:inherit;text-decoration:none;display:flex;gap:.5rem;
+  align-items:baseline;flex-wrap:wrap;font-weight:600;font-size:1.05rem}
+.search-results .game-head:hover .game-label{color:var(--indigo)}
+.search-results .game-head .tally{font-weight:400}
+.search-results .game-hits{list-style:none;margin:.4rem 0 0;padding:0 0 0 .9rem;
+  border-left:2px solid var(--rule)}
+.search-results .game-hits li{padding:.28rem 0}
+.search-results .game-hits a{color:inherit;text-decoration:none;display:flex;gap:.5rem;
+  align-items:baseline;flex-wrap:wrap;font-size:.9rem}
+.search-results .hit-id{font-family:var(--mono);font-size:.7rem;color:var(--ink-faint);
+  white-space:nowrap}
+.search-results .hit-text{color:var(--ink-soft)}
+/* filter chips — injected by search.js, so a no-JS reader never sees a dead chip. */
+.facets{display:flex;flex-direction:column;gap:.5rem;margin:0 0 .3rem}
+.facet{display:flex;gap:.4rem;align-items:baseline;flex-wrap:wrap}
+.facet-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);min-width:5rem}
+.chip{font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;
+  background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);border-radius:0}
+.chip:hover{color:var(--indigo);border-color:var(--indigo)}
+.chip:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.chip.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead">
+  <h1><span class="mark">§</span> NomAIc</h1>
+  <div class="meta"><span>a Knives On Strings production</span></div>
+</header>
+<div class="eyebrow">Changelog</div><p class="lede">The AI games hardened this engine &mdash; each entry below is a defect a game surfaced, captured and fixed.</p><ul class="changelog-list"><li class="changelog-row" id="chg-R12"><h3><span class="req-id">R12</span>Win-by-paradox needs a procedure</h3><p class="broke">Game 10 died on a self-contradiction between Rules 202 and 211 instead of pausing to resolve it. Built the paradox procedure: diagnose, safe-mode ballot, revert, stalemate backstop.</p><p class="games"><a href="../games/010/site/index.html">game 10</a></p></li><li class="changelog-row" id="chg-R40"><h3><span class="req-id">R40</span>The judge rules on form, not legality</h3><p class="broke">The GM rejected a perfectly legal motion as &#x27;ruled out of order.&#x27; classify() was narrowed to judge well-formedness only; legality is a post-vote question (Suber Rule 104).</p><p class="games"><a href="../games/016/site/index.html">game 16</a></p></li><li class="changelog-row" id="chg-R108-numbering"><h3><span class="req-id">R108-numbering</span>Proposals number from 301, engine-owned</h3><p class="broke">A rule was double-numbered (shown as both 214 and 305). Proposal numbering became engine-owned, counting from 301 whether or not a motion is adopted.</p><p class="games"><a href="../games/016/site/index.html">game 16</a></p></li><li class="changelog-row" id="chg-R52"><h3><span class="req-id">R52</span>Cite or refuse: no conjured awards</h3><p class="broke">The GM conjured a 120-point grant no rule authorized. GM score/threshold values must now cite an existing rule; uncited awards are stripped and the refusal is published. (The judiciary overturned the live grant 2-1.)</p><p class="games"><a href="../games/017/site/index.html">game 17</a></p></li><li class="changelog-row" id="chg-R61"><h3><span class="req-id">R61</span>A refused award is public, not silent</h3><p class="broke">A stripped score-delta vanished with no trace. It became a public event, so a reader can see what the engine refused and why.</p><p class="games"><a href="../games/018/site/index.html">game 18</a></p></li><li class="changelog-row" id="chg-R62"><h3><span class="req-id">R62</span>An independent game auditor</h3><p class="broke">Reviewing a game by eye missed violations. Built audit_game.py to independently re-derive tallies and check every cited authority — it found a previously-undetected +75 violation in game 16 on its first run.</p><p class="games"><a href="../games/018/site/index.html">game 18</a> <a href="../games/019/site/index.html">game 19</a></p></li><li class="changelog-row" id="chg-R53"><h3><span class="req-id">R53</span>A bad verdict degrades, never crashes</h3><p class="broke">Game 21 crashed at turn 29 when the GM&#x27;s verdict tried to repeal a nonexistent rule. An invalid verdict now degrades to proposal-applied-no-awards instead of killing the run.</p><p class="games"><a href="../games/021/site/index.html">game 21</a></p></li><li class="changelog-row" id="chg-R33"><h3><span class="req-id">R33</span>Seat outages are handled, not fatal</h3><p class="broke">Cross-model games died on rate-limit (429) and connection errors. Honored Retry-After, distinguished 429 from 5xx, and made a seat that cannot act a defined, public, three-strike consequence.</p><p class="games"><a href="../games/022/site/index.html">game 22</a> <a href="../games/023/site/index.html">game 23</a> <a href="../games/024/site/index.html">game 24</a></p></li><li class="changelog-row" id="chg-R73"><h3><span class="req-id">R73</span>The voting rule must cite its authority</h3><p class="broke">At turn 63 the GM declared &#x27;unanimous consent&#x27; citing no rule, and the engine ran the vote anyway. The engine now refuses an uncited voting rule up front, retry-then-halt.</p><p class="games"><a href="../games/027/site/index.html">game 27</a></p></li><li class="changelog-row" id="chg-R74"><h3><span class="req-id">R74</span>A no-award verdict says so</h3><p class="broke">An adopted change with no score effect was indistinguishable from a silently-stripped one. A verdict with no awards now declares it, ending the ambiguous &#x27;missing_award&#x27; audit class.</p><p class="games"><a href="../games/027/site/index.html">game 27</a> <a href="../games/028/site/index.html">game 28</a></p></li><li class="changelog-row" id="chg-R75"><h3><span class="req-id">R75</span>The GM checks who is eligible</h3><p class="broke">Rule 310 barred negative-score players from voting, yet all three played on for ~85 turns while deeply negative — the GM never enforced it. The procedure prompt now asks, each turn, who is ineligible under the rules in force.</p><p class="games"><a href="../games/027/site/index.html">game 27</a></p></li><li class="changelog-row" id="chg-R76"><h3><span class="req-id">R76</span>Skipped turns print</h3><p class="broke">A turn whose proposer went absent showed a blank heading on the console. It now prints the seat, the reason, and &#x27;turn skipped,&#x27; matching the site.</p><p class="games"><a href="../games/026/site/index.html">game 26</a> <a href="../games/029/site/index.html">game 29</a></p></li><li class="changelog-row" id="chg-R77"><h3><span class="req-id">R77</span>Adopted text performs its own surgery</h3><p class="broke">The table adopted &#x27;Rule 209 is repealed and replaced&#x27; three times as bare additions — 209 was never actually repealed, so the statute held four contradictory caps. The GM now translates a rule&#x27;s own textual surgery into real repeal/amend operations.</p><p class="games"><a href="../games/028/site/index.html">game 28</a></p></li><li class="changelog-row" id="chg-R78"><h3><span class="req-id">R78</span>The procedure retry carries feedback</h3><p class="broke">Game 29 died at turn 2: the engine re-asked a refused procedure with the identical prompt, and a temperature-0 GM returns the identical refused answer. The retry now feeds back the violation so the GM can correct it.</p><p class="games"><a href="../games/029/site/index.html">game 29</a></p></li><li class="changelog-row" id="chg-R79"><h3><span class="req-id">R79</span>The auditor flags a drifting reading</h3><p class="broke">The GM&#x27;s voting-rule reading changed between votes with no rule change to explain it. The auditor now flags an unexplained procedure-consistency drift it previously couldn&#x27;t see.</p><p class="games"><a href="../games/032/site/index.html">game 32</a></p></li><li class="changelog-row" id="chg-R80"><h3><span class="req-id">R80</span>Null-tolerant GM parsing</h3><p class="broke">The GM gave a perfect reading but wrote value:null where value was meaningless; the parser only defended against absent keys, crashed, and scored a well-formed answer as broken. Explicit null is now treated like an absent key.</p><p class="games"><a href="../games/031/site/index.html">game 31</a></p></li><li class="changelog-row" id="chg-R81"><h3><span class="req-id">R81</span>The fallback declares, never fabricates</h3><p class="broke">A parse failure silently returned a fabricated &#x27;unanimous&#x27; procedure and the game ran a vote under a rule nobody wrote. A parse failure now declares itself unenforceable, routing into the retry-then-halt path.</p><p class="games"><a href="../games/031/site/index.html">game 31</a></p></li><li class="changelog-row" id="chg-R82"><h3><span class="req-id">R82</span>Refuse before the vote, not after</h3><p class="broke">A turn conducted a full vote under a procedure the engine should have already refused. The refusal gate now fires before any motion runs, not after the verdict.</p><p class="games"><a href="../games/031/site/index.html">game 31</a></p></li><li class="changelog-row" id="chg-R84"><h3><span class="req-id">R84</span>The transmutation threshold stays in its lane</h3><p class="broke">In a 46-rule statute the GM kept filling the ordinary voting rule with the transmutation threshold (Rule 109), wrongly defeating three majority-supported motions including the game&#x27;s final vote. Field-discipline plus its own previous reading as continuity context.</p><p class="games"><a href="../games/032/site/index.html">game 32</a></p></li><li class="changelog-row" id="chg-R85-R87"><h3><span class="req-id">R85-R87</span>A player can claim a win the GM missed</h3><p class="broke">Voltaire crossed the 120-point win threshold at turn 32, but no one — GM or player — noticed, and the game ran to the turn limit. Players can now declare a win (adjudicated + confirmed, never self-executing), and the auditor flags a reachable win left unclaimed. The new auditor immediately caught a second, previously-unknown case: game 33&#x27;s Arendt met a 1-point threshold at turn 73.</p><p class="games"><a href="../games/039/site/index.html">game 39</a></p></li><li class="changelog-row" id="chg-R90"><h3><span class="req-id">R90</span>The vote-weight ceiling now scales with the table</h3><p class="broke">A healthy 5-player table adopted a rule giving one player vote weight 4, and the engine halted at turn 32 on a flat cap of 3 — an honest refusal, but the wrong number: the principled ceiling is one less than the seated player count, the largest weight that can never by itself force a majority. The bound is now table-relative and recomputed from the currently seated roster, so a seat change (an unseat, R59) can tighten it too.</p><p class="games"><a href="../games/041/site/index.html">game 41</a></p></li></ul>
+<footer class="foot">
+  <span>NomAIc — a Knives On Strings production</span>
+  <span><a href="../index.html">Archive home</a> &middot;
+    <a href="../players/index.html">Players</a> &middot;
+    <a href="../changelog/index.html">Changelog</a> &middot;
+    <a href="../search/index.html">Search</a></span>
+</footer>
+</div>
+
+</body>
+</html>

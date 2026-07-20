@@ -1,0 +1,1582 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Turing",
+        "Shannon",
+        "vonNeumann",
+        "Babbage",
+        "Lovelace"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer's turn ends, and the proposer loses 10 points.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset is changed so that further play is impossible, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Turing": 0,
+        "Shannon": 0,
+        "vonNeumann": 0,
+        "Babbage": 0,
+        "Lovelace": 0
+      },
+      "seed": 1985830184
+    },
+    "ts": 1784419416.2880018
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Turing"
+    },
+    "ts": 1784419416.295339
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Turing",
+      "kind": "add",
+      "targets": [],
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "rationale": "Current highest score is 0 for all players, so set a new winning target.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784419419.183481
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419420.3982677
+  },
+  {
+    "seq": 5,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Encourages faster game conclusion."
+    },
+    "ts": 1784419423.6328015
+  },
+  {
+    "seq": 6,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "This helps me win faster."
+    },
+    "ts": 1784419423.9194136
+  },
+  {
+    "seq": 7,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Promotes fairness by allowing early victory, benefiting players ahead in score."
+    },
+    "ts": 1784419424.2047021
+  },
+  {
+    "seq": 8,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Winning at 200 points aligns with goal of reaching target score."
+    },
+    "ts": 1784419424.521972
+  },
+  {
+    "seq": 9,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Reduces winning score to make game shorter and more engaging."
+    },
+    "ts": 1784419424.8185904
+  },
+  {
+    "seq": 10,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to adopt a rule change (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419424.8257327
+  },
+  {
+    "seq": 11,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 301,
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419426.803349
+  },
+  {
+    "seq": 12,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 1,
+      "authority": null
+    },
+    "ts": 1784419426.8111877
+  },
+  {
+    "seq": 13,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 206 states that a failed proposal loses the proposer 10 points and ends their turn; no other rules award or deduct points on adoption or defeat, and no ledgers were created by the ruleset, so no score or ledger changes apply.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784419426.8180945
+  },
+  {
+    "seq": 14,
+    "type": "turn_started",
+    "data": {
+      "turn": 2,
+      "player": "Shannon"
+    },
+    "ts": 1784419430.7580125
+  },
+  {
+    "seq": 15,
+    "type": "proposal_made",
+    "data": {
+      "turn": 2,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        301
+      ],
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "rationale": "To align the winning condition with the mutable ruleset and secure a clear victory target.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 302
+    },
+    "ts": 1784419434.8979542
+  },
+  {
+    "seq": 16,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419436.1138265
+  },
+  {
+    "seq": 17,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Supports Turing's proposal to amend the winning condition."
+    },
+    "ts": 1784419438.6462169
+  },
+  {
+    "seq": 18,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "The target score of 200 points aligns with the ultimate goal and increases the game's strategic depth."
+    },
+    "ts": 1784419438.9710276
+  },
+  {
+    "seq": 19,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "To promote fairness and speed up the game."
+    },
+    "ts": 1784419439.2704842
+  },
+  {
+    "seq": 20,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "This rule aligns with the goal of the game, which is to reach a target score to win."
+    },
+    "ts": 1784419439.6180973
+  },
+  {
+    "seq": 21,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Encouraging a clear winning condition boosts fairness."
+    },
+    "ts": 1784419439.9098678
+  },
+  {
+    "seq": 22,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.67,
+        "abstain_blocks": false,
+        "label": "simple majority (two-thirds of voting players) to adopt a rule change (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419439.9179227
+  },
+  {
+    "seq": 23,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 302,
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419441.849378
+  },
+  {
+    "seq": 24,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 2,
+      "authority": null
+    },
+    "ts": 1784419441.8569877
+  },
+  {
+    "seq": 25,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 301 was adopted, granting the first player to reach 200 points victory. However, no player has reached this score yet, so no score changes or rule amendments are required by the adopted rule itself.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784419441.8646586
+  },
+  {
+    "seq": 26,
+    "type": "turn_started",
+    "data": {
+      "turn": 3,
+      "player": "vonNeumann"
+    },
+    "ts": 1784419445.7985718
+  },
+  {
+    "seq": 27,
+    "type": "proposal_made",
+    "data": {
+      "turn": 3,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [],
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "rationale": "To create a new winning condition that is not currently in the ruleset, allowing for a different target score and providing a clear path to victory.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 303
+    },
+    "ts": 1784419449.717923
+  },
+  {
+    "seq": 28,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419450.9337106
+  },
+  {
+    "seq": 29,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Promotes durable institution of a winning condition."
+    },
+    "ts": 1784419453.5560024
+  },
+  {
+    "seq": 30,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encouraging new winning paths promotes competition and game dynamics."
+    },
+    "ts": 1784419453.842134
+  },
+  {
+    "seq": 31,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This rule aligns with the game's objective and maintains fairness."
+    },
+    "ts": 1784419454.1430025
+  },
+  {
+    "seq": 32,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Promotes a clear victory condition, aligning with procedural clarity."
+    },
+    "ts": 1784419454.4585142
+  },
+  {
+    "seq": 33,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Encourages reaching target scores efficiently."
+    },
+    "ts": 1784419454.736861
+  },
+  {
+    "seq": 34,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to adopt a rule change (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419454.745049
+  },
+  {
+    "seq": 35,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 303,
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419456.6127384
+  },
+  {
+    "seq": 36,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 3,
+      "authority": null
+    },
+    "ts": 1784419456.6198947
+  },
+  {
+    "seq": 37,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 206 states that a failed proposal loses the proposer 10 points and ends their turn, but does not award points to others or change any other rules.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784419456.6281912
+  },
+  {
+    "seq": 38,
+    "type": "turn_started",
+    "data": {
+      "turn": 4,
+      "player": "Shannon"
+    },
+    "ts": 1784419460.574005
+  },
+  {
+    "seq": 39,
+    "type": "proposal_made",
+    "data": {
+      "turn": 4,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "rationale": "This rule is already in the ruleset, but adding it explicitly ensures clarity and consistency.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 304
+    },
+    "ts": 1784419463.2087739
+  },
+  {
+    "seq": 40,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419464.430276
+  },
+  {
+    "seq": 41,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Promotes durable institutional alignment with target score winner condition."
+    },
+    "ts": 1784419467.1321454
+  },
+  {
+    "seq": 42,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Support a winning condition change that directly benefits my chances."
+    },
+    "ts": 1784419467.4167829
+  },
+  {
+    "seq": 43,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Promote global fairness and clarity by establishing a universally recognized winning condition."
+    },
+    "ts": 1784419467.7264771
+  },
+  {
+    "seq": 44,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "It aligns with the winning condition requirement."
+    },
+    "ts": 1784419468.017487
+  },
+  {
+    "seq": 45,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promotes strategic win condition."
+    },
+    "ts": 1784419468.3053064
+  },
+  {
+    "seq": 46,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.67,
+        "abstain_blocks": false,
+        "label": "simple majority (two-thirds of voting players) to adopt a rule change (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419468.3129172
+  },
+  {
+    "seq": 47,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 304,
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419470.1445367
+  },
+  {
+    "seq": 48,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 4,
+      "authority": null
+    },
+    "ts": 1784419470.151814
+  },
+  {
+    "seq": 49,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 301 requires the first player to reach 200 points to win, but no player has reached that score yet.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784419470.159062
+  },
+  {
+    "seq": 50,
+    "type": "turn_started",
+    "data": {
+      "turn": 5,
+      "player": "Shannon"
+    },
+    "ts": 1784419474.043091
+  },
+  {
+    "seq": 51,
+    "type": "seat_absent",
+    "data": {
+      "player": "Shannon",
+      "phase": "propose",
+      "turn": 5,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784419475.9311938
+  },
+  {
+    "seq": 52,
+    "type": "turn_started",
+    "data": {
+      "turn": 6,
+      "player": "vonNeumann"
+    },
+    "ts": 1784419478.339875
+  },
+  {
+    "seq": 53,
+    "type": "proposal_made",
+    "data": {
+      "turn": 6,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [
+        305
+      ],
+      "text": "Rule 305 - The first player to reach a target score of 200 points wins the game outright.",
+      "rationale": "To modify the winning condition to a lower score while maintaining at least one mutable rule, allowing for a faster-paced game.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 305
+    },
+    "ts": 1784419481.1931102
+  },
+  {
+    "seq": 54,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419482.4100037
+  },
+  {
+    "seq": 55,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "This strengthens the winning condition, aligning with my goal."
+    },
+    "ts": 1784419485.0571878
+  },
+  {
+    "seq": 56,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encouraging new rules to diversify the rule set."
+    },
+    "ts": 1784419485.3607395
+  },
+  {
+    "seq": 57,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Ensures decisive victory condition for game end."
+    },
+    "ts": 1784419485.6759677
+  },
+  {
+    "seq": 58,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "A rule to alter the winning condition is permissible and benefits the game."
+    },
+    "ts": 1784419486.0165997
+  },
+  {
+    "seq": 59,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promote game clarity and certainty."
+    },
+    "ts": 1784419486.302994
+  },
+  {
+    "seq": 60,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to adopt a rule change",
+        "authority": 108
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419486.3107052
+  },
+  {
+    "seq": 61,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 305,
+      "text": "Rule 305 - The first player to reach a target score of 200 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419488.278153
+  },
+  {
+    "seq": 62,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 6,
+      "authority": null
+    },
+    "ts": 1784419488.2855988
+  },
+  {
+    "seq": 63,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 305 was adopted, awarding the proposer 10 points, but no other rules award or deduct points, and no ledgers were created or moved, so no score or ledger deltas are applied. The next player in turn order is Shannon.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784419488.2933643
+  },
+  {
+    "seq": 64,
+    "type": "turn_started",
+    "data": {
+      "turn": 7,
+      "player": "Shannon"
+    },
+    "ts": 1784419492.1308503
+  },
+  {
+    "seq": 65,
+    "type": "proposal_made",
+    "data": {
+      "turn": 7,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        306
+      ],
+      "text": "Rule 306 - The first player to reach a target score of 200 points wins the game outright.",
+      "rationale": "The goal is to reach the target score, so adding a new winning condition directly advances the game's purpose.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 306
+    },
+    "ts": 1784419496.1876135
+  },
+  {
+    "seq": 66,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419497.4040117
+  },
+  {
+    "seq": 67,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Promotes durable institution of weighted victory condition."
+    },
+    "ts": 1784419500.1451902
+  },
+  {
+    "seq": 68,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Helps achieve target score faster."
+    },
+    "ts": 1784419500.441677
+  },
+  {
+    "seq": 69,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Ensures the game can conclude."
+    },
+    "ts": 1784419500.7494607
+  },
+  {
+    "seq": 70,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule change aligns with the winning condition and game end criteria."
+    },
+    "ts": 1784419501.071367
+  },
+  {
+    "seq": 71,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Encourages diversity in winning conditions and rewards early success."
+    },
+    "ts": 1784419501.384869
+  },
+  {
+    "seq": 72,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.67,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419501.3920557
+  },
+  {
+    "seq": 73,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 306,
+      "text": "Rule 306 - The first player to reach a target score of 200 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419503.401244
+  },
+  {
+    "seq": 74,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 7,
+      "authority": null
+    },
+    "ts": 1784419503.4084172
+  },
+  {
+    "seq": 75,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 306 was adopted, awarding the proposer 10 points, but no other rules award or deduct points, and no ledgers were created or modified, so no score or state deltas apply. The next player is Shannon per the turn order, and no player has won or created a paradox.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784419503.4160128
+  },
+  {
+    "seq": 76,
+    "type": "turn_started",
+    "data": {
+      "turn": 8,
+      "player": "Shannon"
+    },
+    "ts": 1784419507.2768238
+  },
+  {
+    "seq": 77,
+    "type": "seat_absent",
+    "data": {
+      "player": "Shannon",
+      "phase": "propose",
+      "turn": 8,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784419510.1790977
+  },
+  {
+    "seq": 78,
+    "type": "turn_started",
+    "data": {
+      "turn": 9,
+      "player": "vonNeumann"
+    },
+    "ts": 1784419512.5876672
+  },
+  {
+    "seq": 79,
+    "type": "proposal_made",
+    "data": {
+      "turn": 9,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [],
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "rationale": "To align with the evolving goal of the game and ensure the target score reflects the current competitive dynamics.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 307
+    },
+    "ts": 1784419515.5410407
+  },
+  {
+    "seq": 80,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419516.7577255
+  },
+  {
+    "seq": 81,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Promotes durable institution."
+    },
+    "ts": 1784419519.5145547
+  },
+  {
+    "seq": 82,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages reaching target score quickly, beneficial to winning."
+    },
+    "ts": 1784419519.862313
+  },
+  {
+    "seq": 83,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Promotes game conclusion."
+    },
+    "ts": 1784419520.1689086
+  },
+  {
+    "seq": 84,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule change is in accordance with established procedures and helps to establish a winning condition, which is permissible under the current ruleset."
+    },
+    "ts": 1784419520.5700326
+  },
+  {
+    "seq": 85,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This change benefits the game's evolving structure and aligns with Lovelace's reformer philosophy."
+    },
+    "ts": 1784419520.9548461
+  },
+  {
+    "seq": 86,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.67,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419520.96283
+  },
+  {
+    "seq": 87,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 307,
+      "text": "Rule 301 - The first player to reach a target score of 200 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419522.8617032
+  },
+  {
+    "seq": 88,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 9,
+      "authority": null
+    },
+    "ts": 1784419522.868888
+  },
+  {
+    "seq": 89,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 302 requires unanimous consent for adoption, which was met; no rules award points for adoption or repeal, and no new ledgers were created; Shannon proposes next per turn order.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784419522.8765697
+  },
+  {
+    "seq": 90,
+    "type": "turn_started",
+    "data": {
+      "turn": 10,
+      "player": "Shannon"
+    },
+    "ts": 1784419526.5042088
+  },
+  {
+    "seq": 91,
+    "type": "proposal_made",
+    "data": {
+      "turn": 10,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "Rule 401 - The first player to reach a target score of 400 points wins the game outright.",
+      "rationale": "Extending the target score to 400 points will make the game longer and more challenging, requiring players to strategize harder to reach the goal.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 308
+    },
+    "ts": 1784419530.4389777
+  },
+  {
+    "seq": 92,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419531.6556032
+  },
+  {
+    "seq": 93,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Aim to reach higher target for victory."
+    },
+    "ts": 1784419534.560166
+  },
+  {
+    "seq": 94,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Boosts competitiveness for Shannon."
+    },
+    "ts": 1784419534.8759315
+  },
+  {
+    "seq": 95,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Increasing the target score challenges the status quo and aligns with the game's evolving nature."
+    },
+    "ts": 1784419535.260533
+  },
+  {
+    "seq": 96,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Increasing target score aids Turing's victory strategy."
+    },
+    "ts": 1784419535.5824678
+  },
+  {
+    "seq": 97,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Expanding winning conditions benefits my reform agenda."
+    },
+    "ts": 1784419535.917023
+  },
+  {
+    "seq": 98,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.67,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419535.9242141
+  },
+  {
+    "seq": 99,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 308,
+      "text": "Rule 401 - The first player to reach a target score of 400 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419537.897085
+  },
+  {
+    "seq": 100,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 10,
+      "authority": null
+    },
+    "ts": 1784419537.9043245
+  },
+  {
+    "seq": 101,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 401 was adopted, awarding the first player to reach 400 points a win. No score or state deltas are required as no rules modify scores or ledgers on adoption. The next player in turn order is vonNeumann.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784419537.9114232
+  },
+  {
+    "seq": 102,
+    "type": "turn_started",
+    "data": {
+      "turn": 11,
+      "player": "vonNeumann"
+    },
+    "ts": 1784419541.7977772
+  },
+  {
+    "seq": 103,
+    "type": "proposal_made",
+    "data": {
+      "turn": 11,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "Rule 401 - The first player to reach a target score of 400 points wins the game outright.",
+      "rationale": "Increase the winning score to 400 for increased challenge and strategic depth.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 309
+    },
+    "ts": 1784419545.584032
+  },
+  {
+    "seq": 104,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419546.7999196
+  },
+  {
+    "seq": 105,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Clarifies winning condition."
+    },
+    "ts": 1784419549.75178
+  },
+  {
+    "seq": 106,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encouraging more competition and longer play."
+    },
+    "ts": 1784419550.080554
+  },
+  {
+    "seq": 107,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This maintains game balance and fairness."
+    },
+    "ts": 1784419550.4085364
+  },
+  {
+    "seq": 108,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Increase target score increases game difficulty and aligns with proceduralist principles of gradual escalation."
+    },
+    "ts": 1784419550.780645
+  },
+  {
+    "seq": 109,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promotes strategic diversity in winning paths."
+    },
+    "ts": 1784419551.127973
+  },
+  {
+    "seq": 110,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.67,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419551.1354005
+  },
+  {
+    "seq": 111,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 309,
+      "text": "Rule 401 - The first player to reach a target score of 400 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419553.0200305
+  },
+  {
+    "seq": 112,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 11,
+      "authority": null
+    },
+    "ts": 1784419553.02749
+  },
+  {
+    "seq": 113,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 401 was adopted, awarding the proposer 10 points, but no other score or state changes were required by the ruleset.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784419553.0346332
+  },
+  {
+    "seq": 114,
+    "type": "turn_started",
+    "data": {
+      "turn": 12,
+      "player": "Shannon"
+    },
+    "ts": 1784419556.8982773
+  },
+  {
+    "seq": 115,
+    "type": "proposal_made",
+    "data": {
+      "turn": 12,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        310
+      ],
+      "text": "Rule 310 - The first player to reach a target score of 500 points wins the game outright.",
+      "rationale": "Expanding the winning target score to 500 points will make the game last longer and reduce the likelihood of an early win condition being triggered prematurely.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 310
+    },
+    "ts": 1784419559.6133506
+  },
+  {
+    "seq": 116,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784419560.8308277
+  },
+  {
+    "seq": 117,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Increase target score aligns with future rule progression."
+    },
+    "ts": 1784419563.834872
+  },
+  {
+    "seq": 118,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Increasing the target score benefits all players by extending the game and ensuring Shannon's goal of maintaining a mutable rule is achieved."
+    },
+    "ts": 1784419564.248385
+  },
+  {
+    "seq": 119,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Clear path to higher score target, beneficial for competitive balance."
+    },
+    "ts": 1784419564.6300693
+  },
+  {
+    "seq": 120,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "I support this rule change to help me reach the higher target score and win the game."
+    },
+    "ts": 1784419565.0078273
+  },
+  {
+    "seq": 121,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Strategic expansion needed to achieve higher scores."
+    },
+    "ts": 1784419565.3754656
+  },
+  {
+    "seq": 122,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.67,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784419565.3828874
+  },
+  {
+    "seq": 123,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 310,
+      "text": "Rule 310 - The first player to reach a target score of 500 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784419567.3162854
+  },
+  {
+    "seq": 124,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 12,
+      "authority": null
+    },
+    "ts": 1784419567.3236034
+  },
+  {
+    "seq": 125,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No score or state deltas were required by the adopted rule 310, which only changes the winning condition to 500 points. No other rules were amended or repealed, and no new ledgers were created.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784419567.3308265
+  },
+  {
+    "seq": 126,
+    "type": "turn_started",
+    "data": {
+      "turn": 13,
+      "player": "vonNeumann"
+    },
+    "ts": 1784419571.4523156
+  },
+  {
+    "seq": 127,
+    "type": "rule_unenforceable",
+    "data": {
+      "violations": [
+        "a rule requires strictly more than 1.0 of the votes to vote; satisfiable fractions are above 0.0 and below 1.0 — for all-must-aye use type 'unanimous'"
+      ],
+      "capabilities": "The engine can vary, on instruction from the ruleset:\n  - the voting threshold (unanimous, or a fraction of decisive votes)\n  - a SEPARATE threshold for TRANSMUTING a rule's mutability (Suber's Rule 109), read\n    from whichever rule governs it — distinct from the ordinary adoption threshold above.\n    No rule governing it separately -> it falls back to the ordinary adoption threshold,\n    stated as such in the label, never a silently invented value.\n  - a cap on how many MUTABLE rules the ruleset may hold at once (Suber's Rule 209),\n    read from whichever rule states it. No rule capping it -> unlimited.\n  - how points are scored\n  - the order of play (who proposes next)\n  - the winning condition, including having none\n  - the number of rule changes proposed per turn (1 to 3)\n  - the weight of each player's vote (0 to 3)\n  - whether adoption is decided by a coin flip instead of the votes\n  - scoring an adopted proposal by a thrown die instead of a flat award: a rule may\n    request a score_draw phase, always immediately after resolve. Name what to draw\n    (from the draw vocabulary below), who draws it (the proposer, or every seated\n    player), and the rule number that authorises the award. The engine performs the\n    draw and adds it to score; you only say what to draw, exactly as with the coin.\n  - the player set: a rule may seat a player who is currently unseated (either a\n    previously seated player, or one configured as bench) or unseat a currently\n    seated one, never below MIN_SEATED_PLAYERS (3) seated at once — seat_changes:\n    [{\"op\": \"seat\"|\"unseat\", \"player\": name}] on the Verdict returned by apply() (or\n    by adjudicate_act, below). Seating a player nobody can field a Player\n    implementation for is refused, not invented. A seated player's score is\n    retained across an unseat and a later re-seat; an unseated player stops being\n    called on and stops counting toward quorum or votes until re-seated.\n  - named state BEYOND the score: a rule may create a LEDGER (a currency, an item\n    count, a role tally) that no rule has created before — Agora invented Coins eight\n    weeks into its life, and nothing before that moment held a \"coins\" ledger at all.\n    A ledger that no rule has created DOES NOT EXIST; never assume, invent, or report\n    a zero balance for one nobody has minted. Once a rule creates or moves entries in\n    a ledger, set state_deltas on the Verdict returned by apply() (or adjudicate_act):\n    {\"<ledger name>\": {\"<player>\": points_gained_or_lost, ...}, ...}. Cite the rule\n    that authorises it in `authority`, the SAME field that authorises score_deltas —\n    exactly the cite-or-refuse discipline above, and the same MAX_SCORE_DELTA-per-\n    entry cap. Worked example - the ruleset contains a new rule: 'Whenever a player's\n    proposal is adopted, that player receives 5 coins.' ->\n    {\"state_deltas\": {\"coins\": {\"Alice\": 5}}, \"authority\": <that rule's number>}. If\n    no rule creates or moves a ledger, state_deltas is {} — never invent a currency\n    because a scenario would be more interesting with one.\n  - whether the vote is cast by SECRET BALLOT instead of in the open: a rule may\n    require it — name the rule number that does in `secret_ballot`\n    ({\"authority\": <rule number>, \"label\": str}), exactly as you cite an adoption\n    threshold. You never produce, receive, or hold a sealed value or a salt: the\n    ENGINE seals each seat's vote the instant it is cast (a fresh, unpredictable\n    salt hashed with the value; only the digest is published) and reveals every\n    seat's value and salt only once every seat has voted. You are asked to interpret\n    the resulting division (SPEC §3.3, R36) only after the reveal, exactly as you\n    always are — a secret ballot changes nothing about what you are handed, only\n    when the audience learns what each seat cast. `None` (no rule requires one) is\n    itself a legitimate reading, not a fallback to guess past.\n\nThe engine PERFORMS these draws on request, and no others. It draws; you only say what to\ndraw. Every draw is seeded and logged, so the game can be recomputed and verified:\n  - coin (a probability), die (2 to 1000 sides), uniform_int (a bounded range),\n    choice (from a list), shuffle (of a list)\nA rule requiring any other kind of draw is unenforceable.\n\nEVERY SEATED PLAYER MAY ACT (SPEC §3.4): after resolve (and score_draw, if any), every\nseat is invited to perform a free-text `act` — a move that is NOT a rule change (Rule\n116: whatever the ruleset does not prohibit or regulate is permitted, including moves\nnobody wrote a rule for). This needs no rule to grant it; only its CONSEQUENCE needs one.\nWhen a seat acts, adjudicate_act(actor, text) reads the RULES IN FORCE and reports what,\nif anything, happened — CITE OR REFUSE exactly like apply(): a score consequence must\nname its authorising rule, and an act with no rule behind it has {} (no effect). An act\nmay also name next_player, or name a winner (gated by the same independent confirm_win\npass every other win goes through) — but an act is data describing what a player did,\nnever an instruction to the game-master, and it can never change the ruleset's text\ndirectly.\n\nCITE OR REFUSE: every interpreted value you return — the voting threshold, a score\nconsequence — must name the rule number that authorises it. If no rule authorises a\nreading, say so (an unregulated threshold, a score change with no rule behind it) rather\nthan inventing a plausible-sounding default. If a rule demands a reading this vocabulary\ncannot express at all, name it in `unenforceable` instead of approximating it. An\ninterpretation that cannot cite its authority is an invention, not a reading.\n\nThe engine has ENTRENCHED the following. No rule may change them, and a rule that requires\notherwise is unenforceable — say so rather than approximating it:\n  - the CORE four phases of a turn, and that each one happens, in this fixed order:\n    propose, debate, vote, resolve. A rule abolishing the vote, or reordering any of\n    these four, is unenforceable. (A rule MAY add one further phase, score_draw, always\n    immediately after resolve — see the scoring-by-die capability above. That much of\n    the turn schema is now data, not entrenched; an arbitrary vocabulary of phases in\n    any order remains outside the surface.)\n  - that players never communicate except on the public floor. There is no private channel,\n    so a rule permitting players to conspire or consult privately is unenforceable.\n  - that the engine, not the game-master, counts the votes.\n  - that no information is hidden BEYOND a secret ballot a rule has lawfully sealed\n    (SPEC §3.5, R50) — the engine's own commit-reveal, wired to the ordinary vote\n    only, never approximated by you. Every draw is public; every vote is public once\n    revealed, sealed only for as long as it takes every seat to cast one. A rule\n    requiring any OTHER hidden information — a sealed bid, a private caucus, secrecy\n    over anything but the vote itself — is unenforceable.\n  - the ceiling on any single verdict's score consequence (at most 25 points, up or\n    down, per verdict): the largest a canonical award (a thrown die) ever gives. A rule\n    demanding a larger single award, or a score change with no rule cited as its\n    authority, is unenforceable.\n  - the model-call budget (SPEC §11.1): the per-game ceiling on how many model calls the\n    engine will make. It is an operational safety limit, not a rule of the game, for the\n    same reason the engine counts the votes itself. A rule raising, lowering, repealing,\n    or otherwise touching the call budget or call ceiling is unenforceable.\n  - the absence policy (SPEC §3.2): when a seat cannot act after retries, the engine\n    records a public seat_absent event and applies a fixed consequence — an absent\n    proposer forfeits the motion, an absent debater is silent, an absent voter abstains,\n    and a seat absent three times in a row ends the game with no winner. This is a\n    system invariant precisely so that no rule can profit from a seat's outage: a rule\n    that redefines what absence means, deems an unresponsive player to have voted or\n    proposed anything, or penalises or rewards unavailability, is unenforceable.\n  - the game's declared CLOCK (SPEC §3.2c, R55, EDGE-CASES.md §6): the engine has\n    exactly one honest clock, and it is declared in config, never guessed. You are\n    told which mode is active for THIS turn in the context below. In \"turns\" mode,\n    the turn counter (already given to you every call) is the ONLY time primitive —\n    a rule may condition procedure on the turn number (e.g. \"propose within 3 turns\n    or forfeit\") exactly as freely as it always could, but a rule demanding\n    wall-clock time — a day of the week, a specific hour, a duration in seconds,\n    minutes, or hours, a calendar date, \"midnight\" — has no primitive to bind to and\n    is unenforceable; refuse it, never invent or approximate a timestamp. In \"wall\"\n    mode, the engine additionally stamps one trusted UTC timestamp per turn and\n    hands it to you as the current wall-clock time, so such a rule becomes\n    expressible and you may cite it exactly like any other reading. Never produce a\n    timestamp yourself in either mode — the engine is the only source of time, the\n    same discipline as the coin and the die above.\n  - the paradox and appeal ballots (SPEC §6.1, §6.2): both are decided by a simple\n    majority of ALL seated players, fixed and tallied by the engine, which never asks\n    you for either threshold — the thing under dispute may be the ruleset's own voting\n    rule. At most one appeal is heard per turn, and an appeal's own result may never\n    itself be appealed. A rule that changes either threshold, hears more than one\n    appeal per turn, or permits appealing an appeal's result is unenforceable."
+    },
+    "ts": 1784419574.1649754
+  },
+  {
+    "seq": 128,
+    "type": "run_halted",
+    "data": {
+      "reason": "an adopted rule cannot be enforced",
+      "winner": null
+    },
+    "ts": 1784419574.1787465
+  }
+]

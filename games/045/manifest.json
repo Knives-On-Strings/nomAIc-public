@@ -1,0 +1,30 @@
+{
+  "game": 45,
+  "players": [
+    "Turing",
+    "Shannon",
+    "vonNeumann",
+    "Babbage",
+    "Lovelace"
+  ],
+  "ruleset": "full",
+  "turns": 13,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1985830184,
+  "started": "2026-07-19T00:03:36.288002+00:00",
+  "ended": "2026-07-19T00:06:14.178746+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

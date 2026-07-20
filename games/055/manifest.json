@@ -1,0 +1,30 @@
+{
+  "game": 55,
+  "players": [
+    "Frege",
+    "Russell",
+    "Quine",
+    "Carnap",
+    "Wittgenstein"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 300508564,
+  "started": "2026-07-19T18:09:05.879477+00:00",
+  "ended": "2026-07-19T19:27:27.103157+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}
