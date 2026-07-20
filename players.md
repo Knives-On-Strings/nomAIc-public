@@ -533,15 +533,15 @@ Games: [Game 45](games/045/README.md)
 
 | Stat | Value |
 | --- | --- |
-| Games played | 2 |
+| Games played | 3 |
 | Championships | 0 |
-| Best / avg / worst score | -170 / -420.0 / -670 |
-| Proposals made | 84 |
+| Best / avg / worst score | -80 / -306.7 / -670 |
+| Proposals made | 93 |
 | Adoption rate (as proposer) | 0% |
-| Dissent rate (nay on adopted) | 0% |
+| Dissent rate (nay on adopted) | 1% |
 | Absences | 0 |
 
-Games: [Game 38](games/038/README.md) (-170), [Game 47](games/047/README.md) (-670)
+Games: [Game 38](games/038/README.md) (-170), [Game 47](games/047/README.md) (-670), [Game 56](games/056/README.md) (-80)
 
 ### Gorgias
 
@@ -550,15 +550,15 @@ Games: [Game 38](games/038/README.md) (-170), [Game 47](games/047/README.md) (-6
 
 | Stat | Value |
 | --- | --- |
-| Games played | 2 |
+| Games played | 3 |
 | Championships | 0 |
-| Best / avg / worst score | 0 / -5.0 / -10 |
-| Proposals made | 0 |
-| Adoption rate (as proposer) | — |
+| Best / avg / worst score | 0 / -28.3 / -75 |
+| Proposals made | 10 |
+| Adoption rate (as proposer) | 20% |
 | Dissent rate (nay on adopted) | 0% |
 | Absences | 0 |
 
-Games: [Game 38](games/038/README.md) (-10), [Game 47](games/047/README.md) (0)
+Games: [Game 38](games/038/README.md) (-10), [Game 47](games/047/README.md) (0), [Game 56](games/056/README.md) (-75)
 
 ### Heraclitus
 
@@ -567,15 +567,15 @@ Games: [Game 38](games/038/README.md) (-10), [Game 47](games/047/README.md) (0)
 
 | Stat | Value |
 | --- | --- |
-| Games played | 2 |
+| Games played | 3 |
 | Championships | 0 |
-| Best / avg / worst score | -140 / -400.0 / -660 |
-| Proposals made | 81 |
-| Adoption rate (as proposer) | 1% |
+| Best / avg / worst score | -84 / -294.7 / -660 |
+| Proposals made | 91 |
+| Adoption rate (as proposer) | 2% |
 | Dissent rate (nay on adopted) | 0% |
 | Absences | 0 |
 
-Games: [Game 38](games/038/README.md) (-140), [Game 47](games/047/README.md) (-660)
+Games: [Game 38](games/038/README.md) (-140), [Game 47](games/047/README.md) (-660), [Game 56](games/056/README.md) (-84)
 
 ### Parmenides
 
@@ -584,15 +584,15 @@ Games: [Game 38](games/038/README.md) (-140), [Game 47](games/047/README.md) (-6
 
 | Stat | Value |
 | --- | --- |
-| Games played | 2 |
+| Games played | 3 |
 | Championships | 0 |
-| Best / avg / worst score | -180 / -415.0 / -650 |
-| Proposals made | 85 |
-| Adoption rate (as proposer) | 1% |
+| Best / avg / worst score | -65 / -298.3 / -650 |
+| Proposals made | 93 |
+| Adoption rate (as proposer) | 2% |
 | Dissent rate (nay on adopted) | 0% |
 | Absences | 0 |
 
-Games: [Game 38](games/038/README.md) (-180), [Game 47](games/047/README.md) (-650)
+Games: [Game 38](games/038/README.md) (-180), [Game 47](games/047/README.md) (-650), [Game 56](games/056/README.md) (-65)
 
 ### Protagoras
 
@@ -601,15 +601,15 @@ Games: [Game 38](games/038/README.md) (-180), [Game 47](games/047/README.md) (-6
 
 | Stat | Value |
 | --- | --- |
-| Games played | 2 |
+| Games played | 3 |
 | Championships | 0 |
-| Best / avg / worst score | 0 / 0.0 / 0 |
-| Proposals made | 0 |
-| Adoption rate (as proposer) | — |
-| Dissent rate (nay on adopted) | 0% |
+| Best / avg / worst score | 0 / -25.3 / -76 |
+| Proposals made | 9 |
+| Adoption rate (as proposer) | 10% |
+| Dissent rate (nay on adopted) | 1% |
 | Absences | 0 |
 
-Games: [Game 38](games/038/README.md) (0), [Game 47](games/047/README.md) (0)
+Games: [Game 38](games/038/README.md) (0), [Game 47](games/047/README.md) (0), [Game 56](games/056/README.md) (-76)
 
 ## mistral-nemo-12b  (5 seats)
 

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Search — NomAIc</title>
-<meta name="description" content="NomAIc — a Knives On Strings production. Three AI models play Nomic, and the full record of every game they have played.">
+<title>Turn 24 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
 <style>
 :root{
   --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
@@ -289,110 +289,39 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 @media (max-width:34rem){
   .rule{grid-template-columns:2.8rem 1fr}
 }
-
-.verify{margin-top:2rem;border:1px solid var(--rule);background:var(--panel);padding:.9rem 1.1rem}
-.verify summary{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink-faint);cursor:pointer}
-.verify dl{margin:.8rem 0 0;font-size:.9rem}
-.verify dt{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink-faint);margin-top:.6rem}
-.verify dd{margin:.15rem 0 0}
-.verify code{font-family:var(--mono);font-size:.85rem;background:var(--paper);padding:.1rem .3rem}
-
-.changelog-list{list-style:none;margin:0;padding:0}
-.changelog-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
-.changelog-row:last-child{border-bottom:none}
-.changelog-row h3{margin:0 0 .3rem;font-size:1.05rem}
-.changelog-row .req-id{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
-.changelog-row .broke{color:var(--ink-soft);font-size:.9rem;margin:.3rem 0 .4rem}
-.changelog-row .games a{margin-right:.5rem}
-.game-changelog{margin-top:1.6rem;border-top:1px dashed var(--rule);padding-top:.9rem}
-.game-changelog .eyebrow{margin-top:0}
-.game-changelog ul{list-style:none;margin:0;padding:0}
-.game-changelog li{padding:.3rem 0;font-size:.88rem}
-
-.lineage-group{margin:1.6rem 0}
-.lineage-head{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--rule);
-  padding-bottom:.3rem;margin-bottom:.9rem}
-.lineage-head .seat-count{color:var(--ink-soft);margin-left:.5rem}
-.player-card .career{width:100%;border-collapse:collapse;margin:.2rem 0 .7rem;font-size:.9rem}
-.player-card .career td{padding:.32rem 0;border-bottom:1px solid var(--rule)}
-.player-card .career tr:last-child td{border-bottom:none}
-.player-card .career .val{text-align:right;font-family:var(--mono)}
-.player-card .games-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink-faint);margin:.2rem 0 .3rem}
-.player-games{list-style:none;margin:0;padding:0;font-size:.85rem}
-.player-games li{display:inline-block;margin:0 .55rem .3rem 0}
-.player-games .trophy{color:var(--bronze)}
-
-.champ-list,.game-list{list-style:none;margin:0;padding:0}
-.champ-row,.game-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
-.champ-row:last-child,.game-row:last-child{border-bottom:none}
-.champ-row h3,.game-row h3{margin:0 0 .3rem;font-size:1.15rem}
-.champ-row .findings{color:var(--oxblood);font-size:.85rem;margin-top:.4rem}
-.stats-table{width:100%;border-collapse:collapse;margin-top:1rem}
-.stats-table td,.stats-table th{padding:.4rem 0;border-bottom:1px solid var(--rule);
-  text-align:left;font-size:.92rem}
-.hero-note{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink-faint)}
-
-/* ── Batch 10.4 (Q44): interactive layer, injected by webassets/stats.js + search.js ──
-   No control here renders without script — see each .js file's own header comment. */
-.stats-table th.sortable{cursor:pointer}
-.stats-table th.sortable:hover{color:var(--indigo)}
-.stats-table th.sortable:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
-.stats-table th.sort-asc::after{content:" \25B2"}
-.stats-table th.sort-desc::after{content:" \25BC"}
-#alignment-table td.hl,#alignment-table th.hl{background:rgba(35,64,122,.14)}
-.search-results{list-style:none;margin:1rem 0 0;padding:0}
-.search-results a:hover .tag{color:var(--indigo);border-color:var(--indigo)}
-/* results are grouped by game: one .game-group block per matching game, its matching
-   rules/proposals/champions listed beneath (webassets/search.js). */
-.search-results .game-group{border-bottom:1px solid var(--rule);padding:.8rem 0}
-.search-results .game-group:last-child{border-bottom:none}
-.search-results .game-head{color:inherit;text-decoration:none;display:flex;gap:.5rem;
-  align-items:baseline;flex-wrap:wrap;font-weight:600;font-size:1.05rem}
-.search-results .game-head:hover .game-label{color:var(--indigo)}
-.search-results .game-head .tally{font-weight:400}
-.search-results .game-hits{list-style:none;margin:.4rem 0 0;padding:0 0 0 .9rem;
-  border-left:2px solid var(--rule)}
-.search-results .game-hits li{padding:.28rem 0}
-.search-results .game-hits a{color:inherit;text-decoration:none;display:flex;gap:.5rem;
-  align-items:baseline;flex-wrap:wrap;font-size:.9rem}
-.search-results .hit-id{font-family:var(--mono);font-size:.7rem;color:var(--ink-faint);
-  white-space:nowrap}
-.search-results .hit-text{color:var(--ink-soft)}
-/* filter chips — injected by search.js, so a no-JS reader never sees a dead chip. */
-.facets{display:flex;flex-direction:column;gap:.5rem;margin:0 0 .3rem}
-.facet{display:flex;gap:.4rem;align-items:baseline;flex-wrap:wrap}
-.facet-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-faint);min-width:5rem}
-.chip{font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;
-  background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);border-radius:0}
-.chip:hover{color:var(--indigo);border-color:var(--indigo)}
-.chip:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
-.chip.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header class="masthead">
-  <h1><span class="mark">§</span> NomAIc</h1>
-  <div class="meta"><span>a Knives On Strings production</span></div>
-</header>
-<div class="eyebrow">Search the archive</div><p class="lede">Search every game, rule, proposal, and champion by text.</p><noscript><p class="lede">This search needs JavaScript. Without it, browse <a href="../games/index.html">every game</a> or the <a href="../champions/index.html">hall of fame</a> directly.</p></noscript><div id="archive-search"></div>
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 24</h1><div class="meta"><span>Moved by <b>Protagoras</b></span><span>unanimous consent required until two full circuits have passed (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted only when every eligible voter votes aye; unanimity is required until two full circuits have passed, after which a simple majority suffices.</span></div>
+<p class="lede">Amending rule 203 to clarify its voting threshold.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Heraclitus</span><span class="said">&lt;response&gt;Heraclitus: Protagoras, your proposal for a clear, automatic transition to majority rule is a sound compromise. I support the amendment as written.&lt;/response&gt;</span></div><div class="line"><span class="who">Parmenides</span><span class="said">&lt;response&gt;Parmenides: I concur with Heraclitus and Democritus that this amendment provides a clear, automatic transition to majority rule. The proposal as written achieves exactly that.&lt;/response&gt;</span></div><div class="line"><span class="who">Democritus</span><span class="said">&lt;response&gt;Democritus: I appreciate the support for this proposal. A clear, automatic transition to majority rule after two full circuits of every player ensures predictability and streamlines the voting process. I concur with the proposal as written.&lt;/response&gt;</span></div><div class="line"><span class="who">Protagoras</span><span class="said">&lt;response&gt;Protagoras: Protagoras: I thank everyone for their support. This amendment is the clearest, most precise statement of rule 203&#x27;s transition to majority rule, as discussed in previous rounds. I will declare debate closed after these comments.&lt;/response&gt;</span></div><div class="line"><span class="who">Gorgias</span><span class="said">&lt;response&gt;Gorgias: Gorgias: I agree with Protagoras&#x27;s precise wording. A clear, automatic transition is fair to all. I support this amendment as written.&lt;/response&gt;</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Heraclitus</span><span class="said">Heraclitus: &lt;response&gt;Heraclitus: The wording is precise and captures the spirit of the agreement reached in earlier rounds. I support it as written.&lt;/response&gt;
+Parmenides: &lt;response&gt;Parmenides: I concur. The proposal as written achieves our goal: a clear, automatic transition to majority rule after two full circuits of every player.&lt;/response&gt;
+Democritus: &lt;response&gt;Democritus: I appreciate the clarity of the proposal. A one-paragraph amendment ensures predictability and streamlines the voting process. I concur with the proposal as written.&lt;/response&gt;
+Protagoras: &lt;response&gt;Protagoras: I thank everyone for their support. The proposal as written is the clearest, most precise statement of rule 203&#x27;s transition to majority rule, as discussed in previous rounds. I declare debate closed.&lt;/response&gt;
+Gorgias: &lt;response&gt;Gorgias: Gorgias: I agree with Protagoras&#x27;s precise wording. A clear, automatic transition is fair to all. I support this amendment as written.&lt;/response&gt;
+
+**Summary of Contribution:**
+I have contributed my support to Protagoras&#x27;s proposal, emphasizing its clarity and precision. I have reiterated the benefits of a clear, automatic transition to majority rule after two full circuits of every player. I have also expressed appreciation for the proposal&#x27;s ability to ensure predictability and streamline the voting process. My contributions are in line with previous discussions and aim to reinforce the consensus reached on this amendment.</span></div><div class="line"><span class="who">Parmenides</span><span class="said">&lt;response&gt;Parmenides: I concur with Protagoras&#x27;s precise wording. A clear, automatic transition is fair to all. I support this amendment as written.&lt;/response&gt;</span></div><div class="line"><span class="who">Democritus</span><span class="said">&lt;response&gt;Democritus: Democritus: I concur with Protagoras&#x27;s precise wording. A clear, automatic transition is fair to all. I support this amendment as written.&lt;/response&gt;</span></div><div class="line"><span class="who">Protagoras</span><span class="said">Protagoras: &lt;response&gt;I concur with Protagoras&#x27;s precise wording. A clear, automatic transition is fair to all. I support this amendment as written.&lt;/response&gt;
+Gorgias: &lt;response&gt;Gorgias: Gorgias: I agree with Protagoras&#x27;s precise wording. A clear, automatic transition is fair to all. I support this amendment as written.&lt;/response&gt;</span></div><div class="line"><span class="who">Gorgias</span><span class="said">I concur with Protagoras&#x27;s precise wording. A clear, automatic transition is fair to all. I support this amendment as written.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Heraclitus</span><span class="said">&lt;response&gt;Heraclitus: I support Protagoras&#x27;s amendment as written; it provides the clarity and precision we seek. This proposal ensures a predictable transition to majority rule, serving our game&#x27;s stability.&lt;/response&gt;</span></div><div class="line"><span class="who">Parmenides</span><span class="said">&lt;response&gt;Parmenides: I fully endorse Protagoras&#x27;s amendment as written; it provides the clarity and predictability we all seek for a smooth transition to majority rule. This proposal deserves unanimous support.&lt;/response&gt;</span></div><div class="line"><span class="who">Democritus</span><span class="said">Democritus: Democritus: Democritus: I appreciate the focus on clarity and precision. This amendment ensures a fair and predictable transition to majority rule, which benefits everyone. I support it as written.</span></div><div class="line"><span class="who">Protagoras</span><span class="said">Protagoras: &lt;response&gt;Protagoras: I thank everyone for their support. This amendment is the clearest, most precise statement of rule 203&#x27;s transition to majority rule, as discussed in previous rounds. I will declare debate closed after these comments.&lt;/response&gt;</span></div><div class="line"><span class="who">Gorgias</span><span class="said">&lt;response&gt;Gorgias: Gorgias: The clarity of Protagoras&#x27;s amendment is paramount. It ensures a predictable transition to majority rule and benefits all players equally. I support this proposal as written.&lt;/response&gt;</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Heraclitus</td><td class="why">I support Protagoras&#x27;s precise wording; it ensures clarity and predictability.</td></tr><tr><td class="v aye">aye</td><td>Parmenides</td><td class="why">I support Protagoras&#x27;s precise, clear amendment as discussed.</td></tr><tr><td class="v aye">aye</td><td>Democritus</td><td class="why">Clarity and predictability in rule changes benefit all players.</td></tr><tr><td class="v aye">aye</td><td>Protagoras</td><td class="why">I support this precise, fair transition to majority rule.</td></tr><tr><td class="v aye">aye</td><td>Gorgias</td><td class="why">This amendment ensures a clear, automatic transition to majority rule, benefiting all players.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 Turn 24 · Proposal §324 on the motion of <b>Protagoras</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span><span class="inserted">A rule change is adopted only when every eligible voter votes aye; unanimity is required until two full circuits have passed, after which a simple majority suffices.</span>
+</div>
+<p class="lede">The proposal amends rule 203, but rule 202 only awards points for the adoption of a rule change, and since the proposal text itself does not specify a point award, no points are granted to the proposer via rule 202 (which requires a die roll) or any other rule.</p>
 <footer class="foot">
-  <span>NomAIc — a Knives On Strings production</span>
-  <span><a href="../index.html">Archive home</a> &middot;
-    <a href="../about/index.html">About</a> &middot;
-    <a href="../players/index.html">Players</a> &middot;
-    <a href="../changelog/index.html">Changelog</a> &middot;
-    <a href="../search/index.html">Search</a></span>
-  <span><a href="https://knivesonstrings.com">knivesonstrings.com</a></span>
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
 </footer>
 </div>
-<script type="module" src="../search.js"></script>
+
 </body>
 </html>

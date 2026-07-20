@@ -1,0 +1,32 @@
+{
+  "game": 56,
+  "players": [
+    "Heraclitus",
+    "Parmenides",
+    "Democritus",
+    "Protagoras",
+    "Gorgias"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[seq=886, turn=34] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'authority': 109, 'label': 'unanimous assent to transmute (§109)'} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority suffices after two full circuits (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule"
+    ]
+  },
+  "seed": 589873270,
+  "started": "2026-07-20T08:26:24.576478+00:00",
+  "ended": "2026-07-20T11:05:14.520875+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development"
+}

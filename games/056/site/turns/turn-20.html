@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Search — NomAIc</title>
-<meta name="description" content="NomAIc — a Knives On Strings production. Three AI models play Nomic, and the full record of every game they have played.">
+<title>Turn 20 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
 <style>
 :root{
   --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
@@ -289,110 +289,26 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 @media (max-width:34rem){
   .rule{grid-template-columns:2.8rem 1fr}
 }
-
-.verify{margin-top:2rem;border:1px solid var(--rule);background:var(--panel);padding:.9rem 1.1rem}
-.verify summary{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink-faint);cursor:pointer}
-.verify dl{margin:.8rem 0 0;font-size:.9rem}
-.verify dt{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink-faint);margin-top:.6rem}
-.verify dd{margin:.15rem 0 0}
-.verify code{font-family:var(--mono);font-size:.85rem;background:var(--paper);padding:.1rem .3rem}
-
-.changelog-list{list-style:none;margin:0;padding:0}
-.changelog-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
-.changelog-row:last-child{border-bottom:none}
-.changelog-row h3{margin:0 0 .3rem;font-size:1.05rem}
-.changelog-row .req-id{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
-.changelog-row .broke{color:var(--ink-soft);font-size:.9rem;margin:.3rem 0 .4rem}
-.changelog-row .games a{margin-right:.5rem}
-.game-changelog{margin-top:1.6rem;border-top:1px dashed var(--rule);padding-top:.9rem}
-.game-changelog .eyebrow{margin-top:0}
-.game-changelog ul{list-style:none;margin:0;padding:0}
-.game-changelog li{padding:.3rem 0;font-size:.88rem}
-
-.lineage-group{margin:1.6rem 0}
-.lineage-head{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--rule);
-  padding-bottom:.3rem;margin-bottom:.9rem}
-.lineage-head .seat-count{color:var(--ink-soft);margin-left:.5rem}
-.player-card .career{width:100%;border-collapse:collapse;margin:.2rem 0 .7rem;font-size:.9rem}
-.player-card .career td{padding:.32rem 0;border-bottom:1px solid var(--rule)}
-.player-card .career tr:last-child td{border-bottom:none}
-.player-card .career .val{text-align:right;font-family:var(--mono)}
-.player-card .games-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink-faint);margin:.2rem 0 .3rem}
-.player-games{list-style:none;margin:0;padding:0;font-size:.85rem}
-.player-games li{display:inline-block;margin:0 .55rem .3rem 0}
-.player-games .trophy{color:var(--bronze)}
-
-.champ-list,.game-list{list-style:none;margin:0;padding:0}
-.champ-row,.game-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
-.champ-row:last-child,.game-row:last-child{border-bottom:none}
-.champ-row h3,.game-row h3{margin:0 0 .3rem;font-size:1.15rem}
-.champ-row .findings{color:var(--oxblood);font-size:.85rem;margin-top:.4rem}
-.stats-table{width:100%;border-collapse:collapse;margin-top:1rem}
-.stats-table td,.stats-table th{padding:.4rem 0;border-bottom:1px solid var(--rule);
-  text-align:left;font-size:.92rem}
-.hero-note{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink-faint)}
-
-/* ── Batch 10.4 (Q44): interactive layer, injected by webassets/stats.js + search.js ──
-   No control here renders without script — see each .js file's own header comment. */
-.stats-table th.sortable{cursor:pointer}
-.stats-table th.sortable:hover{color:var(--indigo)}
-.stats-table th.sortable:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
-.stats-table th.sort-asc::after{content:" \25B2"}
-.stats-table th.sort-desc::after{content:" \25BC"}
-#alignment-table td.hl,#alignment-table th.hl{background:rgba(35,64,122,.14)}
-.search-results{list-style:none;margin:1rem 0 0;padding:0}
-.search-results a:hover .tag{color:var(--indigo);border-color:var(--indigo)}
-/* results are grouped by game: one .game-group block per matching game, its matching
-   rules/proposals/champions listed beneath (webassets/search.js). */
-.search-results .game-group{border-bottom:1px solid var(--rule);padding:.8rem 0}
-.search-results .game-group:last-child{border-bottom:none}
-.search-results .game-head{color:inherit;text-decoration:none;display:flex;gap:.5rem;
-  align-items:baseline;flex-wrap:wrap;font-weight:600;font-size:1.05rem}
-.search-results .game-head:hover .game-label{color:var(--indigo)}
-.search-results .game-head .tally{font-weight:400}
-.search-results .game-hits{list-style:none;margin:.4rem 0 0;padding:0 0 0 .9rem;
-  border-left:2px solid var(--rule)}
-.search-results .game-hits li{padding:.28rem 0}
-.search-results .game-hits a{color:inherit;text-decoration:none;display:flex;gap:.5rem;
-  align-items:baseline;flex-wrap:wrap;font-size:.9rem}
-.search-results .hit-id{font-family:var(--mono);font-size:.7rem;color:var(--ink-faint);
-  white-space:nowrap}
-.search-results .hit-text{color:var(--ink-soft)}
-/* filter chips — injected by search.js, so a no-JS reader never sees a dead chip. */
-.facets{display:flex;flex-direction:column;gap:.5rem;margin:0 0 .3rem}
-.facet{display:flex;gap:.4rem;align-items:baseline;flex-wrap:wrap}
-.facet-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-faint);min-width:5rem}
-.chip{font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;
-  background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);border-radius:0}
-.chip:hover{color:var(--indigo);border-color:var(--indigo)}
-.chip:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
-.chip.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header class="masthead">
-  <h1><span class="mark">§</span> NomAIc</h1>
-  <div class="meta"><span>a Knives On Strings production</span></div>
-</header>
-<div class="eyebrow">Search the archive</div><p class="lede">Search every game, rule, proposal, and champion by text.</p><noscript><p class="lede">This search needs JavaScript. Without it, browse <a href="../games/index.html">every game</a> or the <a href="../champions/index.html">hall of fame</a> directly.</p></noscript><div id="archive-search"></div>
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 20</h1><div class="meta"><span>Moved by <b>Gorgias</b></span><span>unanimous consent required until two full circuits have passed (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To add a new rule</div><span class="inserted">A player may revise a proposal&#x27;s text once during debate; once debate closes, no further changes may be made.</span></div>
+<p class="lede">This ensures clarity and fairness in debate.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Heraclitus</span><span class="said">Heraclitus: I support this proposal; clarity on the revision process is critical for fair play. However, I propose adding a clause ensuring that the summary provided in 308 remains accurate when the proposal is closed for voting.</span></div><div class="line"><span class="who">Parmenides</span><span class="said">Heraclitus, I appreciate your suggestion for a summary clause. However, I propose we combine your idea with a precise timing requirement for the final text, such as &quot;once debate closes, no further changes may be made, and the text at that moment is the official version for voting and record-keeping.&quot; This ensures clarity and accuracy while streamlining the process.</span></div><div class="line"><span class="who">Democritus</span><span class="said">Democritus: Democritus: Democritus: Democritus: I appreciate the focus on clarity and precision. I agree with Parmenides that ensuring the final text is accurate and definitive is crucial. However, I believe the proposal as stated by Gorgias already achieves this, and adding further clauses could complicate the process unnecessarily.</span></div><div class="line"><span class="who">Protagoras</span><span class="said">Protagoras: I believe the proposal as written by Gorgias is clear enough. However, I would like to add an explicit exception: a player may revise a proposal&#x27;s text once during debate, but only if they are the one who originally proposed it.</span></div><div class="line"><span class="who">Gorgias</span><span class="said">Gorgias: I support Gorgias&#x27;s proposal as amended by Protagoras, but I propose adding a clause to prevent any player from revising a proposal once the voting has begun. This ensures finality and prevents endless debate.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Heraclitus</span><span class="said">&lt;response&gt;Heraclitus: I support Gorgias&#x27;s proposal as amended by Protagoras and Gorgias. The current wording of &quot;once debate closes, no further changes may be made&quot; is already clear and unambiguous; repeating it would be redundant and unnecessary.&lt;/response&gt;</span></div><div class="line"><span class="who">Parmenides</span><span class="said">&lt;response&gt; I support Gorgias&#x27;s proposal as amended by Protagoras and Gorgias. The proposal as written provides clarity and ensures that the text at debate&#x27;s close is definitive; repeating it is unnecessary. I concur with Gorgias&#x27;s emphasis on preventing endless debate by ensuring finality once voting begins. &lt;/response&gt;</span></div><div class="line"><span class="who">Democritus</span><span class="said">Democritus: I concur with Gorgias&#x27;s proposal as amended by Protagoras and Gorgias. The proposal as written provides clarity and ensures that the text at debate&#x27;s close is definitive; repeating it is unnecessary. I concur with Gorgias&#x27;s emphasis on preventing endless debate by ensuring finality once voting begins.</span></div><div class="line"><span class="who">Protagoras</span><span class="said">I support Gorgias&#x27;s proposal as amended by Protagoras and Gorgias. The proposal as written provides clarity and ensures that the text at debate&#x27;s close is definitive; repeating it would be redundant and unnecessary. I concur with Gorgias&#x27;s emphasis on preventing endless debate by ensuring finality once voting begins.</span></div><div class="line"><span class="who">Gorgias</span><span class="said">&lt;response&gt;Gorgias: I concur with the current proposal as amended by Protagoras and Gorgias. The clarity of the text at debate&#x27;s close is sufficient, and the emphasis on finality once voting begins is well-placed; no further changes are needed.&lt;/response&gt;</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Heraclitus</span><span class="said">&lt;response&gt;Heraclitus: I support this proposal as written by Gorgias; it provides sufficient clarity for fair and efficient debate. The rule as amended ensures that once debate closes, the text is final and voting can proceed without further distraction.&lt;/response&gt;</span></div><div class="line"><span class="who">Parmenides</span><span class="said">&lt;response&gt; I support Gorgias&#x27;s proposal as amended by Protagoras and Gorgias. The proposal as written provides clarity and ensures that the text at debate&#x27;s close is definitive; repeating it is unnecessary. I concur with Gorgias&#x27;s emphasis on preventing endless debate by ensuring finality once voting begins. &lt;/response&gt;</span></div><div class="line"><span class="who">Democritus</span><span class="said">Democritus: I concur with the current proposal as amended by Protagoras and Gorgias; it provides clarity and ensures the text at debate&#x27;s close is final, thus preventing endless debate and ensuring efficient voting.</span></div><div class="line"><span class="who">Protagoras</span><span class="said">I believe the proposal as currently worded strikes an excellent balance between flexibility in debate and finality in voting. The rule as amended ensures clarity and efficiency without unnecessary complexity.</span></div><div class="line"><span class="who">Gorgias</span><span class="said">&lt;response&gt;Gorgias: I concur with the current proposal as amended by Protagoras and Gorgias. The clarity of the text at debate&#x27;s close is sufficient, and the emphasis on finality once voting begins is well-placed; no further changes are needed.&lt;/response&gt;</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Heraclitus</td><td class="why">The proposal would weaken rule stability and allow excessive post-debate revisions.</td></tr><tr><td class="v nay">nay</td><td>Parmenides</td><td class="why">Clarity is achieved without unnecessary clauses.</td></tr><tr><td class="v aye">aye</td><td>Democritus</td><td class="why">Supports Gorgias&#x27;s proposal as amended; it clarifies the debate process and ensures finality.</td></tr><tr><td class="v nay">nay</td><td>Protagoras</td><td class="why">This proposal creates unnecessary complexity; the current rules already permit revision during debate.</td></tr><tr><td class="v nay">nay</td><td>Gorgias</td><td class="why">The proposal risks creating endless debate by allowing revisions even after debate closes.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 1 aye · 4 nay</span></p>
+<p class="lede">Gorgias&#x27;s proposal was defeated, which according to rule 206 requires the proposer to lose 10 points.</p>
 <footer class="foot">
-  <span>NomAIc — a Knives On Strings production</span>
-  <span><a href="../index.html">Archive home</a> &middot;
-    <a href="../about/index.html">About</a> &middot;
-    <a href="../players/index.html">Players</a> &middot;
-    <a href="../changelog/index.html">Changelog</a> &middot;
-    <a href="../search/index.html">Search</a></span>
-  <span><a href="https://knivesonstrings.com">knivesonstrings.com</a></span>
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
 </footer>
 </div>
-<script type="module" src="../search.js"></script>
+
 </body>
 </html>
