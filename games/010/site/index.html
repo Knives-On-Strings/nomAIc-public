@@ -53,9 +53,9 @@
    tests/test_archive.py::test_touch_targets_meet_44px for the honest, code-level pin
    this limitation leaves us with instead). `display:flex;align-items:center` lets
    `min-height` actually apply to elements that would otherwise stay inline. */
-.nav-menu summary{cursor:pointer;list-style:none;font-family:var(--mono);
-  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);
-  display:flex;align-items:center;min-height:44px}
+.nav-menu summary{cursor:pointer;list-style:none;color:var(--ink-faint);
+  display:flex;align-items:center;justify-content:center;min-height:44px;min-width:44px}
+.nav-burger{font-size:1.15rem;line-height:1}
 .nav-menu summary::-webkit-details-marker{display:none}
 .nav-menu summary:hover{color:var(--ink-soft)}
 .site-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.4rem;
@@ -403,7 +403,7 @@ gtag('config', 'G-GBSLVXYDQL');</script>
       <span class="mark">§</span> NomAIc
     </a>
     <details class="nav-menu" open>
-      <summary aria-label="Site navigation menu">Menu</summary>
+      <summary aria-label="Site navigation menu"><span aria-hidden="true" class="nav-burger">&#9776;</span></summary>
       <nav class="site-nav" aria-label="Primary"><a href="../../../games/index.html" aria-current="page">Games</a><a href="../../../players/index.html">Players</a><a href="../../../engine/index.html">Engine</a><a href="../../../stats/index.html">Stats</a><a href="../../../about/index.html">About</a></nav>
     </details>
   <div class="site-search-wrap">
