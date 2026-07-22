@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
   },
   "confirmed": false,
   "audit": {
@@ -29,5 +30,15 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Frege": 162,
+    "Russell": 110,
+    "Quine": 20,
+    "Carnap": 20,
+    "Wittgenstein": 10
+  },
+  "adoptions": 23,
+  "gm_model": "phi-4",
+  "completed_at": "2026-07-18T20:09:10.308739+00:00"
 }

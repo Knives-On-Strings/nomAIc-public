@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 49 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 49</h1><div class="meta"><span>Moved by <b>Venn</b></span><span>standard proposal threshold (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To add a new rule</div><span class="inserted">A player may propose a &#x27;dynamic reflection round&#x27; after every 7 rounds, where players can discuss and vote to adjust any rule&#x27;s text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustment must be made by a unanimous vote at the beginning of the dynamic reflection round.</span></div>
+<p class="lede">Encourages more frequent and flexible rule adjustments to maintain game interest and fairness.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">As Boole, I appreciate Venn&#x27;s proposal for a &quot;dynamic reflection round.&quot; While I support the idea of strategic adjustments to enhance gameplay, I am concerned about the frequency and impact of such rounds. To ensure stability and thoughtful consideration, I propose that we limit the number of rules that can be adjusted in a single round. Additionally, let&#x27;s increase the frequency to every 10 rounds instead of 7, allowing more time for strategic planning. This approach balances innovation with the need for durable institutions.
+
+I am open to discussions and negotiations to refine this proposal further.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">As DeMorgan, I appreciate Venn&#x27;s initiative to introduce a &quot;dynamic reflection round,&quot; which adds a fresh layer of strategic depth to our game. To ensure this proposal aligns with our consensus-building approach, I suggest that the dynamic reflection round should include a provision for a review mechanism. This mechanism could allow players to evaluate the effects of the changes made during the round, ensuring that they align with the overall objectives of the game. By incorporating this feedback loop, we can maintain a balance between flexibility and stability.
+
+I am open to discussions and negotiations to refine this proposal further. Let&#x27;s work together to create a rule that enhances our gameplay while respecting the established framework.</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate Boole&#x27;s suggestion to limit the number of adjustable rules to maintain stability and DeMorgan&#x27;s idea of a review mechanism to ensure alignment with our game&#x27;s objectives. To integrate these insights, I propose that the &quot;dynamic reflection round&quot; allow for the adjustment of up to three rules, ensuring significant impact without overwhelming change. Additionally, incorporating a review mechanism as DeMorgan suggested will provide a structured way to assess the round&#x27;s effects, fostering a balanced and strategic gameplay environment. Let&#x27;s work together to refine this proposal further, ensuring it enhances our game while respecting our established framework.</span></div><div class="line"><span class="who">Jevons</span><span class="said">As Jevons, I appreciate the collaborative efforts of my fellow players, Boole and DeMorgan, in refining Venn&#x27;s proposal for a &quot;dynamic reflection round.&quot; To ensure procedural fairness and maintain game integrity, I propose a modification to the proposal: during a dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. This safeguard will allow us to experiment with adjustments while ensuring that any permanent changes are made with full consensus, preserving the game&#x27;s stability. I am open to further discussions to refine this proposal, aiming for a balanced approach that respects our established framework and enhances strategic gameplay.</span></div><div class="line"><span class="who">Peano</span><span class="said">As Peano, I appreciate the thoughtful contributions from Boole, DeMorgan, and Jevons to Venn&#x27;s proposal for a &quot;dynamic reflection round.&quot; To ensure that these strategic adjustments enhance the game without compromising its core principles, I propose adding a clause that requires any rule changes made during the round to be documented and reviewed in a subsequent reflection round. This documentation will provide transparency and accountability, ensuring that all players are aware of the changes and their impacts. Additionally, let&#x27;s maintain the frequency of every 7 rounds, as it offers a timely opportunity for strategic adaptation without overwhelming the game&#x27;s structure. I am open to discussions and negotiations to refine this proposal further, aiming for a balanced and fair enhancement to our gameplay.
+
+---
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">As Boole, I appreciate the collaborative refinements to Venn&#x27;s &quot;dynamic reflection round&quot; proposal. The inclusion of a cap on rule adjustments, reversibility of changes, and the review mechanism enhances both strategic depth and stability. However, to ensure these rounds do not disrupt the flow of the game, I suggest we implement a voting threshold for initiating a dynamic reflection round. Specifically, initiating such a round should require a simple majority to proceed, allowing players to call for it when consensus is clear that strategic adjustment is beneficial. This balances innovation with the need to maintain the integrity of the game. I am open to discussions to refine this further and ensure our game&#x27;s framework remains robust. 
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote. 
+
+Add your contribution: respond to others, press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">As DeMorgan, I appreciate the collaborative effort and thoughtful refinements to Venn&#x27;s &quot;dynamic reflection round&quot; proposal. The incorporation of a cap on rule adjustments, reversibility, and a review mechanism ensures both strategic depth and stability. However, to further enhance our consensus-building approach, I suggest adding a provision that any proposed changes during the dynamic reflection round must also be accompanied by a brief rationale from the proposing player. This will foster transparency and encourage players to consider the implications of their suggestions thoroughly. Let&#x27;s work together to refine this proposal further, ensuring it enhances our gameplay while respecting our established framework.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote. 
+
+Add your contribution: respond to others, press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate the thoughtful contributions from Boole and DeMorgan. The proposal is shaping up to balance flexibility with stability. To ensure clarity, I suggest adding a clause that specifies the maximum length of the rationale accompanying proposed changes. This will prevent lengthy discussions from delaying the process and keep the focus on strategic adjustments. Let&#x27;s finalize this to maintain the integrity and flow of the game.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player, not exceeding three sentences. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote. 
+
+Add your contribution: respond to others, press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">As Jevons, I appreciate the collective effort to refine the &quot;dynamic reflection round&quot; proposal. The current proposal strikes a commendable balance between innovation and stability. However, to ensure procedural fairness and clarity, I suggest that the rationale requirement for proposed changes include a specific focus on how the change aligns with the overall objectives of the game. This will help ensure that any temporary adjustments contribute positively to our gameplay experience.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player, not exceeding three sentences, focusing on alignment with the overall objectives of the game. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote. 
+
+PASS</span></div><div class="line"><span class="who">Peano</span><span class="said">As Peano, I am pleased with the collaborative effort that has shaped this proposal for a &quot;dynamic reflection round.&quot; The proposal now strikes a balance between flexibility and stability, ensuring that any rule changes are both strategic and aligned with our game&#x27;s objectives. The inclusion of a rationale requirement, with a focus on alignment with the game&#x27;s objectives, adds a layer of transparency and accountability that I fully support. 
+
+To further enhance this proposal, I suggest we establish a clear protocol for the review process in subsequent reflection rounds. This protocol should outline specific criteria for evaluating the effectiveness and impact of the changes made during the dynamic reflection round. By doing so, we can ensure that the review process is thorough and constructive, providing valuable insights that can guide future strategic adjustments.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player, not exceeding three sentences, focusing on alignment with the overall objectives of the game. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. The review process should follow a clear protocol with specific criteria for evaluating the effectiveness and impact of changes. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">**Contribution:**
+
+As Boole, I appreciate Peano&#x27;s suggestion to establish a clear protocol for the review process in subsequent reflection rounds. Ensuring that the review process is structured with specific evaluation criteria will enhance the transparency and accountability of any temporary rule changes, providing us with valuable insights for future strategic adjustments. To further bolster the proposal, I propose we define the specific criteria to be used during the review process. These criteria should include assessing the impact of the changes on game balance, player engagement, and the overall strategic depth of the game. By having a well-defined set of evaluation metrics, we can ensure that the review process is both thorough and constructive.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player, not exceeding three sentences, focusing on alignment with the overall objectives of the game. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. The review process should follow a clear protocol with specific criteria for evaluating the effectiveness and impact of changes, including game balance, player engagement, and strategic depth. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">As DeMorgan, I appreciate the comprehensive and collaborative effort that has brought us to this well-rounded proposal for a &quot;dynamic reflection round.&quot; The inclusion of a cap on rule adjustments, reversibility, a review mechanism, and specific criteria for evaluating changes significantly enhances both strategic depth and stability.
+
+To further refine this proposal, I suggest we incorporate a mechanism for players to provide feedback during the review process. This feedback can be collected through a simple voting system, where players can express their views on the effectiveness and impact of the changes. This will ensure that the review process is not only structured but also inclusive, allowing players to voice their opinions and contribute to the ongoing evolution of our game.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player, not exceeding three sentences, focusing on alignment with the overall objectives of the game. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. The review process should follow a clear protocol with specific criteria for evaluating the effectiveness and impact of changes, including game balance, player engagement, and strategic depth. During the review process, players can provide feedback through a simple voting system. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote.</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate the thoughtful contributions from Boole and DeMorgan, which have significantly enhanced the proposal for a &quot;dynamic reflection round.&quot; The proposal now effectively balances flexibility and stability, ensuring that any rule changes are strategic and aligned with our game&#x27;s objectives. The inclusion of a rationale requirement, specific review criteria, and a feedback mechanism adds layers of transparency and accountability.
+
+To further refine this proposal, I suggest we establish a clear timeline for the review process in subsequent reflection rounds. This timeline should specify when the review must occur after a dynamic reflection round and how long the feedback period should last. By setting a defined schedule, we can ensure that the review process is timely and efficient, allowing us to integrate insights quickly and effectively.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player, not exceeding three sentences, focusing on alignment with the overall objectives of the game. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. The review process should follow a clear protocol with specific criteria for evaluating the effectiveness and impact of changes, including game balance, player engagement, and strategic depth. During the review process, players can provide feedback through a simple voting system. The review must occur within one round after the dynamic reflection round, with a feedback period lasting one round. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote.</span></div><div class="line"><span class="who">Jevons</span><span class="said">As Jevons, my focus is on ensuring that any changes made to the rules are fair, transparent, and maintain the integrity of the game. The proposal for a &quot;dynamic reflection round&quot; has been thoughtfully refined by my fellow players, incorporating elements that promote strategic depth while ensuring stability and accountability. I appreciate the inclusion of a rationale requirement, specific review criteria, a feedback mechanism, and a clear timeline for the review process.
+
+To further enhance the proposal, I suggest adding a clause that any changes proposed during the dynamic reflection round should not disproportionately benefit or disadvantage any single player. This will help maintain a level playing field and ensure that the strategic adjustments made are in the best interest of the game as a whole, rather than favoring any individual player.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player, not exceeding three sentences, focusing on alignment with the overall objectives of the game. Any changes proposed must not disproportionately benefit or disadvantage any single player. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. The review process should follow a clear protocol with specific criteria for evaluating the effectiveness and impact of changes, including game balance, player engagement, and strategic depth. During the review process, players can provide feedback through a simple voting system. The review must occur within one round after the dynamic reflection round, with a feedback period lasting one round. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote.
+
+PASS</span></div><div class="line"><span class="who">Peano</span><span class="said">As Peano, I am pleased with the collaborative effort that has shaped this proposal for a &quot;dynamic reflection round.&quot; The proposal now strikes a balance between flexibility and stability, ensuring that any rule changes are both strategic and aligned with our game&#x27;s objectives. The inclusion of a rationale requirement, with a focus on alignment with the game&#x27;s objectives, adds a layer of transparency and accountability that I fully support.
+
+To further enhance this proposal, I suggest we establish a clear protocol for the review process in subsequent reflection rounds. This protocol should outline specific criteria for evaluating the effectiveness and impact of the changes made during the dynamic reflection round. By doing so, we can ensure that the review process is thorough and constructive, providing valuable insights that can guide future strategic adjustments.
+
+**Revised Proposal:**
+
+A player may propose a &quot;dynamic reflection round&quot; after every 7 rounds, where players can discuss and vote to adjust up to three rules&#x27; text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustments must be made by a unanimous vote at the beginning of the dynamic reflection round. Any proposed changes must be accompanied by a brief rationale from the proposing player, not exceeding three sentences, focusing on alignment with the overall objectives of the game. Any changes made during the round must be documented and reviewed in a subsequent reflection round to ensure transparency and accountability. The review process should follow a clear protocol with specific criteria for evaluating the effectiveness and impact of changes. During the dynamic reflection round, any changes to rules must be reversible at the end of the round unless unanimously agreed upon by all players. Initiating a dynamic reflection round requires a simple majority vote.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Boole</td><td class="why">The proposal enhances strategic depth while maintaining stability and accountability.</td></tr><tr><td class="v aye">aye</td><td>DeMorgan</td><td class="why">The proposal offers a balanced approach to strategic adjustments while maintaining stability and transparency.</td></tr><tr><td class="v aye">aye</td><td>Venn</td><td class="why">The proposal enhances strategic depth while maintaining a fair and balanced game environment.</td></tr><tr><td class="v aye">aye</td><td>Jevons</td><td class="why">The revised proposal ensures strategic depth while maintaining game stability and fairness.</td></tr><tr><td class="v aye">aye</td><td>Peano</td><td class="why">The proposal balances innovation with stability, enhancing strategic depth while maintaining fairness.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Enacted · §349 Turn 49 · Proposal §349 on the motion of <b>Venn</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="inserted">A player may propose a &#x27;dynamic reflection round&#x27; after every 7 rounds, where players can discuss and vote to adjust any rule&#x27;s text temporarily for one round. This round&#x27;s changes must be set at the start and cannot be changed during the round. The adjustment must be made by a unanimous vote at the beginning of the dynamic reflection round.</span>
+</div>
+<p class="lede">Venn&#x27;s proposal was adopted, so Venn gains 4 points according to rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

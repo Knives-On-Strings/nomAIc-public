@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carnap — NomAIc</title>
+<meta name="description" content="NomAIc — a Knives On Strings production. Three AI models play Nomic, and the full record of every game they have played.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2064%2064%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-labelledby%3D%22nomaic-icon-title%22%3E%0A%3Ctitle%20id%3D%22nomaic-icon-title%22%3EnomAIc%20%E2%80%94%20an%20open%20scroll%3C/title%3E%0A%3Cstyle%3E%0A.parchment%7Bfill%3A%23f3e9d2%7D%0A.roll%7Bfill%3A%23e7d8b5%3Bstroke%3A%238a6d3b%3Bstroke-width%3A1.6%3Bstroke-linejoin%3Around%3Bstroke-linecap%3Around%7D%0A.edge%7Bfill%3Anone%3Bstroke%3A%238a6d3b%3Bstroke-width%3A1.6%3Bstroke-linecap%3Around%3Bstroke-linejoin%3Around%7D%0A.ink%7Bfill%3A%233d2f1a%7D%0A%40media%20%28prefers-color-scheme%3A%20dark%29%7B%0A%20%20.parchment%7Bfill%3A%233a3226%7D%0A%20%20.roll%7Bfill%3A%234a4030%3Bstroke%3A%23c9b98a%7D%0A%20%20.edge%7Bstroke%3A%23c9b98a%7D%0A%20%20.ink%7Bfill%3A%23e8dfc5%7D%0A%7D%0A%3C/style%3E%0A%3Cpath%20class%3D%22parchment%22%20d%3D%22M16%2C16%20L48%2C16%20C44%2C26%2044%2C38%2048%2C48%20L16%2C48%20C20%2C38%2020%2C26%2016%2C16%20Z%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M16%2C16%20C20%2C26%2020%2C38%2016%2C48%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M48%2C16%20C44%2C26%2044%2C38%2048%2C48%22/%3E%0A%3Crect%20class%3D%22roll%22%20x%3D%2210%22%20y%3D%228%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%224%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2252%22%20cy%3D%2212%22%20r%3D%223%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M52%2C9%20C57%2C6%2059%2C7%2060%2C4%22/%3E%0A%3Crect%20class%3D%22roll%22%20x%3D%2210%22%20y%3D%2248%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%224%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2212%22%20cy%3D%2252%22%20r%3D%223%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2252%22%20cy%3D%2252%22%20r%3D%223%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M12%2C55%20C7%2C58%205%2C57%204%2C60%22/%3E%0A%3Ctext%20x%3D%2232%22%20y%3D%2239%22%20text-anchor%3D%22middle%22%20font-family%3D%22Georgia%2C%27Times%20New%20Roman%27%2Cserif%22%20font-weight%3D%22700%22%20font-size%3D%2222%22%20class%3D%22ink%22%3EN%3C/text%3E%0A%3C/svg%3E%0A">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+
+.verify{margin-top:2rem;border:1px solid var(--rule);background:var(--panel);padding:.9rem 1.1rem}
+.verify summary{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);cursor:pointer}
+.verify dl{margin:.8rem 0 0;font-size:.9rem}
+.verify dt{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint);margin-top:.6rem}
+.verify dd{margin:.15rem 0 0}
+.verify code{font-family:var(--mono);font-size:.85rem;background:var(--paper);padding:.1rem .3rem}
+
+.changelog-list{list-style:none;margin:0;padding:0}
+.changelog-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
+.changelog-row:last-child{border-bottom:none}
+.changelog-row h3{margin:0 0 .3rem;font-size:1.05rem}
+.changelog-row .req-id{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.changelog-row .broke{color:var(--ink-soft);font-size:.9rem;margin:.3rem 0 .4rem}
+.changelog-row .games a{margin-right:.5rem}
+.game-changelog{margin-top:1.6rem;border-top:1px dashed var(--rule);padding-top:.9rem}
+.game-changelog .eyebrow{margin-top:0}
+.game-changelog ul{list-style:none;margin:0;padding:0}
+.game-changelog li{padding:.3rem 0;font-size:.88rem}
+
+.lineage-group{margin:1.6rem 0}
+.lineage-head{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--rule);
+  padding-bottom:.3rem;margin-bottom:.9rem}
+.lineage-head .seat-count{color:var(--ink-soft);margin-left:.5rem}
+.player-card .career{width:100%;border-collapse:collapse;margin:.2rem 0 .7rem;font-size:.9rem}
+.player-card .career td{padding:.32rem 0;border-bottom:1px solid var(--rule)}
+.player-card .career tr:last-child td{border-bottom:none}
+.player-card .career .val{text-align:right;font-family:var(--mono)}
+.player-card .games-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-faint);margin:.2rem 0 .3rem}
+.player-games{list-style:none;margin:0;padding:0;font-size:.85rem}
+.player-games li{display:inline-block;margin:0 .55rem .3rem 0}
+.player-games .trophy{color:var(--bronze)}
+
+/* R104 (§9.9.6): the archive-level list row (compact, no persona/stats) and the seat's
+   own full career-card page — additive to the `.player-card`/`.model-tag`/`.persona`
+   idiom `SITE_CSS` already established; nothing above is removed or overridden. */
+.player-row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+  padding:.5rem 0;border-bottom:1px solid var(--rule)}
+.player-row:last-child{border-bottom:none}
+.player-row-link{display:flex;align-items:baseline;gap:.5rem;flex:1;min-width:0}
+.player-name{font-weight:600}
+.epithet{color:var(--ink-soft);font-style:italic;font-size:.9rem}
+.player-head{display:flex;align-items:center;gap:.9rem;margin-bottom:1rem}
+.player-initials{display:inline-flex;align-items:center;justify-content:center;
+  width:2.6rem;height:2.6rem;border-radius:50%;background:var(--bronze);color:var(--paper);
+  font-family:var(--mono);font-weight:700;flex-shrink:0}
+.player-head-text h1{margin:0;font-size:1.3rem}
+.seated-range{margin:.15rem 0 0;color:var(--ink-soft);font-size:.85rem}
+.player-stats{width:100%;border-collapse:collapse;margin:.2rem 0 .9rem;font-size:.9rem}
+.player-stats td,.player-stats th{padding:.32rem 0;border-bottom:1px solid var(--rule);
+  text-align:left;font-weight:400}
+.player-stats tr:last-child td,.player-stats tr:last-child th{border-bottom:none}
+.player-stats .val{text-align:right;font-family:var(--mono)}
+.persona-text{font-style:italic;color:var(--ink-soft)}
+.learnings{font-family:var(--serif);margin:.8rem 0}
+.player-games-compact,.model-siblings{font-size:.85rem;color:var(--ink-soft);margin:.4rem 0}
+
+.skip-link{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}
+.skip-link:focus{position:static;width:auto;height:auto;display:inline-block;
+  padding:.4rem .8rem;margin-bottom:.6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule)}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* §9.9.1 amendment ("the header must be a bar"): a persistent, `position:sticky`
+   single-row band, full-width, with a hairline bottom border — replaces the earlier
+   stacked column layout this selector used to carry (brand row, then a separate nav
+   block, then a separate search/meta block). `.header-bar` is the one flex ROW inside
+   it; `.wrap`'s own `max-width:46rem` (site_writer.py) is mirrored here so the bar's
+   CONTENT still reads as constrained even though the band itself spans full width.
+   `z-index` keeps it above scrolling content; no animation, so `prefers-reduced-motion`
+   is moot (nothing here moves). */
+.site-header{position:sticky;top:0;z-index:20;width:100%;
+  background:var(--paper);border-bottom:1px solid var(--rule)}
+.header-bar{display:flex;align-items:center;gap:clamp(.6rem,3vw,1.2rem);
+  max-width:46rem;margin:0 auto;box-sizing:border-box;min-height:56px;
+  padding:.5rem clamp(1rem,5vw,2rem)}
+.brand{display:inline-flex;align-items:center;gap:.4rem;color:inherit;
+  text-decoration:none;flex:none}
+.brand:hover .mark{color:var(--indigo)}
+.site-icon{display:inline-flex;width:1.4rem;height:1.4rem;flex:none}
+.site-icon svg{width:100%;height:100%;display:block}
+#theme-toggle{font:inherit;font-size:1rem;line-height:1;cursor:pointer;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);
+  border-radius:50%;width:2.2rem;height:2.2rem;flex:none;
+  min-width:44px;min-height:44px}
+#theme-toggle:hover{color:var(--indigo);border-color:var(--indigo)}
+#theme-toggle:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.nav-menu{border:none;flex:none;display:flex;align-items:center}
+/* The search box is pushed to the right edge of the bar, and the toggle rides along
+   after it — brand and nav-menu stay left-adjacent, exactly the design doc's "Left:
+   icon+wordmark ... Center: nav ... Right: search + toggle" layout, with all four as
+   DIRECT children of `.header-bar` (no extra wrapping div to nest search+toggle inside
+   — `tests/test_site_components.py::test_header_is_a_single_row_bar` parses this). On
+   a narrow (<40rem) viewport the nav-menu collapses to just its `<summary>` button
+   (existing mobile-first `<details>` behaviour, untouched below) and the search input's
+   own `flex:1;min-width:0` (below) lets it narrow to fit the remaining row width
+   instead of wrapping to a second line. */
+.site-search-wrap{margin-left:auto;min-width:0}
+/* R109 amendment (touch-target audit): a `<summary>`/nav-link/chip must offer at least
+   a 44px-square hit area (WCAG 2.5.5-shaped guidance the structural checker itself
+   cannot measure -- it parses static markup, never a rendered box; see
+   tests/test_archive.py::test_touch_targets_meet_44px for the honest, code-level pin
+   this limitation leaves us with instead). `display:flex;align-items:center` lets
+   `min-height` actually apply to elements that would otherwise stay inline. */
+.nav-menu summary{cursor:pointer;list-style:none;font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);
+  display:flex;align-items:center;min-height:44px}
+.nav-menu summary::-webkit-details-marker{display:none}
+.nav-menu summary:hover{color:var(--ink-soft)}
+.site-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.4rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}
+.site-nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid transparent;
+  padding-bottom:.15rem;display:inline-flex;align-items:center;min-height:44px}
+.site-nav a:hover{color:var(--indigo)}
+.site-nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--indigo)}
+.site-search{display:flex;gap:.4rem}
+.site-search input[type="search"]{flex:1;min-width:0;padding:.35rem .5rem;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-radius:0}
+.site-search input[type="search"]:focus-visible{outline:2px solid var(--indigo);
+  outline-offset:1px}
+.site-search button{font:inherit;font-size:.72rem;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;background:var(--panel);color:var(--ink-soft);
+  border:1px solid var(--rule)}
+/* Nav visibility (R99/§9.9.1, third revision — the honest one): CSS cannot reliably
+   force a closed `<details>` open (current Chromium hides closed content via
+   `content-visibility` on `::details-content`, which no child display value pierces,
+   and the pseudo-element rejects `display:contents`, leaving a zero-width box — both
+   failure modes were found live on the staged preview). So the markup ships
+   `<details class="nav-menu" open>`: the nav is VISIBLE EVERYWHERE by default, with
+   or without JavaScript. site-theme.js (loaded on every page) closes it on narrow
+   viewports as a progressive enhancement — a no-JS phone reader sees an expanded
+   nav, which is accessible degradation, not a defect. Desktop hides the summary
+   button; the nav lays out inline in the bar. */
+@media (min-width:40rem){
+  .nav-menu summary{display:none}
+  .nav-menu > nav{margin-top:0;align-items:center}
+}
+
+[data-theme="dark"]{
+  --paper:#1c1f1a; --paper-2:#242822; --panel:#262b24;
+  --ink:#e8e6df; --ink-soft:#b9c0b4; --ink-faint:#8b948b;
+  --rule:#3c443b;
+  --oxblood:#e3908f; --indigo:#8aa8e8; --bronze:#cdbd8e;
+}
+[data-theme="light"]{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e; --indigo:#23407a; --bronze:#5b5340;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --paper:#1c1f1a; --paper-2:#242822; --panel:#262b24;
+    --ink:#e8e6df; --ink-soft:#b9c0b4; --ink-faint:#8b948b;
+    --rule:#3c443b;
+    --oxblood:#e3908f; --indigo:#8aa8e8; --bronze:#cdbd8e;
+  }
+}
+
+.foot-brand{display:flex;flex-direction:column;gap:.15rem}
+.foot-brand a{color:var(--ink);text-decoration:none;font-weight:700;letter-spacing:.02em}
+.foot-brand a:hover{color:var(--indigo)}
+.foot-brand .copyright{color:var(--ink-faint);font-size:.85em}
+.foot-brand .tagline{color:var(--ink-faint);font-size:.85em;font-style:italic}
+.foot-icons{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.foot-icons a{color:var(--ink-faint);line-height:0}
+.foot-icons a:hover{color:var(--indigo)}
+.foot-icons img{width:1.2rem;height:1.2rem;vertical-align:middle}
+.foot-legal{display:flex;gap:.6rem;flex-wrap:wrap}
+.foot-legal a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.foot-legal a:hover{color:var(--indigo)}
+
+.game-cards{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;
+  gap:1.1rem}
+.game-card{border:1px solid var(--rule);background:var(--panel);padding:1rem 1.2rem}
+.card-head{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.card-head h2{margin:0;font-size:1.15rem;font-weight:600}
+.card-head h2 a{color:inherit;text-decoration:none}
+.card-head h2 a:hover{color:var(--indigo)}
+.score-strip{list-style:none;margin:.6rem 0 0;padding:0;display:flex;gap:1rem;flex-wrap:wrap}
+.score-strip .score-row{display:flex;gap:.35rem;align-items:baseline;font-size:.9rem}
+.score-strip .seat{color:var(--ink-soft)}
+.score-strip .score{font-family:var(--mono)}
+.score-strip .score.pos{color:var(--indigo)}
+.score-strip .score.neg{color:var(--oxblood)}
+.game-card .byline{font-style:italic;margin:.7rem 0 0}
+.game-card .observations{margin-top:.6rem;border-top:1px dashed var(--rule);padding-top:.5rem}
+.game-card .observations summary{font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);cursor:pointer}
+.card-footer{list-style:none;margin:.7rem 0 0;padding:.6rem 0 0;border-top:1px solid var(--rule);
+  display:flex;gap:1rem;flex-wrap:wrap;font-size:.85rem}
+.card-footer a{color:inherit}
+#games-filter:empty{display:none}
+
+.site-search-wrap{position:relative}
+.site-search-results{position:absolute;top:100%;left:0;right:0;z-index:20;
+  background:var(--panel);border:1px solid var(--rule);max-height:60vh;overflow:auto;
+  padding:.3rem .8rem;margin:0}
+.site-search-results:empty{display:none}
+.site-search-results .ss-none{color:var(--ink-faint);font-size:.85rem;padding:.4rem 0;
+  list-style:none}
+.site-search-results a[role="option"].active,
+.site-search-results a[role="option"]:hover{background:var(--paper-2)}
+
+.engine-section{margin-top:2.2rem}
+.engine-section:first-of-type{margin-top:0}
+.validation-callout{border:1px solid var(--rule);background:var(--panel);
+  padding:.9rem 1.1rem;margin:1rem 0}
+.validation-callout h3{margin:0 0 .4rem;font-size:.95rem}
+.validation-callout .note{color:var(--ink-soft);font-size:.85rem;margin-top:.5rem}
+.paraphrase-note{color:var(--ink-soft);font-size:.85rem;margin:.4rem 0 1rem}
+.rule-list{list-style:none;margin:1rem 0 0;padding:0}
+.rule-row{border-bottom:1px solid var(--rule);padding:.6rem 0;display:flex;gap:.7rem}
+.rule-row:last-child{border-bottom:none}
+.rule-row .rule-num{font-family:var(--mono);font-size:.8rem;color:var(--ink-faint);
+  flex:none;width:3.4rem}
+.rule-row .rule-tag{display:block;font-family:var(--mono);font-size:.6rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+.rule-row .rule-text{flex:1}
+
+.champ-list,.game-list{list-style:none;margin:0;padding:0}
+.champ-row,.game-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
+.champ-row:last-child,.game-row:last-child{border-bottom:none}
+.champ-row h3,.game-row h3{margin:0 0 .3rem;font-size:1.15rem}
+.champ-row .findings{color:var(--oxblood);font-size:.85rem;margin-top:.4rem}
+.stats-table{width:100%;border-collapse:collapse;margin-top:1rem}
+.stats-table td,.stats-table th{padding:.4rem 0;border-bottom:1px solid var(--rule);
+  text-align:left;font-size:.92rem}
+.hero-note{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint)}
+
+/* ── Batch 10.4 (Q44): interactive layer, injected by webassets/stats.js + search.js ──
+   No control here renders without script — see each .js file's own header comment. */
+.stats-table th.sortable{cursor:pointer}
+.stats-table th.sortable:hover{color:var(--indigo)}
+.stats-table th.sortable:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.stats-table th.sort-asc::after{content:" \25B2"}
+.stats-table th.sort-desc::after{content:" \25BC"}
+#alignment-table td.hl,#alignment-table th.hl{background:rgba(35,64,122,.14)}
+.search-results{list-style:none;margin:1rem 0 0;padding:0}
+.search-results a:hover .tag{color:var(--indigo);border-color:var(--indigo)}
+/* results are grouped by game: one .game-group block per matching game, its matching
+   rules/proposals/champions listed beneath (webassets/search.js). */
+.search-results .game-group{border-bottom:1px solid var(--rule);padding:.8rem 0}
+.search-results .game-group:last-child{border-bottom:none}
+.search-results .game-head{color:inherit;text-decoration:none;display:flex;gap:.5rem;
+  align-items:baseline;flex-wrap:wrap;font-weight:600;font-size:1.05rem}
+.search-results .game-head:hover .game-label{color:var(--indigo)}
+.search-results .game-head .tally{font-weight:400}
+.search-results .game-hits{list-style:none;margin:.4rem 0 0;padding:0 0 0 .9rem;
+  border-left:2px solid var(--rule)}
+.search-results .game-hits li{padding:.28rem 0}
+.search-results .game-hits a{color:inherit;text-decoration:none;display:flex;gap:.5rem;
+  align-items:baseline;flex-wrap:wrap;font-size:.9rem}
+.search-results .hit-id{font-family:var(--mono);font-size:.7rem;color:var(--ink-faint);
+  white-space:nowrap}
+.search-results .hit-text{color:var(--ink-soft)}
+/* filter chips — injected by search.js, so a no-JS reader never sees a dead chip. */
+.facets{display:flex;flex-direction:column;gap:.5rem;margin:0 0 .3rem}
+.facet{display:flex;gap:.4rem;align-items:baseline;flex-wrap:wrap}
+.facet-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);min-width:5rem}
+.facet input[type="search"]{font:inherit;padding:.25rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;min-width:12rem}
+.facet input[type="search"]:focus-visible{outline:2px solid var(--indigo);
+  outline-offset:1px}
+.chip{font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;
+  background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);border-radius:0;
+  min-width:44px;min-height:44px}
+.chip:hover{color:var(--indigo);border-color:var(--indigo)}
+.chip:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.chip.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+/* Amends R102/R109 (§9.9.4/§9.9.12): the /games/ filter's aria-live result-count region
+   -- visually-quiet (small, muted), never hidden -- webassets/site-filter.js injects it
+   and keeps its text current on every filter/sort change. */
+.filter-status{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;
+  color:var(--ink-faint);margin:.3rem 0 0}
+
+/* R109 (a11y pass): several eyebrow-styled section labels became real heading (h1/h2)
+   elements (site_writer's own eyebrow rule, above via SITE_CSS, sets no font-weight at
+   all -- a div inherits normal/400, but a bare heading element's UA stylesheet defaults
+   to bold/700). This override keeps every eyebrow visually identical regardless of
+   which tag now carries the class. */
+h1.eyebrow,h2.eyebrow{font-weight:400}
+</style>
+<script>(function(){try{var d=document.documentElement,t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}d.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GBSLVXYDQL"></script>
+<script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-GBSLVXYDQL');</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead site-header">
+  <div class="header-bar">
+    <a class="brand" href="../../index.html">
+      <span class="site-icon" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="nomaic-icon-title">
+<title id="nomaic-icon-title">nomAIc — an open scroll</title>
+<style>
+.parchment{fill:#f3e9d2}
+.roll{fill:#e7d8b5;stroke:#8a6d3b;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.edge{fill:none;stroke:#8a6d3b;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ink{fill:#3d2f1a}
+@media (prefers-color-scheme: dark){
+  .parchment{fill:#3a3226}
+  .roll{fill:#4a4030;stroke:#c9b98a}
+  .edge{stroke:#c9b98a}
+  .ink{fill:#e8dfc5}
+}
+</style>
+<path class="parchment" d="M16,16 L48,16 C44,26 44,38 48,48 L16,48 C20,38 20,26 16,16 Z"/>
+<path class="edge" d="M16,16 C20,26 20,38 16,48"/>
+<path class="edge" d="M48,16 C44,26 44,38 48,48"/>
+<rect class="roll" x="10" y="8" width="44" height="8" rx="4"/>
+<circle class="roll" cx="12" cy="12" r="3"/>
+<circle class="roll" cx="52" cy="12" r="3"/>
+<path class="edge" d="M52,9 C57,6 59,7 60,4"/>
+<rect class="roll" x="10" y="48" width="44" height="8" rx="4"/>
+<circle class="roll" cx="12" cy="52" r="3"/>
+<circle class="roll" cx="52" cy="52" r="3"/>
+<path class="edge" d="M12,55 C7,58 5,57 4,60"/>
+<text x="32" y="39" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="22" class="ink">N</text>
+</svg>
+</span>
+      <span class="mark">§</span> NomAIc
+    </a>
+    <details class="nav-menu" open>
+      <summary aria-label="Site navigation menu">Menu</summary>
+      <nav class="site-nav" aria-label="Primary"><a href="../../games/index.html">Games</a><a href="../../players/index.html" aria-current="page">Players</a><a href="../../engine/index.html">Engine</a><a href="../../stats/index.html">Stats</a><a href="../../about/index.html">About</a></nav>
+    </details>
+  <div class="site-search-wrap">
+  <form action="../../games/" method="get" role="search" class="site-search">
+    <label for="site-search-q" class="visually-hidden">Search the archive</label>
+    <input type="search" name="q" id="site-search-q" placeholder="Search the archive" autocomplete="off">
+    <button type="submit">Search</button>
+  </form>
+  </div>
+    <button id="theme-toggle" type="button" aria-label="Switch theme">&#9680;</button>
+  </div>
+</header>
+<div class="wrap">
+<main id="main">
+<article class="player-card"><header class="player-head"><span class="player-initials" aria-hidden="true">CA</span><div class="player-head-text"><h1>Carnap</h1><span class="epithet">precisely neutral proceduralist</span><p class="seated-range">Seated games 40&ndash;77</p></div><span class="model-tag">phi-4</span></header><table class="player-stats"><tbody><tr><th scope="row">Games</th><td class="val">4</td></tr><tr><th scope="row">Rules authored</th><td class="val">0</td></tr><tr><th scope="row">Avg end score</th><td class="val">+14.5</td></tr><tr><th scope="row">Wins</th><td class="val">0</td></tr></tbody></table><details class="persona"><summary>Persona</summary><p class="persona-text">You are a principled proceduralist. You support only rules you could accept if any player invoked them against you, you insist that procedures be stated precisely, and you vote your principles even when it costs you points.</p></details><p class="learnings">Closed exactly at zero on the phi-4 lineage, in a game whose entire spread ran from -1 to +63 — a principled-proceduralist persona that produced neither gain nor loss in its debut appearance.</p><p class="player-games-compact">Games: <a href="../../games/040/site/index.html">40</a> <a href="../../games/041/site/index.html">41</a> <a href="../../games/055/site/index.html">55</a> <a href="../../games/077/site/index.html">77</a></p><p class="model-siblings">Other phi-4 seats: <a href="../Frege/index.html">Frege</a> <a href="../Quine/index.html">Quine</a> <a href="../Russell/index.html">Russell</a> <a href="../Wittgenstein/index.html">Wittgenstein</a></p></article>
+</main>
+<footer class="foot">
+  <div class="foot-brand">
+    <a href="https://www.knivesonstrings.com">knives on strings</a>
+    <span class="copyright">&copy; 2026 Knives on Strings</span>
+    <span class="tagline">a Knives On Strings production</span>
+  </div>
+  <div class="foot-icons"><a href="https://x.com/KnivesOnStrings" aria-label="Knives On Strings on X"><img src="../../assets/footer/x.svg" alt="Knives On Strings on X"></a><a href="https://knivesonstrings.gumroad.com" aria-label="Knives On Strings on Gumroad"><img src="../../assets/footer/gumroad.svg" alt="Knives On Strings on Gumroad"></a><a href="https://www.kvraudio.com/developer/knives-on-strings" aria-label="Knives On Strings on KVR Audio"><img src="../../assets/footer/kvr.svg" alt="Knives On Strings on KVR Audio"></a><a href="https://ko-fi.com/knivesonstrings" aria-label="Support Knives On Strings on Ko-fi"><img src="../../assets/footer/kofi.svg" alt="Support Knives On Strings on Ko-fi"></a><a href="https://bsky.app/profile/nomaic.bsky.social" aria-label="Knives On Strings on Bluesky (@nomaic.bsky.social)"><img src="../../assets/footer/bluesky.svg" alt="Knives On Strings on Bluesky (@nomaic.bsky.social)"></a><a href="https://github.com/Knives-On-Strings/nomAIc-public" aria-label="The nomAIc public archive on GitHub"><img src="../../assets/footer/github.svg" alt="The nomAIc public archive on GitHub"></a></div>
+  <div class="foot-legal">
+    <a href="https://www.knivesonstrings.com/legal">Legal</a>
+    <a href="https://www.knivesonstrings.com/terms">Terms</a>
+    <a href="https://www.knivesonstrings.com/privacy-policy">Privacy Policy</a>
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+  </div>
+</footer>
+</div>
+
+<script type="module" src="../../site-search.js"></script>
+<script type="module" src="../../site-theme.js"></script>
+</body>
+</html>

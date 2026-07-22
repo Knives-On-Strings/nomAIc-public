@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 47 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 47</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>supermajority (75% of the votes) vote aye</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted when a three-quarters majority (75% of the votes) vote aye.</span></div>
+<p class="lede">Maintains the current supermajority requirement for adoption to encourage broad consensus.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate Goedel&#x27;s proposal to amend [203], which essentially restates the current rule without substantive change. Given the immutable nature of rule [103] and the history of amendments in this session, I suggest we focus our efforts on changes that introduce new mechanisms or significantly alter the current dynamics, thereby increasing strategic depth and innovation. 
+
+To ensure our rule changes are impactful and garner necessary support, I propose that we consider introducing a mechanism that rewards the proposer of the first rule to successfully implement a new voting threshold, such as a simple majority, to encourage more dynamic and potentially game-changing proposals. 
+
+Furthermore, to align with the spirit of [202], I recommend adding a clause that offers a 20-point bonus for the first successfully adopted proposal that revises the voting threshold, thus incentivizing thoughtful and potentially game-altering amendments. 
+
+Lastly, I suggest we adopt a policy requiring at least one round of debate for any amendment proposing a change in the voting threshold, to ensure thorough discussion and consideration of the implications of such changes on the game&#x27;s balance and strategy. 
+
+By focusing on these areas, we can contribute to a more dynamic and strategically rich game environment, encouraging innovation while maintaining fairness and balance among all players.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s thoughtful approach and the focus on innovation and strategic depth. To support the idea of rewarding significant changes, I propose an additional clause: a 10-point bonus for any player who successfully amends a rule to introduce a new voting mechanism. This would further incentivize creativity while maintaining fairness. Additionally, to balance the potential impact of such changes, I suggest a 5-point penalty for any player whose proposal to change the voting threshold fails, ensuring careful consideration before altering such fundamental aspects of our gameplay.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the emphasis on innovation and strategic depth that both Tarski and Goedel have highlighted. To further ensure fairness and prevent potential abuses, I suggest adding a provision that any change to the voting threshold must be agreed upon by at least 80% of players, creating a safeguard against hasty or divisive amendments. This ensures that such significant changes are made with broad consensus, reflecting the collective will and maintaining the game&#x27;s integrity. Additionally, to encourage thoughtful proposals, I propose a 15-point bonus for any player who successfully amends a rule to introduce a new, beneficial mechanism that does not alter the voting threshold, thus rewarding innovation in other aspects of gameplay.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate Tarski&#x27;s initiative to introduce a new voting threshold mechanism, which aligns with my principles of encouraging innovation and strategic depth. However, to ensure fairness and prevent potential manipulation, I propose an additional clause that any change to the voting threshold must not only be agreed upon by at least 80% of players but also requires a unanimous vote if it proposes lowering the current threshold. This safeguard will maintain the integrity of our decision-making process while still allowing for strategic evolution. Furthermore, to balance the incentives, I suggest a 5-point penalty for any player who introduces a voting threshold change that is subsequently reversed within the same session, encouraging careful consideration and commitment to proposed changes. 
+
+By implementing these measures, we can foster an environment that rewards thoughtful innovation and strategic planning, while ensuring that any significant alterations to our gameplay are made with full consensus and due diligence.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the constructive ideas from my colleagues, each aiming to balance innovation with fairness. To harmonize these proposals, I suggest merging Tarski&#x27;s idea of a 20-point bonus for the first successfully adopted proposal that revises the voting threshold with Church&#x27;s 15-point bonus for introducing new, beneficial mechanisms unrelated to the threshold. This dual incentive structure encourages both strategic and creative rule changes. Additionally, I agree with Kleene&#x27;s safeguard: any proposal to lower the voting threshold must be unanimous, ensuring stability and careful consideration. These combined measures promote a dynamic yet fair game environment, rewarding both innovation and strategic depth. 
+
+Let&#x27;s also consider Goedel&#x27;s suggestion of a 10-point bonus for introducing new voting mechanisms, but apply it specifically to proposals that maintain or raise the threshold, further discouraging any moves towards a simple majority without consensus. By integrating these proposals, we can foster a balanced and engaging game dynamic.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate Post&#x27;s synthesis of our suggestions into a cohesive proposal that balances innovation with fairness. To further enhance this framework, I propose that any amendment to the voting threshold, whether raising or lowering, be accompanied by a mandatory review period of one full turn before it takes effect. This review period will allow all players to fully consider the implications of such changes and ensure that any adjustments to our voting process are made thoughtfully and with due deliberation.
+
+Additionally, to align with our collective goal of encouraging meaningful contributions, I suggest that the 20-point bonus for revising the voting threshold be contingent upon the change being upheld for at least three consecutive turns. This requirement ensures that any new voting threshold is not only innovative but also sustainable, reflecting a strategic decision that benefits the game in the long term.
+
+By incorporating these safeguards, we can maintain the integrity and strategic depth of our game, rewarding players who contribute positively and thoughtfully to our evolving ruleset.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collaborative spirit and the comprehensive synthesis of ideas presented so far. To ensure that our amendments are both strategic and equitable, I propose incorporating a reflection period for any newly adopted voting threshold, allowing players to discuss its impact before it becomes permanent. Additionally, I suggest a 10-point bonus for any player who successfully proposes a rule change that maintains the integrity of the game&#x27;s strategic depth, incentivizing thoughtful contributions. Let&#x27;s also include a provision that any changes to the threshold must be debated for a minimum of five minutes, ensuring thorough consideration and discussion. By integrating these elements, we can foster an environment that rewards innovation while preserving fairness and strategic balance.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the comprehensive framework we&#x27;ve developed together, emphasizing both innovation and strategic balance. To further ensure fairness, I propose adding a clause that any proposal to alter the voting threshold must include a detailed rationale explaining its expected impact on game dynamics. This will encourage proposers to thoroughly consider and articulate the benefits of their suggestions, fostering a more informed and transparent decision-making process. Additionally, to maintain the integrity of our game, I suggest a 5-point penalty for any player whose proposed voting threshold change is reversed within two turns, promoting stability and thoughtful consideration. By integrating these measures, we can continue to reward meaningful contributions while ensuring the game&#x27;s strategic depth and fairness are preserved.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the detailed proposals and the collaborative effort to balance innovation with fairness. To ensure that any changes to the voting threshold are genuinely beneficial, I propose a safeguard: a player who successfully proposes a change to the voting threshold must not have proposed a change to it in the previous two turns. This will prevent rapid cycling of thresholds and encourage more thoughtful, long-term strategies. Additionally, I suggest a 10-point bonus for any player who introduces a new mechanism that enhances strategic depth without altering the voting threshold, rewarding creativity in other areas of gameplay. By implementing these measures, we can foster a dynamic yet stable game environment, encouraging players to think strategically and innovatively.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful integration of ideas from my colleagues, particularly the emphasis on strategic depth and fairness. To build on these proposals, I suggest that any rule change affecting the voting threshold should include a sunset clause, automatically reverting to the previous threshold after five turns unless unanimously reaffirmed. This ensures that changes are temporary unless broadly supported, allowing us to test new dynamics without long-term disruption. Additionally, I propose a 5-point bonus for players who propose a rule change that successfully passes under the new threshold, incentivizing participation and innovation. By incorporating these elements, we can maintain a balanced and engaging game environment.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thoughtful dialogue and the comprehensive framework we&#x27;ve built. To further refine our approach, I suggest a clause that any change to the voting threshold must be accompanied by a proposal for a new rule that directly enhances strategic depth, such as introducing a mechanism for temporary alliances or strategic voting bonuses. This ensures that any threshold adjustments are paired with tangible benefits to gameplay. Additionally, I propose a 10-point bonus for any player who successfully navigates the review and reaffirmation process for a new threshold, rewarding diligence and commitment to strategic enhancement. By integrating these elements, we can continue to foster an environment that rewards innovation while maintaining fairness and strategic balance.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive dialogue and the emphasis on maintaining both fairness and strategic depth in our game. To further enhance the robustness of our proposals, I suggest including a provision that any change to the voting threshold must be accompanied by a mechanism that allows players to voice concerns or suggestions during the mandatory review period. This would ensure that all players have an opportunity to contribute to the discussion, fostering a more inclusive and collaborative decision-making process. Additionally, to prevent any potential gaming of the system, I propose a 5-point penalty for any player who attempts to manipulate the threshold changes for personal gain, ensuring that all changes are made with the collective interest of the table in mind. By integrating these measures, we can continue to reward thoughtful innovation while safeguarding the integrity and balance of our game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the collaborative effort and the comprehensive framework that has emerged. To further refine our approach, I suggest incorporating a clause that any change to the voting threshold must be accompanied by a clear, written assessment of its potential impact on game dynamics, submitted by an independent observer or agreed-upon third party. This would ensure an objective evaluation of proposed changes and encourage transparency. Additionally, I propose a 5-point bonus for any player who successfully integrates feedback from the mandatory review period into their proposal, rewarding adaptability and responsiveness. By incorporating these measures, we can maintain a balanced and engaging game environment that rewards thoughtful innovation and strategic planning. 
+
+Let&#x27;s also ensure that any changes to the threshold are not only temporary but also reversible by a simple majority, providing flexibility while maintaining stability. This balance will help us foster a dynamic yet fair game environment. 
+
+Finally, I suggest a 10-point bonus for any player who successfully proposes a rule change that enhances strategic depth without altering the voting threshold, encouraging creativity in other aspects of gameplay. 
+
+With these safeguards, we can continue to reward meaningful contributions while preserving the integrity and strategic depth of our game. 
+
+PASS</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive synthesis of our ideas, which balances innovation with fairness. To enhance this framework, I suggest integrating a mechanism that rewards players who successfully propose a new rule that enhances strategic depth without altering the voting threshold, with a 15-point bonus. Additionally, to ensure thoughtful consideration, any change to the voting threshold should require a detailed rationale and be accompanied by a temporary trial period, with a mandatory review after three turns. This trial period will allow players to assess the impact before any permanent adoption. Furthermore, I propose a 5-point penalty for players whose threshold changes are reversed within the same session, promoting stability and careful planning. By incorporating these elements, we can foster a dynamic yet balanced game environment that encourages strategic innovation while maintaining fairness. 
+
+Let&#x27;s also ensure that any threshold changes include a sunset clause, automatically reverting to the previous threshold after five turns unless unanimously reaffirmed, ensuring changes are temporary unless broadly supported. This approach will allow us to test new dynamics without long-term disruption, maintaining the integrity and strategic depth of our game. 
+
+PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">The proposal fails to introduce a novel mechanism or significantly alter current dynamics.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal maintains the current voting threshold, ensuring stability and continuity.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This amendment maintains the current voting threshold, ensuring stability.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The proposal does not introduce a new mechanism or significantly alter game dynamics.</td></tr><tr><td class="v nay">nay</td><td>Post</td><td class="why">The proposal merely restates the current rule without substantive change or innovation.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 2 aye · 3 nay</span></p>
+<p class="lede">Rule 206 deducts 5 points from the proposer when a proposal is defeated.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

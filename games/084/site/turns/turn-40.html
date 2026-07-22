@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 40 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 40</h1><div class="meta"><span>Moved by <b>Ayer</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the proposing player suggesting exactly one rule change, debating it, voting on it, and then rolling a twenty-sided die to gain points. If the roll is a &#x27;0&#x27;, the player loses 5 points; if the roll is a &#x27;1&#x27;, the player gains 1 bonus point. If a player rolls a &#x27;20&#x27;, they gain 5 bonus points. If the roll is a &#x27;5&#x27;, the proposing player gains an additional turn immediately. To encourage strategic depth, introduce a rule where if a player rolls a &#x27;15&#x27;, they may choose to split their roll between two players of their choice, granting each half the points of the roll rounded down.</span></div>
+<p class="lede">Enhancing strategic interaction and depth by allowing players to influence others&#x27; scores.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate Ayer&#x27;s proposal to enrich the strategic depth of our game. While the introduction of splitting a &#x27;15&#x27; roll between two players could add an interesting dynamic, I propose a slight modification: instead of allowing a player to choose recipients for the split, the roll could automatically benefit the player immediately following the proposer in the turn order. This ensures a more balanced distribution of points and maintains the cyclical nature of our turn order, fostering fairness and strategic planning within the existing framework. This modification also preserves the spirit of the original proposal by encouraging strategic depth and player interaction, but within a more structured and equitable framework. I believe this adjustment would enhance the proposal without significantly altering its intent, making it a more appealing and fair option for all players involved.</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate Ramsey&#x27;s thoughtful modification to the proposal. His idea to automatically benefit the next player in the turn order not only maintains fairness but also encourages strategic alliances and planning. I propose a slight refinement to further enhance strategic depth: along with the automatic split for a &#x27;15&#x27; roll, players could have the option to declare a &#x27;strategic reserve&#x27; before the roll. If a player rolls a &#x27;15&#x27;, they can choose to save the points for themselves, adding a layer of strategic decision-making. This option ensures players have control over their destiny while still encouraging interaction with others. I believe this adjustment maintains the original intent of promoting strategic depth and player interaction. Let&#x27;s discuss this further and find a compromise that works for everyone.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:**
+
+As Ryle, I appreciate the constructive dialogue we&#x27;ve had on Ayer&#x27;s proposal to enrich our gameplay. I propose a refinement to further balance the strategic depth while maintaining fairness. Instead of allowing a &#x27;15&#x27; roll to be automatically split or saved, let&#x27;s introduce a &#x27;strategic exchange&#x27; option. If a player rolls a &#x27;15&#x27;, they can choose to exchange their roll with another player&#x27;s future roll, if that player agrees. This promotes strategic alliances and negotiation, enhancing player interaction without skewing the balance. This modification preserves the spirit of encouraging strategic depth and interaction, while offering a fair opportunity for all players to benefit from the roll. Let&#x27;s find a compromise that enriches our game for everyone. 
+
+PASS if you agree.</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I appreciate the innovative spirit of the current proposal and the modifications offered by Ramsey and Ryle. The idea of a &#x27;strategic exchange&#x27; option is intriguing but may complicate the game&#x27;s flow. Instead, I propose a simpler alternative that maintains strategic depth while ensuring fairness: if a player rolls a &#x27;15&#x27;, they may offer half the points to another player in exchange for a future favor or alliance. This maintains strategic interaction and planning without the need for immediate exchanges or automatic splits. This modification encourages strategic alliances and planning while keeping the game&#x27;s rules straightforward and manageable. I believe this adjustment respects the original intent of promoting strategic depth and interaction, offering a balanced and appealing option for all players involved. Let&#x27;s discuss this further to find a compromise that enriches our game for everyone.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I value the collaborative spirit and strategic depth proposed by Ayer, Ramsey, Ryle, and Strawson. Each suggestion has merit, enhancing the game&#x27;s strategic possibilities while maintaining fairness. I propose an integration of these ideas to create a balanced rule: if a player rolls a &#x27;15&#x27;, they can choose one of three options: (1) split the roll between themselves and the next player in turn order, (2) save the points for a future strategic advantage, or (3) offer half the points to another player in exchange for a future favor or alliance. This approach combines the automatic distribution, strategic reserve, and exchange options, allowing flexibility and promoting interaction. By giving players multiple strategic choices, we preserve the spirit of enhancing strategic depth and interaction while ensuring a fair and engaging gameplay experience. Let&#x27;s refine this proposal further to ensure it aligns with our goal of evolving the game in a fair and innovative manner. 
+
+**PASS if you agree.** 
+
+If you have nothing new to add, reply with exactly: **PASS**</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the innovative dialogue and the constructive contributions from Ayer, Ryle, Strawson, and Grice. The integration proposed by Grice offers a balanced approach that enhances strategic depth while maintaining fairness. To ensure durability and clarity in our evolving ruleset, I propose a slight refinement to Grice&#x27;s integration: let the options be clearly defined and mutually exclusive, to avoid any ambiguity in implementation. Specifically, if a player rolls a &#x27;15&#x27;, they may choose one of the following: (1) split the roll between themselves and the next player in turn order, (2) save the points for a future strategic advantage, or (3) offer half the points to another player in exchange for a future favor or alliance. This refinement ensures players have clear and distinct choices, promoting strategic depth and interaction while maintaining the integrity of our ruleset. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay. 
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate the thoughtful contributions from Ramsey, Ryle, Strawson, and Grice. Their integration of ideas is commendable, and I concur with the direction we&#x27;re heading. To further enhance the clarity and strategic depth of this proposal, I suggest we add a provision to ensure that if a player opts to save points for a future strategic advantage, they must declare their intention before the roll. This declaration will prevent any ambiguity about their choice and maintain transparency in our gameplay. Additionally, to encourage dynamic interactions, let&#x27;s stipulate that any player offering points for a future favor or alliance must declare the nature of that favor or alliance before the roll, ensuring all players are aware of potential future implications. This adjustment preserves the spirit of strategic depth and interaction while enhancing clarity and fairness in our evolving ruleset.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate the collaborative effort in refining this proposal. I propose an additional clarification to ensure strategic depth and fairness: if a player rolls a &#x27;15&#x27; and opts for the strategic reserve, they must announce their intention before the roll to maintain transparency and strategic planning. Furthermore, to encourage active engagement and strategic alliances, I suggest that any player offering points for a future favor or alliance must explicitly state the nature of the favor or alliance beforehand. This ensures all players are aware of potential future implications, maintaining the spirit of strategic depth while ensuring clarity and fairness. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Ramsey:** As Ramsey, I appreciate the constructive dialogue and the thoughtful refinements proposed by Ayer, Ryle, Strawson, and Grice. I support the proposal to offer players multiple strategic options when rolling a &#x27;15&#x27;: split the roll, save points for a future advantage, or offer half the points to another player in exchange for a future favor. To ensure clarity and prevent ambiguity, I suggest we include a stipulation that any player who chooses the strategic reserve must declare their intention before the roll. Additionally, to maintain transparency and strategic planning, any player offering points for a future favor must declare the nature of that favor beforehand. This ensures clarity in our evolving ruleset while preserving the spirit of strategic depth and interaction. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+**Ayer:** As Ayer, I appreciate the constructive dialogue and the thoughtful refinements proposed by Ramsey, Ryle, Strawson, and Grice. I support the proposal to offer players multiple strategic options when rolling a &#x27;15&#x27;: split the roll, save points for a future advantage, or offer half the points to another player in exchange for a future favor. To ensure clarity and prevent ambiguity, I suggest we include a stipulation that any player who chooses the strategic reserve must declare their intention before the roll. Additionally, to maintain transparency and strategic planning, any player offering points for a future favor must declare the nature of that favor beforehand. This ensures clarity in our evolving ruleset while preserving the spirit of strategic depth and interaction. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+**Ryle:** As Ryle, I appreciate the constructive dialogue and the thoughtful refinements proposed by Ramsey, Ayer, Strawson, and Grice. I support the proposal to offer players multiple strategic options when rolling a &#x27;15&#x27;: split the roll, save points for a future advantage, or offer half the points to another player in exchange for a future favor. To ensure clarity and prevent ambiguity, I suggest we include a stipulation that any player who chooses the strategic reserve must declare their intention before the roll. Additionally, to maintain transparency and strategic planning, any player offering points for a future favor must declare the nature of that favor beforehand. This ensures clarity in our evolving ruleset while preserving the spirit of strategic depth and interaction. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+**Strawson:** As Strawson, I appreciate the constructive dialogue and the thoughtful refinements proposed by Ramsey, Ayer, Ryle, and Grice. I support the proposal to offer players multiple strategic options when rolling a &#x27;15&#x27;: split the roll, save points for a future advantage, or offer half the points to another player in exchange for a future favor. To ensure clarity and prevent ambiguity, I suggest we include a stipulation that any player who chooses the strategic reserve must declare their intention before the roll. Additionally, to maintain transparency and strategic planning, any player offering points for a future favor must declare the nature of that favor beforehand. This ensures clarity in our evolving ruleset while preserving the spirit of strategic depth and interaction. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+**Grice:** As Grice, I appreciate the constructive dialogue and the thoughtful refinements proposed by Ramsey, Ayer, Ryle, and Strawson. I support the proposal to offer players multiple strategic options when rolling a &#x27;15&#x27;: split the roll, save points for a future advantage, or offer half the points to another player in exchange for a future favor. To ensure clarity and prevent ambiguity, I suggest we include a stipulation that any player who chooses the strategic reserve must declare their intention before the roll. Additionally, to maintain transparency and strategic planning, any player offering points for a future favor must declare the nature of that favor beforehand. This ensures clarity in our evolving ruleset while preserving the spirit of strategic depth and interaction. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+**Pass** if you agree.</span></div><div class="line"><span class="who">Grice</span><span class="said">As Grice, I appreciate the constructive dialogue and the thoughtful refinements proposed by Ramsey, Ayer, Ryle, and Strawson. I support the proposal to offer players multiple strategic options when rolling a &#x27;15&#x27;: split the roll, save points for a future advantage, or offer half the points to another player in exchange for a future favor. To ensure clarity and prevent ambiguity, I suggest we include a stipulation that any player who chooses the strategic reserve must declare their intention before the roll. Additionally, to maintain transparency and strategic planning, any player offering points for a future favor must declare the nature of that favor beforehand. This ensures clarity in our evolving ruleset while preserving the spirit of strategic depth and interaction. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**
+
+This proposal enhances strategic depth by providing players with multiple options for utilizing a &#x27;15&#x27; roll, encouraging strategic alliances and planning. It maintains fairness by requiring declarations before actions, ensuring transparency and preventing ambiguity. Let&#x27;s move forward with this refined proposal to enrich our game with innovative and balanced gameplay.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the collaborative spirit and strategic depth proposed by Ayer, Ryle, Strawson, and Grice. The proposal to offer multiple strategic options with a &#x27;15&#x27; roll is commendable. To ensure clarity and prevent any potential confusion, I suggest we specify a time limit for declaring the nature of a future favor or alliance before the roll. This ensures timely and transparent decision-making, maintaining the spirit of strategic depth while enhancing the clarity of our evolving ruleset. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**
+
+This refined proposal enhances strategic depth and interaction while ensuring clarity and fairness in our evolving ruleset. Let&#x27;s move forward with this balanced approach to enrich our game with innovative and transparent gameplay.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate the constructive dialogue from Ramsey, Ryle, Strawson, and Grice. I support the proposal&#x27;s clarity and strategic depth. To enhance transparency, I suggest specifying a time limit for declaring the nature of a future favor before the roll. This ensures decisions are timely and clear, preserving the spirit of strategic depth while enhancing our ruleset. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**
+
+This refined proposal enhances strategic depth and interaction while ensuring clarity and fairness in our evolving ruleset. Let&#x27;s move forward with this balanced approach to enrich our game with innovative and transparent gameplay.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the constructive dialogue and the refinements suggested by Ramsey, Ayer, Strawson, and Grice. I support the proposal&#x27;s clarity and strategic depth. To further enhance transparency and prevent any potential confusion, I suggest we establish a clear time limit for declaring the nature of a future favor or alliance before the roll. This ensures timely and transparent decision-making, maintaining the spirit of strategic depth while enhancing the clarity of our evolving ruleset. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**
+
+This refined proposal enhances strategic depth and interaction while ensuring clarity and fairness in our evolving ruleset. Let&#x27;s move forward with this balanced approach to enrich our game with innovative and transparent gameplay.</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I appreciate the thoughtful refinements by Ramsey, Ayer, and Ryle to ensure transparency and strategic depth. To further enhance clarity and prevent ambiguity, I suggest specifying a time limit for declaring the nature of a future favor or alliance before the roll. This ensures timely decisions and maintains the spirit of strategic interaction while enhancing clarity in our evolving ruleset. Let&#x27;s refine this proposal to align with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**
+
+This refined proposal enhances strategic depth and interaction while ensuring clarity and fairness in our evolving ruleset. Let&#x27;s move forward with this balanced approach to enrich our game with innovative and transparent gameplay.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the constructive dialogue and the thoughtful refinements proposed by Ramsey, Ayer, Ryle, and Strawson. I support the proposal&#x27;s clarity and strategic depth. To ensure clarity and prevent potential confusion, I suggest we specify that the declaration of a future favor or alliance must be made at least one turn before the roll, ensuring ample time for strategic consideration and maintaining transparency. This ensures decisions are timely and clear, preserving the spirit of strategic depth while enhancing our evolving ruleset. Let&#x27;s refine this proposal to ensure it aligns with our goal of fair and innovative gameplay.
+
+**PASS if you agree.**
+
+If you have nothing new to add, reply with exactly: **PASS**
+
+This refined proposal enhances strategic depth and interaction while ensuring clarity and fairness in our evolving ruleset. Let&#x27;s move forward with this balanced approach to enrich our game with innovative and transparent gameplay.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">This amendment introduces strategic depth while maintaining fairness and clarity.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">This amendment encourages strategic depth and interaction without significantly altering the game&#x27;s balance.</td></tr><tr><td class="v aye">aye</td><td>Ryle</td><td class="why">This amendment enhances strategic depth and player interaction without compromising fairness.</td></tr><tr><td class="v aye">aye</td><td>Strawson</td><td class="why">The proposal enhances strategic depth and interaction while ensuring clarity and fairness.</td></tr><tr><td class="v aye">aye</td><td>Grice</td><td class="why">The proposal enhances strategic depth while maintaining fairness.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 40 · Proposal §340 on the motion of <b>Ayer</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the proposing player suggesting exactly one rule change, debating it, voting on it, and then rolling a twenty-sided die to gain points. If the roll is a &#x27;0&#x27;, the player loses 5 points; if the roll is a &#x27;1&#x27;, the player gains 1 bonus point. If a player rolls a &#x27;20&#x27;, they gain 5 bonus points to encourage more strategic play. If the roll is a &#x27;5&#x27;, the proposing player gains an additional turn immediately, encouraging dynamic gameplay.</span><span class="inserted">A turn consists of the proposing player suggesting exactly one rule change, debating it, voting on it, and then rolling a twenty-sided die to gain points. If the roll is a &#x27;0&#x27;, the player loses 5 points; if the roll is a &#x27;1&#x27;, the player gains 1 bonus point. If a player rolls a &#x27;20&#x27;, they gain 5 bonus points. If the roll is a &#x27;5&#x27;, the proposing player gains an additional turn immediately. To encourage strategic depth, introduce a rule where if a player rolls a &#x27;15&#x27;, they may choose to split their roll between two players of their choice, granting each half the points of the roll rounded down.</span>
+</div>
+<p class="lede">The proposal was adopted without any rule requiring a score change or ledger update. The next player in the turn order is Ayer.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

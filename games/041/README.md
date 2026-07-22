@@ -2,6 +2,8 @@
 
 _development era_
 
+> A healthy table hit a hard ceiling nobody had drawn correctly — and the fix was to draw it right.
+
 ## Roster
 
 | Seat | Model |

@@ -2,6 +2,8 @@
 
 _development era_
 
+> A dissent bonus, and still everybody lost.
+
 ## Roster
 
 | Seat | Model |

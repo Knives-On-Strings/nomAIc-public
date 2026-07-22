@@ -1,0 +1,41 @@
+{
+  "game": 71,
+  "players": [
+    "Seneca",
+    "Epictetus",
+    "MarcusAurelius",
+    "Chrysippus",
+    "ZenoOfCitium"
+  ],
+  "ruleset": "full",
+  "turns": 18,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1685059668,
+  "started": "2026-07-21T03:36:47.318618+00:00",
+  "ended": "2026-07-21T04:00:21.590728+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Seneca": 2,
+    "Epictetus": 23,
+    "MarcusAurelius": 22,
+    "Chrysippus": 11,
+    "ZenoOfCitium": 1
+  },
+  "adoptions": 17,
+  "gm_model": "gemma-4-12b-q3",
+  "completed_at": "2026-07-21T04:00:21.590728+00:00"
+}

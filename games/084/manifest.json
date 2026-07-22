@@ -1,0 +1,43 @@
+{
+  "game": 84,
+  "players": [
+    "Ramsey",
+    "Ayer",
+    "Ryle",
+    "Strawson",
+    "Grice"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "turn limit reached"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[turn=41] missing_award: a rule change was adopted this turn but no player's score changed and no score_deltas_refused was recorded — either the GM correctly awarded nothing, or a score consequence was silently stripped for lacking a citable authority (SPEC EDGE-CASES.md); the log alone cannot tell which (a store recorded before R74's no_awards_declared marker existed)"
+    ]
+  },
+  "seed": 962512397,
+  "started": "2026-07-22T01:04:40.462431+00:00",
+  "ended": "2026-07-22T02:57:20.326226+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Ramsey": 11,
+    "Ayer": 1,
+    "Ryle": 16,
+    "Strawson": 0,
+    "Grice": 0
+  },
+  "adoptions": 41,
+  "gm_model": "phi-4-q2",
+  "completed_at": "2026-07-22T02:57:20.326226+00:00"
+}

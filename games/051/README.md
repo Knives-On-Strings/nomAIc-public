@@ -2,6 +2,8 @@
 
 _development era_
 
+> The same table, a healthier spread this time — four of five seats in the black.
+
 ## Roster
 
 | Seat | Model |

@@ -1,0 +1,43 @@
+{
+  "game": 87,
+  "players": [
+    "Laozi",
+    "ZhuXi",
+    "WangYangming",
+    "DongZhongshu",
+    "ShaoYong"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "turn limit reached"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[seq=220, turn=8] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': True, 'label': 'unanimous consent required (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority of those voting (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule"
+    ]
+  },
+  "seed": 510738100,
+  "started": "2026-07-21T16:02:13.420580+00:00",
+  "ended": "2026-07-21T17:26:46.515065+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Laozi": 21,
+    "ZhuXi": -46,
+    "WangYangming": 11,
+    "DongZhongshu": 65,
+    "ShaoYong": 10
+  },
+  "adoptions": 15,
+  "gm_model": "deepseek/deepseek-v3.2",
+  "completed_at": "2026-07-21T17:26:46.515065+00:00"
+}

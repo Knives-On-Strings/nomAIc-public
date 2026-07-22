@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 28 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 28</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>supermajority (70% of the votes) vote aye (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted when a supermajority (75% of the votes) vote aye.</span></div>
+<p class="lede">Adjusting the threshold to 75% balances fairness and strategic opportunities.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate Goedel&#x27;s proposal to increase the supermajority threshold to 75%. However, raising the bar may inadvertently stifle beneficial amendments, especially in cases where near-unanimous agreement already signifies strong support. We might consider a more nuanced adjustment, such as introducing a sliding scale based on the importance of the rule being changed, or perhaps a temporary adjustment mechanism to assess its impact before making it permanent. A flexible approach could preserve the spirit of consensus while allowing for necessary evolution. Alternatively, we could implement a trial period for this new threshold to evaluate its effects on our strategic dynamics and make data-informed decisions moving forward.
+
+PASS</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s thoughtful consideration of the proposal&#x27;s potential effects. To align with our collaborative spirit, I suggest we implement a trial period for the 75% threshold. This way, we can assess its impact on our decision-making process without committing to a permanent change immediately. If successful, it could enhance our strategic depth, but if not, we can revert to the original 70% supermajority. This approach allows us to adapt dynamically while maintaining the integrity of our decision-making.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Goedel&#x27;s suggestion for a trial period and Tarski&#x27;s emphasis on flexibility. Implementing a trial period for the 75% supermajority threshold seems like a prudent approach. However, to ensure it benefits us all, I propose we define specific criteria for evaluating its success. For instance, we could monitor the quality and frequency of rule changes during the trial and gather feedback from all players. If the trial yields positive outcomes, such as more thoughtful proposals and fairer decision-making, we can consider making the change permanent. Otherwise, we can revert to the 70% threshold. This way, we maintain a balance between innovation and stability.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the proposal for a trial period and the suggestion to establish criteria for evaluation. To ensure transparency and fairness, let&#x27;s include a mechanism for all players to provide feedback at the end of the trial, with a summary report being discussed before deciding on permanence. This approach allows us to collectively assess the impact and make informed decisions about the new threshold.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful discussion so far and the emphasis on flexibility and evaluation. To further refine our approach, I propose that during the trial period, we also track any shifts in player engagement and satisfaction with the rule-change process. This way, we ensure that the new threshold not only maintains strategic depth but also fosters a more inclusive and enjoyable environment for all players. By incorporating these metrics, we can make a comprehensive assessment of the trial&#x27;s impact on the game&#x27;s dynamics.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the detailed framework for the trial period and the criteria for evaluating its success. To build upon Church&#x27;s and Post&#x27;s suggestions, let&#x27;s ensure that the summary report includes both quantitative data (e.g., number of successful amendments) and qualitative feedback (e.g., player satisfaction). This comprehensive analysis will allow us to make a well-rounded decision about whether to retain the 75% threshold. Additionally, we could set a specific duration for the trial to maintain focus and urgency in our assessment.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive plan laid out by my esteemed colleagues. To further ensure that our trial period is both effective and efficient, I propose we set a clear timeline, perhaps a fixed number of turns, to complete the trial. This will give us a concrete timeframe for evaluation and decision-making, allowing us to focus on gathering meaningful insights while maintaining momentum in our strategic gameplay.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the constructive suggestions from everyone and the comprehensive plan we&#x27;ve developed for the trial period. To ensure a smooth transition and minimize disruption, I propose we also introduce a mechanism for temporarily adjusting the threshold back to 70% if any player raises concerns about the trial&#x27;s impact mid-way through. This safety valve approach will allow us to address any unforeseen issues promptly while still exploring the potential benefits of the 75% supermajority. 
+
+PASS</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the structured proposal for a trial period and the criteria for evaluating its success. However, to ensure that no player is unfairly disadvantaged during this trial, I propose that any rule change requiring the 75% threshold cannot be applied retroactively to affect decisions made before its implementation. This safeguard will prevent strategic manipulation during the trial and maintain fairness. If agreed, we can proceed with the trial while keeping this protective measure in place.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate Kleene&#x27;s proposal for a safeguard against retroactive rule changes, which ensures fairness during the trial. To further strengthen our trial framework, I suggest we include a mid-trial review where all players can propose adjustments to the trial conditions if necessary, based on observed impacts. This provision will allow us to dynamically address any unforeseen issues without compromising the trial&#x27;s integrity or strategic balance. Let&#x27;s aim for a trial period of 10 turns, with the mid-trial review scheduled halfway through, to ensure we gather comprehensive insights while maintaining flexibility.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the comprehensive framework for the trial period and the thoughtful inclusion of safeguards by Kleene and Post. To ensure robust and unbiased evaluation, I propose that the mid-trial review includes a formalized feedback session, where each player can present their observations and suggestions. This structured format will help us systematically assess the trial&#x27;s impact and make informed adjustments, if necessary, to maintain strategic balance and fairness. Let&#x27;s finalize this trial period for 10 turns, with the mid-trial review at turn 35, and ensure that any changes post-review are transparently communicated to all players.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the detailed structure and safeguards proposed for the trial period. To further ensure alignment with our collective goals, I suggest we also include a clause that allows any player to request an extension of the trial period by up to 5 additional turns if, at the mid-trial review, there is a consensus that more time is needed for a comprehensive evaluation. This flexibility can help us gather more insights and ensure that our decision is well-informed and reflects the collective experience of all players.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful contributions and the structured plan for the trial period. Church&#x27;s suggestion of a safety valve is particularly compelling, ensuring flexibility and fairness. To further enhance our decision-making process, I propose that any adjustments to the trial conditions during the mid-trial review require a simple majority vote, allowing us to adapt swiftly to any emerging dynamics. Let&#x27;s also commit to a post-trial reflection session to discuss our experiences and lessons learned, fostering continued improvement and strategic depth in our game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive structure and collaborative spirit reflected in our discussion on the trial period for the 75% supermajority threshold. To ensure that our trial remains fair and adaptable, I propose that any extension of the trial period beyond the initial 10 turns must be supported by a supermajority vote, thereby requiring broad consensus before we commit to additional time. This measure will help us maintain strategic balance and ensure that any decision to extend is well-supported by the majority. Let&#x27;s proceed with these terms to evaluate the impact effectively.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful contributions and the robust framework developed for the trial period of the 75% supermajority threshold. To further ensure that the trial is both fair and effective, I propose that any adjustments made during the mid-trial review should be documented and shared with all players before implementation. This transparency will help build trust and ensure that everyone is informed about changes, fostering a more collaborative and strategic environment. Let&#x27;s proceed with these terms, including a supermajority requirement for any trial extension, to evaluate the impact effectively. 
+
+PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal for a trial period with structured evaluation criteria is well-considered and promotes strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">I support the trial period with safeguards for evaluating the impact of the 75% threshold.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">The trial period for a 75% threshold is structured to evaluate its impact fairly, with safeguards in place.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">The trial period provides a balanced approach to evaluate the impact of the new threshold.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Supports trial period for assessing impact of 75% threshold.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 Turn 28 · Proposal §331 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when a supermajority (70% of the votes) vote aye.</span><span class="inserted">A rule change is adopted when a supermajority (75% of the votes) vote aye.</span>
+</div>
+<p class="lede">The proposal was adopted unanimously, so Goedel gains 30 points according to rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 48 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 48</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>simple majority after ten full circuits of turns (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To add a new rule</div><span class="inserted">A rule change that introduces a mechanism for periodic rule reviews, scheduled every ten turns, must be proposed and can be adopted with a simple majority. This review allows players to assess the current ruleset&#x27;s impact on gameplay and propose amendments for better balance and fairness.</span></div>
+<p class="lede">Facilitates ongoing adjustment and balance, ensuring the ruleset evolves with gameplay dynamics.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate Goedel&#x27;s proposal for periodic rule reviews, which could enhance the game&#x27;s adaptability and fairness. However, I am concerned that this could lead to frequent disruptions. I propose we limit the scope of these reviews to only assessing mutable rules, ensuring stability in our core principles. Let&#x27;s negotiate on the frequency to perhaps every fifteen turns instead, allowing for thoughtful reflection and fewer interruptions.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thoughtful contributions from Tarski and support the idea of limiting the review to mutable rules, as this aligns with maintaining core stability. I propose adopting the reviews every ten turns to ensure timely assessments without overwhelming our gameplay. By balancing frequency and scope, we can achieve a fairer and more adaptive rule environment. I&#x27;m open to negotiating further on this frequency, but I believe every ten turns strikes a good balance.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the intention behind Goedel&#x27;s proposal for periodic rule reviews, as it could lead to a more balanced and fair gameplay experience. However, I suggest we adopt these reviews every fifteen turns, as proposed by Tarski, to minimize disruptions and allow players more time to adapt to changes. Additionally, I propose that any rule changes resulting from these reviews should require a two-thirds majority to pass, ensuring that only widely supported amendments are adopted. This would help maintain stability and fairness in the game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the intention behind Goedel&#x27;s proposal and Tarski&#x27;s suggestion to limit reviews to mutable rules. However, I&#x27;m concerned about the potential for these reviews to be used strategically rather than for genuine balance and fairness. To address this, I propose that any rule changes from these reviews must also be approved by a simple majority in a separate vote within three turns of the review. This ensures that changes are carefully considered and agreed upon by the majority, maintaining fairness without frequent disruptions.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the collaborative spirit and thoughtful considerations brought forth by my fellow players. To address concerns about potential strategic manipulation and ensure that the periodic reviews genuinely enhance fairness and balance, I propose adding a condition that any rule changes proposed during these reviews must not directly benefit the proposer in terms of scoring or turn order. This ensures that the focus remains on collective improvement rather than individual advantage. Additionally, I support the fifteen-turn interval for reviews to allow sufficient time for players to adapt and reflect on changes, aligning with Tarski&#x27;s suggestion. Let&#x27;s work together to refine this proposal for the betterment of our game.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful dialogue and proposals from Goedel, Tarski, Church, Kleene, and Post. To balance adaptability with stability, I support the fifteen-turn interval proposed by Tarski and Church, which provides sufficient time for reflection and adaptation. Additionally, I agree with Post&#x27;s condition that rule changes from these reviews should not directly benefit the proposer, ensuring that the focus remains on collective improvement. To further enhance fairness, I suggest implementing a mechanism where any proposed amendments during these reviews are subject to a preliminary debate period of three turns, allowing all players ample time to discuss and refine the proposals before voting. This structured approach will help maintain the integrity and fairness of our game.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collaborative effort and insightful proposals from Tarski, Church, Kleene, and Post. To ensure that our periodic rule reviews are both effective and fair, I support the fifteen-turn interval and the two-thirds majority for adopting changes, as these measures strike a balance between adaptability and stability. I also agree with the condition that rule changes must not directly benefit the proposer, ensuring the focus remains on collective improvement. To further refine this proposal, I suggest incorporating a preliminary review stage where any proposed amendments during these reviews are initially discussed and refined in a closed session before being opened to the wider player group. This will allow for more focused discussions and prevent strategic manipulation, ensuring that only well-considered changes are brought forward for voting.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the constructive dialogue and the consensus-building efforts from Tarski, Goedel, Church, Kleene, and Post. To further ensure fairness and prevent strategic manipulation, I propose that any rule changes resulting from these periodic reviews require an additional confirmation vote within two turns of adoption, ensuring ongoing player agreement. This additional step will help maintain stability and fairness, as it allows all players to reaffirm their support for the changes after careful consideration. Additionally, I support the fifteen-turn interval and the preliminary review stage, as they collectively promote thoughtful reflection and minimize disruptions.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative spirit and thoughtful contributions from Tarski, Goedel, Church, Kleene, and Post. To further safeguard against strategic manipulation and ensure that the periodic reviews genuinely serve the collective interest, I propose that any amendments arising from these reviews be subjected to a public feedback round for one turn before voting. This allows all players to voice their thoughts and suggestions, promoting transparency and inclusiveness. Additionally, I support the fifteen-turn interval and the two-thirds majority for adopting changes to maintain balance and fairness. Let&#x27;s work together to refine this proposal for the betterment of our game.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful refinements from Tarski, Goedel, Church, and Kleene. To further enhance fairness and ensure the reviews are not used strategically, I propose adding a clause that any rule changes arising from these periodic reviews cannot be proposed again for another ten turns if defeated. This will prevent repeated attempts to push through unpopular changes and maintain focus on genuine improvements. Additionally, I support the fifteen-turn interval and the two-thirds majority requirement, as they collectively ensure stability and thoughtful consideration. Let&#x27;s finalize this proposal to benefit our collective gameplay experience.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful refinements and collaborative effort from Tarski, Goedel, Church, Kleene, and Post. To further promote stability and fairness, I propose that during these periodic reviews, a record of all proposed amendments, whether adopted or not, be maintained and publicly accessible for reference. This will encourage transparency and allow players to learn from past discussions, ensuring that future proposals are well-informed. I support the fifteen-turn interval, the two-thirds majority for adoption, and the additional steps proposed to prevent strategic manipulation and ensure genuine collective improvement.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive refinements and collaborative spirit shown by Tarski, Goedel, Church, Kleene, and Post. To further enhance the effectiveness of the periodic reviews, I suggest incorporating a mechanism where any rule change proposals must include a brief impact analysis, outlining potential effects on gameplay and fairness. This analysis will help players make more informed decisions, ensuring that adopted changes genuinely benefit the game. Additionally, I support the fifteen-turn interval, the two-thirds majority requirement, and the other safeguards against strategic manipulation. Let&#x27;s finalize this proposal for a fairer and more balanced gameplay experience.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thorough and collaborative refinements from Tarski, Goedel, Church, Kleene, and Post. To further ensure fairness and prevent strategic manipulation, I propose that any amendments proposed during these reviews must be co-sponsored by at least two other players, ensuring they reflect a collective interest rather than individual agendas. This requirement will enhance the integrity of the review process, promoting changes that are genuinely beneficial for all players. I support the fifteen-turn interval, the two-thirds majority for adoption, and the other proposed safeguards, as they collectively maintain balance and fairness in our game. Let&#x27;s move forward with these refinements for the betterment of our collective gameplay experience.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive refinements and the collaborative spirit demonstrated by Tarski, Goedel, Church, Kleene, and Post. To further promote procedural fairness and ensure that the periodic reviews align with our collective interests, I propose adding a clause that any proposed amendments must undergo a mandatory review by an impartial player who did not participate in the initial proposal. This step will provide an additional layer of scrutiny, ensuring that changes are balanced and equitable. I support the fifteen-turn interval, the two-thirds majority requirement, and the other safeguards against strategic manipulation to maintain fairness and stability in our game. Let&#x27;s finalize this proposal to benefit our collective gameplay experience.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive refinements and the collaborative spirit shown by Tarski, Goedel, Church, Kleene, and Post. To further enhance transparency and fairness, I propose that any amendments proposed during these reviews be subject to a brief summary presentation by the proposer, highlighting key points and anticipated impacts. This ensures all players have a clear understanding of the proposed changes before voting. Additionally, I support the fifteen-turn interval, the two-thirds majority requirement, and the other safeguards, as they collectively maintain balance and fairness in our game. Let&#x27;s finalize this proposal for a fairer and more adaptive gameplay experience.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">Frequent reviews may disrupt gameplay; a longer interval is preferable.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">This proposal encourages adaptive gameplay and fairness with periodic reviews.</td></tr><tr><td class="v nay">nay</td><td>Church</td><td class="why">The proposal lacks sufficient safeguards against strategic manipulation and could lead to frequent disruptions.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">Frequent reviews could disrupt gameplay and the ten-turn interval is too short for meaningful reflection.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Periodic reviews promote fairness and adaptability.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 2 aye · 3 nay</span></p>
+<p class="lede">Rule 206 states that a defeated proposal results in the proposer losing 5 points.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

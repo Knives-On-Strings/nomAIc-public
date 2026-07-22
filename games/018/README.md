@@ -2,6 +2,8 @@
 
 _development era_
 
+> Twenty turns, ten adoptions, and not one point changed hands.
+
 ## Roster
 
 | Seat | Model |

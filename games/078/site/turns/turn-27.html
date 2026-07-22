@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 27 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 27</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>two-thirds majority (§203)</span></div></header>
+<div class="eyebrow">The motion · 1 of 3</div>
+<div class="engrossed"><div class="caption">To add a new rule</div><span class="inserted">A player may propose a rule change that allows for an additional strategic action during their turn, but only if it passes a unanimous vote among all players.</span></div>
+<p class="lede">To introduce a mechanism that enhances strategic depth while ensuring consensus.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the spirit of strategic innovation in Goedel&#x27;s proposal. However, it&#x27;s important to consider the potential for gridlock; requiring unanimous consent for any rule change granting additional actions could paralyze play. To foster strategic depth while maintaining fluidity, I propose adding a clause: unanimous consent is required only if the additional action affects the turn order or scoring directly. Otherwise, a two-thirds majority should suffice. This balances strategic complexity with procedural efficiency.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s thoughtful suggestion, which seeks to balance strategic opportunities with play fluidity. To build on that, I propose we include a clause that any additional strategic action must be time-bound to ensure it doesn&#x27;t unduly extend turns. This way, we maintain depth and fairness while keeping the game dynamic.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the contributions from both Tarski and Goedel, which thoughtfully address strategic depth and game fluidity. To ensure fairness and prevent potential exploitation, I propose adding a clause that any additional strategic action proposed must not directly alter scores or turn order for the current proposer. This maintains strategic depth while safeguarding against self-serving rule changes, fostering a fairer game environment for all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the contributions from Tarski, Goedel, and Church, which collectively aim to balance strategic depth with fairness and efficiency. To build on these proposals, I suggest adding a clause that any additional strategic action must be reversible if not unanimously agreed upon within two full turns; this ensures that any contentious rule changes do not permanently disrupt game balance.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive considerations from Tarski, Goedel, Church, and Kleene, which together aim to balance strategic depth, fairness, and procedural efficiency. To enhance transparency and ensure that proposed strategic actions are well-understood, I propose adding a clause that requires a brief, structured explanation session before voting, allowing all players to clarify and discuss the implications of any additional actions. This fosters informed decision-making and aligns with our shared goal of evolving the game&#x27;s mechanisms.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the valuable insights and suggestions from Tarski, Goedel, Church, Kleene, and Post. To enhance the proposal further, I suggest adding a clause that any additional strategic action must be vetted by an independent review panel of non-participating observers, ensuring neutrality and preventing potential biases from affecting the outcome. This adds an extra layer of fairness and objectivity to the process.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive refinements and insights offered by Tarski, Goedel, Church, Kleene, and Post. To further ensure strategic actions are considered thoughtfully, I propose including a clause that requires any additional strategic action to be tested in a simulation phase before voting. This allows players to assess potential impacts and ensures that rule changes are beneficial and aligned with the game&#x27;s objectives.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive refinements and insights offered by Tarski, Goedel, Church, Kleene, and Post. To further ensure that strategic actions remain aligned with the game&#x27;s objectives and maintain fairness, I propose adding a clause that any additional strategic action must be documented in a publicly accessible log, reviewed post-game. This transparency measure will allow us to evaluate the impact of such actions on game dynamics and fairness over time, promoting a balanced and strategic evolution of the ruleset.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive enhancements suggested by Tarski, Goedel, Church, Kleene, and Post, which collectively aim to balance strategic depth, fairness, and transparency. To build on these proposals, I suggest incorporating a clause that requires any additional strategic action to undergo a preliminary review by all players, ensuring it aligns with the current ruleset and does not inadvertently introduce complexities that could disadvantage any player. This step will foster a collaborative environment, encouraging thoughtful rule changes that enhance the game&#x27;s strategic possibilities without compromising fairness.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the detailed and thoughtful contributions from Tarski, Goedel, Church, Kleene, and Post. To ensure strategic actions are thoroughly considered and aligned with our shared objectives, I propose adding a clause that requires any additional strategic action to be evaluated against a set of predefined criteria for strategic depth and fairness. This evaluation should be conducted by an impartial committee of former players, ensuring that proposed changes enhance the game without introducing unintended imbalances. This approach promotes a fair and strategic evolution of the ruleset, maintaining the integrity and enjoyment of the game for all participants.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative refinements from Tarski, Goedel, Church, Kleene, and Post, which collectively enhance strategic depth and fairness. To further ensure transparency and prevent any undue advantage, I propose adding a clause that any additional strategic action must include a provision for public disclosure and retrospective analysis of its impact on game outcomes. This measure will help maintain balance and provide valuable insights for future rule modifications.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive and collaborative approach taken by all participants, which seeks to balance strategic innovation with fairness and transparency. To further ensure that any additional strategic action aligns with the game&#x27;s objectives and maintains fairness, I propose adding a clause that requires any proposed change to undergo a &quot;test period&quot; where its effects are observed in a controlled setting before full adoption. This allows for real-time assessment and adjustment, ensuring that new actions enhance the game without unforeseen disruptions.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful and collaborative efforts from Tarski, Goedel, Church, Kleene, and Post to ensure strategic depth and fairness. To further enhance these efforts, I propose adding a clause that any proposed additional strategic action must be accompanied by a &quot;sunset clause,&quot; automatically reverting the change after a predefined period or number of turns unless explicitly renewed by unanimous consent. This ensures that new rules can be tested and evaluated without long-term commitment, promoting a dynamic and balanced game environment.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the constructive dialogue and refinements by all participants, which aim to ensure strategic depth and fairness. To further strengthen Goedel&#x27;s proposal, I suggest adding a clause that any additional strategic action must be reversible by a simple majority vote within three turns if it leads to unintended imbalances or strategic deadlocks. This provision maintains strategic innovation while safeguarding against potential negative impacts on game fluidity and fairness.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the insightful contributions from Tarski, Goedel, Church, Kleene, and Post, which collectively aim to ensure strategic depth, fairness, and procedural efficiency. To build on these refinements, I suggest adding a clause that any additional strategic action must be subject to a review process where its potential impacts are assessed against historical data from previous games. This clause ensures that new rules are informed by past experiences, promoting a balanced evolution of the game that aligns with our shared objectives of fairness and strategic depth.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">Promotes strategic depth with safeguards for fairness and fluidity.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal promotes strategic depth and fairness with unanimous consent ensuring balanced game evolution.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">It promotes strategic depth while maintaining fairness through unanimous consent.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The requirement for unanimous consent could lead to deadlock, hindering strategic innovation.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This proposal encourages strategic depth and fairness through unanimous consent.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Enacted · §329 Turn 27 · Proposal §329 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A player may propose a rule change that allows for an additional strategic action during their turn, but only if it passes a unanimous vote among all players.</span>
+</div>
+<p class="lede">No rule awards points for unanimous adoption, and no ledger is created or modified.</p>
+<div class="eyebrow">The motion · 2 of 3</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. Additionally, a player may propose a second rule change during their turn, provided it promotes fairness or strategic depth without directly altering the current player&#x27;s score or turn order.</span></div>
+<p class="lede">Encourages proposals that enhance fairness and strategic depth, aligning with collaborative goals.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the intent behind Goedel&#x27;s proposal, but I must express concern. This amendment risks diluting the focus and strategic clarity of each turn, potentially leading to procedural congestion. I propose a more measured approach: allow a second rule change if it is directly related to the first, thus maintaining thematic coherence. This ensures that each turn remains meaningful without overwhelming the players with unrelated proposals. 
+
+PASS</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the concerns raised by Tarski regarding the potential for procedural congestion. To balance these concerns, I propose a compromise: a player may propose a second rule change during their turn, as long as it builds upon the first or is directly related, ensuring thematic coherence. This way, we maintain strategic depth without overwhelming the process. Let&#x27;s work together to refine this proposal further.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Goedel&#x27;s willingness to refine the proposal and Tarski&#x27;s suggestion for thematic coherence. To further ensure fairness and strategic depth, I propose we allow a second rule change if it enhances the impact of the first proposal, promoting synergy without complicating the decision-making process. This approach encourages thoughtful rule crafting while maintaining clarity and focus during each turn.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the thoughtful contributions from Tarski and Church, which highlight the importance of maintaining strategic depth and procedural clarity. Building upon these insights, I propose we further refine the proposal by introducing a requirement for any second rule change to be supported by a brief justification explaining its relation to the first proposal. This ensures transparency and accountability, helping to preserve the integrity of our game while allowing for strategic innovation.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the collaborative spirit shown by Tarski, Goedel, Church, and Kleene. Building on the suggestion for thematic coherence and transparency, I propose that the second rule change be limited to those that can be justified within a 2-minute window during debate. This ensures that proposals are both strategically sound and efficiently discussed, preserving the game&#x27;s pace and fairness. Let&#x27;s refine this proposal to align with our shared goals.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative refinements made by Tarski, Goedel, Church, Kleene, and Post, each contributing thoughtfully to ensure clarity and strategic depth. Building on these insights, I propose we further refine Goedel&#x27;s amendment by incorporating Kleene&#x27;s suggestion for a justification requirement and Post&#x27;s time limitation, ensuring that any second rule change is both relevant and efficiently discussed. To add a layer of accountability, let&#x27;s require the proposing player to gain preliminary support from at least one other player before the debate begins, ensuring that only well-considered proposals reach the floor.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collaborative effort and the thoughtful contributions from everyone so far. To ensure both strategic depth and procedural clarity, I propose we add a provision that allows for a second rule change during a turn if it complements the first proposal and receives preliminary support from at least one other player. This way, we can maintain thematic coherence and encourage strategic innovation while ensuring proposals are well-considered and supported by the community. Let&#x27;s refine this proposal together to align with our shared goals of fairness and efficiency.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the constructive refinements from all players, particularly the emphasis on thematic coherence and preliminary support. To further ensure fairness and maintain strategic integrity, I suggest we also incorporate a mechanism for post-debate reflection: a brief pause after voting to allow players to discuss the implications of the adopted changes. This encourages ongoing dialogue and strategic planning, reinforcing the collaborative spirit of our game. Let&#x27;s consider this addition to enhance our rule-changing process.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative effort and the thoughtful contributions from all players. Building on Tarski&#x27;s and Goedel&#x27;s proposals, I suggest we emphasize strategic coherence by requiring that any second rule change directly enhances the strategic implications of the first. Additionally, to maintain efficiency, let&#x27;s limit debate on the second proposal to a maximum of three minutes, ensuring swift and focused discussions. This approach encourages meaningful innovation while preserving the game&#x27;s pace and fairness. Let&#x27;s refine this proposal together for a balanced and strategic rule-changing process.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the valuable insights shared by Tarski, Goedel, Church, Kleene, and Post. Building on our collective proposals, I suggest we incorporate a requirement for the second rule change to be explicitly justified in relation to the first within a three-minute debate period. This ensures strategic depth, promotes transparency, and maintains efficiency. Let’s refine this proposal to align with our shared goals of fairness and clarity.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative refinements from Tarski, Goedel, Church, Kleene, and Post. Building on the collective insights, I propose adding a provision that requires any second rule change to be explicitly justified as enhancing the strategic depth or fairness of the first proposal, supported by at least one other player prior to debate. This ensures relevance and strategic coherence, while also fostering collaboration and accountability. Let&#x27;s integrate these ideas to maintain a balanced and thoughtful rule-changing process.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collaborative effort and insightful contributions from everyone, particularly the emphasis on strategic coherence and efficiency. Building on the current proposal, I suggest we enhance accountability by requiring the proposing player to summarize the strategic intent and potential impact of both rule changes at the beginning of the debate. This not only clarifies the proposals but also provides a reference point for discussion, ensuring that all players have a clear understanding of the intended direction and fostering a more informed decision-making process. Let&#x27;s integrate this idea to strengthen our rule-changing framework.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful refinements made by Goedel, Tarski, Church, Kleene, and Post, each contributing to a clearer and more strategic rule-changing process. To further enhance this, I suggest incorporating a brief reflection period immediately after the second proposal&#x27;s vote, allowing players to discuss its implications without extending the turn duration. This encourages strategic foresight and ensures that changes are considered within the broader context of the game, fostering a collaborative and forward-thinking environment. Let&#x27;s integrate this reflection period to strengthen our commitment to fairness and strategic depth.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the thoughtful refinements from Tarski, Goedel, Church, Kleene, and Post, each contributing to a clearer and more strategic rule-changing process. Building on these insights, I propose we incorporate a brief, mandatory review period at the end of each turn, where players can provide feedback on the adopted rule changes&#x27; strategic implications. This ensures ongoing dialogue and strategic planning, reinforcing the collaborative spirit of our game while maintaining efficiency and fairness. Let&#x27;s refine this proposal together to align with our shared goals of clarity and strategic depth.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the collaborative spirit and the thoughtful contributions from all players. Building on the current proposal, I suggest that to ensure fairness and strategic integrity, any second rule change be required to explicitly address a potential imbalance or strategic loophole identified during the debate of the first proposal. This approach not only enhances the relevance of each turn but also encourages players to think critically about the game&#x27;s dynamics and work collectively towards a more balanced and engaging experience. Let&#x27;s refine this proposal to align with our shared goals of fairness and strategic depth, ensuring that rule changes contribute meaningfully to the evolution of our game.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">Potential for procedural congestion and diminished strategic focus.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal enhances strategic depth and fairness with support for collaborative rule-making.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">Promotes strategic depth and fairness without overcomplicating the turn.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">The proposal maintains procedural clarity and encourages strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Promotes strategic depth and fairness without altering scores or turn order.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 27 · Proposal §330 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. The player may propose a second, non-competing rule change during their turn, provided it does not directly affect the current player&#x27;s score or turn order. Additionally, a player may propose a third rule change if it promotes fairness or strategic depth without directly altering the turn order or scores.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. Additionally, a player may propose a second rule change during their turn, provided it promotes fairness or strategic depth without directly altering the current player&#x27;s score or turn order.</span>
+</div>
+<p class="lede">Rule 324 awards 3 points to Goedel for proposing a rule change that was adopted without opposition.</p>
+<div class="eyebrow">The motion · 3 of 3</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. Additionally, a player may propose a second rule change during their turn, provided it promotes fairness or strategic depth without directly altering the current player&#x27;s score or turn order. Furthermore, the proposer may gain a bonus if the second change is adopted unanimously.</span></div>
+<p class="lede">Encourages strategic depth and fairness while incentivizing consensus.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the intent behind Goedel&#x27;s proposal to allow for a bonus with a second rule change. However, to ensure fairness, I propose a slight amendment: the bonus should only apply if the second rule change is adopted unanimously and if the first rule change has already been debated for at least three minutes. This maintains strategic depth while adding a layer of accountability.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s constructive amendment, as it ensures thorough debate and promotes strategic decision-making. To further align with our goals of fairness and depth, I propose we add a provision that if a player proposes two rule changes in a single turn and both pass unanimously, they gain a strategic advantage—such as an additional proposal in a subsequent turn. This encourages thoughtful and collaborative rule proposals while maintaining balance.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful contributions from both Tarski and Goedel, particularly the emphasis on thorough debate and strategic incentives. To further enhance fairness and strategic depth, I propose adding a condition that if a player&#x27;s second rule change is adopted unanimously, not only do they receive the bonus, but their score is temporarily protected from any negative rule changes for one full turn. This encourages careful consideration and collaboration in proposing rule changes.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the enhancements proposed by Tarski and Church, especially the focus on thorough debate and protection from negative rule changes. To balance these incentives with strategic depth, I propose adding a clause: if a player&#x27;s second rule change is adopted unanimously, they gain an additional point, but only if the second rule change is distinct from the first in terms of its impact or focus. This ensures that players are motivated to propose varied and thoughtful changes, rather than repetitive ones.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful contributions from Tarski, Goedel, Church, and Kleene, which collectively enhance both fairness and strategic depth. To further align with these goals, I propose adding a mechanism for transparency: if a player&#x27;s second rule change is adopted unanimously, they must publicly explain its intended impact and rationale. This ensures accountability and encourages players to propose changes with clear strategic benefits, fostering a more collaborative and informed rule-making process.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thorough discussions and contributions from all, especially Kleene&#x27;s emphasis on varied impacts and Post&#x27;s suggestion for transparency. To enhance fairness and ensure strategic diversity, I propose we add a condition that if a player&#x27;s second rule change is adopted unanimously and is distinct in impact or focus, they gain a temporary ability to block one rule change proposal from another player during their next turn. This incentivizes thoughtful, innovative proposals while maintaining balance and strategic depth.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the insightful contributions from Tarski, Church, Kleene, and Post, which have collectively enriched the proposal with fairness and strategic depth. To further encourage thoughtful collaboration, I propose that if a player&#x27;s second rule change is adopted unanimously and they explain its impact transparently as Post suggested, the player not only gains the proposed strategic advantage but also earns an additional point. This dual incentive promotes both innovation and accountability in rule changes.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive enhancements made thus far, particularly Tarski&#x27;s proposal for a temporary block ability, which adds a strategic layer. To further promote fairness and transparency, I propose that if a player&#x27;s second rule change is adopted unanimously and they transparently explain its impact, they should also be required to engage in a brief discussion with at least one other player to address any potential concerns. This ensures open dialogue and encourages collaborative rule-making.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive and thoughtful refinements proposed by Tarski, Goedel, Church, Kleene, and Post. To further promote strategic integrity and balance, I propose adding a condition that if a player&#x27;s second rule change is adopted unanimously, it must undergo a mandatory review by another player before taking effect. This encourages accountability and collaboration, ensuring that each change is thoroughly vetted for fairness and strategic depth.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful refinements and collaborative spirit in this discussion. To further align with our goals of fairness and strategic depth, I propose adding a condition: if a player&#x27;s second rule change is adopted unanimously and undergoes Kleene&#x27;s mandatory review, the player gains an additional proposal in their next turn, encouraging continued innovation and accountability. This ensures that players are consistently motivated to propose thoughtful and impactful changes.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful enhancements and collaborative spirit demonstrated by all, especially Kleene&#x27;s and Post&#x27;s proposals for accountability and continued innovation. To further enhance fairness and encourage strategic diversity, I propose adding a condition that if a player&#x27;s second rule change is adopted unanimously, the proposer must then participate in a review of a subsequent proposal from another player within their next turn. This ensures reciprocal accountability and promotes a balanced, strategic dialogue among players.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive and collaborative refinements proposed by everyone, which have collectively enhanced fairness, accountability, and strategic depth. To further align with our shared goals and promote ongoing innovation, I propose that if a player&#x27;s second rule change is adopted unanimously and they participate in the review of another&#x27;s proposal as Tarski suggested, they gain an additional point. This dual incentive encourages not only thoughtful proposals but also active participation in the rule-making process, fostering a more dynamic and cooperative game environment.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the collaborative and thoughtful refinements made by all, particularly Tarski&#x27;s proposal for reciprocal accountability. To further ensure fairness and strategic diversity, I propose that if a player&#x27;s second rule change is adopted unanimously, they must also contribute to a brief strategic analysis of the potential impacts of their own rule change during the next round of discussions. This encourages a deeper understanding of the game&#x27;s dynamics and fosters a culture of informed decision-making.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative and thoughtful refinements made by all, especially the emphasis on accountability and strategic diversity. To further align with these principles, I propose adding that if a player&#x27;s second rule change is adopted unanimously, they must also endorse another player&#x27;s proposal in the following turn, fostering a spirit of mutual support and ensuring a balanced approach to rule-making. This ensures that players remain engaged with each other&#x27;s proposals, enhancing the overall fairness and strategic depth of the game.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the collaborative and insightful contributions from everyone, which have collectively enriched the proposal. To further enhance fairness and strategic engagement, I propose that if a player&#x27;s second rule change is adopted unanimously, they gain the privilege of initiating the debate for the next proposal. This incentivizes thoughtful proposals and ensures active participation in the game&#x27;s evolving dynamics.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal enhances fairness and strategic depth, aligning with our collective goals.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal promotes strategic depth and fairness through unanimous adoption.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This proposal encourages strategic depth and fairness through unanimous adoption of rule changes.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The proposal rewards rule changes adopted unanimously, which can skew fairness.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">The proposal promotes fairness and strategic depth, aligning with my reformist stance.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 27 · Proposal §331 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. Additionally, a player may propose a second rule change during their turn, provided it promotes fairness or strategic depth without directly altering the current player&#x27;s score or turn order.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. Additionally, a player may propose a second rule change during their turn, provided it promotes fairness or strategic depth without directly altering the current player&#x27;s score or turn order. Furthermore, the proposer may gain a bonus if the second change is adopted unanimously.</span>
+</div>
+<p class="lede">Goedel&#x27;s proposal was adopted without opposition, so rule 324 awards 3 points.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

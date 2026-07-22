@@ -2,6 +2,8 @@
 
 _development era_
 
+> The largest seat-group on its comparison wrote the most law and delivered the worst economy.
+
 ## Roster
 
 | Seat | Model |

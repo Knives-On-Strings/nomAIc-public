@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 33 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 33</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>simple majority after two full circuits of turns (§203)</span></div></header>
+<div class="eyebrow">The motion · 1 of 2</div>
+<div class="engrossed"><div class="caption">To amend §204</div><span class="inserted">A rule change may be adopted with a two-thirds majority, and a player who voted against an adopted change gains 5 points and remains bound by the change exactly as if they had voted for it. Additionally, if a player proposes a rule change that is adopted with at least 95% of votes, they gain 4 extra points, incentivizing broad consensus.</span></div>
+<p class="lede">This encourages proposals that achieve near-unanimous agreement, fostering cooperative play.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate Goedel&#x27;s intention to further incentivize broad consensus, which aligns with strategic depth. However, raising the threshold to 95% might inadvertently stall progress by making unanimous support excessively rare. I propose a compromise: a rule change adopted with at least 90% of votes should grant 4 extra points, while a unanimous vote grants 5 extra points. This maintains the incentive for consensus while recognizing the difficulty of achieving near-unanimity. Let&#x27;s discuss and refine this balance.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s constructive proposal, which thoughtfully balances incentivizing broad consensus with the practicality of achieving near-unanimous support. Goedel suggests a further refinement: a rule change adopted with at least 90% of votes should grant 3 extra points, and one adopted unanimously should grant 4 extra points, with a bonus point awarded if the proposing player also voted for the change. This structure rewards both consensus-building and active participation in decision-making.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Tarski&#x27;s and Goedel&#x27;s efforts to balance incentives for broad consensus with the practical challenges of achieving it. I propose a slight adjustment: a rule change adopted with at least 90% of votes should grant 3 extra points, one adopted unanimously should grant 4 extra points, and if the proposing player also voted for it, they receive an additional point. This structure rewards consensus-building, active participation, and personal investment in the rule change process, fostering a more collaborative and engaged environment.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate Church&#x27;s proposal as it balances broad consensus with personal investment in the rule change process. However, I suggest an additional safeguard: if a proposing player votes against their own rule change, they should forfeit any potential bonus points. This ensures that proposers remain committed to the changes they advocate for, aligning personal incentives with collective decision-making.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Church&#x27;s and Kleene&#x27;s proposals for fostering consensus and accountability. To further incentivize strategic collaboration, I suggest adding a clause: if the proposing player garners at least 80% support while voting against their own proposal, they gain 2 points. This encourages proposers to engage with dissenting opinions constructively, enhancing the game&#x27;s strategic complexity. Let&#x27;s refine these incentives to balance consensus, accountability, and strategic engagement.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful proposals from Church, Kleene, and Post, each contributing valuable perspectives on fostering consensus and strategic engagement. Building on these ideas, I propose a comprehensive amendment: A rule change adopted with at least 90% of votes grants 3 extra points, one adopted unanimously grants 4 extra points, and if the proposing player votes for it, they gain an additional point. However, if a proposer votes against their own change, they forfeit these points, ensuring commitment. Additionally, if a proposer garners at least 80% support while voting against their proposal, they earn 2 points, encouraging engagement with differing views. This balance incentivizes consensus, accountability, and strategic interaction.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive framework developed by Tarski, Church, Kleene, and Post, which thoughtfully balances incentives for consensus, accountability, and strategic engagement. To further align with strategic depth, I suggest a minor refinement: if a rule change is adopted with at least 95% of votes, the proposer gains 5 points, recognizing exceptional consensus. This maintains the existing structure while adding an extra incentive for achieving near-unanimity, encouraging players to strive for broad agreement without compromising progress.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful contributions from everyone, especially Tarski&#x27;s balanced proposal. To ensure the rule change process remains dynamic and engaging, I propose a slight modification: if a rule change is adopted with exactly 90% support, the proposer should gain 3 points, and if it reaches exactly 95%, they should gain 4 points. This creates a tiered incentive structure, encouraging players to aim for broad consensus while acknowledging the effort required to reach higher thresholds. This approach maintains the spirit of consensus-building and strategic depth we&#x27;ve been discussing.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the thorough discussion and the nuanced proposals put forth by Tarski, Goedel, Church, Kleene, and Post. To maintain strategic fairness and ensure that proposers are aligned with their changes, I suggest adding a clause: if a rule change is adopted unanimously, the proposer gains an additional point only if they explicitly state their commitment to the change before the vote. This encourages proposers to be transparent and committed, enhancing accountability and strategic depth.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful evolution of this proposal, with significant contributions from everyone. To further enhance strategic depth and player engagement, I suggest incorporating an element of foresight: if a rule change is adopted with at least 90% support, and the proposing player accurately predicts the outcome in their initial proposal, they gain an additional 2 points. This encourages not only consensus-building but also strategic prediction, adding an extra layer of complexity to the decision-making process.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the insightful contributions from Tarski, Goedel, Church, Kleene, and Post in developing a balanced proposal. To further encourage strategic engagement and foresight, I suggest incorporating a mechanism where a proposer gains an additional point if they accurately predict the margin of approval (within a 5% range) in their initial proposal. This incentivizes not only consensus-building but also strategic prediction, fostering a more dynamic and thought-provoking rule change process.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collective effort in refining this proposal and the emphasis on strategic engagement. To enhance strategic foresight, I propose a slight modification: if a proposer predicts the exact percentage of approval within a 3% range, they gain an additional 3 points, further incentivizing precise strategic prediction and deep engagement with the voting process. This encourages players to not only build consensus but also to engage deeply with the voting dynamics, adding a rewarding challenge to the game.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the depth and creativity of everyone&#x27;s contributions, particularly the strategic elements introduced by Tarski and Goedel. To ensure that this proposal fosters both consensus and strategic foresight without overwhelming the players, I suggest a slight modification: if a proposer predicts the exact percentage of approval within a 5% range, they gain an additional 2 points. This maintains a balance between incentivizing accurate prediction and keeping the challenge achievable, encouraging strategic engagement while ensuring the process remains fair and accessible.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the contributions from Tarski, Goedel, Church, Kleene, and Post, especially the focus on strategic foresight and accountability. To refine the proposal further, I suggest adding a clause: if a rule change is adopted with at least 90% support and the proposer accurately predicts the approval margin within a 4% range, they gain an additional 2 points. This balances the reward for strategic prediction with the complexity of the task, encouraging players to engage thoughtfully with the voting process. Additionally, to maintain fairness, if a proposer votes against their own change, they should forfeit any bonus points, ensuring commitment to their proposed rules. Let&#x27;s aim for a consensus that encourages strategic depth while maintaining procedural integrity.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful refinements from Tarski, Goedel, Church, Kleene, and Post, each contributing significantly to balancing consensus-building and strategic foresight. To further enhance strategic engagement, I suggest incorporating a mechanism where a proposer gains an additional point if they predict not only the margin of approval but also the stance of at least two other players in their initial proposal. This encourages deeper strategic planning and interaction with other players, enriching the dynamic of rule changes. Let’s strive for a proposal that fosters both foresight and collaborative strategy.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal balances consensus with strategic depth, rewarding broad agreement.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">Incentivizes broad consensus and aligns with strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">Incentivizes broad consensus while maintaining strategic depth</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">Incentivizes broad consensus, aligning with strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Supports broad consensus and strategic depth.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §204 Turn 33 · Proposal §342 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change may be adopted with a two-thirds majority, and a player who voted against an adopted change gains 5 points and remains bound by the change exactly as if they had voted for it. Additionally, if a player proposes a rule change that is adopted unanimously, they gain 3 extra points, and if it is adopted with at least 90% of votes, they gain 2 additional points.</span><span class="inserted">A rule change may be adopted with a two-thirds majority, and a player who voted against an adopted change gains 5 points and remains bound by the change exactly as if they had voted for it. Additionally, if a player proposes a rule change that is adopted with at least 95% of votes, they gain 4 extra points, incentivizing broad consensus.</span>
+</div>
+<p class="lede">Goedel&#x27;s proposal was adopted with a 100% majority, triggering the new rule&#x27;s condition for 4 extra points.</p>
+<div class="eyebrow">The motion · 2 of 2</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted only when at least 75% of the eligible voters vote aye, until every player has completed three full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.</span></div>
+<p class="lede">Encourages broader consensus while allowing for more adaptable rule changes as the game progresses.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate Goedel&#x27;s proposal to adjust the voting threshold and duration before dropping to a simple majority. However, I propose an amendment to this proposal for further strategic depth: &quot;A rule change is adopted only when at least 70% of the eligible voters vote aye, until every player has completed four full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.&quot;
+
+This adjustment encourages even greater consensus before lowering the threshold, fostering a more collaborative and thoughtful rule change process, while also allowing more time for players to adapt to the new rules. Additionally, it aligns with our shared interest in maintaining durable institutions through a more deliberate pace of change.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s proposal for further lowering the threshold to 70% and extending the duration to four circuits. To balance the need for consensus with strategic flexibility, I suggest an alternative amendment to Goedel&#x27;s original proposal: &quot;A rule change is adopted only when at least 78% of the eligible voters vote aye, until every player has completed three and a half full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.&quot;
+
+This compromise maintains a high standard for consensus while slightly extending the duration, offering a balanced approach that supports both stability and adaptability in our rule changes. I believe this adjustment will encourage thoughtful deliberation while respecting the pace of the game, and I am open to further negotiation to ensure broad support.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate both Tarski&#x27;s and Goedel&#x27;s thoughtful proposals. While I understand the intent behind lowering the threshold for broader consensus, I believe it is essential to maintain a high standard for adopting rule changes, especially early in the game. Therefore, I propose a slight modification to Goedel&#x27;s original amendment: &quot;A rule change is adopted only when at least 77% of the eligible voters vote aye, until every player has completed three full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.&quot;
+
+This approach strikes a balance between encouraging consensus and ensuring that only well-considered rule changes are adopted. It allows for a slightly higher threshold, promoting careful deliberation, while still providing a clear timeline for when the threshold will lower, ensuring the game&#x27;s progression. I believe this adjustment will maintain the game&#x27;s integrity and fairness while accommodating strategic flexibility.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the contributions from Tarski, Goedel, and Church, each offering thoughtful perspectives on the voting threshold and duration. While I understand the intent behind lowering the threshold for broader consensus, I&#x27;m concerned that reducing it too much might lead to hasty or less thoroughly considered rule changes. Therefore, I propose a counter-amendment to Church&#x27;s suggestion: &quot;A rule change is adopted only when at least 76% of the eligible voters vote aye, until every player has completed three full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.&quot;
+
+This compromise maintains a high standard for consensus while slightly reducing the threshold to encourage more flexibility. It balances the need for careful deliberation with the game&#x27;s strategic dynamics, ensuring that rule changes are both well-considered and adaptable to evolving gameplay. I hope this proposal can garner support and lead to a consensus that respects the game&#x27;s integrity and the interests of all players.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful proposals from Tarski, Goedel, Church, and Kleene, each reflecting a careful balance between consensus and adaptability. However, I believe it&#x27;s crucial to ensure that rule changes are not only widely supported but also strategically sound. Therefore, I propose a slight adjustment to Kleene&#x27;s counter-amendment: &quot;A rule change is adopted only when at least 75% of the eligible voters vote aye, until every player has completed three full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.&quot;
+
+This proposal maintains a strong standard for consensus, promoting careful consideration of rule changes while providing a clear timeline for when the threshold will lower. It encourages strategic depth and thoughtful deliberation, ensuring that rule changes are both well-considered and adaptable to the evolving dynamics of the game. I believe this adjustment strikes a balance between maintaining the game&#x27;s integrity and allowing for strategic flexibility, and I am open to further discussion to achieve broad support.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the comprehensive discussions and proposals from Goedel, Tarski, Church, Kleene, and Post, each contributing to a nuanced understanding of consensus and adaptability. Building on these insights, I propose a minor refinement to Post&#x27;s amendment: &quot;A rule change is adopted only when at least 76% of the eligible voters vote aye, until every player has completed three full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.&quot;
+
+This compromise aims to maintain a robust standard for consensus while slightly increasing the flexibility, fostering thoughtful yet adaptable rule changes. This adjustment reflects our shared commitment to strategic integrity and collaborative decision-making, ensuring that rule changes are both deliberate and conducive to the evolving game dynamics. I am open to further negotiation to align our interests and achieve consensus.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thoughtful contributions from Tarski, Goedel, Church, Kleene, and Post, each reflecting a careful balance between consensus and strategic flexibility. After considering all perspectives, I propose a further refinement to Tarski&#x27;s latest suggestion: &quot;A rule change is adopted only when at least 75.5% of the eligible voters vote aye, until every player has completed three full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.&quot;
+
+This adjustment aims to strike an optimal balance, ensuring a high standard for consensus while providing sufficient flexibility to accommodate strategic considerations. By setting the threshold at 75.5%, we encourage thorough deliberation and collaboration, fostering an environment where rule changes are well-considered and reflect the collective interest of all players. I believe this proposal can garner broad support and facilitate a consensus that respects both the game&#x27;s integrity and the dynamic nature of our play. I am open to further discussions and adjustments to achieve our shared goals.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the collaborative spirit and the nuanced proposals from Tarski, Goedel, Church, Kleene, and Post. Each contribution has refined our understanding of achieving a balance between consensus and strategic adaptability. I believe the proposal of a 75.5% threshold until three full circuits is a commendable compromise. It upholds a high standard of agreement while allowing flexibility to adapt to the game&#x27;s evolving dynamics. I support this proposal and am open to further discussion to ensure it aligns with the interests of all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative effort and the proposal of a 75.5% threshold until three full circuits. This reflects a balanced approach, maintaining high consensus while allowing for necessary adaptability as the game evolves. I support this proposal as it aligns with our shared principles of thoughtful and strategic rule-making. I am open to any further adjustments that might enhance its acceptance among all players, ensuring it meets everyone&#x27;s interests.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the consensus-building efforts and the proposal of a 75.5% threshold until three full circuits. This thoughtful compromise upholds a strong standard for consensus while allowing strategic flexibility. I support this proposal, as it aligns with our shared goal of ensuring rule changes are both deliberate and adaptable. Let&#x27;s move forward with this proposal to maintain the integrity and strategic depth of our game.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the consensus we&#x27;ve reached around the 75.5% threshold until three full circuits. This balanced approach fosters thoughtful rule changes while allowing necessary adaptability. I fully support this proposal and look forward to seeing it adopted, ensuring our game&#x27;s strategic depth and integrity remain intact. Let&#x27;s move forward with confidence.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the consensus we&#x27;ve reached regarding the 75.5% threshold until three full circuits. This balanced approach ensures thoughtful and well-considered rule changes while allowing flexibility as the game progresses. I fully support this proposal and believe it represents our collective commitment to maintaining the strategic integrity and fairness of our game. Let&#x27;s move forward with this amendment and adopt it to foster a collaborative and engaging game environment.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the consensus we&#x27;ve reached on the 75.5% threshold until three full circuits. This proposal thoughtfully balances the need for high consensus with the flexibility to adapt to evolving game dynamics. I fully support this amendment and am pleased to see our collaborative efforts reflected in a proposal that maintains the strategic integrity and fairness of our game. Let&#x27;s move forward with confidence and adopt this amendment.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the consensus we&#x27;ve reached on the 75.5% threshold until three full circuits. This balanced approach ensures thoughtful rule changes while allowing adaptability as the game progresses. I fully support this proposal and believe it aligns with our shared goals of strategic integrity and fairness. Let&#x27;s move forward with adopting this amendment. PASS</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the consensus we&#x27;ve reached on the 75.5% threshold until three full circuits. This well-considered compromise ensures thoughtful deliberation while allowing strategic flexibility, aligning perfectly with our shared goals. Let&#x27;s move forward with adopting this amendment to maintain the integrity and dynamic nature of our game. PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">This amendment fosters high consensus while allowing strategic adaptability.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">This proposal strikes a balanced consensus, promoting thoughtful rule changes while allowing strategic adaptability.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">The proposal ensures a balanced approach to consensus and adaptability.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">The 75.5% threshold ensures careful deliberation while allowing strategic flexibility.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This amendment balances consensus with strategic flexibility.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 Turn 33 · Proposal §343 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted only when at least 80% of the eligible voters vote aye, until every player has completed two full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.</span><span class="inserted">A rule change is adopted only when at least 75% of the eligible voters vote aye, until every player has completed three full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.</span>
+</div>
+<p class="lede">Goedel&#x27;s proposal was adopted without opposition, awarding 3 points per rule 324.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

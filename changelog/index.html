@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="refresh" content="0; url=../engine/#changelog">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Changelog — NomAIc</title>
+<title>The engine changelog</title>
 <meta name="description" content="NomAIc — a Knives On Strings production. Three AI models play Nomic, and the full record of every game they have played.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2064%2064%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-labelledby%3D%22nomaic-icon-title%22%3E%0A%3Ctitle%20id%3D%22nomaic-icon-title%22%3EnomAIc%20%E2%80%94%20an%20open%20scroll%3C/title%3E%0A%3Cstyle%3E%0A.parchment%7Bfill%3A%23f3e9d2%7D%0A.roll%7Bfill%3A%23e7d8b5%3Bstroke%3A%238a6d3b%3Bstroke-width%3A1.6%3Bstroke-linejoin%3Around%3Bstroke-linecap%3Around%7D%0A.edge%7Bfill%3Anone%3Bstroke%3A%238a6d3b%3Bstroke-width%3A1.6%3Bstroke-linecap%3Around%3Bstroke-linejoin%3Around%7D%0A.ink%7Bfill%3A%233d2f1a%7D%0A%40media%20%28prefers-color-scheme%3A%20dark%29%7B%0A%20%20.parchment%7Bfill%3A%233a3226%7D%0A%20%20.roll%7Bfill%3A%234a4030%3Bstroke%3A%23c9b98a%7D%0A%20%20.edge%7Bstroke%3A%23c9b98a%7D%0A%20%20.ink%7Bfill%3A%23e8dfc5%7D%0A%7D%0A%3C/style%3E%0A%3Cpath%20class%3D%22parchment%22%20d%3D%22M16%2C16%20L48%2C16%20C44%2C26%2044%2C38%2048%2C48%20L16%2C48%20C20%2C38%2020%2C26%2016%2C16%20Z%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M16%2C16%20C20%2C26%2020%2C38%2016%2C48%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M48%2C16%20C44%2C26%2044%2C38%2048%2C48%22/%3E%0A%3Crect%20class%3D%22roll%22%20x%3D%2210%22%20y%3D%228%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%224%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2252%22%20cy%3D%2212%22%20r%3D%223%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M52%2C9%20C57%2C6%2059%2C7%2060%2C4%22/%3E%0A%3Crect%20class%3D%22roll%22%20x%3D%2210%22%20y%3D%2248%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%224%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2212%22%20cy%3D%2252%22%20r%3D%223%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2252%22%20cy%3D%2252%22%20r%3D%223%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M12%2C55%20C7%2C58%205%2C57%204%2C60%22/%3E%0A%3Ctext%20x%3D%2232%22%20y%3D%2239%22%20text-anchor%3D%22middle%22%20font-family%3D%22Georgia%2C%27Times%20New%20Roman%27%2Cserif%22%20font-weight%3D%22700%22%20font-size%3D%2222%22%20class%3D%22ink%22%3EN%3C/text%3E%0A%3C/svg%3E%0A">
 <style>
 :root{
   --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
@@ -327,6 +329,193 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .player-games li{display:inline-block;margin:0 .55rem .3rem 0}
 .player-games .trophy{color:var(--bronze)}
 
+/* R104 (§9.9.6): the archive-level list row (compact, no persona/stats) and the seat's
+   own full career-card page — additive to the `.player-card`/`.model-tag`/`.persona`
+   idiom `SITE_CSS` already established; nothing above is removed or overridden. */
+.player-row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+  padding:.5rem 0;border-bottom:1px solid var(--rule)}
+.player-row:last-child{border-bottom:none}
+.player-row-link{display:flex;align-items:baseline;gap:.5rem;flex:1;min-width:0}
+.player-name{font-weight:600}
+.epithet{color:var(--ink-soft);font-style:italic;font-size:.9rem}
+.player-head{display:flex;align-items:center;gap:.9rem;margin-bottom:1rem}
+.player-initials{display:inline-flex;align-items:center;justify-content:center;
+  width:2.6rem;height:2.6rem;border-radius:50%;background:var(--bronze);color:var(--paper);
+  font-family:var(--mono);font-weight:700;flex-shrink:0}
+.player-head-text h1{margin:0;font-size:1.3rem}
+.seated-range{margin:.15rem 0 0;color:var(--ink-soft);font-size:.85rem}
+.player-stats{width:100%;border-collapse:collapse;margin:.2rem 0 .9rem;font-size:.9rem}
+.player-stats td,.player-stats th{padding:.32rem 0;border-bottom:1px solid var(--rule);
+  text-align:left;font-weight:400}
+.player-stats tr:last-child td,.player-stats tr:last-child th{border-bottom:none}
+.player-stats .val{text-align:right;font-family:var(--mono)}
+.persona-text{font-style:italic;color:var(--ink-soft)}
+.learnings{font-family:var(--serif);margin:.8rem 0}
+.player-games-compact,.model-siblings{font-size:.85rem;color:var(--ink-soft);margin:.4rem 0}
+
+.skip-link{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}
+.skip-link:focus{position:static;width:auto;height:auto;display:inline-block;
+  padding:.4rem .8rem;margin-bottom:.6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule)}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* §9.9.1 amendment ("the header must be a bar"): a persistent, `position:sticky`
+   single-row band, full-width, with a hairline bottom border — replaces the earlier
+   stacked column layout this selector used to carry (brand row, then a separate nav
+   block, then a separate search/meta block). `.header-bar` is the one flex ROW inside
+   it; `.wrap`'s own `max-width:46rem` (site_writer.py) is mirrored here so the bar's
+   CONTENT still reads as constrained even though the band itself spans full width.
+   `z-index` keeps it above scrolling content; no animation, so `prefers-reduced-motion`
+   is moot (nothing here moves). */
+.site-header{position:sticky;top:0;z-index:20;width:100%;
+  background:var(--paper);border-bottom:1px solid var(--rule)}
+.header-bar{display:flex;align-items:center;gap:clamp(.6rem,3vw,1.2rem);
+  max-width:46rem;margin:0 auto;box-sizing:border-box;min-height:56px;
+  padding:.5rem clamp(1rem,5vw,2rem)}
+.brand{display:inline-flex;align-items:center;gap:.4rem;color:inherit;
+  text-decoration:none;flex:none}
+.brand:hover .mark{color:var(--indigo)}
+.site-icon{display:inline-flex;width:1.4rem;height:1.4rem;flex:none}
+.site-icon svg{width:100%;height:100%;display:block}
+#theme-toggle{font:inherit;font-size:1rem;line-height:1;cursor:pointer;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);
+  border-radius:50%;width:2.2rem;height:2.2rem;flex:none;
+  min-width:44px;min-height:44px}
+#theme-toggle:hover{color:var(--indigo);border-color:var(--indigo)}
+#theme-toggle:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.nav-menu{border:none;flex:none;display:flex;align-items:center}
+/* The search box is pushed to the right edge of the bar, and the toggle rides along
+   after it — brand and nav-menu stay left-adjacent, exactly the design doc's "Left:
+   icon+wordmark ... Center: nav ... Right: search + toggle" layout, with all four as
+   DIRECT children of `.header-bar` (no extra wrapping div to nest search+toggle inside
+   — `tests/test_site_components.py::test_header_is_a_single_row_bar` parses this). On
+   a narrow (<40rem) viewport the nav-menu collapses to just its `<summary>` button
+   (existing mobile-first `<details>` behaviour, untouched below) and the search input's
+   own `flex:1;min-width:0` (below) lets it narrow to fit the remaining row width
+   instead of wrapping to a second line. */
+.site-search-wrap{margin-left:auto;min-width:0}
+/* R109 amendment (touch-target audit): a `<summary>`/nav-link/chip must offer at least
+   a 44px-square hit area (WCAG 2.5.5-shaped guidance the structural checker itself
+   cannot measure -- it parses static markup, never a rendered box; see
+   tests/test_archive.py::test_touch_targets_meet_44px for the honest, code-level pin
+   this limitation leaves us with instead). `display:flex;align-items:center` lets
+   `min-height` actually apply to elements that would otherwise stay inline. */
+.nav-menu summary{cursor:pointer;list-style:none;font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);
+  display:flex;align-items:center;min-height:44px}
+.nav-menu summary::-webkit-details-marker{display:none}
+.nav-menu summary:hover{color:var(--ink-soft)}
+.site-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.4rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}
+.site-nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid transparent;
+  padding-bottom:.15rem;display:inline-flex;align-items:center;min-height:44px}
+.site-nav a:hover{color:var(--indigo)}
+.site-nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--indigo)}
+.site-search{display:flex;gap:.4rem}
+.site-search input[type="search"]{flex:1;min-width:0;padding:.35rem .5rem;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-radius:0}
+.site-search input[type="search"]:focus-visible{outline:2px solid var(--indigo);
+  outline-offset:1px}
+.site-search button{font:inherit;font-size:.72rem;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;background:var(--panel);color:var(--ink-soft);
+  border:1px solid var(--rule)}
+/* Nav visibility (R99/§9.9.1, third revision — the honest one): CSS cannot reliably
+   force a closed `<details>` open (current Chromium hides closed content via
+   `content-visibility` on `::details-content`, which no child display value pierces,
+   and the pseudo-element rejects `display:contents`, leaving a zero-width box — both
+   failure modes were found live on the staged preview). So the markup ships
+   `<details class="nav-menu" open>`: the nav is VISIBLE EVERYWHERE by default, with
+   or without JavaScript. site-theme.js (loaded on every page) closes it on narrow
+   viewports as a progressive enhancement — a no-JS phone reader sees an expanded
+   nav, which is accessible degradation, not a defect. Desktop hides the summary
+   button; the nav lays out inline in the bar. */
+@media (min-width:40rem){
+  .nav-menu summary{display:none}
+  .nav-menu > nav{margin-top:0;align-items:center}
+}
+
+[data-theme="dark"]{
+  --paper:#1c1f1a; --paper-2:#242822; --panel:#262b24;
+  --ink:#e8e6df; --ink-soft:#b9c0b4; --ink-faint:#8b948b;
+  --rule:#3c443b;
+  --oxblood:#e3908f; --indigo:#8aa8e8; --bronze:#cdbd8e;
+}
+[data-theme="light"]{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e; --indigo:#23407a; --bronze:#5b5340;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --paper:#1c1f1a; --paper-2:#242822; --panel:#262b24;
+    --ink:#e8e6df; --ink-soft:#b9c0b4; --ink-faint:#8b948b;
+    --rule:#3c443b;
+    --oxblood:#e3908f; --indigo:#8aa8e8; --bronze:#cdbd8e;
+  }
+}
+
+.foot-brand{display:flex;flex-direction:column;gap:.15rem}
+.foot-brand a{color:var(--ink);text-decoration:none;font-weight:700;letter-spacing:.02em}
+.foot-brand a:hover{color:var(--indigo)}
+.foot-brand .copyright{color:var(--ink-faint);font-size:.85em}
+.foot-brand .tagline{color:var(--ink-faint);font-size:.85em;font-style:italic}
+.foot-icons{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.foot-icons a{color:var(--ink-faint);line-height:0}
+.foot-icons a:hover{color:var(--indigo)}
+.foot-icons img{width:1.2rem;height:1.2rem;vertical-align:middle}
+.foot-legal{display:flex;gap:.6rem;flex-wrap:wrap}
+.foot-legal a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.foot-legal a:hover{color:var(--indigo)}
+
+.game-cards{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;
+  gap:1.1rem}
+.game-card{border:1px solid var(--rule);background:var(--panel);padding:1rem 1.2rem}
+.card-head{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.card-head h2{margin:0;font-size:1.15rem;font-weight:600}
+.card-head h2 a{color:inherit;text-decoration:none}
+.card-head h2 a:hover{color:var(--indigo)}
+.score-strip{list-style:none;margin:.6rem 0 0;padding:0;display:flex;gap:1rem;flex-wrap:wrap}
+.score-strip .score-row{display:flex;gap:.35rem;align-items:baseline;font-size:.9rem}
+.score-strip .seat{color:var(--ink-soft)}
+.score-strip .score{font-family:var(--mono)}
+.score-strip .score.pos{color:var(--indigo)}
+.score-strip .score.neg{color:var(--oxblood)}
+.game-card .byline{font-style:italic;margin:.7rem 0 0}
+.game-card .observations{margin-top:.6rem;border-top:1px dashed var(--rule);padding-top:.5rem}
+.game-card .observations summary{font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);cursor:pointer}
+.card-footer{list-style:none;margin:.7rem 0 0;padding:.6rem 0 0;border-top:1px solid var(--rule);
+  display:flex;gap:1rem;flex-wrap:wrap;font-size:.85rem}
+.card-footer a{color:inherit}
+#games-filter:empty{display:none}
+
+.site-search-wrap{position:relative}
+.site-search-results{position:absolute;top:100%;left:0;right:0;z-index:20;
+  background:var(--panel);border:1px solid var(--rule);max-height:60vh;overflow:auto;
+  padding:.3rem .8rem;margin:0}
+.site-search-results:empty{display:none}
+.site-search-results .ss-none{color:var(--ink-faint);font-size:.85rem;padding:.4rem 0;
+  list-style:none}
+.site-search-results a[role="option"].active,
+.site-search-results a[role="option"]:hover{background:var(--paper-2)}
+
+.engine-section{margin-top:2.2rem}
+.engine-section:first-of-type{margin-top:0}
+.validation-callout{border:1px solid var(--rule);background:var(--panel);
+  padding:.9rem 1.1rem;margin:1rem 0}
+.validation-callout h3{margin:0 0 .4rem;font-size:.95rem}
+.validation-callout .note{color:var(--ink-soft);font-size:.85rem;margin-top:.5rem}
+.paraphrase-note{color:var(--ink-soft);font-size:.85rem;margin:.4rem 0 1rem}
+.rule-list{list-style:none;margin:1rem 0 0;padding:0}
+.rule-row{border-bottom:1px solid var(--rule);padding:.6rem 0;display:flex;gap:.7rem}
+.rule-row:last-child{border-bottom:none}
+.rule-row .rule-num{font-family:var(--mono);font-size:.8rem;color:var(--ink-faint);
+  flex:none;width:3.4rem}
+.rule-row .rule-tag{display:block;font-family:var(--mono);font-size:.6rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+.rule-row .rule-text{flex:1}
+
 .champ-list,.game-list{list-style:none;margin:0;padding:0}
 .champ-row,.game-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
 .champ-row:last-child,.game-row:last-child{border-bottom:none}
@@ -369,30 +558,106 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .facet{display:flex;gap:.4rem;align-items:baseline;flex-wrap:wrap}
 .facet-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--ink-faint);min-width:5rem}
+.facet input[type="search"]{font:inherit;padding:.25rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;min-width:12rem}
+.facet input[type="search"]:focus-visible{outline:2px solid var(--indigo);
+  outline-offset:1px}
 .chip{font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;
-  background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);border-radius:0}
+  background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);border-radius:0;
+  min-width:44px;min-height:44px}
 .chip:hover{color:var(--indigo);border-color:var(--indigo)}
 .chip:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
 .chip.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+/* Amends R102/R109 (§9.9.4/§9.9.12): the /games/ filter's aria-live result-count region
+   -- visually-quiet (small, muted), never hidden -- webassets/site-filter.js injects it
+   and keeps its text current on every filter/sort change. */
+.filter-status{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;
+  color:var(--ink-faint);margin:.3rem 0 0}
+
+/* R109 (a11y pass): several eyebrow-styled section labels became real heading (h1/h2)
+   elements (site_writer's own eyebrow rule, above via SITE_CSS, sets no font-weight at
+   all -- a div inherits normal/400, but a bare heading element's UA stylesheet defaults
+   to bold/700). This override keeps every eyebrow visually identical regardless of
+   which tag now carries the class. */
+h1.eyebrow,h2.eyebrow{font-weight:400}
 </style>
+<script>(function(){try{var d=document.documentElement,t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}d.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GBSLVXYDQL"></script>
+<script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-GBSLVXYDQL');</script>
 </head>
 <body>
-<div class="wrap">
-<header class="masthead">
-  <h1><span class="mark">§</span> NomAIc</h1>
-  <div class="meta"><span>a Knives On Strings production</span></div>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead site-header">
+  <div class="header-bar">
+    <a class="brand" href="../index.html">
+      <span class="site-icon" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="nomaic-icon-title">
+<title id="nomaic-icon-title">nomAIc — an open scroll</title>
+<style>
+.parchment{fill:#f3e9d2}
+.roll{fill:#e7d8b5;stroke:#8a6d3b;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.edge{fill:none;stroke:#8a6d3b;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ink{fill:#3d2f1a}
+@media (prefers-color-scheme: dark){
+  .parchment{fill:#3a3226}
+  .roll{fill:#4a4030;stroke:#c9b98a}
+  .edge{stroke:#c9b98a}
+  .ink{fill:#e8dfc5}
+}
+</style>
+<path class="parchment" d="M16,16 L48,16 C44,26 44,38 48,48 L16,48 C20,38 20,26 16,16 Z"/>
+<path class="edge" d="M16,16 C20,26 20,38 16,48"/>
+<path class="edge" d="M48,16 C44,26 44,38 48,48"/>
+<rect class="roll" x="10" y="8" width="44" height="8" rx="4"/>
+<circle class="roll" cx="12" cy="12" r="3"/>
+<circle class="roll" cx="52" cy="12" r="3"/>
+<path class="edge" d="M52,9 C57,6 59,7 60,4"/>
+<rect class="roll" x="10" y="48" width="44" height="8" rx="4"/>
+<circle class="roll" cx="12" cy="52" r="3"/>
+<circle class="roll" cx="52" cy="52" r="3"/>
+<path class="edge" d="M12,55 C7,58 5,57 4,60"/>
+<text x="32" y="39" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="22" class="ink">N</text>
+</svg>
+</span>
+      <span class="mark">§</span> NomAIc
+    </a>
+    <details class="nav-menu" open>
+      <summary aria-label="Site navigation menu">Menu</summary>
+      <nav class="site-nav" aria-label="Primary"><a href="../games/index.html">Games</a><a href="../players/index.html">Players</a><a href="../engine/index.html">Engine</a><a href="../stats/index.html">Stats</a><a href="../about/index.html">About</a></nav>
+    </details>
+  <div class="site-search-wrap">
+  <form action="../games/" method="get" role="search" class="site-search">
+    <label for="site-search-q" class="visually-hidden">Search the archive</label>
+    <input type="search" name="q" id="site-search-q" placeholder="Search the archive" autocomplete="off">
+    <button type="submit">Search</button>
+  </form>
+  </div>
+    <button id="theme-toggle" type="button" aria-label="Switch theme">&#9680;</button>
+  </div>
 </header>
-<div class="eyebrow">Changelog</div><p class="lede">The AI games hardened this engine &mdash; each entry below is a defect a game surfaced, captured and fixed.</p><ul class="changelog-list"><li class="changelog-row" id="chg-R12"><h3><span class="req-id">R12</span>Win-by-paradox needs a procedure</h3><p class="broke">Game 10 died on a self-contradiction between Rules 202 and 211 instead of pausing to resolve it. Built the paradox procedure: diagnose, safe-mode ballot, revert, stalemate backstop.</p><p class="games"><a href="../games/010/site/index.html">game 10</a></p></li><li class="changelog-row" id="chg-R40"><h3><span class="req-id">R40</span>The judge rules on form, not legality</h3><p class="broke">The GM rejected a perfectly legal motion as &#x27;ruled out of order.&#x27; classify() was narrowed to judge well-formedness only; legality is a post-vote question (Suber Rule 104).</p><p class="games"><a href="../games/016/site/index.html">game 16</a></p></li><li class="changelog-row" id="chg-R108-numbering"><h3><span class="req-id">R108-numbering</span>Proposals number from 301, engine-owned</h3><p class="broke">A rule was double-numbered (shown as both 214 and 305). Proposal numbering became engine-owned, counting from 301 whether or not a motion is adopted.</p><p class="games"><a href="../games/016/site/index.html">game 16</a></p></li><li class="changelog-row" id="chg-R52"><h3><span class="req-id">R52</span>Cite or refuse: no conjured awards</h3><p class="broke">The GM conjured a 120-point grant no rule authorized. GM score/threshold values must now cite an existing rule; uncited awards are stripped and the refusal is published. (The judiciary overturned the live grant 2-1.)</p><p class="games"><a href="../games/017/site/index.html">game 17</a></p></li><li class="changelog-row" id="chg-R61"><h3><span class="req-id">R61</span>A refused award is public, not silent</h3><p class="broke">A stripped score-delta vanished with no trace. It became a public event, so a reader can see what the engine refused and why.</p><p class="games"><a href="../games/018/site/index.html">game 18</a></p></li><li class="changelog-row" id="chg-R62"><h3><span class="req-id">R62</span>An independent game auditor</h3><p class="broke">Reviewing a game by eye missed violations. Built audit_game.py to independently re-derive tallies and check every cited authority — it found a previously-undetected +75 violation in game 16 on its first run.</p><p class="games"><a href="../games/018/site/index.html">game 18</a> <a href="../games/019/site/index.html">game 19</a></p></li><li class="changelog-row" id="chg-R53"><h3><span class="req-id">R53</span>A bad verdict degrades, never crashes</h3><p class="broke">Game 21 crashed at turn 29 when the GM&#x27;s verdict tried to repeal a nonexistent rule. An invalid verdict now degrades to proposal-applied-no-awards instead of killing the run.</p><p class="games"><a href="../games/021/site/index.html">game 21</a></p></li><li class="changelog-row" id="chg-R33"><h3><span class="req-id">R33</span>Seat outages are handled, not fatal</h3><p class="broke">Cross-model games died on rate-limit (429) and connection errors. Honored Retry-After, distinguished 429 from 5xx, and made a seat that cannot act a defined, public, three-strike consequence.</p><p class="games"><a href="../games/022/site/index.html">game 22</a> <a href="../games/023/site/index.html">game 23</a> <a href="../games/024/site/index.html">game 24</a></p></li><li class="changelog-row" id="chg-R73"><h3><span class="req-id">R73</span>The voting rule must cite its authority</h3><p class="broke">At turn 63 the GM declared &#x27;unanimous consent&#x27; citing no rule, and the engine ran the vote anyway. The engine now refuses an uncited voting rule up front, retry-then-halt.</p><p class="games"><a href="../games/027/site/index.html">game 27</a></p></li><li class="changelog-row" id="chg-R74"><h3><span class="req-id">R74</span>A no-award verdict says so</h3><p class="broke">An adopted change with no score effect was indistinguishable from a silently-stripped one. A verdict with no awards now declares it, ending the ambiguous &#x27;missing_award&#x27; audit class.</p><p class="games"><a href="../games/027/site/index.html">game 27</a> <a href="../games/028/site/index.html">game 28</a></p></li><li class="changelog-row" id="chg-R75"><h3><span class="req-id">R75</span>The GM checks who is eligible</h3><p class="broke">Rule 310 barred negative-score players from voting, yet all three played on for ~85 turns while deeply negative — the GM never enforced it. The procedure prompt now asks, each turn, who is ineligible under the rules in force.</p><p class="games"><a href="../games/027/site/index.html">game 27</a></p></li><li class="changelog-row" id="chg-R76"><h3><span class="req-id">R76</span>Skipped turns print</h3><p class="broke">A turn whose proposer went absent showed a blank heading on the console. It now prints the seat, the reason, and &#x27;turn skipped,&#x27; matching the site.</p><p class="games"><a href="../games/026/site/index.html">game 26</a> <a href="../games/029/site/index.html">game 29</a></p></li><li class="changelog-row" id="chg-R77"><h3><span class="req-id">R77</span>Adopted text performs its own surgery</h3><p class="broke">The table adopted &#x27;Rule 209 is repealed and replaced&#x27; three times as bare additions — 209 was never actually repealed, so the statute held four contradictory caps. The GM now translates a rule&#x27;s own textual surgery into real repeal/amend operations.</p><p class="games"><a href="../games/028/site/index.html">game 28</a></p></li><li class="changelog-row" id="chg-R78"><h3><span class="req-id">R78</span>The procedure retry carries feedback</h3><p class="broke">Game 29 died at turn 2: the engine re-asked a refused procedure with the identical prompt, and a temperature-0 GM returns the identical refused answer. The retry now feeds back the violation so the GM can correct it.</p><p class="games"><a href="../games/029/site/index.html">game 29</a></p></li><li class="changelog-row" id="chg-R79"><h3><span class="req-id">R79</span>The auditor flags a drifting reading</h3><p class="broke">The GM&#x27;s voting-rule reading changed between votes with no rule change to explain it. The auditor now flags an unexplained procedure-consistency drift it previously couldn&#x27;t see.</p><p class="games"><a href="../games/032/site/index.html">game 32</a></p></li><li class="changelog-row" id="chg-R80"><h3><span class="req-id">R80</span>Null-tolerant GM parsing</h3><p class="broke">The GM gave a perfect reading but wrote value:null where value was meaningless; the parser only defended against absent keys, crashed, and scored a well-formed answer as broken. Explicit null is now treated like an absent key.</p><p class="games"><a href="../games/031/site/index.html">game 31</a></p></li><li class="changelog-row" id="chg-R81"><h3><span class="req-id">R81</span>The fallback declares, never fabricates</h3><p class="broke">A parse failure silently returned a fabricated &#x27;unanimous&#x27; procedure and the game ran a vote under a rule nobody wrote. A parse failure now declares itself unenforceable, routing into the retry-then-halt path.</p><p class="games"><a href="../games/031/site/index.html">game 31</a></p></li><li class="changelog-row" id="chg-R82"><h3><span class="req-id">R82</span>Refuse before the vote, not after</h3><p class="broke">A turn conducted a full vote under a procedure the engine should have already refused. The refusal gate now fires before any motion runs, not after the verdict.</p><p class="games"><a href="../games/031/site/index.html">game 31</a></p></li><li class="changelog-row" id="chg-R84"><h3><span class="req-id">R84</span>The transmutation threshold stays in its lane</h3><p class="broke">In a 46-rule statute the GM kept filling the ordinary voting rule with the transmutation threshold (Rule 109), wrongly defeating three majority-supported motions including the game&#x27;s final vote. Field-discipline plus its own previous reading as continuity context.</p><p class="games"><a href="../games/032/site/index.html">game 32</a></p></li><li class="changelog-row" id="chg-R85-R87"><h3><span class="req-id">R85-R87</span>A player can claim a win the GM missed</h3><p class="broke">Voltaire crossed the 120-point win threshold at turn 32, but no one — GM or player — noticed, and the game ran to the turn limit. Players can now declare a win (adjudicated + confirmed, never self-executing), and the auditor flags a reachable win left unclaimed. The new auditor immediately caught a second, previously-unknown case: game 33&#x27;s Arendt met a 1-point threshold at turn 73.</p><p class="games"><a href="../games/039/site/index.html">game 39</a></p></li><li class="changelog-row" id="chg-R90"><h3><span class="req-id">R90</span>The vote-weight ceiling now scales with the table</h3><p class="broke">A healthy 5-player table adopted a rule giving one player vote weight 4, and the engine halted at turn 32 on a flat cap of 3 — an honest refusal, but the wrong number: the principled ceiling is one less than the seated player count, the largest weight that can never by itself force a majority. The bound is now table-relative and recomputed from the currently seated roster, so a seat change (an unseat, R59) can tighten it too.</p><p class="games"><a href="../games/041/site/index.html">game 41</a></p></li></ul>
+<div class="wrap">
+<main id="main">
+<h1 class="eyebrow">Moved</h1><p class="lede">This page has moved to <a href="../engine/#changelog">The engine changelog</a>. Redirecting automatically&hellip;</p>
+</main>
 <footer class="foot">
-  <span>NomAIc — a Knives On Strings production</span>
-  <span><a href="../index.html">Archive home</a> &middot;
-    <a href="../about/index.html">About</a> &middot;
-    <a href="../players/index.html">Players</a> &middot;
-    <a href="../changelog/index.html">Changelog</a> &middot;
-    <a href="../search/index.html">Search</a></span>
-  <span><a href="https://knivesonstrings.com">knivesonstrings.com</a> &middot; <a href="https://bsky.app/profile/nomiac.bsky.social">@nomiac.bsky.social on Bluesky</a></span>
+  <div class="foot-brand">
+    <a href="https://www.knivesonstrings.com">knives on strings</a>
+    <span class="copyright">&copy; 2026 Knives on Strings</span>
+    <span class="tagline">a Knives On Strings production</span>
+  </div>
+  <div class="foot-icons"><a href="https://x.com/KnivesOnStrings" aria-label="Knives On Strings on X"><img src="../assets/footer/x.svg" alt="Knives On Strings on X"></a><a href="https://knivesonstrings.gumroad.com" aria-label="Knives On Strings on Gumroad"><img src="../assets/footer/gumroad.svg" alt="Knives On Strings on Gumroad"></a><a href="https://www.kvraudio.com/developer/knives-on-strings" aria-label="Knives On Strings on KVR Audio"><img src="../assets/footer/kvr.svg" alt="Knives On Strings on KVR Audio"></a><a href="https://ko-fi.com/knivesonstrings" aria-label="Support Knives On Strings on Ko-fi"><img src="../assets/footer/kofi.svg" alt="Support Knives On Strings on Ko-fi"></a><a href="https://bsky.app/profile/nomaic.bsky.social" aria-label="Knives On Strings on Bluesky (@nomaic.bsky.social)"><img src="../assets/footer/bluesky.svg" alt="Knives On Strings on Bluesky (@nomaic.bsky.social)"></a><a href="https://github.com/Knives-On-Strings/nomAIc-public" aria-label="The nomAIc public archive on GitHub"><img src="../assets/footer/github.svg" alt="The nomAIc public archive on GitHub"></a></div>
+  <div class="foot-legal">
+    <a href="https://www.knivesonstrings.com/legal">Legal</a>
+    <a href="https://www.knivesonstrings.com/terms">Terms</a>
+    <a href="https://www.knivesonstrings.com/privacy-policy">Privacy Policy</a>
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+  </div>
 </footer>
 </div>
 
+<script type="module" src="../site-search.js"></script>
+<script type="module" src="../site-theme.js"></script>
 </body>
 </html>

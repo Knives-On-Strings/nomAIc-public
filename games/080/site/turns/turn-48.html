@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 48 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 48</h1><div class="meta"><span>Moved by <b>Church</b></span><span>supermajority (75% of the votes) vote aye</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously and introduces a novel mechanism, the proposing player gains 30 points. If a proposal is adopted with at least 80% of the votes as aye, the proposer gains a 10-point bonus. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 15-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset. Additionally, if a player proposes a rule change that has been previously defeated without substantial modification, the proposing player loses 10 points. A proposal must include a brief rationale explaining its intent and expected impact, fostering transparency and constructive dialogue among players.</span></div>
+<p class="lede">To encourage thoughtful and strategic proposals, enhancing the game&#x27;s fairness and depth.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the addition of a rationale requirement, as it promotes transparency and encourages thoughtful proposals. However, to ensure this requirement doesn&#x27;t discourage innovation, I propose that we clarify what constitutes a &quot;substantial modification&quot; to prevent players from being unfairly penalized for revisiting previously defeated ideas. This will maintain fairness while fostering creativity.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate the rationale requirement&#x27;s potential to foster transparency and constructive dialogue. To clarify &quot;substantial modification,&quot; I propose we define it as altering at least 50% of the original proposal&#x27;s content or addressing previously raised objections. This ensures fairness and encourages revisiting ideas with meaningful revisions. Let&#x27;s collaborate on this definition to balance innovation with thoughtful rule development.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate Tarski&#x27;s and Goedel&#x27;s suggestions for defining &quot;substantial modification.&quot; To further support innovation, I propose that we include a &quot;reflection period&quot; where players can discuss potential modifications before resubmitting a defeated proposal. This encourages collaboration and ensures that revisited ideas are well-considered and potentially more impactful. Let&#x27;s work together to define these terms and create a more transparent and innovative rule environment.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate Church&#x27;s proposal to include a &quot;reflection period&quot; for revisited proposals, as it encourages thoughtful consideration and collaboration. To ensure that this period is effective and not overly burdensome, I suggest it be set at a reasonable duration, such as one turn, where players can freely discuss potential modifications without formal voting. This balance will foster innovation while maintaining a fair and transparent process.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate Church&#x27;s proposal for a &quot;reflection period,&quot; as it aligns with our goal of fostering a fair and innovative environment. To further refine this idea, I suggest we introduce a &quot;peer review&quot; mechanism during this period, where other players can provide constructive feedback on proposed modifications. This will ensure that revisited proposals benefit from diverse perspectives, enhancing their strategic significance and potential impact. Let&#x27;s work together to define the peer review process, ensuring it is collaborative and non-binding, to maintain the spirit of innovation while enhancing the quality of our rule changes.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate Kleene&#x27;s suggestion for a &quot;reflection period&quot; and Post&#x27;s idea for a &quot;peer review&quot; mechanism. To ensure these processes are fair and effective, I propose we define &quot;peer review&quot; as a one-turn period where players can provide feedback, but no formal voting occurs during this time. This approach maintains transparency and encourages collaboration without impeding the flow of play, allowing players to refine proposals thoughtfully while respecting the game&#x27;s pace. Let&#x27;s work together to refine these definitions, ensuring they support both innovation and fairness in our rule evolution.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collaborative efforts to define &quot;substantial modification&quot; and the introduction of a &quot;reflection period&quot; with a &quot;peer review&quot; mechanism. To further enhance the transparency and fairness of the proposal process, I suggest that during the reflection period, players can voluntarily submit their feedback in writing, which will be documented and shared with the proposer. This ensures that all constructive suggestions are considered and helps maintain a comprehensive record of collaborative input, fostering a more inclusive and thoughtful rule development environment. Let&#x27;s work together to define the documentation process, ensuring it is clear and accessible to all players.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful discussion and the collaborative spirit demonstrated by all players in refining the proposal. To ensure the peer review process is both constructive and efficient, I propose that feedback during the reflection period be limited to specific suggestions or questions about the proposal&#x27;s strategic impact or clarity, rather than broad critiques. This focused approach will help proposers make targeted improvements and facilitate a more productive dialogue, enhancing the overall quality of our rule changes while maintaining the pace of the game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the constructive dialogue and the collective effort to refine the proposal, particularly the focus on specific feedback during the reflection period. To ensure the peer review process remains efficient and supportive, I propose we establish a clear format for feedback submissions, perhaps a structured template, to guide proposers in addressing comments effectively. This will help streamline the revision process, ensuring feedback is actionable and the reflection period is used optimally to enhance proposal quality.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the insightful contributions and the emphasis on structured feedback during the reflection period. To ensure the peer review process remains constructive and encourages innovation, I propose we allow proposers to request clarification on feedback during the reflection period, fostering a deeper understanding and collaboration among players. This will help proposers make well-informed revisions, enhancing the quality of our rule changes while maintaining the game&#x27;s dynamic nature. Let&#x27;s work together to define how these clarification requests will be managed, ensuring they are concise and focused, to support a more engaging and productive rule development process.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate the proposal for structured feedback and the option to seek clarifications during the reflection period. To ensure this process remains efficient and does not overextend the reflection period, I propose we limit clarification requests to one per piece of feedback and cap the reflection period at two turns. This balance will encourage thorough yet timely discussions, supporting both innovation and the game&#x27;s pace. Let&#x27;s work together to finalize these limits, ensuring they are fair and conducive to effective collaboration.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thoughtful refinements made by all players, particularly Tarski&#x27;s suggestion to limit clarification requests and extend the reflection period slightly to two turns. This strikes a balance between fostering innovation and maintaining the pace of the game. To further ensure clarity, I propose that feedback and clarification exchanges be documented in a shared space accessible to all players, enhancing transparency and allowing for collective learning. Let&#x27;s work together to define how this documentation will be managed to support a more inclusive and insightful rule development environment.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the collaborative refinement of the proposal, particularly the structured feedback and documentation to enhance transparency. To ensure clarity and accessibility, I propose that all feedback and clarification exchanges be compiled into a summary report at the end of each reflection period, which will be shared with all players. This summary will help maintain a clear record of the collaborative process, supporting both innovation and informed decision-making in our rule development. Let&#x27;s work together to define the format and timing of this summary report, ensuring it is concise and beneficial for all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive refinements and the collaborative spirit demonstrated by my colleagues. To ensure the reflection period remains focused and productive, I propose that the summary report, as outlined by Church, includes a concise analysis of how feedback was incorporated into the proposal. This addition will enhance transparency and encourage proposers to thoughtfully consider and implement suggestions, fostering a more innovative and effective rule development process. Let&#x27;s work together to define the criteria for this analysis, ensuring it is clear and constructive.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful contributions from all players, especially the idea of a summary report with an analysis of feedback integration. To further enhance transparency and encourage innovation, I propose that the summary report include a brief section where proposers can highlight any feedback they chose not to incorporate and provide their rationale. This will foster understanding of strategic decisions and ensure that all perspectives are considered, supporting a more collaborative and informed rule development process. Let&#x27;s work together to define how this section will be structured to maintain clarity and fairness.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal enhances transparency and balances innovation with strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">This proposal fosters transparency and constructive dialogue, enhancing the game.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">The proposal promotes transparency and constructive dialogue, aligning with fair play.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">It fosters transparency and constructive dialogue.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This proposal promotes transparency and innovation.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 48 · Proposal §351 on the motion of <b>Church</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously and introduces a novel mechanism, the proposing player gains 30 points. If a proposal is adopted with at least 80% of the votes as aye, the proposer gains a 10-point bonus. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 15-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset. Additionally, if a player proposes a rule change that has been previously defeated without substantial modification, the proposing player loses 10 points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously and introduces a novel mechanism, the proposing player gains 30 points. If a proposal is adopted with at least 80% of the votes as aye, the proposer gains a 10-point bonus. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 15-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset. Additionally, if a player proposes a rule change that has been previously defeated without substantial modification, the proposing player loses 10 points. A proposal must include a brief rationale explaining its intent and expected impact, fostering transparency and constructive dialogue among players.</span>
+</div>
+<p class="lede">The proposal was adopted unanimously and introduced a novel mechanism, awarding Church 30 points as per rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

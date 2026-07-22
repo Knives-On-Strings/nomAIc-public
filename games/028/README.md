@@ -2,6 +2,8 @@
 
 _development era_
 
+> 'Rule 209 is repealed and replaced' — adopted three times, and 209 was never touched.
+
 ## Roster
 
 | Seat | Model |

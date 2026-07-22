@@ -1,0 +1,47 @@
+{
+  "game": 78,
+  "players": [
+    "Tarski",
+    "Goedel",
+    "Church",
+    "Kleene",
+    "Post"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "turn limit reached"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[seq=170, turn=6] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': False, 'label': 'unanimous consent (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.6666666666666666, 'abstain_blocks': False, 'label': 'two-thirds majority (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=1550, turn=43] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6, 'abstain_blocks': False, 'label': '60% majority until five full circuits of turns (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority after five full circuits of turns (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=1666, turn=47] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.6, 'abstain_blocks': False, 'label': '60% majority until five full circuits of turns (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority after five full circuits of turns (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=1723, turn=49] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority after ten full circuits of turns (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.65, 'abstain_blocks': False, 'label': '65% majority until ten full circuits of turns (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=1752, turn=50] procedure_consistency: the GM's voting_rule reading changed from {'type': 'fraction', 'value': 0.65, 'abstain_blocks': False, 'label': '65% majority until ten full circuits of turns (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority after ten full circuits of turns (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule"
+    ]
+  },
+  "seed": 7982464,
+  "started": "2026-07-21T12:18:23.568516+00:00",
+  "ended": "2026-07-21T15:49:21.903984+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Tarski": 77,
+    "Goedel": 105,
+    "Church": 1,
+    "Kleene": 5,
+    "Post": 15
+  },
+  "adoptions": 46,
+  "gm_model": "phi-4-q5",
+  "completed_at": "2026-07-21T15:49:21.903984+00:00"
+}

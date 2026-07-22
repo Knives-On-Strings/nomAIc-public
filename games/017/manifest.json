@@ -10,7 +10,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "turn limit reached"
   },
   "confirmed": false,
   "audit": {
@@ -29,5 +30,12 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Hobbes": 1,
+    "Locke": 31,
+    "Rousseau": 0
+  },
+  "adoptions": 9,
+  "completed_at": "2026-07-13T16:17:29.842629+00:00"
 }

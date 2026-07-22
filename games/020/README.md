@@ -2,6 +2,8 @@
 
 _development era_
 
+> Hobbes crosses the line at turn 36 — the table's first confirmed champion.
+
 ## Roster
 
 | Seat | Model |

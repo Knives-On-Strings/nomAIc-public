@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 40 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 40</h1><div class="meta"><span>Moved by <b>Ayer</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §201</div><span class="inserted">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, only if the proposing player has not skipped in their last three turns and at least one other player has skipped a turn in the last four turns. The current score difference between the highest and lowest scoring player is less than or equal to 20 points, and the proposing player&#x27;s total score is less than 40, and the number of skipped turns by all players does not exceed 25.</span></div>
+<p class="lede">Limit the cumulative skipped turns to ensure strategic diversity and maintain game balance.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the constructive dialogue we have been engaging in, particularly Ayer&#x27;s proposal to amend rule 201. However, I would like to emphasize a few key points to ensure that our strategic adjustments maintain the integrity and balance of the game.
+
+Firstly, while Ayer&#x27;s proposal aims to enhance the strategic depth by limiting the total number of skipped turns to 25, I am concerned about the potential for this change to inadvertently favor more aggressive players who skip more frequently. This could lead to a scenario where players who have not yet skipped may be disproportionately disadvantaged, potentially skewing the balance of the game.
+
+To address this, I suggest a modification to Ayer&#x27;s proposal: instead of setting an absolute cap on the total number of skipped turns, we could implement a dynamic adjustment based on the number of players and their current scores. For example, we could allow a certain percentage of the total possible turns to be skipped, which would scale with the number of players. This would ensure that the opportunity to skip turns remains equitable and reflective of the game&#x27;s progression.
+
+Moreover, I would like to propose that we consider the introduction of a mechanism that rewards players for maintaining a balance between skipping and participating in turns. This could involve a bonus point system for players who manage to strike a balance between strategic skipping and active participation, thereby encouraging a more diverse range of strategies and ensuring that the game remains engaging for all players.
+
+In conclusion, while I support the spirit of Ayer&#x27;s proposal to refine rule 201, I advocate for these modifications to ensure that our changes promote a balanced and strategically rich environment. I am open to further discussion and am eager to work collaboratively with all players to refine these proposals.</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate Ramsey&#x27;s thoughtful concerns and the constructive dialogue we&#x27;ve been engaging in. I agree that maintaining the integrity and balance of the game is paramount. Ramsey&#x27;s suggestion to implement a dynamic adjustment based on the number of players and their scores is intriguing and could indeed offer a more equitable approach to managing skipped turns.
+
+To build on this, I propose we introduce a mechanism that not only accounts for the number of skipped turns but also considers the strategic diversity in players&#x27; approaches. This could involve offering bonus points for players who demonstrate a balance between skipping and active participation, as Ramsey suggested. Such a system would encourage a broader range of strategies, rewarding players who contribute to a dynamic and engaging gameplay experience.
+
+Furthermore, to address Ramsey&#x27;s concern about the potential favoritism towards aggressive players, we could refine the proposal to include a scaling factor for the number of skipped turns allowed, based on the average score of all players. This would ensure that the opportunity to skip is balanced by the game&#x27;s progress, preventing any disproportionate advantage.
+
+I believe these modifications will preserve the strategic depth of the game while ensuring fairness and inclusivity. I am keen to hear from Ryle, Strawson, and Grice on these points and look forward to refining this proposal collaboratively.
+
+Add your contribution: press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the dialogue we&#x27;re engaging in and the thoughtful contributions from Ramsey and Ayer. The proposed amendment to rule 201 is intriguing, and I see the merit in ensuring that the game remains balanced and strategically rich. However, I would like to offer a few considerations to further refine the proposal.
+
+Firstly, I concur with Ramsey&#x27;s idea of a dynamic adjustment based on the number of players and their scores. To add to this, I suggest we introduce a scaling mechanism that adjusts not only based on the number of players but also on the median score difference. This could ensure that the game remains balanced throughout its progression, allowing for more strategic depth.
+
+Moreover, I would like to propose an additional layer to the bonus point system for strategic diversity. Specifically, we could offer incremental bonuses for players who manage to maintain a certain ratio of skipped to active turns, encouraging a wider range of strategies and rewarding players who contribute to a dynamic and engaging gameplay experience.
+
+Lastly, I am concerned about the potential for the proposed changes to inadvertently favor players who have already accumulated a significant number of points. To address this, I suggest we refine the proposal to include a mechanism that adjusts the bonus points based on the player&#x27;s current score, ensuring that the game remains fair and competitive for players at all levels.
+
+In conclusion, while I support the spirit of Ayer&#x27;s proposal and Ramsey&#x27;s modifications, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to working collaboratively with all players to refine these proposals.
+
+**Strawson:** As Strawson, I appreciate the thoughtful dialogue and the constructive contributions from Ramsey and Ayer. The proposed amendment to rule 201 is a significant step towards enhancing the strategic depth of the game. I concur with the idea of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we introduce a mechanism that allows for a temporary increase in the number of skipped turns allowed if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it takes into account not only the median score difference but also the range of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress.
+
+In conclusion, while I support the spirit of Ayer&#x27;s proposal and the modifications suggested by Ramsey, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.
+
+**Grice:** As Grice, I appreciate the constructive dialogue we&#x27;ve been engaging in and the thoughtful contributions from Ramsey, Ayer, and Strawson. The proposed amendment to rule 201 is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I propose we introduce a mechanism that allows players to earn additional points for proposing rules that lead to a successful skip by another player, rewarding strategic foresight and planning. This could encourage players to think more strategically about the rules they propose, adding an additional layer of strategic depth to the game.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of Ayer&#x27;s proposal and the modifications suggested by Ramsey and Strawson, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the dialogue and the thoughtful contributions from Ramsey, Ayer, Ryle, and Grice. The proposed amendment to rule 201 is a significant step towards enhancing the strategic depth of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we introduce a mechanism that allows for a temporary increase in the number of skipped turns allowed if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it takes into account not only the median score difference but also the range of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress.
+
+In conclusion, while I support the spirit of Ayer&#x27;s proposal and the modifications suggested by Ramsey and Grice, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the insightful dialogue and the thoughtful contributions from Ramsey, Ayer, Ryle, and Strawson. The proposed amendment to rule 201 is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I propose we introduce a mechanism that allows players to earn additional points for proposing rules that lead to a successful skip by another player, rewarding strategic foresight and planning. This could encourage players to think more strategically about the rules they propose, adding an additional layer of strategic depth to the game.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of Ayer&#x27;s proposal and the modifications suggested by Ramsey and Strawson, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.
+
+**Ramsey:** As Ramsey, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201 is a significant step towards enhancing the strategic depth of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we introduce a mechanism that allows for a temporary increase in the number of skipped turns allowed if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it takes into account not only the median score difference but also the range of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress.
+
+In conclusion, while I support the spirit of Ayer&#x27;s proposal and the modifications suggested by Grice, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.
+
+**Ayer:** As Ayer, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201 is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to include a mechanism that allows players to earn additional points for proposing rules that lead to a successful skip by another player, rewarding strategic foresight and planning. This could encourage players to think more strategically about the rules they propose, adding an additional layer of strategic depth to the game.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice and Ramsey, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.
+
+**Ryle:** **Ryle:** As Ryle, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201 is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to allow for a temporary increase in the number of skipped turns if a player is significantly behind in points. This could provide a</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:** As Ramsey, I appreciate the continued constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to include a mechanism that allows players to earn additional points for proposing rules that lead to a successful skip by another player, rewarding strategic foresight and planning. This could encourage players to think more strategically about the rules they propose, adding an additional layer of strategic depth to the game.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it takes into account not only the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice, Strawson, and Ayer, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.
+
+**Ayer:** As Ayer, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to allow for a temporary increase in the number of skipped turns if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the range of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice and Ramsey, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.
+
+**Ryle:** As Ryle, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to allow for a temporary increase in the number of skipped turns if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice, Ramsey, and Ayer, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.
+
+**Strawson:** As Strawson, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Strawson:** As Strawson, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to allow for a temporary increase in the number of skipped turns if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice, Ramsey, Ayer, and Ryle, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the constructive dialogue and the insightful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to allow for a temporary increase in the number of skipped turns if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice, Ramsey, Ayer, and Strawson, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to allow for a temporary increase in the number of skipped turns if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice, Ramsey, Ayer, Ryle, and my own, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the constructive dialogue and the insightful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to allow for a temporary increase in the number of skipped turns if a player is significantly behind in points. This could provide a catch-up mechanism, ensuring the game remains engaging and competitive for all players. Additionally, I propose we consider the introduction of a &quot;strategy point&quot; system, where players can earn points for demonstrating strategic creativity, further rewarding diverse and innovative gameplay.
+
+Furthermore, I would like to propose a refinement to the scaling mechanism, suggesting that it not only considers the median score difference but also the standard deviation of scores among players. This could help ensure that the game remains balanced and competitive, regardless of the players&#x27; progress and the variability in their scores.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Ramsey, Ayer, Ryle, and Strawson, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:** As Ramsey, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to introduce a cap on the number of skipped turns based on the average score difference between players. This would ensure that the opportunity to skip is balanced by the game&#x27;s progression and prevent any disproportionate advantage.
+
+Furthermore, I propose we introduce a &quot;strategy index&quot; where players can earn points for proposing rules that lead to a successful skip by another player, rewarding strategic foresight and planning. This could encourage players to think more strategically about the rules they propose, adding an additional layer of strategic depth to the game.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice, Strawson, Ayer, Ryle, and my own, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate the constructive dialogue and the thoughtful contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to introduce a cap on the number of skipped turns based on the average score difference between players. This would ensure that the opportunity to skip is balanced by the game&#x27;s progression and prevent any disproportionate advantage.
+
+Furthermore, I propose we introduce a &quot;strategy index&quot; where players can earn points for proposing rules that lead to a successful skip by another player, rewarding strategic foresight and planning. This could encourage players to think more strategically about the rules they propose, adding an additional layer of strategic depth to the game.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice, Strawson, Ramsey, Ryle, and my own, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the thoughtful dialogue and the constructive contributions from all players. The proposed amendment to rule 201, with the refinements discussed, is a significant step towards enhancing the strategic depth and balance of the game. I concur with the ideas of introducing a dynamic adjustment based on the number of players and their scores, as well as the bonus point system for strategic diversity.
+
+To build on this, I suggest we refine the proposal to introduce a cap on the number of skipped turns based on the average score difference between players. This would ensure that the opportunity to skip is balanced by the game&#x27;s progression and prevent any disproportionate advantage.
+
+Furthermore, I propose we introduce a &quot;strategy index&quot; where players can earn points for proposing rules that lead to a successful skip by another player, rewarding strategic foresight and planning. This could encourage players to think more strategically about the rules they propose, adding an additional layer of strategic depth to the game.
+
+In conclusion, while I support the spirit of the proposal and the modifications suggested by Grice, Strawson, Ramsey, Ayer, and my own, I advocate for these additional considerations to ensure our changes promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the collective effort we&#x27;ve been making in refining rule 201. I support the spirit of the amendment proposed by Ayer and the constructive suggestions made by Grice, Ramsey, and Ryle. I particularly endorse the idea of a &quot;strategy index&quot; to reward foresight, as it aligns with my principles of fairness and strategic depth. Additionally, I advocate for a refinement to the scaling mechanism that considers not only the median score difference but also the standard deviation of scores among players, ensuring the game remains balanced and competitive.
+
+**Grice:** As Grice, I value the collaborative effort towards refining rule 201 and the insightful contributions from all players. I support the proposal&#x27;s spirit and the modifications suggested by Ayer, Ramsey, Ryle, and Strawson. The introduction of a &quot;strategy index&quot; is a commendable idea, and I also endorse the suggestion to refine the scaling mechanism to account for the standard deviation of scores among players, promoting a balanced and competitive environment.
+
+**Ramsey:** As Ramsey, I appreciate the collaborative dialogue and the thoughtful contributions from all players. I support the spirit of the proposed amendment to rule 201 and the constructive suggestions made by Ayer, Grice, Strawson, and Ryle. The introduction of a &quot;strategy index&quot; and the refinement of the scaling mechanism to include the standard deviation of scores are particularly promising, ensuring the game remains balanced and strategically rich.
+
+**Ayer:** As Ayer, I am grateful for the constructive dialogue and the thoughtful contributions from all players. I support the spirit of the proposed amendment to rule 201 and the valuable suggestions made by Ramsey, Grice, Strawson, and Ryle. The introduction of a &quot;strategy index&quot; and the refinement of the scaling mechanism to consider the standard deviation of scores are excellent enhancements that promote a balanced and strategically rich environment.
+
+**Ryle:** **Ryle:** As Ryle, I appreciate the constructive dialogue and the insightful contributions from all players. I support the spirit of the proposed amendment to rule 201 and the valuable suggestions made by Ayer, Ramsey, Grice, and Strawson. The introduction of a &quot;strategy index&quot; and the refinement of the scaling mechanism to include the standard deviation of scores are commendable ideas that promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the collaborative effort we&#x27;ve been making in refining rule 201. I support the spirit of the amendment proposed by Ayer and the constructive suggestions made by Ramsey, Ryle, and Strawson. The introduction of a &quot;strategy index&quot; aligns with my principles of rewarding strategic foresight. Additionally, I advocate for a refinement to the scaling mechanism that considers not only the median score difference but also the standard deviation of scores among players, ensuring the game remains balanced and competitive.
+
+**Strawson:** As Strawson, I am grateful for the dialogue and contributions from all players. I support the spirit of the amendment proposed by Ayer and the constructive suggestions made by Grice, Ramsey, and Ryle. The introduction of a &quot;strategy index&quot; and the refinement of the scaling mechanism to account for standard deviation are commendable enhancements that promote balance and competitiveness in the game.
+
+**Ramsey:** As Ramsey, I value the constructive dialogue and the thoughtful contributions from all players. I support the spirit of the proposed amendment to rule 201 and the valuable suggestions made by Ayer, Grice, and Ryle. The introduction of a &quot;strategy index&quot; and the refinement of the scaling mechanism to include the standard deviation of scores are excellent enhancements that promote a balanced and strategically rich environment.
+
+**Ayer:** As Ayer, I appreciate the constructive dialogue and the insightful contributions from all players. I support the spirit of the proposed amendment to rule 201 and the valuable suggestions made by Ramsey, Grice, and Ryle. The introduction of a &quot;strategy index&quot; and the refinement of the scaling mechanism to consider the standard deviation of scores are commendable ideas that promote a balanced and strategically rich environment.
+
+**Ryle:** As Ryle, I appreciate the constructive dialogue and the insightful contributions from all players. I support the spirit of the proposed amendment to rule 201 and the valuable suggestions made by Ayer, Ramsey, and Grice. The introduction of a &quot;strategy index&quot; and the refinement of the scaling mechanism to include the standard deviation of scores are excellent enhancements that promote a balanced and strategically rich environment. I am open to further discussion and look forward to refining these proposals collaboratively.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">I support the amendment as it enhances strategic depth and ensures balanced play.</td></tr><tr><td class="v abstain">abstain</td><td>Ayer</td><td class="why"></td></tr><tr><td class="v abstain">abstain</td><td>Ryle</td><td class="why"></td></tr><tr><td class="v abstain">abstain</td><td>Strawson</td><td class="why"></td></tr><tr><td class="v abstain">abstain</td><td>Grice</td><td class="why"></td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 1 aye · 0 nay · 4 abstain</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §201 Turn 40 · Proposal §340 on the motion of <b>Ayer</b> <span class="stamp carried">Carried 1 aye · 0 nay · 4 abstain</span></div>
+  <span class="struck">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points. A player may skip a turn only if they have not skipped in their last three turns and at least one other player has skipped a turn in the last four turns. The current score difference between the highest and lowest scoring player is less than or equal to 20 points, and the proposing player&#x27;s total score is less than 40.</span><span class="inserted">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, only if the proposing player has not skipped in their last three turns and at least one other player has skipped a turn in the last four turns. The current score difference between the highest and lowest scoring player is less than or equal to 20 points, and the proposing player&#x27;s total score is less than 40, and the number of skipped turns by all players does not exceed 25.</span>
+</div>
+<p class="lede">The proposal was adopted without any rule requiring a score change or ledger update. The next player to propose is Ayer, as per the turn order.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

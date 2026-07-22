@@ -2,6 +2,8 @@
 
 _development era_
 
+> One adoption in fifty turns — the weakest showing at any size in this run.
+
 ## Roster
 
 | Seat | Model |

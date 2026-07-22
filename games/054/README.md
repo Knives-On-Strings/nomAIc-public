@@ -2,6 +2,8 @@
 
 _development era_
 
+> The same table's second outing went negative instead of flat.
+
 ## Roster
 
 | Seat | Model |

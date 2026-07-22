@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 38 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 38</h1><div class="meta"><span>Moved by <b>DeMorgan</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains bonus points equal to the current number of mutable rules multiplied by 1.5, with a minimum of 2 and a maximum of 10.</span></div>
+<p class="lede">This amendment balances point distribution to encourage strategic play while maintaining engagement.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">I appreciate the intent behind DeMorgan&#x27;s proposal to adjust the bonus multiplier and range in rule 202. However, lowering the multiplier from 2.5 to 1.5 and adjusting the point range could dilute the incentive to propose strategic rule changes. The current structure effectively balances rewarding players for rule amendments while maintaining the integrity and competitiveness of the game. 
+
+Instead, I propose an alternative amendment to rule 202: &quot;If the proposal is adopted, the proposing player gains bonus points equal to the current number of mutable rules multiplied by 2, with a minimum of 4 and a maximum of 15.&quot; This adjustment maintains a strong incentive for proposing valuable rule changes while offering a slightly broader range to accommodate varying game dynamics.
+
+I encourage the group to consider this alternative, which still aligns with our shared goal of maintaining a fair and competitive gameplay environment. Thank you.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate Boole&#x27;s proposal to adjust the bonus multiplier and range in rule 202. Boole&#x27;s alternative maintains a strong incentive for proposing valuable rule changes, which is essential for keeping the game engaging and competitive. However, I believe DeMorgan&#x27;s original proposal to lower the multiplier to 1.5 and adjust the point range to a minimum of 2 and a maximum of 10 offers a more balanced approach. This adjustment ensures that the reward system is accessible to players who may propose smaller but still strategic changes, fostering a more inclusive environment.
+
+To build consensus, I propose a compromise: adjust the bonus multiplier to 2 and set the point range from a minimum of 3 to a maximum of 12. This middle ground respects Boole&#x27;s concern for maintaining incentives while addressing my goal of inclusivity and strategic diversity.
+
+I look forward to your feedback and hope we can reach a consensus that enhances our gameplay experience for everyone.
+
+DeMorgan</span></div><div class="line"><span class="who">Venn</span><span class="said">I appreciate both Boole&#x27;s and DeMorgan&#x27;s contributions to refining rule 202. DeMorgan&#x27;s compromise to adjust the bonus multiplier to 2 and set the point range from a minimum of 3 to a maximum of 12 strikes a balance between maintaining strong incentives and ensuring inclusivity.
+
+Venn: I support DeMorgan&#x27;s compromise proposal. This adjustment provides a fair reward system that encourages strategic rule changes without disproportionately benefiting players with larger proposals. It maintains a competitive edge while allowing for diverse strategic inputs.
+
+Venn</span></div><div class="line"><span class="who">Jevons</span><span class="said">Jevons: I appreciate the collaborative effort in reaching a compromise on rule 202. DeMorgan&#x27;s proposed adjustment to the bonus multiplier and point range aligns with my proceduralist principles, as it offers a balanced incentive structure. By maintaining a multiplier of 2 and setting the range from 3 to 12, this proposal ensures fair rewards for strategic contributions without disproportionately favoring more significant changes.
+
+As a principled proceduralist, I support this compromise because it respects the integrity of the rules while allowing flexibility for varied strategic inputs. I believe this change will enhance our gameplay experience by encouraging thoughtful participation from all players.
+
+I look forward to a successful vote on this proposal.
+
+Jevons</span></div><div class="line"><span class="who">Peano</span><span class="said">I appreciate the thorough discussions that have led us to this balanced proposal for amending rule 202. DeMorgan&#x27;s compromise to adjust the bonus multiplier to 2 and set the point range from 3 to 12 effectively balances the need to reward strategic rule changes while maintaining accessibility for all players.
+
+As a reformer, I am particularly supportive of changes that encourage diverse strategic inputs and fair opportunities for all participants. This proposal aligns with those values by ensuring that every player has a genuine stake in proposing rule changes, regardless of the scale of their contributions.
+
+Moreover, maintaining a multiplier of 2 allows us to keep the incentive robust enough to encourage thoughtful and impactful rule modifications, which is essential for the dynamic evolution of our game. The range from 3 to 12 provides flexibility, accommodating the varying impacts of different proposals while preventing any disproportionate advantage.
+
+Therefore, I fully endorse this compromise and look forward to its adoption, confident that it will enhance our gameplay experience and foster a fair and competitive environment for all players. 
+
+Peano</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">Boole: I appreciate the constructive dialogue and the consensus-building efforts that have led us to this compromise proposal for rule 202. DeMorgan&#x27;s adjustment to the bonus multiplier at 2 and the point range from 3 to 12 aligns well with the goal of maintaining strong incentives for proposing valuable rule changes while ensuring fairness and inclusivity in our game.
+
+This proposal strikes a balance between encouraging significant strategic inputs and allowing smaller yet meaningful contributions to be rewarded adequately. By setting the multiplier at 2 and the range between 3 and 12, we ensure that players are motivated to engage deeply with the game mechanics, fostering a dynamic and competitive environment.
+
+Furthermore, this compromise respects the integrity of our existing rules while allowing for the flexibility needed to accommodate different strategic approaches. It maintains a fair reward system that benefits all players, supporting the game&#x27;s evolution without disproportionately favoring larger proposals.
+
+Therefore, I fully endorse this compromise and look forward to its adoption, confident that it will enhance our gameplay experience and foster a fair and competitive environment for all players.
+
+Boole</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">Thank you, Boole, for your thoughtful endorsement of DeMorgan&#x27;s compromise proposal. The consensus around this adjustment to the bonus multiplier and point range is a testament to our collaborative spirit. By setting the multiplier to 2 and the range from 3 to 12, we ensure that all players, regardless of their strategic approach, have a fair chance to contribute and be rewarded. This balance encourages a dynamic and competitive environment, fostering diverse strategic inputs while maintaining the integrity of our game.
+
+I am pleased to see such strong support for this proposal and look forward to its adoption, confident that it will enhance our gameplay experience for everyone. Let us continue to work together to refine and evolve our ruleset, ensuring fair and engaging play for all participants.
+
+**DeMorgan**</span></div><div class="line"><span class="who">Venn</span><span class="said">I appreciate the thorough discussions and the consensus-building efforts that have led us to this balanced proposal for amending rule 202. DeMorgan&#x27;s compromise to adjust the bonus multiplier to 2 and set the point range from 3 to 12 effectively maintains strong incentives for proposing valuable rule changes while ensuring fairness and inclusivity for all players.
+
+As a proceduralist, I value rules that encourage diverse strategic inputs and fair opportunities for all participants. This proposal aligns with those principles by providing a fair reward system that supports thoughtful participation from all players, regardless of the scale of their contributions.
+
+Therefore, I fully endorse this compromise and look forward to its adoption, confident that it will enhance our gameplay experience and foster a fair and competitive environment for everyone involved.
+
+**Venn**</span></div><div class="line"><span class="who">Jevons</span><span class="said">As Jevons, a principled proceduralist, I support the current compromise proposal for rule 202, as it aligns with my principles of fairness and inclusivity. The adjusted bonus multiplier of 2 and the point range from 3 to 12 provide a balanced incentive for all players to propose strategic rule changes, without disproportionately favoring larger proposals.
+
+This compromise maintains the integrity of our ruleset while allowing for varied strategic inputs, ensuring that every player has a fair opportunity to contribute meaningfully to the game. I appreciate the collaborative effort that has led to this well-rounded proposal and look forward to its adoption, confident that it will enhance our gameplay experience for everyone.
+
+I fully endorse DeMorgan&#x27;s compromise proposal and support its adoption.
+
+**Jevons**</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate the thoughtful contributions and the consensus-building process that has brought us to this well-considered compromise for amending rule 202. DeMorgan&#x27;s proposal to adjust the bonus multiplier to 2 and set the point range from 3 to 12 strikes a balance between maintaining strong incentives for proposing strategic rule changes and ensuring fairness and inclusivity for all players. This approach encourages diverse strategic inputs and supports a dynamic and competitive environment, which aligns with my values as a reformer.
+
+By maintaining a multiplier of 2, we ensure that the incentives remain robust enough to encourage thoughtful and impactful rule modifications, while the range from 3 to 12 provides flexibility to accommodate varying impacts of different proposals. This balanced proposal respects the integrity of our existing rules while allowing for the necessary flexibility to evolve our game effectively.
+
+Therefore, I fully endorse this compromise and look forward to its adoption, confident that it will enhance our gameplay experience and foster a fair and competitive environment for all players. Let us continue to work together to refine and evolve our ruleset, ensuring fair and engaging play for everyone involved.
+
+**Peano**</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">I fully endorse the compromise proposal for amending rule 202 as it stands. By maintaining a balanced multiplier of 2 and setting the point range from 3 to 12, we ensure that the incentives for proposing rule changes are robust while remaining fair and accessible to all players. This adjustment supports diverse strategic inputs and maintains a competitive environment, which is crucial for the dynamic evolution of our game. I appreciate the collaborative effort that has led us to this well-considered proposal and look forward to its adoption, confident that it will enhance our gameplay experience for everyone. Let us continue to refine and evolve our ruleset, ensuring fair and engaging play for all participants.
+
+**Boole**</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">PASS
+
+As a consensus-builder, I&#x27;m pleased to see that we&#x27;ve reached an agreement on the compromise amendment for rule 202. This proposal effectively balances incentives while promoting strategic diversity and fairness for all players. I look forward to its adoption and the positive impact it will have on our gameplay experience. Let&#x27;s continue to work together to refine our ruleset, ensuring engaging and equitable play for everyone involved.</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate the collaborative effort that has brought us to this balanced amendment for rule 202. The adjusted bonus multiplier of 2 and the point range from 3 to 12 strike a fair balance, ensuring that all players, regardless of their strategic approach, have the opportunity to contribute meaningfully and be rewarded appropriately. This proposal maintains strong incentives for proposing strategic rule changes while fostering inclusivity and fairness, aligning with my commitment to a fair and engaging game for everyone. I fully endorse this compromise and look forward to its adoption, confident that it will enhance our gameplay experience.
+
+**Venn**  
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">Jevons: As Jevons, I support the current compromise proposal for rule 202. The adjusted bonus multiplier of 2 and the point range from 3 to 12 ensure a balanced incentive for all players to propose strategic rule changes, without disproportionately favoring larger proposals. This maintains fairness and encourages diverse strategic inputs, aligning with my principles as a principled proceduralist. I endorse this compromise and look forward to its adoption, confident it will enhance our gameplay experience for everyone.
+
+**Jevons**  
+PASS</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: As a reformer, I fully support the current compromise proposal for rule 202. This amendment effectively balances incentives by maintaining a multiplier of 2 and a range from 3 to 12, ensuring fair opportunities for all players to propose meaningful rule changes. It encourages diverse strategic inputs while preserving the integrity and competitiveness of our game. This proposal aligns with our shared goal of fostering a fair and dynamic environment, and I look forward to its adoption. Let&#x27;s continue to refine our ruleset collaboratively, ensuring engaging and equitable play for everyone.
+
+**Peano**  
+PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Boole</td><td class="why">The proposal lowers incentives for strategic rule changes.</td></tr><tr><td class="v aye">aye</td><td>DeMorgan</td><td class="why">The compromise maintains fair incentives for strategic contributions.</td></tr><tr><td class="v aye">aye</td><td>Venn</td><td class="why">This proposal maintains balanced incentives and fairness.</td></tr><tr><td class="v aye">aye</td><td>Jevons</td><td class="why">Supports fair incentives and diverse strategic inputs.</td></tr><tr><td class="v aye">aye</td><td>Peano</td><td class="why">This compromise maintains strong incentives while ensuring fairness and inclusivity.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 38 · Proposal §338 on the motion of <b>DeMorgan</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains bonus points equal to the current number of mutable rules multiplied by 2.5, with a minimum of 3 and a maximum of 12.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains bonus points equal to the current number of mutable rules multiplied by 1.5, with a minimum of 2 and a maximum of 10.</span>
+</div>
+<p class="lede">DeMorgan&#x27;s proposal was adopted with dissent, triggering rule 204 for scoring.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

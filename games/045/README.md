@@ -2,6 +2,8 @@
 
 _development era_
 
+> Ten turns spent re-legislating the same winning number, while two seated players never got a turn at all.
+
 ## Roster
 
 | Seat | Model |

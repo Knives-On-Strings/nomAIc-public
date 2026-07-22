@@ -2,6 +2,8 @@
 
 _development era_
 
+> The seat that ran away with the record the first time round crashed hardest the third.
+
 ## Roster
 
 | Seat | Model |

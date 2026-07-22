@@ -1,0 +1,35 @@
+{
+  "game": 63,
+  "players": [
+    "Turing",
+    "Shannon",
+    "vonNeumann",
+    "Babbage",
+    "Lovelace"
+  ],
+  "ruleset": "full",
+  "turns": 3,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 828568147,
+  "started": "2026-07-20T18:38:46.538954+00:00",
+  "ended": "2026-07-20T18:39:19.886302+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {},
+  "adoptions": 2,
+  "gm_model": "granite-4.0-h-tiny",
+  "completed_at": "2026-07-20T18:39:19.886302+00:00"
+}

@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
   },
   "confirmed": false,
   "audit": {
@@ -28,5 +29,15 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Aquinas": -10,
+    "Hypatia": 0,
+    "Confucius": 0,
+    "Spinoza": 0,
+    "Arendt": 0
+  },
+  "adoptions": 0,
+  "gm_model": "qwen3.5-35b-a3b",
+  "completed_at": "2026-07-15T21:02:38.618451+00:00"
 }

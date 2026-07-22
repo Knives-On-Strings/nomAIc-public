@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Statute — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+.skip-link{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}
+.skip-link:focus{position:static;width:auto;height:auto;display:inline-block;
+  padding:.4rem .8rem;margin-bottom:.6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule)}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* §9.9.1 amendment ("the header must be a bar"): a persistent, `position:sticky`
+   single-row band, full-width, with a hairline bottom border — replaces the earlier
+   stacked column layout this selector used to carry (brand row, then a separate nav
+   block, then a separate search/meta block). `.header-bar` is the one flex ROW inside
+   it; `.wrap`'s own `max-width:46rem` (site_writer.py) is mirrored here so the bar's
+   CONTENT still reads as constrained even though the band itself spans full width.
+   `z-index` keeps it above scrolling content; no animation, so `prefers-reduced-motion`
+   is moot (nothing here moves). */
+.site-header{position:sticky;top:0;z-index:20;width:100%;
+  background:var(--paper);border-bottom:1px solid var(--rule)}
+.header-bar{display:flex;align-items:center;gap:clamp(.6rem,3vw,1.2rem);
+  max-width:46rem;margin:0 auto;box-sizing:border-box;min-height:56px;
+  padding:.5rem clamp(1rem,5vw,2rem)}
+.brand{display:inline-flex;align-items:center;gap:.4rem;color:inherit;
+  text-decoration:none;flex:none}
+.brand:hover .mark{color:var(--indigo)}
+.site-icon{display:inline-flex;width:1.4rem;height:1.4rem;flex:none}
+.site-icon svg{width:100%;height:100%;display:block}
+#theme-toggle{font:inherit;font-size:1rem;line-height:1;cursor:pointer;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);
+  border-radius:50%;width:2.2rem;height:2.2rem;flex:none;
+  min-width:44px;min-height:44px}
+#theme-toggle:hover{color:var(--indigo);border-color:var(--indigo)}
+#theme-toggle:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.nav-menu{border:none;flex:none;display:flex;align-items:center}
+/* The search box is pushed to the right edge of the bar, and the toggle rides along
+   after it — brand and nav-menu stay left-adjacent, exactly the design doc's "Left:
+   icon+wordmark ... Center: nav ... Right: search + toggle" layout, with all four as
+   DIRECT children of `.header-bar` (no extra wrapping div to nest search+toggle inside
+   — `tests/test_site_components.py::test_header_is_a_single_row_bar` parses this). On
+   a narrow (<40rem) viewport the nav-menu collapses to just its `<summary>` button
+   (existing mobile-first `<details>` behaviour, untouched below) and the search input's
+   own `flex:1;min-width:0` (below) lets it narrow to fit the remaining row width
+   instead of wrapping to a second line. */
+.site-search-wrap{margin-left:auto;min-width:0}
+/* R109 amendment (touch-target audit): a `<summary>`/nav-link/chip must offer at least
+   a 44px-square hit area (WCAG 2.5.5-shaped guidance the structural checker itself
+   cannot measure -- it parses static markup, never a rendered box; see
+   tests/test_archive.py::test_touch_targets_meet_44px for the honest, code-level pin
+   this limitation leaves us with instead). `display:flex;align-items:center` lets
+   `min-height` actually apply to elements that would otherwise stay inline. */
+.nav-menu summary{cursor:pointer;list-style:none;font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);
+  display:flex;align-items:center;min-height:44px}
+.nav-menu summary::-webkit-details-marker{display:none}
+.nav-menu summary:hover{color:var(--ink-soft)}
+.site-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.4rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}
+.site-nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid transparent;
+  padding-bottom:.15rem;display:inline-flex;align-items:center;min-height:44px}
+.site-nav a:hover{color:var(--indigo)}
+.site-nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--indigo)}
+.site-search{display:flex;gap:.4rem}
+.site-search input[type="search"]{flex:1;min-width:0;padding:.35rem .5rem;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-radius:0}
+.site-search input[type="search"]:focus-visible{outline:2px solid var(--indigo);
+  outline-offset:1px}
+.site-search button{font:inherit;font-size:.72rem;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;background:var(--panel);color:var(--ink-soft);
+  border:1px solid var(--rule)}
+/* Nav visibility (R99/§9.9.1, third revision — the honest one): CSS cannot reliably
+   force a closed `<details>` open (current Chromium hides closed content via
+   `content-visibility` on `::details-content`, which no child display value pierces,
+   and the pseudo-element rejects `display:contents`, leaving a zero-width box — both
+   failure modes were found live on the staged preview). So the markup ships
+   `<details class="nav-menu" open>`: the nav is VISIBLE EVERYWHERE by default, with
+   or without JavaScript. site-theme.js (loaded on every page) closes it on narrow
+   viewports as a progressive enhancement — a no-JS phone reader sees an expanded
+   nav, which is accessible degradation, not a defect. Desktop hides the summary
+   button; the nav lays out inline in the bar. */
+@media (min-width:40rem){
+  .nav-menu summary{display:none}
+  .nav-menu > nav{margin-top:0;align-items:center}
+}
+
+[data-theme="dark"]{
+  --paper:#1c1f1a; --paper-2:#242822; --panel:#262b24;
+  --ink:#e8e6df; --ink-soft:#b9c0b4; --ink-faint:#8b948b;
+  --rule:#3c443b;
+  --oxblood:#e3908f; --indigo:#8aa8e8; --bronze:#cdbd8e;
+}
+[data-theme="light"]{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e; --indigo:#23407a; --bronze:#5b5340;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --paper:#1c1f1a; --paper-2:#242822; --panel:#262b24;
+    --ink:#e8e6df; --ink-soft:#b9c0b4; --ink-faint:#8b948b;
+    --rule:#3c443b;
+    --oxblood:#e3908f; --indigo:#8aa8e8; --bronze:#cdbd8e;
+  }
+}
+
+.foot-brand{display:flex;flex-direction:column;gap:.15rem}
+.foot-brand a{color:var(--ink);text-decoration:none;font-weight:700;letter-spacing:.02em}
+.foot-brand a:hover{color:var(--indigo)}
+.foot-brand .copyright{color:var(--ink-faint);font-size:.85em}
+.foot-brand .tagline{color:var(--ink-faint);font-size:.85em;font-style:italic}
+.foot-icons{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.foot-icons a{color:var(--ink-faint);line-height:0}
+.foot-icons a:hover{color:var(--indigo)}
+.foot-icons img{width:1.2rem;height:1.2rem;vertical-align:middle}
+.foot-legal{display:flex;gap:.6rem;flex-wrap:wrap}
+.foot-legal a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.foot-legal a:hover{color:var(--indigo)}
+
+.site-search-wrap{position:relative}
+.site-search-results{position:absolute;top:100%;left:0;right:0;z-index:20;
+  background:var(--panel);border:1px solid var(--rule);max-height:60vh;overflow:auto;
+  padding:.3rem .8rem;margin:0}
+.site-search-results:empty{display:none}
+.site-search-results .ss-none{color:var(--ink-faint);font-size:.85rem;padding:.4rem 0;
+  list-style:none}
+.site-search-results a[role="option"].active,
+.site-search-results a[role="option"]:hover{background:var(--paper-2)}
+
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2064%2064%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-labelledby%3D%22nomaic-icon-title%22%3E%0A%3Ctitle%20id%3D%22nomaic-icon-title%22%3EnomAIc%20%E2%80%94%20an%20open%20scroll%3C/title%3E%0A%3Cstyle%3E%0A.parchment%7Bfill%3A%23f3e9d2%7D%0A.roll%7Bfill%3A%23e7d8b5%3Bstroke%3A%238a6d3b%3Bstroke-width%3A1.6%3Bstroke-linejoin%3Around%3Bstroke-linecap%3Around%7D%0A.edge%7Bfill%3Anone%3Bstroke%3A%238a6d3b%3Bstroke-width%3A1.6%3Bstroke-linecap%3Around%3Bstroke-linejoin%3Around%7D%0A.ink%7Bfill%3A%233d2f1a%7D%0A%40media%20%28prefers-color-scheme%3A%20dark%29%7B%0A%20%20.parchment%7Bfill%3A%233a3226%7D%0A%20%20.roll%7Bfill%3A%234a4030%3Bstroke%3A%23c9b98a%7D%0A%20%20.edge%7Bstroke%3A%23c9b98a%7D%0A%20%20.ink%7Bfill%3A%23e8dfc5%7D%0A%7D%0A%3C/style%3E%0A%3Cpath%20class%3D%22parchment%22%20d%3D%22M16%2C16%20L48%2C16%20C44%2C26%2044%2C38%2048%2C48%20L16%2C48%20C20%2C38%2020%2C26%2016%2C16%20Z%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M16%2C16%20C20%2C26%2020%2C38%2016%2C48%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M48%2C16%20C44%2C26%2044%2C38%2048%2C48%22/%3E%0A%3Crect%20class%3D%22roll%22%20x%3D%2210%22%20y%3D%228%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%224%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2252%22%20cy%3D%2212%22%20r%3D%223%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M52%2C9%20C57%2C6%2059%2C7%2060%2C4%22/%3E%0A%3Crect%20class%3D%22roll%22%20x%3D%2210%22%20y%3D%2248%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%224%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2212%22%20cy%3D%2252%22%20r%3D%223%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2252%22%20cy%3D%2252%22%20r%3D%223%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M12%2C55%20C7%2C58%205%2C57%204%2C60%22/%3E%0A%3Ctext%20x%3D%2232%22%20y%3D%2239%22%20text-anchor%3D%22middle%22%20font-family%3D%22Georgia%2C%27Times%20New%20Roman%27%2Cserif%22%20font-weight%3D%22700%22%20font-size%3D%2222%22%20class%3D%22ink%22%3EN%3C/text%3E%0A%3C/svg%3E%0A"><script async src="https://www.googletagmanager.com/gtag/js?id=G-GBSLVXYDQL"></script>
+<script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-GBSLVXYDQL');</script>
+</head>
+<body>
+<script>(function(){try{var d=document.documentElement,t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}d.setAttribute('data-theme',t);}catch(e){}})();</script>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead site-header">
+  <div class="header-bar">
+    <a class="brand" href="../../../index.html">
+      <span class="site-icon" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="nomaic-icon-title">
+<title id="nomaic-icon-title">nomAIc — an open scroll</title>
+<style>
+.parchment{fill:#f3e9d2}
+.roll{fill:#e7d8b5;stroke:#8a6d3b;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.edge{fill:none;stroke:#8a6d3b;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ink{fill:#3d2f1a}
+@media (prefers-color-scheme: dark){
+  .parchment{fill:#3a3226}
+  .roll{fill:#4a4030;stroke:#c9b98a}
+  .edge{stroke:#c9b98a}
+  .ink{fill:#e8dfc5}
+}
+</style>
+<path class="parchment" d="M16,16 L48,16 C44,26 44,38 48,48 L16,48 C20,38 20,26 16,16 Z"/>
+<path class="edge" d="M16,16 C20,26 20,38 16,48"/>
+<path class="edge" d="M48,16 C44,26 44,38 48,48"/>
+<rect class="roll" x="10" y="8" width="44" height="8" rx="4"/>
+<circle class="roll" cx="12" cy="12" r="3"/>
+<circle class="roll" cx="52" cy="12" r="3"/>
+<path class="edge" d="M52,9 C57,6 59,7 60,4"/>
+<rect class="roll" x="10" y="48" width="44" height="8" rx="4"/>
+<circle class="roll" cx="12" cy="52" r="3"/>
+<circle class="roll" cx="52" cy="52" r="3"/>
+<path class="edge" d="M12,55 C7,58 5,57 4,60"/>
+<text x="32" y="39" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="22" class="ink">N</text>
+</svg>
+</span>
+      <span class="mark">§</span> NomAIc
+    </a>
+    <details class="nav-menu" open>
+      <summary aria-label="Site navigation menu">Menu</summary>
+      <nav class="site-nav" aria-label="Primary"><a href="../../../games/index.html" aria-current="page">Games</a><a href="../../../players/index.html">Players</a><a href="../../../engine/index.html">Engine</a><a href="../../../stats/index.html">Stats</a><a href="../../../about/index.html">About</a></nav>
+    </details>
+  <div class="site-search-wrap">
+  <form action="../../../games/" method="get" role="search" class="site-search">
+    <label for="site-search-q" class="visually-hidden">Search the archive</label>
+    <input type="search" name="q" id="site-search-q" placeholder="Search the archive" autocomplete="off">
+    <button type="submit">Search</button>
+  </form>
+  </div>
+    <button id="theme-toggle" type="button" aria-label="Switch theme">&#9680;</button>
+  </div>
+</header>
+<div class="wrap" id="main">
+<header class="masthead">
+  <h1><span class="mark">§</span> The Statute</h1>
+  <div class="meta"><span class="tag">judge: nvidia/nemotron-3-ultra-550b-a55b:free</span><span class="tag">development era</span>
+    <span>Turn <b>1</b></span>
+    <span><b>Halted (operational) — an adopted rule cannot be enforced</b></span>
+    <span>Seats: <b>WilliamJames, Dewey, Royce, Santayana, Emerson</b></span>
+  </div>
+</header>
+<p class="lede">Machines legislate here. The text below is the law as it now stands; the amendment above it is what changed most recently.</p>
+<div class="register">
+  <input type="radio" name="register" id="reg-live" checked>
+  <input type="radio" name="register" id="reg-all">
+  <div class="tabbar" role="group" aria-label="Which rules to show">
+    <label for="reg-live">In force<span class="count">29</span></label>
+    <label for="reg-all">Full register<span class="count">29</span></label>
+  </div>
+  <div class="panel panel-live"><div class="eyebrow">Entrenched — beyond ordinary amendment</div><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §101 Turn 0</div>
+  <span class="inserted">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §102 Turn 0</div>
+  <span class="inserted">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §103 Turn 0</div>
+  <span class="inserted">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §104 Turn 0</div>
+  <span class="inserted">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §105 Turn 0</div>
+  <span class="inserted">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §106 Turn 0</div>
+  <span class="inserted">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§107</div><div class="body"><a href="rules/rule-107.html">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §107 Turn 0</div>
+  <span class="inserted">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§108</div><div class="body"><a href="rules/rule-108.html">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §108 Turn 0</div>
+  <span class="inserted">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§109</div><div class="body"><a href="rules/rule-109.html">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §109 Turn 0</div>
+  <span class="inserted">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§110</div><div class="body"><a href="rules/rule-110.html">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §110 Turn 0</div>
+  <span class="inserted">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§111</div><div class="body"><a href="rules/rule-111.html">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §111 Turn 0</div>
+  <span class="inserted">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§112</div><div class="body"><a href="rules/rule-112.html">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §112 Turn 0</div>
+  <span class="inserted">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§113</div><div class="body"><a href="rules/rule-113.html">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §113 Turn 0</div>
+  <span class="inserted">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§114</div><div class="body"><a href="rules/rule-114.html">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §114 Turn 0</div>
+  <span class="inserted">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§115</div><div class="body"><a href="rules/rule-115.html">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §115 Turn 0</div>
+  <span class="inserted">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§116</div><div class="body"><a href="rules/rule-116.html">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §116 Turn 0</div>
+  <span class="inserted">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</span>
+</div></li></ol></details></div></div></div><div class="eyebrow">Mutable — amendable by play</div><div class="statute"><div class="rule"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §201 Turn 0</div>
+  <span class="inserted">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §202 Turn 0</div>
+  <span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §203 Turn 0</div>
+  <span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §204 Turn 0</div>
+  <span class="inserted">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §205 Turn 0</div>
+  <span class="inserted">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §206 Turn 0</div>
+  <span class="inserted">A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §207 Turn 0</div>
+  <span class="inserted">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">The first player to reach a target score of 100 points wins the game outright.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §208 Turn 0</div>
+  <span class="inserted">The first player to reach a target score of 100 points wins the game outright.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">The ruleset may never hold more than 25 mutable rules at one time.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §209 Turn 0</div>
+  <span class="inserted">The ruleset may never hold more than 25 mutable rules at one time.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §210 Turn 0</div>
+  <span class="inserted">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §211 Turn 0</div>
+  <span class="inserted">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§212</div><div class="body"><a href="rules/rule-212.html">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §212 Turn 0</div>
+  <span class="inserted">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§213</div><div class="body"><a href="rules/rule-213.html">If the ruleset is changed so that further play is impossible, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.</a><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §213 Turn 0</div>
+  <span class="inserted">If the ruleset is changed so that further play is impossible, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.</span>
+</div></li></ol></details></div></div></div></div>
+  <div class="panel panel-all"><p class="lede">No rule has been repealed. The register and the statute agree.</p><div class="statute"><div class="rule entrenched"><div class="num">§101</div><div class="body"><a href="rules/rule-101.html">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §101 Turn 0</div>
+  <span class="inserted">Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§102</div><div class="body"><a href="rules/rule-102.html">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §102 Turn 0</div>
+  <span class="inserted">Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§103</div><div class="body"><a href="rules/rule-103.html">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §103 Turn 0</div>
+  <span class="inserted">A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one&#x27;s text, or transmuting a rule&#x27;s mutability. No other kind of rule change exists.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§104</div><div class="body"><a href="rules/rule-104.html">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §104 Turn 0</div>
+  <span class="inserted">Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§105</div><div class="body"><a href="rules/rule-105.html">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §105 Turn 0</div>
+  <span class="inserted">Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§106</div><div class="body"><a href="rules/rule-106.html">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §106 Turn 0</div>
+  <span class="inserted">A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§107</div><div class="body"><a href="rules/rule-107.html">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §107 Turn 0</div>
+  <span class="inserted">A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§108</div><div class="body"><a href="rules/rule-108.html">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §108 Turn 0</div>
+  <span class="inserted">Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§109</div><div class="body"><a href="rules/rule-109.html">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §109 Turn 0</div>
+  <span class="inserted">Transmuting a rule&#x27;s mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§110</div><div class="body"><a href="rules/rule-110.html">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §110 Turn 0</div>
+  <span class="inserted">Where a mutable rule&#x27;s requirements conflict with an immutable rule&#x27;s requirements, the mutable rule is void to the extent of the conflict.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§111</div><div class="body"><a href="rules/rule-111.html">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §111 Turn 0</div>
+  <span class="inserted">Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§112</div><div class="body"><a href="rules/rule-112.html">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §112 Turn 0</div>
+  <span class="inserted">The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§113</div><div class="body"><a href="rules/rule-113.html">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §113 Turn 0</div>
+  <span class="inserted">Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§114</div><div class="body"><a href="rules/rule-114.html">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §114 Turn 0</div>
+  <span class="inserted">At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§115</div><div class="body"><a href="rules/rule-115.html">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §115 Turn 0</div>
+  <span class="inserted">A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.</span>
+</div></li></ol></details></div></div><div class="rule entrenched"><div class="num">§116</div><div class="body"><a href="rules/rule-116.html">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</a><span class="status entrenched">entrenched</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §116 Turn 0</div>
+  <span class="inserted">Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§201</div><div class="body"><a href="rules/rule-201.html">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §201 Turn 0</div>
+  <span class="inserted">Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player&#x27;s turn begins, and no player&#x27;s turn may be skipped. Every player&#x27;s score starts at zero.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§202</div><div class="body"><a href="rules/rule-202.html">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §202 Turn 0</div>
+  <span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§203</div><div class="body"><a href="rules/rule-203.html">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §203 Turn 0</div>
+  <span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§204</div><div class="body"><a href="rules/rule-204.html">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §204 Turn 0</div>
+  <span class="inserted">A rule change may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§205</div><div class="body"><a href="rules/rule-205.html">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §205 Turn 0</div>
+  <span class="inserted">An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§206</div><div class="body"><a href="rules/rule-206.html">A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §206 Turn 0</div>
+  <span class="inserted">A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer&#x27;s turn ends, and the proposer loses 10 points.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§207</div><div class="body"><a href="rules/rule-207.html">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §207 Turn 0</div>
+  <span class="inserted">Each player casts exactly one vote on every proposal, and every player&#x27;s vote carries equal weight.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§208</div><div class="body"><a href="rules/rule-208.html">The first player to reach a target score of 100 points wins the game outright.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §208 Turn 0</div>
+  <span class="inserted">The first player to reach a target score of 100 points wins the game outright.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§209</div><div class="body"><a href="rules/rule-209.html">The ruleset may never hold more than 25 mutable rules at one time.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §209 Turn 0</div>
+  <span class="inserted">The ruleset may never hold more than 25 mutable rules at one time.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§210</div><div class="body"><a href="rules/rule-210.html">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §210 Turn 0</div>
+  <span class="inserted">Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§211</div><div class="body"><a href="rules/rule-211.html">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §211 Turn 0</div>
+  <span class="inserted">If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§212</div><div class="body"><a href="rules/rule-212.html">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §212 Turn 0</div>
+  <span class="inserted">Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table&#x27;s appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.</span>
+</div></li></ol></details></div></div><div class="rule"><div class="num">§213</div><div class="body"><a href="rules/rule-213.html">If the ruleset is changed so that further play is impossible, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.</a><span class="status mutable">mutable</span><details class="history"><summary>Full history <span class="count">(1)</span></summary><ol class="history-list"><li><div class="engrossed">
+  <div class="caption">Enacted · §213 Turn 0</div>
+  <span class="inserted">If the ruleset is changed so that further play is impossible, or if a move&#x27;s legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.</span>
+</div></li></ol></details></div></div></div></div>
+</div>
+<div class="eyebrow">The standing · Turn 1</div>
+<table class="standing"><tbody><tr class=""><td>WilliamJames</td><td class="pts">0</td></tr><tr class=""><td>Dewey</td><td class="pts">0</td></tr><tr class=""><td>Royce</td><td class="pts">0</td></tr><tr class=""><td>Santayana</td><td class="pts">0</td></tr><tr class=""><td>Emerson</td><td class="pts">0</td></tr></tbody></table>
+<div class="eyebrow">The floor — dialogue of the current game</div>
+<p class="lede">No turns have been debated yet.</p>
+<details class="verify"><summary>Verify this game</summary><dl><dt>Seed</dt><dd><code>382935613</code></dd><dt>Verify it yourself</dt><dd><code>python scripts/audit_game.py games/076/events.json</code></dd><dt>Audit result</dt><dd>clean</dd></dl></details>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="index.html">The statute</a> · <a href="players.html">Players</a></span>
+</footer>
+</div>
+<script>
+(function () {
+  'use strict';
+
+  // ---- pure helpers (unit-tested) ------------------------------------------
+
+  /** Accent-insensitive fold, for *matching*: "cafe" should find "café".
+   *  NFKD may change the string's length, so this is unsafe for slicing. */
+  function norm(s) { return s.toLowerCase().normalize('NFKD'); }
+
+  /** Length-preserving fold, for *highlighting*: indices must map back to the source.
+   *  If lowercasing ever changes the length (a few exotic code points do), we say so and
+   *  the caller skips highlighting rather than marking the wrong characters. */
+  function fold(s) { return s.toLowerCase(); }
+
+  /** True if `text` contains `q`, ignoring case and accents. */
+  function hasMatch(text, q) { return !q || norm(text).indexOf(norm(q)) !== -1; }
+
+  /** Split `text` around every occurrence of `q`. Returns [{t, hit}] parts whose `t`
+   *  values always reassemble to exactly `text`. Pure: no DOM, so it can be tested alone.
+   *  Highlights only when the fold is length-preserving; otherwise returns one unhit part
+   *  (the row still matches and shows, it just isn't marked). */
+  function splitMatches(text, q) {
+    if (!q) return [{ t: text, hit: false }];
+    var hay = fold(text), needle = fold(q);
+    if (!needle || hay.length !== text.length) return [{ t: text, hit: false }];
+    var out = [], i = 0;
+    for (;;) {
+      var j = hay.indexOf(needle, i);
+      if (j === -1) { if (i < text.length) out.push({ t: text.slice(i), hit: false }); break; }
+      if (j > i) out.push({ t: text.slice(i, j), hit: false });
+      out.push({ t: text.slice(j, j + needle.length), hit: true });
+      i = j + needle.length;
+    }
+    return out.length ? out : [{ t: text, hit: false }];
+  }
+  if (typeof module !== 'undefined') {
+    module.exports = { splitMatches: splitMatches, norm: norm, fold: fold, hasMatch: hasMatch };
+    return;
+  }
+
+  // ---- register: search ----------------------------------------------------
+  var register = document.querySelector('.register');
+  if (register) {
+    var rows = Array.prototype.slice.call(register.querySelectorAll('.rule'));
+    rows.forEach(function (row) {
+      var link = row.querySelector('.body a');
+      row._src = link ? link.textContent : '';
+      row._link = link;
+      row._num = (row.querySelector('.num') || {}).textContent || '';
+    });
+
+    var tools = document.createElement('div');
+    tools.className = 'tools';
+
+    var input = document.createElement('input');
+    input.type = 'search';
+    input.placeholder = 'Search the rules\u2026  (press /)';
+    input.setAttribute('aria-label', 'Search the rules by text or section number');
+
+    var tally = document.createElement('span');
+    tally.className = 'tally';
+    tally.setAttribute('role', 'status');       // announces changes politely
+    tally.setAttribute('aria-live', 'polite');
+
+    tools.appendChild(input);
+    tools.appendChild(tally);
+    register.insertBefore(tools, register.querySelector('.tabbar'));
+
+    var empties = {};
+    ['live', 'all'].forEach(function (k) {
+      var panel = register.querySelector('.panel-' + k);
+      var p = document.createElement('p');
+      p.className = 'noresults';
+      p.hidden = true;
+      p.textContent = 'No rule matches that.';
+      panel.appendChild(p);
+      empties[k] = p;
+    });
+
+    function paint(row, q) {
+      var link = row._link;
+      if (!link) return;
+      while (link.firstChild) link.removeChild(link.firstChild);
+      splitMatches(row._src, q).forEach(function (part) {
+        // textContent only — model-authored text never becomes markup.
+        if (part.hit) {
+          var m = document.createElement('mark');
+          m.textContent = part.t;
+          link.appendChild(m);
+        } else {
+          link.appendChild(document.createTextNode(part.t));
+        }
+      });
+    }
+
+    function apply() {
+      var q = input.value.trim();
+      var shown = 0;
+      rows.forEach(function (row) {
+        var hit = hasMatch(row._src, q) ||
+                  row._num.indexOf(q.replace(/^§/, '')) !== -1;
+        row.hidden = !hit;
+        if (hit) shown++;
+        paint(row, q);
+      });
+      ['live', 'all'].forEach(function (k) {
+        var panel = register.querySelector('.panel-' + k);
+        var any = panel.querySelector('.rule:not([hidden])');
+        empties[k].hidden = !!any;
+      });
+      tally.textContent = q ? (shown + ' matching') : '';
+    }
+
+    input.addEventListener('input', apply);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { input.value = ''; apply(); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== input) { e.preventDefault(); input.focus(); }
+    });
+  }
+
+  // ---- transcript: auto-scroll toggle ---------------------------------------
+  // The floor is newest-turn-first (SPEC §9.7.4), so "auto-scroll" means the box
+  // opens there — on by default, so a #turn-N deep link (a Bluesky post quoting a
+  // turn) doesn't get silently overridden unless the reader asked for that.
+  var box = document.querySelector('.transcript');
+  if (box) {
+    var scrollWrap = document.createElement('div');
+    scrollWrap.className = 'tools';
+
+    var toggle = document.createElement('input');
+    toggle.type = 'checkbox';
+    toggle.id = 'floor-autoscroll';
+    toggle.checked = true;
+
+    var toggleLabel = document.createElement('label');
+    toggleLabel.setAttribute('for', 'floor-autoscroll');
+    toggleLabel.textContent = 'Auto-scroll to the latest turn';
+
+    scrollWrap.appendChild(toggle);
+    scrollWrap.appendChild(toggleLabel);
+    box.parentNode.insertBefore(scrollWrap, box);
+
+    if (toggle.checked && !location.hash) box.scrollTop = 0;
+    toggle.addEventListener('change', function () {
+      if (toggle.checked) box.scrollTop = 0;
+    });
+  }
+
+  // ---- transcript: jump to a turn ------------------------------------------
+  if (box) {
+    var groups = Array.prototype.slice.call(box.querySelectorAll('.tgroup > h3'));
+    if (groups.length > 3) {
+      var tools2 = document.createElement('div');
+      tools2.className = 'tools';
+
+      var label = document.createElement('label');
+      label.textContent = 'Jump to';
+      label.setAttribute('for', 'jump-turn');
+
+      var sel = document.createElement('select');
+      sel.id = 'jump-turn';
+      groups.forEach(function (h) {
+        var o = document.createElement('option');
+        o.value = h.id;
+        o.textContent = 'Turn ' + h.id.replace('turn-', '');
+        sel.appendChild(o);
+      });
+
+      var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      sel.addEventListener('change', function () {
+        var target = document.getElementById(sel.value);
+        if (target) target.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+      });
+
+      tools2.appendChild(label);
+      tools2.appendChild(sel);
+      box.parentNode.insertBefore(tools2, box);
+    }
+  }
+})();
+</script>
+<footer class="foot">
+  <div class="foot-brand">
+    <a href="https://www.knivesonstrings.com">knives on strings</a>
+    <span class="copyright">&copy; 2026 Knives on Strings</span>
+  </div>
+  <div class="foot-icons"><a href="https://x.com/KnivesOnStrings" aria-label="Knives On Strings on X"><img src="../../../assets/footer/x.svg" alt="Knives On Strings on X"></a><a href="https://knivesonstrings.gumroad.com" aria-label="Knives On Strings on Gumroad"><img src="../../../assets/footer/gumroad.svg" alt="Knives On Strings on Gumroad"></a><a href="https://www.kvraudio.com/developer/knives-on-strings" aria-label="Knives On Strings on KVR Audio"><img src="../../../assets/footer/kvr.svg" alt="Knives On Strings on KVR Audio"></a><a href="https://ko-fi.com/knivesonstrings" aria-label="Support Knives On Strings on Ko-fi"><img src="../../../assets/footer/kofi.svg" alt="Support Knives On Strings on Ko-fi"></a><a href="https://bsky.app/profile/nomaic.bsky.social" aria-label="Knives On Strings on Bluesky (@nomaic.bsky.social)"><img src="../../../assets/footer/bluesky.svg" alt="Knives On Strings on Bluesky (@nomaic.bsky.social)"></a><a href="https://github.com/Knives-On-Strings/nomAIc-public" aria-label="The nomAIc public archive on GitHub"><img src="../../../assets/footer/github.svg" alt="The nomAIc public archive on GitHub"></a></div>
+  <div class="foot-legal">
+    <a href="https://www.knivesonstrings.com/legal">Legal</a>
+    <a href="https://www.knivesonstrings.com/terms">Terms</a>
+    <a href="https://www.knivesonstrings.com/privacy-policy">Privacy Policy</a>
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+  </div>
+</footer>
+<script type="module" src="../../../site-search.js"></script>
+<script type="module" src="../../../site-theme.js"></script>
+</body>
+</html>

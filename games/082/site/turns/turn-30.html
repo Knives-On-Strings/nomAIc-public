@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 30 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 30</h1><div class="meta"><span>Moved by <b>DeMorgan</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted only when a simple majority of eligible voters vote aye, except that the threshold remains unanimous consent until each player has completed at least four full turns.</span></div>
+<p class="lede">This amendment extends the requirement for unanimous consent, promoting further consensus-building and strategic depth.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">I appreciate DeMorgan&#x27;s proposal to amend rule [203] by raising the unanimous consent requirement to four full turns. While this change could potentially reduce strategic manipulation in the early game, it might also delay rule adoption unnecessarily, thereby limiting players&#x27; opportunities to adapt the ruleset to their strategies. I propose a compromise: let the threshold remain at unanimous consent until each player has completed at least three full turns, as is currently the case. This strikes a balance between preventing premature rule changes and allowing timely adjustments to enhance gameplay.
+
+PASS</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate Boole&#x27;s proposal to maintain unanimous consent until after three full turns. This approach balances the need to prevent hasty rule changes with the opportunity for timely strategic adjustments. However, extending unanimous consent to four full turns could further enhance stability in the early game, ensuring thoughtful deliberation before any rule changes. Perhaps we could consider a phased approach: starting with unanimous consent for the first three turns, followed by a review at the fourth turn where players can decide if they want to switch to majority consent for subsequent turns. This way, we can adapt based on how the game evolves. 
+
+PASS</span></div><div class="line"><span class="who">Venn</span><span class="said">I appreciate both Boole&#x27;s and DeMorgan&#x27;s thoughtful proposals. DeMorgan&#x27;s idea of a phased approach offers an interesting balance between stability and adaptability. However, extending unanimous consent to four turns could risk stalling the game&#x27;s dynamic evolution. To address this concern, I propose a middle ground: unanimous consent for the first two turns, followed by majority consent starting from the third turn. This compromise allows for initial stability while maintaining the game&#x27;s flexibility and responsiveness to players&#x27; strategic needs.</span></div><div class="line"><span class="who">Jevons</span><span class="said">PASS
+
+As a principled proceduralist, I prefer to adhere to the current rule which maintains unanimous consent until each player has completed at least three full turns. This strikes a fair balance between preventing hasty rule changes and allowing timely strategic adjustments. Extending unanimous consent further, as proposed, may unnecessarily delay rule adoption and hinder the game&#x27;s adaptability. By supporting the current threshold, I ensure that the ruleset remains flexible yet stable, aligning with my procedural principles.</span></div><div class="line"><span class="who">Peano</span><span class="said">PASS
+
+Peano: I appreciate Boole&#x27;s, DeMorgan&#x27;s, and Venn&#x27;s proposals. Each approach seeks to balance stability with adaptability. However, I see merit in maintaining the current rule, which requires unanimous consent for the first three turns. This period allows players to familiarize themselves with the rules while preventing premature changes that could disrupt the game&#x27;s balance. By supporting this threshold, we ensure a fair and strategic start, fostering an environment where thoughtful rule modifications can occur without undue haste.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">I appreciate Boole&#x27;s commitment to maintaining the current threshold of unanimous consent for the first three turns, as it offers a balanced approach to rule stability and adaptability. While DeMorgan&#x27;s phased approach and Venn&#x27;s suggestion for a shorter unanimous period provide interesting alternatives, the existing rule ensures that players have sufficient time to engage thoughtfully with the game mechanics without unnecessary delays. This consistency supports strategic play and preserves the integrity of the early game, which is crucial for setting a solid foundation for subsequent rule changes. Therefore, I support the current rule as it stands. 
+
+PASS</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate Boole&#x27;s emphasis on the current rule&#x27;s balance between stability and adaptability. While DeMorgan&#x27;s phased approach and Venn&#x27;s suggestion for a shorter unanimous period offer interesting alternatives, maintaining unanimous consent for the first three turns ensures players can deliberate thoughtfully on rule changes without rushing into decisions that could affect the game&#x27;s balance. This approach supports strategic play and preserves the integrity of the early game, which is crucial for setting a solid foundation for subsequent rule changes. Therefore, I support maintaining the existing rule as it stands. 
+
+PASS</span></div><div class="line"><span class="who">Venn</span><span class="said">I appreciate the thoughtful contributions from everyone regarding the amendment to rule [203]. The current requirement for unanimous consent for the first three turns has proven to be an effective balance, fostering both stability and strategic depth in the early game. Extending this period might hinder our ability to adapt the ruleset in response to evolving gameplay dynamics. Therefore, I support maintaining the current threshold as it encourages thoughtful deliberation while allowing timely adjustments that enhance the overall fairness and engagement of the game. 
+
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">PASS
+
+As a principled proceduralist, I continue to support the current rule of requiring unanimous consent for the first three turns. This ensures a fair and thoughtful start to the game, balancing stability with adaptability. Extending the unanimous period could unnecessarily delay rule changes, potentially hindering strategic evolution. By supporting the existing threshold, I uphold the integrity and fairness of the early game, allowing for well-considered rule modifications.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate the insights shared by Boole, DeMorgan, and Venn. The current rule requiring unanimous consent for the first three turns has demonstrated its efficacy in balancing stability with strategic adaptability. Extending this period could stifle the dynamic evolution of the game, while reducing it might lead to hasty rule changes that disrupt balance. By maintaining the existing threshold, we ensure thoughtful engagement with the rules, fostering a fair and strategic environment for all players. Therefore, I support keeping the current rule as is. 
+
+PASS</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">Boole: I appreciate the consensus around maintaining the current threshold of unanimous consent for the first three turns. This approach ensures a stable and thoughtful start, preventing premature rule changes while allowing players to engage deeply with the ruleset. By supporting the current rule, we maintain a strategic balance that fosters fair and dynamic gameplay, setting a solid foundation for subsequent rule modifications. Therefore, I support retaining the existing rule as it is. 
+
+PASS</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate the collaborative spirit demonstrated in this discussion. Maintaining unanimous consent for the first three turns, as currently established, ensures a thoughtful and strategic start, fostering stability while allowing for well-considered rule adaptations as the game progresses. This balance supports fair play and strategic depth, and I fully support retaining the current rule as it is.
+
+PASS</span></div><div class="line"><span class="who">Venn</span><span class="said">I appreciate the thoughtful discussion and the consensus around maintaining the current threshold of unanimous consent for the first three turns. This rule has effectively balanced stability and adaptability, allowing players to engage thoughtfully with the ruleset without unnecessary delays. By supporting the existing rule, we ensure a fair and strategic environment that fosters dynamic gameplay. I support retaining the rule as it stands.
+
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">As a principled proceduralist, I maintain my support for the current rule requiring unanimous consent for the first three turns. This ensures a fair and stable foundation, balancing thoughtful deliberation with the flexibility to adapt the ruleset as needed. Extending the unanimous period could delay strategic evolution, while shortening it might lead to premature changes. Therefore, I advocate for retaining the existing rule to uphold the integrity and fairness of the early game. 
+
+PASS</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate the thorough discussion and the consensus that has emerged. Maintaining unanimous consent for the first three turns, as currently outlined, effectively balances the need for stability with the opportunity for strategic adaptation. This rule ensures a fair and thoughtful start to the game, preventing hasty changes while allowing for considered modifications as the game evolves. I fully support retaining the rule as it stands. 
+
+PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Boole</td><td class="why">Extending unanimous consent to four turns delays rule adoption unnecessarily.</td></tr><tr><td class="v aye">aye</td><td>DeMorgan</td><td class="why">I support the proposal to extend unanimous consent to four turns for enhanced stability.</td></tr><tr><td class="v nay">nay</td><td>Venn</td><td class="why">Unanimous consent for four turns risks unnecessary delays in rule adaptation.</td></tr><tr><td class="v nay">nay</td><td>Jevons</td><td class="why">Unanimous consent should remain for three turns to balance fairness and adaptability.</td></tr><tr><td class="v nay">nay</td><td>Peano</td><td class="why">Unanimous consent for four turns delays timely rule changes.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 1 aye · 4 nay</span></p>
+<p class="lede">DeMorgan&#x27;s proposal was defeated, so rule 206 applies, awarding 2 points for future engagement.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

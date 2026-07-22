@@ -1,0 +1,1167 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Diogenes",
+        "Crates",
+        "Hipparchia",
+        "Antisthenes",
+        "Menippus"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer's turn ends, and the proposer loses 10 points.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset is changed so that further play is impossible, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Diogenes": 0,
+        "Crates": 0,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      },
+      "seed": 1397865169
+    },
+    "ts": 1784606941.5732985
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Diogenes"
+    },
+    "ts": 1784606941.5812485
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Diogenes",
+      "kind": "add",
+      "targets": [],
+      "text": "[214] (mutable) If a player's score is to be calculated as a sum of points, and those points are derived from a rule change, the scores of all players who were given points by that rule change are adjusted accordingly. (This does not affect the win condition of rule 208.)",
+      "rationale": "Ensuring that the scoring mechanism is robust and consistent with the winning condition.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784606969.321514
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784606970.5408392
+  },
+  {
+    "seq": 5,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I accept the proposal as written. It clarifies the mechanics of scoring and ensures that and point-based gains remain stable even if the ruleset evolves.",
+      "round": 1
+    },
+    "ts": 1784606971.5164318
+  },
+  {
+    "seq": 6,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I accept the proposal as written. It provides a clear framework for ensuring that scoring and point-based gains remain stable as the ruleset evolves.",
+      "round": 1
+    },
+    "ts": 1784606973.1196575
+  },
+  {
+    "seq": 7,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe this proposal serves the common good by clarifying the nature of scores as cumulative gains. It ensures that the integrity of the win condition remains intact while providing a stable framework for any and all future scoring mechanics.",
+      "round": 1
+    },
+    "ts": 1784606974.945155
+  },
+  {
+    "seq": 8,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I accept the proposal as written. It provides a clear, principled approach to ensuring that-the-moment-of-scoring is consistent with-the-reasons-for-scoring, and it does not change the win condition.",
+      "round": 1
+    },
+    "ts": 1784606976.8521776
+  },
+  {
+    "seq": 9,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I support the proposal because it establishes a principled consistency for point-based gains. By ensuring that scores are treated as cumulative and stable, we protect the integrity of the win condition while allowing for more sophisticated and diverse scoring mechanics to emerge.",
+      "round": 1
+    },
+    "ts": 1784606978.8029406
+  },
+  {
+    "seq": 10,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784606978.8102877
+  },
+  {
+    "seq": 11,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments. I accept the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784606979.6557171
+  },
+  {
+    "seq": 12,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I have no further comments. I accept the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784606980.6879811
+  },
+  {
+    "seq": 13,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have no further comments. I accept the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784606981.6080246
+  },
+  {
+    "seq": 14,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments. I accept the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784606982.5243258
+  },
+  {
+    "seq": 15,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I thank the proponents for their clarity. This rule ensures that the \"stock\" of points remains a stable and reliable metric for the win condition, and I see no reason to oppose its adoption.",
+      "round": 2
+    },
+    "ts": 1784606983.9046419
+  },
+  {
+    "seq": 16,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784606983.9134674
+  },
+  {
+    "seq": 17,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments. I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784606984.8463268
+  },
+  {
+    "seq": 18,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I believe this proposal offers a stable foundation for the game's scoring, and since all parties have expressed their support, I urge the players to consider that its adoption serves the common interest of the players.",
+      "round": 3
+    },
+    "ts": 1784606986.5290549
+  },
+  {
+    "seq": 19,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe that this proposal serves the common good by establishing a clearer framework for point-based gains. It ensures that the integrity of the win condition remains intact while providing a stable foundation for any and all future scoring mechanics.",
+      "round": 3
+    },
+    "ts": 1784606988.1141994
+  },
+  {
+    "seq": 20,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments. I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784606989.1738439
+  },
+  {
+    "seq": 21,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have no further comments. I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784606990.2767854
+  },
+  {
+    "seq": 22,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "The proposal establishes a stable and clear framework for and-the-moment-of-scoring-with-the-reasons-for-scoring."
+    },
+    "ts": 1784606993.0846417
+  },
+  {
+    "seq": 23,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "This rule provides a stable and clear framework for point-based gains without affecting the win condition."
+    },
+    "ts": 1784606994.6930845
+  },
+  {
+    "seq": 24,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "This rule ensures the stability of and integrity of the win condition by clarifying the nature of scores as cumulative and stable gains."
+    },
+    "ts": 1784606996.336001
+  },
+  {
+    "seq": 25,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "The proposal establishes a clear, principled procedural method for the calculation of scores without altering the win condition."
+    },
+    "ts": 1784606997.9215
+  },
+  {
+    "seq": 26,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "This rule ensures the integrity of and for the future of scoring as a stable metric of the game."
+    },
+    "ts": 1784606999.4054425
+  },
+  {
+    "seq": 27,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to transmute (§109)",
+        "authority": 109
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784606999.4136634
+  },
+  {
+    "seq": 28,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 301,
+      "text": "[214] (mutable) If a player's score is to be calculated as a sum of points, and those points are derived from a rule change, the scores of all players who were given points by that rule change are adjusted accordingly. (This does not affect the win condition of rule 208.)",
+      "mutable": true
+    },
+    "ts": 1784607003.4309678
+  },
+  {
+    "seq": 29,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 1,
+      "authority": null
+    },
+    "ts": 1784607003.4401503
+  },
+  {
+    "seq": 30,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rule in the current ruleset awards or deducts points based on the adoption of a rule or the division of votes.",
+      "next_player": "Crates"
+    },
+    "ts": 1784607003.4488854
+  },
+  {
+    "seq": 31,
+    "type": "draw",
+    "data": {
+      "index": 1,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 6,
+      "reason": "score_draw for Diogenes (§202)",
+      "turn": 1
+    },
+    "ts": 1784607003.46641
+  },
+  {
+    "seq": 32,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 6,
+        "Crates": 0,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784607003.474908
+  },
+  {
+    "seq": 33,
+    "type": "turn_started",
+    "data": {
+      "turn": 2,
+      "player": "Crates"
+    },
+    "ts": 1784607014.6291723
+  },
+  {
+    "seq": 34,
+    "type": "proposal_made",
+    "data": {
+      "turn": 2,
+      "player": "Crates",
+      "kind": "add",
+      "targets": [
+        212
+      ],
+      "text": "[212] (mutable) If a player's score is to be calculated as a sum of points, and those points are derived from a rule change, the scores of all players who were given points by that rule change are adjusted accordingly. (This does not affect the win condition of rule 208.)",
+      "rationale": "I am adding this rule as a redundant copy of 301 to ensure the scoring mechanism remains stable as intended by the previous turn.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 302
+    },
+    "ts": 1784607026.2638166
+  },
+  {
+    "seq": 35,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784607027.533873
+  },
+  {
+    "seq": 36,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments. I accept the proposal as written.",
+      "round": 1
+    },
+    "ts": 1784607029.0680523
+  },
+  {
+    "seq": 37,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I see that the current proposal [212] is actually the text for [214], and I appreciate the clarification of and the inclusion of the scoring adjustment. I would support a clarification to ensure [212] remains as it is while [214] serves its intended purpose.",
+      "round": 1
+    },
+    "ts": 1784607030.808335
+  },
+  {
+    "seq": 38,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I thank Crates for his clarification. I believe that ensuring the integrity of [212] while properly establishing [214] is essential for the clarity of the game's scoring system.",
+      "round": 1
+    },
+    "ts": 1784607032.8258805
+  },
+  {
+    "seq": 39,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no comments to add; the proposal is clear as written.",
+      "round": 1
+    },
+    "ts": 1784607034.3658051
+  },
+  {
+    "seq": 40,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I thank the proponents for their clarity. As a reformer, I believe that refining the mechanics of scoring and and the integrity of the ruleset is vital for a stable game. I support this change to ensure the rules correctly reflect the intended scoring and ander-rule logic.",
+      "round": 1
+    },
+    "ts": 1784607036.6642234
+  },
+  {
+    "seq": 41,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784607036.6983364
+  },
+  {
+    "seq": 42,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments. I accept the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784607037.7105255
+  },
+  {
+    "seq": 43,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I thank the proponents and the and-rule logicers for their support. I believe that clarifying the relationship between [212] and [214] ensures the stability of the game's scoring, and I support the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784607039.4185352
+  },
+  {
+    "seq": 44,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe that the clarity of the scoring and the integrity of the ruleset are foundational to the game's stability. By ensuring that [214] functions as intended without undermining the resolution of [212], we maintain a clear and fair framework for all players.",
+      "round": 2
+    },
+    "ts": 1784607041.3292875
+  },
+  {
+    "seq": 45,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have observed that the proponents and opponents have reached a consensus on the necessity of clarifying the relationship between [212] and [214]. As a reformer, I believe that clear and stable scoring mechanisms are the foundation of a balanced game, and I support the proposal as written to ensure that the integrity of the ruleset remains intact.",
+      "round": 2
+    },
+    "ts": 1784607044.3556812
+  },
+  {
+    "seq": 46,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784607044.3952384
+  },
+  {
+    "seq": 47,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments. I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784607045.5635874
+  },
+  {
+    "seq": 48,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I see that the consensus is built on the importance of both [212] and [214] serving their respective roles. I believe that clarifying the scoring and the integrity of the ruleset is essential for the game's stability, and I support the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784607047.6032064
+  },
+  {
+    "seq": 49,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe that the current consensus reflects a shared commitment to the game's stability. By ensuring that [214] functions as intended without undermining the resolution of [212], we maintain a clear and fair framework for all players.",
+      "round": 3
+    },
+    "ts": 1784607049.6246874
+  },
+  {
+    "seq": 50,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments; I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784607050.9392657
+  },
+  {
+    "seq": 51,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have noted the consensus reached by the proponents and the clarity of the-rule logic. As a reformer, I believe that the stability of the scoring system is paramount for the game's evolution, and I support the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784607052.8641932
+  },
+  {
+    "seq": 52,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "The proposal correctly clarifies the scoring and maintains the integrity of the ruleset as intended."
+    },
+    "ts": 1784607055.8033605
+  },
+  {
+    "seq": 53,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "The proposal maintains the integrity of [212] while establishing the necessary scoring logic for [214]."
+    },
+    "ts": 1784607057.5841937
+  },
+  {
+    "seq": 54,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "I support this proposal as it clarifies the scoring framework while maintaining the integrity of the ruleset."
+    },
+    "ts": 1784607059.4369333
+  },
+  {
+    "seq": 55,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "The proposal maintains the integrity of the ruleset while refining the scoring logic."
+    },
+    "ts": 1784607061.125484
+  },
+  {
+    "seq": 56,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "As a reformer, I support this clarification to ensure the stability and integrity of the scoring system."
+    },
+    "ts": 1784607062.9628634
+  },
+  {
+    "seq": 57,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to transmute (§109)",
+        "authority": 109
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784607062.997026
+  },
+  {
+    "seq": 58,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 302,
+      "text": "[212] (mutable) If a player's score is to be calculated as a sum of points, and those points are derived from a rule change, the scores of all players who were given points by that rule change are adjusted accordingly. (This does not affect the win condition of rule 208.)",
+      "mutable": true
+    },
+    "ts": 1784607068.673721
+  },
+  {
+    "seq": 59,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 2,
+      "authority": null
+    },
+    "ts": 1784607068.707195
+  },
+  {
+    "seq": 60,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The proposal was adopted as a new rule 301, and no rules specify and-score-changes for the vote results.",
+      "next_player": "Crates"
+    },
+    "ts": 1784607068.741713
+  },
+  {
+    "seq": 61,
+    "type": "draw",
+    "data": {
+      "index": 2,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 2,
+      "reason": "score_draw for Crates (§202)",
+      "turn": 2
+    },
+    "ts": 1784607068.8173134
+  },
+  {
+    "seq": 62,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 6,
+        "Crates": 2,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784607068.851604
+  },
+  {
+    "seq": 63,
+    "type": "turn_started",
+    "data": {
+      "turn": 3,
+      "player": "Crates"
+    },
+    "ts": 1784607079.967653
+  },
+  {
+    "seq": 64,
+    "type": "proposal_made",
+    "data": {
+      "turn": 3,
+      "player": "Crates",
+      "kind": "add",
+      "targets": [
+        303
+      ],
+      "text": "[303] (mutable) A player's score may be increased or decreased by a rule change, but only if that rule change specifies the number of points to be added or subtracted. (This does not affect the win condition of rule 208.)",
+      "rationale": "This clarifies the implementation of scoring and ensures that the intent of rules 214 and 212 is correctly applied to and from the scores of players.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 303
+    },
+    "ts": 1784607091.8805082
+  },
+  {
+    "seq": 65,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784607093.124543
+  },
+  {
+    "seq": 66,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I support this proposal as it clarifies the mechanics of point adjustment, ensuring that any changes to scores remain consistent with the intent of the ruleset.",
+      "round": 1
+    },
+    "ts": 1784607094.9572976
+  },
+  {
+    "seq": 67,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I appreciate the support from Diogenes and believe that [303] provides a necessary clarification for the and-then-now mechanics of point-based scores. By ensuring that and-then-now adjustments are explicitly quantified, we prevent ambiguity in the scoring and maintain the integrity of the win condition.",
+      "round": 1
+    },
+    "ts": 1784607096.7091022
+  },
+  {
+    "seq": 68,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I support this proposal as it provides a clear, stable framework for how and-then-now point adjustments are handled. By ensuring that any changes to scores are explicitly quantified, it maintains the integrity of the win condition and ensures that the ruleset remains consistent for all players.",
+      "round": 1
+    },
+    "ts": 1784607099.08745
+  },
+  {
+    "seq": 69,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I support this proposal as it seeks to clarify the manner in which scores are modified by rule changes. By ensuring that and-then-now adjustments are explicitly quantified, it maintains the integrity of the win condition and ensures that the ruleset remains consistent for all players.",
+      "round": 1
+    },
+    "ts": 1784607101.4043849
+  },
+  {
+    "seq": 70,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I thank the proponents for their support. This proposal serves as a vital clarification for the and-then-now mechanics of point-based scores, ensuring that any adjustments to scores are explicitly quantified. By establishing this clarity, we preserve the integrity of the win condition and ensure the ruleset remains consistent for all players.",
+      "round": 1
+    },
+    "ts": 1784607103.9602678
+  },
+  {
+    "seq": 71,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784607103.9692028
+  },
+  {
+    "seq": 72,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments. I accept the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784607105.022023
+  },
+  {
+    "seq": 73,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I acknowledge the support from all players and believe that [303] provides a necessary clarification for the and-then-now mechanics of point-based scores. By ensuring that and-then-now adjustments are explicitly quantified, we prevent ambiguity in the scoring and maintain the integrity of the win condition.",
+      "round": 2
+    },
+    "ts": 1784607106.9748187
+  },
+  {
+    "seq": 74,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I see that all players have expressed support for [303], and because the common good of the table relies on a clear and stable understanding of how scores are managed, I believe this proposal is essential to ensure that any and-then-now and-now adjustments are precisely quantified as intended.",
+      "round": 2
+    },
+    "ts": 1784607109.0471509
+  },
+  {
+    "seq": 75,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have nothing further to say. I accept the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784607110.26815
+  },
+  {
+    "seq": 76,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have no further comments. I accept the proposal as written.",
+      "round": 2
+    },
+    "ts": 1784607111.544643
+  },
+  {
+    "seq": 77,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784607111.5531652
+  },
+  {
+    "seq": 78,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments. I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784607112.8534617
+  },
+  {
+    "seq": 79,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I have no further comments. I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784607114.23963
+  },
+  {
+    "seq": 80,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have no further comments. I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784607115.4537184
+  },
+  {
+    "seq": 81,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments. I accept the proposal as written.",
+      "round": 3
+    },
+    "ts": 1784607116.633098
+  },
+  {
+    "seq": 82,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I see that the proponents and supporters have established a clear consensus on the necessity of [303]. By ensuring that all and-then-now point adjustments are explicitly quantified, we preserve the integrity of the win condition and ensure the ruleset remains consistent for all players.",
+      "round": 3
+    },
+    "ts": 1784607118.5223145
+  },
+  {
+    "seq": 83,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "The proposal provides a clear, stable framework for point adjustments and maintains the integrity of the win condition."
+    },
+    "ts": 1784607121.2830317
+  },
+  {
+    "seq": 84,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "I support this proposal as it provides a clear, stable framework for the integrity of the win condition by ensuring and-then-now point adjustments are precisely quantified."
+    },
+    "ts": 1784607123.0689867
+  },
+  {
+    "seq": 85,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "This proposal ensures clarity and consistency in scoring and maintains the common good of the game."
+    },
+    "ts": 1784607124.76324
+  },
+  {
+    "seq": 86,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "I accept this clarification as it maintains the integrity of the win condition by ensuring and-then-now adjustments are explicitly quantified."
+    },
+    "ts": 1784607126.4905128
+  },
+  {
+    "seq": 87,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "This clarification ensures the integrity of the scoring system by requiring explicit quantification of point adjustments."
+    },
+    "ts": 1784607128.1778612
+  },
+  {
+    "seq": 88,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to transmute (§109)",
+        "authority": 109
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784607128.1866736
+  },
+  {
+    "seq": 89,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 303,
+      "text": "[303] (mutable) A player's score may be increased or decreased by a rule change, but only if that rule change specifies the number of points to be added or subtracted. (This does not affect the win condition of rule 208.)",
+      "mutable": true
+    },
+    "ts": 1784607131.953613
+  },
+  {
+    "seq": 90,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 3,
+      "authority": null
+    },
+    "ts": 1784607131.9620073
+  },
+  {
+    "seq": 91,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rule in the current ruleset awards or deducts points upon the adoption of a rule change.",
+      "next_player": "Crates"
+    },
+    "ts": 1784607131.9691756
+  },
+  {
+    "seq": 92,
+    "type": "draw",
+    "data": {
+      "index": 3,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 2,
+      "reason": "score_draw for Crates (§202)",
+      "turn": 3
+    },
+    "ts": 1784607131.9852076
+  },
+  {
+    "seq": 93,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 6,
+        "Crates": 4,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784607131.9940765
+  },
+  {
+    "seq": 94,
+    "type": "turn_started",
+    "data": {
+      "turn": 4,
+      "player": "Crates"
+    },
+    "ts": 1784607143.0365188
+  }
+]

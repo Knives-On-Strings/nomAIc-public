@@ -2,6 +2,8 @@
 
 _development era_
 
+> Fourteen rule changes, and for once all three seats came out ahead.
+
 ## Roster
 
 | Seat | Model |

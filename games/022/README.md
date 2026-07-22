@@ -2,6 +2,8 @@
 
 _development era_
 
+> The first cross-model table — one seat traded out, the scoreboard barely moved.
+
 ## Roster
 
 | Seat | Model |

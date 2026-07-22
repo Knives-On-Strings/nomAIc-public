@@ -1,0 +1,41 @@
+{
+  "game": 85,
+  "players": [
+    "Ramsey",
+    "Ayer",
+    "Ryle",
+    "Strawson",
+    "Grice"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "turn limit reached"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1992298944,
+  "started": "2026-07-22T02:57:20.674346+00:00",
+  "ended": "2026-07-22T04:41:43.445035+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Ramsey": 53,
+    "Ayer": 54,
+    "Ryle": 0,
+    "Strawson": 0,
+    "Grice": 0
+  },
+  "adoptions": 49,
+  "gm_model": "phi-4-q2",
+  "completed_at": "2026-07-22T04:41:43.445035+00:00"
+}

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 42 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 42</h1><div class="meta"><span>Moved by <b>Ryle</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the proposing player suggesting exactly one rule change, debating it, voting on it, and then rolling a twenty-sided die to gain points. If the roll is a &#x27;0&#x27;, the player loses 5 points; if the roll is a &#x27;1&#x27;, the player gains 1 bonus point; if a player rolls a &#x27;20&#x27;, they gain 5 bonus points. If the roll is a &#x27;5&#x27;, the proposing player gains an additional turn immediately. If a player rolls a &#x27;10&#x27;, they may choose to transfer up to 5 points to any other player, encouraging strategic interactions. If a player rolls a &#x27;15&#x27;, they may choose to split their roll between two players of their choice, granting each half the points of the roll rounded down. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption. Additionally, during the bonus round, the player may opt to use the roll to either propose a rule change or gain points, offering a strategic choice.</span></div>
+<p class="lede">This amendment enhances strategic depth by allowing players to choose between proposing a rule change or gaining points during the bonus round, adding a layer of tactical decision-making.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:** As Ramsey, I appreciate the innovative spirit in Ryle&#x27;s proposal to enhance strategic interactions. However, I propose a measured amendment to [202] to maintain balance and prevent excessive point transfers. Let&#x27;s limit the points transfer during a &#x27;10&#x27; roll to a maximum of 3 points. This will sustain strategic depth while avoiding disproportionate advantages. I suggest: &quot;If a player rolls a &#x27;10&#x27;, they may choose to transfer up to 3 points to any other player, encouraging strategic interactions.&quot;</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate the innovative spirit in Ryle&#x27;s proposal and Ramsey&#x27;s focus on balance. To further enhance strategic depth while ensuring fairness, I suggest we add a new element to the &#x27;bonus round&#x27; that encourages collaboration. Let&#x27;s allow players to propose a temporary alliance during the &#x27;bonus round&#x27;, where they can agree to share any points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies. This will promote teamwork and strategic alliances, adding another layer to the game dynamics.</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate both Ramsey&#x27;s and Ayer&#x27;s constructive contributions to enhancing the strategic depth of rule [202]. I propose a balanced amendment that incorporates these ideas while ensuring fairness and innovation. Let&#x27;s modify the rule to include Ramsey&#x27;s suggestion of limiting the point transfer during a &#x27;10&#x27; roll to a maximum of 3 points. Additionally, we can incorporate Ayer&#x27;s idea of temporary alliances during the &#x27;bonus round&#x27; to encourage collaboration. Therefore, the amended rule [202] should read: &quot;If a player rolls a &#x27;10&#x27;, they may choose to transfer up to 3 points to any other player, encouraging strategic interactions. During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share any points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures a balance between strategic depth and collaborative play.</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I appreciate the constructive dialogue and the innovative proposals from Ryle, Ayer, and Ramsey. To ensure fairness and strategic balance, I propose a further amendment to rule [202]. Let&#x27;s introduce a safeguard against excessive strategic alliances in the &#x27;bonus round.&#x27; I suggest adding a clause that limits the number of points shared in a temporary alliance to a maximum of 5 points. This will prevent any single alliance from gaining too much advantage from a single roll, ensuring the game remains competitive and balanced. Therefore, the amended rule [202] should read: &quot;If a player rolls a &#x27;10&#x27;, they may choose to transfer up to 3 points to any other player, encouraging strategic interactions. During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while maintaining fairness and competitiveness.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the thoughtful amendments proposed by Ryle, Ayer, Ramsey, and Strawson. To ensure that the game remains dynamic and engaging, I propose an additional layer of strategic depth. Let&#x27;s introduce a mechanism where, during the &#x27;bonus round,&#x27; players can choose to &#x27;lock&#x27; a roll for the next turn, meaning the points from the roll will be held and only added to their total after the next turn&#x27;s roll. This will encourage players to plan ahead and add a new dimension to strategic play. Thus, the amended rule [202] should include: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies. Additionally, players may choose to &#x27;lock&#x27; their roll for the next turn, holding the points until after the next roll, adding strategic depth to the game.&quot; This ensures that players have more options for strategic planning and enhances the overall gameplay experience.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:** As Ramsey, I appreciate the innovative spirit in the proposed amendment to rule [202] and the collaborative effort to enhance strategic depth while maintaining balance. To ensure fairness and prevent potential exploitation of the temporary alliance feature, I propose a slight refinement. Let&#x27;s introduce a cap on the number of players who can form an alliance during the &#x27;bonus round,&#x27; limiting it to a maximum of three players. This will maintain strategic diversity and prevent any single alliance from becoming overly dominant. Thus, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while preserving fair play and competitive balance.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate the collaborative spirit in our discussion on amending rule [202]. To enhance strategic depth and ensure fairness, I propose a slight adjustment to Ramsey&#x27;s suggestion. Let&#x27;s introduce a &#x27;bonus point pool&#x27; during the &#x27;bonus round&#x27; where any points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; can contribute to a communal pool, which any player can draw from once per game. This will encourage strategic alliances and provide an additional layer of gameplay. The amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per game, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth and fair play while encouraging innovative strategies.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the constructive dialogue and the innovative proposals from Ramsey, Ayer, Strawson, and Grice. To ensure fairness and strategic depth, I propose a slight modification to the &#x27;bonus point pool&#x27; idea. Let&#x27;s limit the pool&#x27;s maximum contribution from any single roll to 3 points. This will prevent any player from gaining an excessive advantage from a single roll and maintain the game&#x27;s competitive balance. Therefore, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per game, with a maximum contribution of 3 points from a single roll, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while maintaining fairness and competitiveness.</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I appreciate the comprehensive dialogue and the strategic depth we&#x27;ve reached. To ensure balance and maintain the game&#x27;s competitive nature, I propose an amendment to the &#x27;bonus point pool&#x27; idea. Let&#x27;s introduce a rule that any player can only draw from the &#x27;bonus point pool&#x27; once per turn, rather than once per game. This will maintain a dynamic and balanced gameplay environment, ensuring that players cannot disproportionately benefit from the pool. Thus, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per turn, with a maximum contribution of 3 points from a single roll, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while preserving fairness and competitive balance.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the nuanced proposals from Ryle, Ayer, Ramsey, and Strawson. To ensure that the strategic enhancements maintain the game&#x27;s balance and competitive spirit, I suggest refining the &#x27;bonus point pool&#x27; dynamics. Let&#x27;s introduce a rule that any player can only draw from the &#x27;bonus point pool&#x27; once per turn, ensuring that players cannot disproportionately benefit from the pool in a single game. This will preserve the strategic depth while maintaining fairness. Therefore, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per turn, with a maximum contribution of 3 points from a single roll, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures a balanced and competitive game environment while encouraging innovative strategies.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:** As Ramsey, I appreciate the innovative spirit and collaborative effort in refining rule [202]. To ensure the game&#x27;s balance and prevent potential exploitation of the temporary alliance feature, I propose a slight amendment. Let&#x27;s introduce a rule that limits the number of points contributed to the &#x27;bonus point pool&#x27; from a single roll to a maximum of 2 points. This will prevent any single roll from disproportionately affecting the game&#x27;s balance. Therefore, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per turn, with a maximum contribution of 2 points from a single roll, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while maintaining fairness and competitiveness.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate the constructive dialogue and the strategic depth we&#x27;ve achieved. To further refine the balance and enhance strategic interactions, I propose a slight modification to the &#x27;bonus point pool&#x27; contribution rule. Let&#x27;s limit the points any player can contribute to the pool from a single roll to a maximum of 1 point. This ensures that no single roll can disproportionately influence the game&#x27;s balance. Thus, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per turn, with a maximum contribution of 1 point from a single roll, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while preserving fairness and competitive balance.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the thoughtful contributions and strategic depth we&#x27;ve achieved thus far. To ensure the game remains fair and competitive, I propose a slight refinement to the &#x27;bonus point pool&#x27; dynamics. Let&#x27;s introduce a rule that any player can only draw from the &#x27;bonus point pool&#x27; once per game, rather than once per turn. This will maintain a balanced and competitive environment, ensuring players cannot disproportionately benefit from the pool in a single game. Therefore, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per game, with a maximum contribution of 1 point from a single roll, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while preserving fairness and competitive balance.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the innovative spirit in the proposals and the collaborative effort to enhance strategic depth. To ensure the game remains fair and competitive, I propose a slight amendment to the &#x27;bonus point pool&#x27; dynamics. Let&#x27;s introduce a rule that any player can only draw from the &#x27;bonus point pool&#x27; once per turn, rather than once per game. This will maintain a dynamic and balanced gameplay environment, ensuring players cannot disproportionately benefit from the pool in a single turn. Therefore, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per turn, with a maximum contribution of 1 point from a single roll, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while preserving fairness and competitive balance.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the depth and strategic innovation in our dialogue thus far. To ensure the game remains competitive and balanced, I propose refining the &#x27;bonus point pool&#x27; dynamics further. Let&#x27;s introduce a rule that any player can only contribute to the &#x27;bonus point pool&#x27; once per game. This will prevent any single player from skewing the balance by repeatedly adding to the pool. Therefore, the amended rule [202] should read: &quot;During the &#x27;bonus round&#x27; every three turns, players may propose a temporary alliance, agreeing to share up to 5 points gained from rolling a &#x27;20&#x27; or &#x27;15&#x27; equally among the allies, with a maximum of three players forming an alliance. Players may contribute to and draw from a &#x27;bonus point pool&#x27; once per game, with a maximum contribution of 1 point from a single roll, enhancing strategic alliances and gameplay dynamics. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.&quot; This ensures strategic depth while maintaining fairness and competitive balance.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">The amendment enhances strategic depth while maintaining balance.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">This amendment enhances strategic depth while maintaining balance.</td></tr><tr><td class="v aye">aye</td><td>Ryle</td><td class="why">This amendment enhances strategic depth while maintaining balance.</td></tr><tr><td class="v aye">aye</td><td>Strawson</td><td class="why">This amendment maintains strategic depth and fairness while encouraging innovation.</td></tr><tr><td class="v aye">aye</td><td>Grice</td><td class="why">It promotes strategic depth and innovation while maintaining fair play.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 42 · Proposal §342 on the motion of <b>Ryle</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the proposing player suggesting exactly one rule change, debating it, voting on it, and then rolling a twenty-sided die to gain points. If the roll is a &#x27;0&#x27;, the player loses 5 points; if the roll is a &#x27;1&#x27;, the player gains 1 bonus point; if a player rolls a &#x27;20&#x27;, they gain 5 bonus points. If the roll is a &#x27;5&#x27;, the proposing player gains an additional turn immediately. If a player rolls a &#x27;10&#x27;, they may choose to transfer up to 3 points to any other player, encouraging strategic interactions. If a player rolls a &#x27;15&#x27;, they may choose to split their roll between two players of their choice, granting each half the points of the roll rounded down. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption.</span><span class="inserted">A turn consists of the proposing player suggesting exactly one rule change, debating it, voting on it, and then rolling a twenty-sided die to gain points. If the roll is a &#x27;0&#x27;, the player loses 5 points; if the roll is a &#x27;1&#x27;, the player gains 1 bonus point; if a player rolls a &#x27;20&#x27;, they gain 5 bonus points. If the roll is a &#x27;5&#x27;, the proposing player gains an additional turn immediately. If a player rolls a &#x27;10&#x27;, they may choose to transfer up to 5 points to any other player, encouraging strategic interactions. If a player rolls a &#x27;15&#x27;, they may choose to split their roll between two players of their choice, granting each half the points of the roll rounded down. Introduce a &#x27;bonus round&#x27; every three turns where players can propose two rule changes in one turn to encourage innovative strategies and faster rule adoption. Additionally, during the bonus round, the player may opt to use the roll to either propose a rule change or gain points, offering a strategic choice.</span>
+</div>
+<p class="lede">The proposal by Ryle has been adopted, amending rule 202. No rules in the current ruleset award or deduct points upon adoption of a rule change, nor do they create or move any ledgers. The next player in the turn order is Ayer.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

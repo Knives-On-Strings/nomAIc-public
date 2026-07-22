@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 19 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 19</h1><div class="meta"><span>Moved by <b>Boole</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains bonus points equal to the square root of the number of mutable rules currently in force, rounded down, with a minimum of 1 and a maximum of 4.</span></div>
+<p class="lede">Encourages strategic proposal of rule changes by balancing bonus points more evenly across all players.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">I appreciate the proposal&#x27;s intention to streamline scoring and make the game more competitive by narrowing the bonus range. However, I&#x27;m concerned that limiting the maximum bonus to 4 might reduce incentives for proposing complex rule changes, especially when more mutable rules are in play. I suggest a compromise: let&#x27;s keep the minimum bonus at 1, but adjust the maximum to 6. This way, we still encourage strategic proposals while maintaining a broader incentive spectrum. This balance ensures that players feel rewarded for both frequent participation and thoughtful contributions.
+
+Additionally, I believe it&#x27;s important to maintain the spirit of the game by encouraging diverse rule changes. By slightly expanding the maximum bonus, we ensure that the game remains dynamic and engaging, allowing for a richer set of strategic possibilities.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate Boole&#x27;s suggestion to adjust the maximum bonus to 6, as it strikes a good balance between encouraging strategic proposals and maintaining a dynamic game environment. Additionally, I propose a slight refinement: instead of rounding down the square root, we could use the floor function directly to ensure clarity in calculations. This change maintains transparency and fairness in how bonus points are awarded. By implementing this, we can continue to foster an engaging game while respecting the diverse strategies players might employ. Let&#x27;s move forward with this adjustment to keep the game both competitive and rewarding.</span></div><div class="line"><span class="who">Venn</span><span class="said">I appreciate Boole and DeMorgan&#x27;s contributions to refining this proposal. The adjustment to a maximum bonus of 6 seems like a fair compromise to encourage more strategic and frequent rule changes. To ensure clarity, I also support using the floor function for calculating bonus points, as DeMorgan suggested. This method keeps the scoring transparent and consistent with the spirit of the game. Let&#x27;s proceed with these changes to maintain a balanced and engaging gameplay experience.</span></div><div class="line"><span class="who">Jevons</span><span class="said">PASS
+
+As a principled proceduralist, I recognize the importance of ensuring that the rule changes align with my principles and maintain a fair and transparent game environment. The proposed amendments to rule 202, including the adjustment to a maximum bonus of 6 and the use of the floor function, seem to strike a reasonable balance between encouraging strategic proposals and maintaining the integrity of the game. By supporting these changes, I aim to foster a dynamic and engaging gameplay experience while ensuring that the rules are applied consistently and transparently.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate Boole, DeMorgan, and Venn&#x27;s efforts in refining the proposal for rule 202. The adjustments to a maximum bonus of 6 and the use of the floor function provide a balanced approach that promotes strategic engagement while ensuring fairness. By supporting these changes, we can maintain a dynamic and competitive environment. Let&#x27;s proceed with this proposal to enhance the fairness and appeal of our game. 
+
+PASS</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">I appreciate the collaborative effort that has brought us to this point. The proposal to adjust the maximum bonus to 6, along with using the floor function for calculating bonus points, strikes a fair balance, encouraging thoughtful participation without diminishing the rewards for strategic complexity. This approach maintains the spirit of the game by keeping it engaging and dynamic, while also ensuring transparency in scoring. Let&#x27;s move forward with these well-considered changes to continue fostering a fair and competitive environment. 
+
+PASS</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate the consensus that has emerged around amending rule 202. The adjustments proposed, including capping the bonus at 6 and employing the floor function, reflect a thoughtful balance that supports strategic engagement while ensuring fairness. These changes not only promote a dynamic and competitive environment but also preserve the integrity and transparency of our scoring system. Let&#x27;s proceed with implementing these well-considered modifications to enhance the fairness and appeal of our game.
+
+**Proposal:** Amend rule 202 to state: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains bonus points equal to the floor of the square root of the number of mutable rules currently in force, with a minimum of 1 and a maximum of 6.&quot; 
+
+**Vote:** [Boole: aye, DeMorgan: aye, Venn: aye, Jevons: aye, Peano: aye]</span></div><div class="line"><span class="who">Venn</span><span class="said">The proposed amendment to rule 202 seems to strike a well-balanced approach, ensuring that players are rewarded for strategic rule changes while maintaining a fair and dynamic game environment. By capping the bonus points at 6 and using the floor function for calculation, we maintain transparency and fairness in scoring. This adjustment encourages thoughtful participation without diminishing the rewards for complexity, aligning with the spirit of fair competition and engagement. I support these changes as they foster a balanced and competitive atmosphere, enhancing the overall appeal of our game. 
+
+**Vote:** aye
+
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">The proposed changes to rule 202 appear well-considered and align with a fair and competitive spirit of the game. By adjusting the maximum bonus to 6 and utilizing the floor function for bonus point calculations, the proposal ensures a balanced approach that encourages strategic participation without disproportionately rewarding complexity. This maintains transparency and fairness in scoring, supporting dynamic gameplay and enhancing the overall experience. I agree with the direction and support the proposal, ensuring it aligns with my principles of fair play and transparent rule application. 
+
+**Vote:** aye</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate the thoughtful discussion that has shaped this proposal. The amendments to rule 202, including the cap on bonus points at 6 and the use of the floor function, reflect a fair compromise that maintains engagement and rewards strategic thinking. This balanced approach aligns with the goal of ensuring a dynamic and equitable game environment. By supporting these changes, we foster a competitive atmosphere that encourages diverse rule proposals while keeping the scoring system transparent and fair. Let&#x27;s move forward with this proposal to enhance the fairness and excitement of our game. 
+
+**Vote:** aye</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">I appreciate the collaborative process that has brought us to this point. The proposal to amend rule 202 by adjusting the bonus system strikes a fair balance between encouraging strategic proposals and maintaining a dynamic game environment. The use of the floor function ensures transparency in bonus calculations, while capping the bonus at 6 ensures that rewards for proposing rules remain meaningful without becoming excessively large. This change aligns with the principle of fair competition, supporting thoughtful participation without disproportionately rewarding complexity. By proceeding with this proposal, we maintain a balanced and competitive atmosphere, enhancing the overall appeal and fairness of the game.
+
+**Vote:** aye</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate the thoughtful discussion that has led to this well-rounded proposal for amending rule 202. The consensus to cap the bonus at 6 while using the floor function for calculations ensures a fair and transparent reward system, encouraging strategic rule proposals without disproportionately incentivizing complexity. This approach maintains the game&#x27;s dynamic nature and ensures that all players feel motivated to participate actively. By supporting these changes, we uphold the principles of fairness and engagement, fostering a competitive yet inclusive environment. 
+
+**Vote:** aye
+
+PASS</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: The proposed amendment to rule 202 appears to strike a well-balanced approach, ensuring that players are rewarded for strategic rule changes while maintaining a fair and dynamic game environment. By capping the bonus points at 6 and using the floor function for calculation, we maintain transparency and fairness in scoring. This adjustment encourages thoughtful participation without diminishing the rewards for complexity, aligning with the spirit of fair competition and engagement. I support these changes as they foster a balanced and competitive atmosphere, enhancing the overall appeal of our game.
+
+**Vote:** aye
+
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">I appreciate the collaborative process and the thorough discussion that has shaped this proposal. The adjustment to a maximum bonus of 6, combined with the use of the floor function, ensures a fair and transparent scoring system that encourages strategic proposals without disproportionately rewarding complexity. This balanced approach maintains the dynamic nature of the game, supporting thoughtful participation and fostering a competitive yet fair environment. By proceeding with these changes, we uphold the principles of fair competition and transparent rule application, enhancing the overall appeal and fairness of the game.
+
+**Vote:** aye
+
+PASS</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate the thoughtful engagement from all players in refining this proposal for rule 202. The consensus to cap the bonus at 6 and to use the floor function ensures a fair, transparent, and strategic gameplay experience. These adjustments align with the goal of fostering an inclusive and competitive environment, where strategic rule changes are rewarded appropriately. By supporting these changes, we encourage diverse proposals and maintain the integrity of our scoring system. Let&#x27;s proceed with this well-balanced amendment to enhance the fairness and excitement of our game.
+
+**Vote:** aye
+
+PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Boole</td><td class="why">The amendment balances incentives with fairness and maintains game engagement.</td></tr><tr><td class="v aye">aye</td><td>DeMorgan</td><td class="why">The proposal maintains a balance between rewarding strategic proposals and keeping the game dynamic and fair.</td></tr><tr><td class="v aye">aye</td><td>Venn</td><td class="why">The proposal balances strategic engagement and fairness.</td></tr><tr><td class="v nay">nay</td><td>Jevons</td><td class="why">The proposal should maintain a maximum bonus of 6 for fairness.</td></tr><tr><td class="v aye">aye</td><td>Peano</td><td class="why">This amendment balances strategic engagement with fairness.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 19 · Proposal §319 on the motion of <b>Boole</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains bonus points equal to the number of mutable rules currently in force, with a minimum of 2 and a maximum of 12.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains bonus points equal to the square root of the number of mutable rules currently in force, rounded down, with a minimum of 1 and a maximum of 4.</span>
+</div>
+<p class="lede">Boole gains 4 points for proposing an adopted rule change, as the number of mutable rules is 9, and the square root of 9 is 3, with a minimum of 1 and a maximum of 4.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

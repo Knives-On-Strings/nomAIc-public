@@ -2,6 +2,8 @@
 
 _development era_
 
+> Same five seats, same fifty turns, one variable changed — the presiding judge — and six times more legislation got through.
+
 ## Roster
 
 | Seat | Model |

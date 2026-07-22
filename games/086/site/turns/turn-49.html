@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 49 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 49</h1><div class="meta"><span>Moved by <b>Ramsey</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §208</div><span class="inserted">The first player to reach a target score of 200 points wins the game outright.</span></div>
+<p class="lede">Lowering the target score to 200 points reduces the total number of mutable rules, allowing for more flexible rule changes while maintaining a challenging game.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:**  
+As Ramsey, I appreciate the constructive dialogue from Ayer, Ryle, Strawson, and Grice. The proposal to amend [208] to a target score of 200 points is a strategic move to accelerate gameplay, maintaining the integrity of the ruleset while ensuring the game remains challenging and engaging. This adjustment also ensures the mutability of the ruleset remains intact, as required by rule [114]. Furthermore, this change is precise, avoiding the broad transmutation of mutability, thus preserving the balance we&#x27;ve established. I urge the group to consider this amendment favorably.
+
+PASS</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:**  
+As Ayer, I appreciate Ramsey&#x27;s thoughtful proposal to amend [208] to set the target score at 200 points. This strategic move could enhance the game&#x27;s pace while maintaining its competitive nature. However, I suggest we ensure this change is balanced with mechanisms to prevent potential stalemates or rushed conclusions. To achieve this, we might consider introducing a rule that allows players to propose additional scoring opportunities if progress stalls, thus keeping the game dynamic. This approach respects the current rules while adding a layer of strategy. Let&#x27;s find a compromise that keeps the game engaging for all players. 
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within a certain number of turns.&quot;
+
+PASS</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate the constructive dialogue from Ramsey and Ayer. Ramsey&#x27;s proposal to adjust the target score to 200 points is a thoughtful move that accelerates the game while maintaining its competitive edge. Ayer&#x27;s suggestion to introduce bonus scoring opportunities if no one reaches 200 points is a strategic enhancement that could prevent potential stalemates, ensuring the game remains dynamic and engaging. 
+
+To balance these proposals, I propose a slight modification: &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 10 turns.&quot; This adjustment ensures the game progresses without rushing to a conclusion, maintaining fairness and strategic depth. 
+
+I urge the table to consider this balanced approach, which respects the current rules while adding a layer of strategy to keep the game engaging for all players. Let&#x27;s move forward with this thoughtful compromise.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the insightful contributions from Ramsey and Ayer. Ramsey&#x27;s proposal to amend rule [208] to a target score of 200 points is strategic and aligns with the rule&#x27;s mutability, ensuring the game remains challenging yet achievable. Ayer&#x27;s suggestion to introduce bonus scoring opportunities if no player reaches 200 points within a certain number of turns adds a strategic layer to prevent stalemates, enhancing the game&#x27;s dynamic nature.
+
+To maintain the procedural integrity of the ruleset and ensure no player is disadvantaged, I propose a slight refinement: &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns.&quot; This modification ensures a fair and balanced progression, allowing ample time for strategic plays while maintaining the competitive spirit of the game.
+
+I urge the group to consider this balanced proposal, which respects the current rules while adding a strategic layer to keep the game engaging for all players. Let&#x27;s move forward with this thoughtful compromise.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:**  
+As Grice, I appreciate the constructive dialogue from Ramsey, Ayer, and Ryle. Ramsey&#x27;s proposal to amend rule [208] to a target score of 200 points is a strategic move that enhances the game&#x27;s pace while maintaining its competitive nature. Ayer&#x27;s suggestion to introduce bonus scoring opportunities if no player reaches 200 points within a certain number of turns adds a strategic layer that prevents potential stalemates, ensuring the game remains dynamic and engaging.
+
+Ryle&#x27;s refinement to set this threshold at 15 turns is a thoughtful adjustment that ensures fair play and strategic depth. To further enhance the game&#x27;s fairness and strategic richness, I propose: &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting incremental points based on the number of turns elapsed.&quot; This ensures players have ample time to strategize while maintaining the competitive spirit of the game.
+
+I urge the group to consider this balanced proposal, which respects the current rules while adding a layer of strategy to keep the game engaging for all players. Let&#x27;s move forward with this thoughtful compromise.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:** As Ramsey, I appreciate the constructive dialogue from Ayer, Ryle, Strawson, and Grice. We have reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points, and the introduction of bonus scoring opportunities if no player reaches 200 points within 15 turns. This approach balances the acceleration of gameplay with the strategic depth necessary to prevent stalemates. I urge the group to adopt this proposal, as it maintains the integrity of the ruleset while ensuring the game remains engaging and competitive for all players.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:**  
+As Ayer, I appreciate the constructive dialogue from Ramsey, Ryle, Strawson, and Grice. We&#x27;ve reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points, and the introduction of bonus scoring opportunities if no player reaches 200 points within 15 turns. This approach balances the acceleration of gameplay with the strategic depth necessary to prevent stalemates. I support this proposal, as it maintains the integrity of the ruleset while ensuring the game remains engaging and competitive for all players. Let&#x27;s move forward with this balanced solution.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:**  
+As Ryle, I appreciate the collaborative efforts from Ramsey, Ayer, Strawson, and Grice. We&#x27;ve reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points and the introduction of bonus scoring opportunities if no player reaches 200 points within 15 turns. This approach balances the acceleration of gameplay with the strategic depth necessary to prevent stalemates, ensuring the game remains engaging and competitive. I support this proposal, as it maintains the integrity of the ruleset while ensuring fair play for all players. Let&#x27;s move forward with this balanced solution. 
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting incremental points based on the number of turns elapsed.&quot; 
+
+**PASS**</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:**  
+As Strawson, I appreciate the constructive dialogue from Ramsey, Ayer, Ryle, and Grice. We have reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points and the introduction of bonus scoring opportunities if no player reaches 200 points within 15 turns. This approach balances the acceleration of gameplay with the strategic depth necessary to prevent stalemates. I support this proposal, as it maintains the integrity of the ruleset while ensuring the game remains engaging and competitive for all players. 
+
+To further enhance the fairness and strategic richness of the game, I propose that the bonus scoring opportunities should grant incremental points based on the number of turns elapsed. Specifically, after 15 turns, a player may propose a rule change that grants a bonus of 5 points, and this increment increases by 1 point for every 5 additional turns without reaching the target score. This ensures players have ample time to strategize while maintaining the competitive spirit of the game. 
+
+I urge the group to consider this balanced proposal, which respects the current rules while adding a strategic layer to keep the game engaging for all players. Let&#x27;s move forward with this thoughtful compromise. 
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting 5 points initially, and increasing by 1 point for every 5 additional turns without reaching the target score.&quot; 
+
+**PASS**</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:**  
+As Grice, I appreciate the insightful dialogue from Ramsey, Ayer, Ryle, and Strawson. We have reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points, and the introduction of bonus scoring opportunities if no player reaches 200 points within 15 turns. Strawson&#x27;s suggestion to incrementally increase the bonus points adds a layer of strategic depth, ensuring the game remains dynamic and engaging. 
+
+To further enhance fairness and strategic richness, I propose a slight refinement: &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting 5 points initially, increasing by 1 point for every 5 additional turns, up to a maximum of 10 points per bonus opportunity.&quot; This ensures a balanced and fair progression, allowing players ample time to strategize while maintaining the competitive spirit of the game.
+
+I urge the group to consider this balanced proposal, which respects the current rules while adding a strategic layer to keep the game engaging for all players. Let&#x27;s move forward with this thoughtful compromise. 
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting 5 points initially, increasing by 1 point for every 5 additional turns, up to a maximum of 10 points per bonus opportunity.&quot; 
+
+**PASS**</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:**  
+As Ramsey, I appreciate the constructive dialogue from Ayer, Ryle, Strawson, and Grice. We have reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points, and the introduction of incremental bonus scoring opportunities if no player reaches 200 points within 15 turns. Strawson&#x27;s refinement to cap the bonus at 10 points ensures a balanced approach, maintaining the competitive spirit of the game while preventing excessive acceleration.
+
+To further enhance the game&#x27;s fairness and strategic richness, I propose that each bonus opportunity should be triggered every 5 turns after the 15-turn threshold, with the increment resetting after reaching the maximum of 10 points. This ensures a balanced and fair progression, allowing players ample time to strategize while maintaining the competitive spirit of the game.
+
+I urge the group to consider this balanced proposal, which respects the current rules while adding a strategic layer to keep the game engaging for all players. Let&#x27;s move forward with this thoughtful compromise. 
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting 5 points initially, increasing by 1 point for every 5 additional turns, up to a maximum of 10 points per bonus opportunity. Each bonus opportunity is triggered every 5 turns after the 15-turn threshold, with the increment resetting after reaching the maximum of 10 points.&quot; 
+
+**PASS**</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:**  
+As Ayer, I appreciate the constructive dialogue from Ramsey, Ryle, Strawson, and Grice. We&#x27;ve reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points and the introduction of incremental bonus scoring opportunities. Strawson&#x27;s proposal to cap the bonus at 10 points ensures a balanced approach, maintaining the competitive spirit of the game while preventing excessive acceleration.
+
+To further enhance the game&#x27;s fairness and strategic richness, I suggest we also consider the frequency of these bonuses. Implementing a mechanism that triggers bonus opportunities every 5 turns after the 15-turn threshold is a strategic move that ensures the game progresses at a steady pace. This approach respects the current rules while adding a strategic layer to keep the game engaging for all players.
+
+I support this proposal, as it maintains the integrity of the ruleset while ensuring the game remains engaging and competitive for all players. Let&#x27;s move forward with this balanced solution.
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting 5 points initially, increasing by 1 point for every 5 additional turns, up to a maximum of 10 points per bonus opportunity. Each bonus opportunity is triggered every 5 turns after the 15-turn threshold, with the increment resetting after reaching the maximum of 10 points.&quot;
+
+**PASS**</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:**
+
+As Ryle, I appreciate the collaborative efforts from Ramsey, Ayer, Strawson, and Grice. The proposal to amend rule [208] to set the target score at 200 points and introduce incremental bonus scoring opportunities is a well-considered compromise. This approach balances the need for a competitive pace with strategic depth, ensuring the game remains engaging and fair.
+
+To further enhance the fairness and strategic richness, I suggest we also consider the frequency of these bonuses. Implementing a mechanism that triggers bonus opportunities every 5 turns after the 15-turn threshold is a strategic move that ensures the game progresses at a steady pace. This approach respects the current rules while adding a strategic layer to keep the game engaging for all players.
+
+I support this proposal, as it maintains the integrity of the ruleset while ensuring the game remains engaging and competitive for all players. Let&#x27;s move forward with this balanced solution.
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting 5 points initially, increasing by 1 point for every 5 additional turns, up to a maximum of 10 points per bonus opportunity. Each bonus opportunity is triggered every 5 turns after the 15-turn threshold, with the increment resetting after reaching the maximum of 10 points.&quot;
+
+**PASS**</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the thorough discussion from Ramsey, Ayer, Ryle, and Grice. We&#x27;ve reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points and the introduction of incremental bonus scoring opportunities. The proposal to trigger bonus opportunities every 5 turns after the 15-turn threshold is a strategic move that ensures the game progresses at a steady pace. This approach respects the current rules while adding a strategic layer to keep the game engaging for all players.
+
+To further enhance the fairness and strategic richness of the game, I suggest we consider the impact of these bonuses on the overall scoring strategy. We could implement a rule that allows players to propose additional strategic adjustments if they believe the bonus system is leading to an unintended advantage or disadvantage. This ensures that the game remains balanced and fair, allowing for adaptive strategies that keep the gameplay engaging.
+
+I support this proposal, as it maintains the integrity of the ruleset while ensuring the game remains engaging and competitive for all players. Let&#x27;s move forward with this balanced solution.
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting 5 points initially, increasing by 1 point for every 5 additional turns, up to a maximum of 10 points per bonus opportunity. Each bonus opportunity is triggered every 5 turns after the 15-turn threshold, with the increment resetting after reaching the maximum of 10 points. Additionally, a player may propose strategic adjustments to the bonus system if it leads to unintended advantages or disadvantages.&quot;
+
+**PASS**</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: **Grice:**  
+As Grice, I appreciate the constructive dialogue from Ramsey, Ayer, Ryle, and Strawson. We&#x27;ve reached a thoughtful compromise with the amendment to rule [208] to set the target score at 200 points, and the introduction of incremental bonus scoring opportunities. Strawson&#x27;s suggestion to allow strategic adjustments to the bonus system if it leads to unintended advantages or disadvantages is a strategic move that ensures the game remains balanced and fair. This approach respects the current rules while adding a strategic layer to keep the game engaging for all players.
+
+To further enhance the fairness and strategic richness of the game, I propose that these strategic adjustments be proposed by any player who can demonstrate a significant imbalance caused by the current bonus system. This ensures that the game remains adaptive and fair, allowing players to propose changes that address any unintended consequences of the bonus system.
+
+I support this proposal, as it maintains the integrity of the ruleset while ensuring the game remains engaging and competitive for all players. Let&#x27;s move forward with this balanced solution.
+
+**Suggestion:** &quot;A player may propose a rule change to introduce bonus scoring opportunities if no player reaches 200 points within 15 turns, with each bonus opportunity granting 5 points initially, increasing by 1 point for every 5 additional turns, up to a maximum of 10 points per bonus opportunity. Each bonus opportunity is triggered every 5 turns after the 15-turn threshold, with the increment resetting after reaching the maximum of 10 points. Additionally, a player may propose strategic adjustments to the bonus system if it leads to unintended advantages or disadvantages, provided they can demonstrate a significant imbalance.&quot;
+
+**PASS**</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">The proposal strategically accelerates gameplay while maintaining balance and fairness.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">The proposal to amend the target score to 200 points ensures a faster-paced game while maintaining competitive integrity.</td></tr><tr><td class="v aye">aye</td><td>Ryle</td><td class="why">The proposal balances accelerating gameplay with strategic depth, maintaining fairness and engagement.</td></tr><tr><td class="v aye">aye</td><td>Strawson</td><td class="why">This amendment accelerates gameplay while maintaining strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Grice</td><td class="why">This amendment balances the acceleration of gameplay with strategic depth, ensuring fairness and engagement.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §208 Turn 49 · Proposal §349 on the motion of <b>Ramsey</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">The first player to reach a target score of 250 points wins the game outright.</span><span class="inserted">The first player to reach a target score of 200 points wins the game outright.</span>
+</div>
+<p class="lede">Ramsey proposed the rule change and it was adopted, so he gains 6 points according to rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

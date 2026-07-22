@@ -1,0 +1,524 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Diogenes",
+        "Crates",
+        "Hipparchia",
+        "Antisthenes",
+        "Menippus"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer's turn ends, and the proposer loses 10 points.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset is changed so that further play is impossible, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Diogenes": 0,
+        "Crates": 0,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      },
+      "seed": 1554548609
+    },
+    "ts": 1784606466.938822
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Diogenes"
+    },
+    "ts": 1784606466.9467967
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Diogenes",
+      "kind": "amend",
+      "targets": [
+        203
+      ],
+      "text": "A rule change is adopted only when every-player votes aye —-unanimous consent--; except that once turn order has carried play through one full circuit of every player, the threshold permanently drops to a simple majority of those voting.",
+      "rationale": "I propose lowering the threshold to a simple majority after one full circuit to ensure the game can progress more fluidly.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784606478.3247738
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784606479.5441248
+  },
+  {
+    "seq": 5,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I propose that we consider the long-term stability of the game's mechanics. By reducing the duration for the shift to a simple majority from two full circuits to one, we move toward a more settled state of play sooner, which may help clarify the game's progression.",
+      "round": 1
+    },
+    "ts": 1784606481.174472
+  },
+  {
+    "seq": 6,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I thank Diogenes for this proposal. I believe that speeding up the transition to a simple majority is a sensible way to ensure the game reaches a settled state of play more quickly. I am interested in exploring how this might affect the pace of play and would support this as a means of compromise.",
+      "round": 1
+    },
+    "ts": 1784606483.1587057
+  },
+  {
+    "seq": 7,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I support this amendment as it promotes the common good by ensuring the game's mechanics reach a settled state more efficiently. By moving toward a simple majority sooner, we reduce the risk of protracted stalemate and ensure the game remains active and clear for all players.",
+      "round": 1
+    },
+    "ts": 1784606484.982124
+  },
+  {
+    "seq": 8,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I accept this amendment as it clarifies the procedure for reaching a settled state of play. By shortening the timeframe for the threshold shift, we reduce the potential for protracted stalemates.",
+      "round": 1
+    },
+    "ts": 1784606486.6374178
+  },
+  {
+    "seq": 9,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I agree with the previous speakers' and the proposer's focus on the \"settled state.\" By accelerating the transition to a simple majority, we ensure that the game's mechanics can evolve more fluidly, preventing the stagnation of the ruleset.",
+      "round": 1
+    },
+    "ts": 1784606488.5127187
+  },
+  {
+    "seq": 10,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784606488.5201497
+  },
+  {
+    "seq": 11,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I observe that the consensus among the speakers suggests that the current and proposed changes align with a common interest in reaching a settled state of play. By shortening the timeframe for the shift to a simple majority, we ensure that the game's mechanics can evolve more fluidly, which is a hallmark of a well-ordered and stable ruleset.",
+      "round": 2
+    },
+    "ts": 1784606490.3043485
+  },
+  {
+    "seq": 12,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I appreciate the consensus reached. The move from two circuits to one circuit provides a clearer path for the ruleset to evolve, and I see this as a constructive step toward ensuring the game's mechanics remain stable and responsive.",
+      "round": 2
+    },
+    "ts": 1784606491.839065
+  },
+  {
+    "seq": 13,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe that this amendment serves the common good by ensuring that the game's mechanics reach a settled state more efficiently. By shortening the timeframe for the shift to a simple majority, we reduce the risk of protracted stalemates and ensure the game remains active and clear for all players.",
+      "round": 2
+    },
+    "ts": 1784606493.5243807
+  },
+  {
+    "seq": 14,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments to add to the record of this discussion.",
+      "round": 2
+    },
+    "ts": 1784606494.5545397
+  },
+  {
+    "seq": 15,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I thank the speakers for their constructive and clear-sighted and support the proposal as a means of refining the game's evolution. By accelerating the move to a simple majority, we foster a more dynamic and responsive ruleset, ensuring that the game's mechanisms are able to adapt to the needs of the players more efficiently.",
+      "round": 2
+    },
+    "ts": 1784606496.4861891
+  },
+  {
+    "seq": 16,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784606496.4944382
+  },
+  {
+    "seq": 17,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments. The consensus among the speakers confirms that this amendment serves the common interest of ensuring the game's mechanics reach a settled state more efficiently.",
+      "round": 3
+    },
+    "ts": 1784606497.8702614
+  },
+  {
+    "seq": 18,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I thank the proponents for their clear-sighted and balanced analysis. This proposal serves as a sensible compromise to ensure that the game's mechanics reach a settled state more efficiently, and I support it as a means of refining the game's evolution.",
+      "round": 3
+    },
+    "ts": 1784606499.6925566
+  },
+  {
+    "seq": 19,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe this amendment serves the common good by ensuring that the game's mechanics reach a settled state more efficiently. By shortening the timeframe for the shift to a simple majority, we reduce the risk of protracted stalemates and ensure the game remains active and clear for all players.",
+      "round": 3
+    },
+    "ts": 1784606501.5931501
+  },
+  {
+    "seq": 20,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments.",
+      "round": 3
+    },
+    "ts": 1784606502.7010872
+  },
+  {
+    "seq": 21,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I thank the proponents for their focus on the \"settled state.\" By accelerating the transition to a simple majority, we ensure that the game's mechanics can evolve more fluidly, preventing the stagnation of the ruleset.",
+      "round": 3
+    },
+    "ts": 1784606504.458268
+  },
+  {
+    "seq": 22,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "This amendment promotes a more stable and responsive ruleset by accelerating the transition to a simple majority."
+    },
+    "ts": 1784606507.1771715
+  },
+  {
+    "seq": 23,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "This amendment promotes the common good by ensuring the game's mechanics reach a settled state more efficiently."
+    },
+    "ts": 1784606508.868294
+  },
+  {
+    "seq": 24,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "This amendment promotes the common good by ensuring the game's mechanics reach a settled state more efficiently and promptly."
+    },
+    "ts": 1784606510.6435018
+  },
+  {
+    "seq": 25,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "The proposal clarifies the procedure for reaching a settled state of play without violating any immutable principles."
+    },
+    "ts": 1784606512.2494993
+  },
+  {
+    "seq": 26,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "This reform accelerates the game's evolution and ensures a more responsive and stable ruleset."
+    },
+    "ts": 1784606513.8579419
+  },
+  {
+    "seq": 27,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to transmute (§109)",
+        "authority": 109
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784606513.8682308
+  },
+  {
+    "seq": 28,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 203,
+      "text": "A rule change is adopted only when every-player votes aye —-unanimous consent--; except that once turn order has carried play through one full circuit of every player, the threshold permanently drops to a simple majority of those voting.",
+      "mutable": true
+    },
+    "ts": 1784606518.949122
+  },
+  {
+    "seq": 29,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 203,
+      "text": "A rule change is adopted only when every-player votes aye --unanimous consent--; except that once turn order has carried play through one full circuit of every player, the threshold permanently drops to a simple majority of those voting.",
+      "mutable": true
+    },
+    "ts": 1784606518.9572287
+  },
+  {
+    "seq": 30,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 1,
+      "authority": null
+    },
+    "ts": 1784606518.9644353
+  },
+  {
+    "seq": 31,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The proposal was adopted, and no rules specify a score change for the vote or for the proposer's success.",
+      "next_player": "Crates"
+    },
+    "ts": 1784606518.9718294
+  },
+  {
+    "seq": 32,
+    "type": "draw",
+    "data": {
+      "index": 1,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 5,
+      "reason": "score_draw for Diogenes (§202)",
+      "turn": 1
+    },
+    "ts": 1784606518.989759
+  },
+  {
+    "seq": 33,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 5,
+        "Crates": 0,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784606518.9997563
+  },
+  {
+    "seq": 34,
+    "type": "turn_started",
+    "data": {
+      "turn": 2,
+      "player": "Crates"
+    },
+    "ts": 1784606530.6794446
+  }
+]

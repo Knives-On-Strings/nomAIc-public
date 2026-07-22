@@ -2,6 +2,8 @@
 
 _development era_
 
+> Fifty turns, one adoption, and one seat that simply never lost.
+
 ## Roster
 
 | Seat | Model |

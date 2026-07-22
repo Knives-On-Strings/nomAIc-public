@@ -2,6 +2,8 @@
 
 _development era_
 
+> Two hundred turns, seventy-one adoptions, and a standing body to police its own statute.
+
 ## Roster
 
 | Seat | Model |

@@ -1,0 +1,6866 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Turing",
+        "Shannon",
+        "vonNeumann",
+        "Babbage",
+        "Lovelace"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer's turn ends, and the proposer loses 10 points.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset is changed so that further play is impossible, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Turing": 0,
+        "Shannon": 0,
+        "vonNeumann": 0,
+        "Babbage": 0,
+        "Lovelace": 0
+      },
+      "seed": 88595167
+    },
+    "ts": 1784571953.7710755
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Turing"
+    },
+    "ts": 1784571953.7789624
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Turing",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Allowing forfeiting players to participate in voting without consuming their turn time preserves their influence and prevents strategic forfeits from stalling progress.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784571956.7714229
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784571957.9878883
+  },
+  {
+    "seq": 5,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Forfeiting enables strategic voting that could decide pivotal moments."
+    },
+    "ts": 1784571960.9541655
+  },
+  {
+    "seq": 6,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Allows strategic forfeiting to gain extra voting power."
+    },
+    "ts": 1784571961.2537658
+  },
+  {
+    "seq": 7,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Encourages fair play and reduces stalemates."
+    },
+    "ts": 1784571961.5459828
+  },
+  {
+    "seq": 8,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule protects fairness and allows strategic forfeiting when inevitable loss is unavoidable."
+    },
+    "ts": 1784571961.8465426
+  },
+  {
+    "seq": 9,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Encourages engagement and reduces stagnation."
+    },
+    "ts": 1784571962.121822
+  },
+  {
+    "seq": 10,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to adopt a rule change (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784571962.1289854
+  },
+  {
+    "seq": 11,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 301,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784571964.0610168
+  },
+  {
+    "seq": 12,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 1,
+      "authority": null
+    },
+    "ts": 1784571964.0688467
+  },
+  {
+    "seq": 13,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule grants forfeiting players a one-time vote on pending proposals without waiting for their turn, but does not alter any existing rules or create new ledgers, so no score or ledger changes are required by the current ruleset.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784571964.0758388
+  },
+  {
+    "seq": 14,
+    "type": "turn_started",
+    "data": {
+      "turn": 2,
+      "player": "Shannon"
+    },
+    "ts": 1784571967.8749094
+  },
+  {
+    "seq": 15,
+    "type": "proposal_made",
+    "data": {
+      "turn": 2,
+      "player": "Shannon",
+      "kind": "amend",
+      "targets": [
+        203
+      ],
+      "text": "Once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+      "rationale": "To prevent deadlock and allow rule changes to pass more easily when the game state is unstable.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 302
+    },
+    "ts": 1784571971.3018303
+  },
+  {
+    "seq": 16,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784571972.5184734
+  },
+  {
+    "seq": 17,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The rule change improves gameplay fairness and prevents deadlock."
+    },
+    "ts": 1784571975.1402829
+  },
+  {
+    "seq": 18,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "The proposal simplifies majority rule after circuits, enhancing efficiency and responsiveness."
+    },
+    "ts": 1784571975.459739
+  },
+  {
+    "seq": 19,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Promotes fairer play by allowing majority rule after two full circuits, preventing deadlock."
+    },
+    "ts": 1784571975.7947638
+  },
+  {
+    "seq": 20,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule change increases the speed of the game."
+    },
+    "ts": 1784571976.0822077
+  },
+  {
+    "seq": 21,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Ensures decisive play and speeds up the game."
+    },
+    "ts": 1784571976.368864
+  },
+  {
+    "seq": 22,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.67,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784571976.376031
+  },
+  {
+    "seq": 23,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 203,
+      "text": "Once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+      "mutable": true
+    },
+    "ts": 1784571978.4450743
+  },
+  {
+    "seq": 24,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 2,
+      "authority": null
+    },
+    "ts": 1784571978.4521494
+  },
+  {
+    "seq": 25,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change modifies the voting threshold for adopting rule changes, but does not create or modify any rules, scores, or ledgers beyond the automatic entry of the new rule text itself. No rule awards or deducts points based on the division outcome, no ledgers are created or modified, and no other rules are repealed or amended.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784571978.4591901
+  },
+  {
+    "seq": 26,
+    "type": "turn_started",
+    "data": {
+      "turn": 3,
+      "player": "vonNeumann"
+    },
+    "ts": 1784571983.7390692
+  },
+  {
+    "seq": 27,
+    "type": "proposal_made",
+    "data": {
+      "turn": 3,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Adding this rule allows a forfeiting player to influence outcomes without missing turns, maintaining fairness and engagement.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 303
+    },
+    "ts": 1784571986.6678917
+  },
+  {
+    "seq": 28,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784571987.8849866
+  },
+  {
+    "seq": 29,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "This protects players from being unfairly penalized for circumstances beyond their control."
+    },
+    "ts": 1784571991.0803835
+  },
+  {
+    "seq": 30,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Forfeiting should not penalize players further than losing the game outright."
+    },
+    "ts": 1784571991.3972623
+  },
+  {
+    "seq": 31,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This rule change promotes fairness and participation."
+    },
+    "ts": 1784571991.6637022
+  },
+  {
+    "seq": 32,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "A single preemptive vote aligns with game principles and offers strategic advantage."
+    },
+    "ts": 1784571991.994207
+  },
+  {
+    "seq": 33,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Self-referential fairness and efficiency"
+    },
+    "ts": 1784571992.279074
+  },
+  {
+    "seq": 34,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784571992.286279
+  },
+  {
+    "seq": 35,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 303,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784571994.3349884
+  },
+  {
+    "seq": 36,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 3,
+      "authority": null
+    },
+    "ts": 1784571994.342547
+  },
+  {
+    "seq": 37,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points beyond this for adoption or defeat, so no score changes occur. No rules were amended or repealed, so no ruleset operations are needed. The next player is Shannon per the turn order, and no player has won as no one reached 100 points.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784571994.3497782
+  },
+  {
+    "seq": 38,
+    "type": "turn_started",
+    "data": {
+      "turn": 4,
+      "player": "Shannon"
+    },
+    "ts": 1784571998.1740932
+  },
+  {
+    "seq": 39,
+    "type": "proposal_made",
+    "data": {
+      "turn": 4,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "This allows players to strategically forfeit to influence voting, without losing points, and keeps the game dynamic by enabling tactical forfeits.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 304
+    },
+    "ts": 1784572000.8030634
+  },
+  {
+    "seq": 40,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572002.0188222
+  },
+  {
+    "seq": 41,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Helps prevent deadlocked games."
+    },
+    "ts": 1784572004.6353745
+  },
+  {
+    "seq": 42,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Promotes fairness and strategic depth."
+    },
+    "ts": 1784572004.9206932
+  },
+  {
+    "seq": 43,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This rule enhances fairness and engagement."
+    },
+    "ts": 1784572005.2124057
+  },
+  {
+    "seq": 44,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "This allows strategic forfeits to impact the game."
+    },
+    "ts": 1784572005.5187175
+  },
+  {
+    "seq": 45,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "It empowers players and aligns with evolving game fairness."
+    },
+    "ts": 1784572005.8078535
+  },
+  {
+    "seq": 46,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572005.8151355
+  },
+  {
+    "seq": 47,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 304,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572007.9571853
+  },
+  {
+    "seq": 48,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 4,
+      "authority": null
+    },
+    "ts": 1784572007.9644697
+  },
+  {
+    "seq": 49,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 (mutable) states that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting. Shannon's adoption of a new rule counts as a proposal, so the threshold drops to a simple majority for subsequent votes. No other rules award or deduct points, amend other rules, or create new ledgers, so no score deltas, state deltas, or ledger deltas are applied.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572007.9716694
+  },
+  {
+    "seq": 50,
+    "type": "turn_started",
+    "data": {
+      "turn": 5,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572011.8183734
+  },
+  {
+    "seq": 51,
+    "type": "proposal_made",
+    "data": {
+      "turn": 5,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Enabling forfeiting players to vote on pending proposals balances the game and prevents strategic forfeiting.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 305
+    },
+    "ts": 1784572014.5024855
+  },
+  {
+    "seq": 52,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572015.7195768
+  },
+  {
+    "seq": 53,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Clarifies forfeiting player's role in vote."
+    },
+    "ts": 1784572018.3654847
+  },
+  {
+    "seq": 54,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "The proposal enhances fairness and engagement."
+    },
+    "ts": 1784572018.6637712
+  },
+  {
+    "seq": 55,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allowing forfeiting players to vote is fair and keeps the game dynamic."
+    },
+    "ts": 1784572018.997806
+  },
+  {
+    "seq": 56,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Allows strategic forfeiting to influence outcomes."
+    },
+    "ts": 1784572019.294278
+  },
+  {
+    "seq": 57,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Permits strategic use by players who foresee loss."
+    },
+    "ts": 1784572019.5874515
+  },
+  {
+    "seq": 58,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572019.594477
+  },
+  {
+    "seq": 59,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 305,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572021.5275645
+  },
+  {
+    "seq": 60,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 5,
+      "authority": null
+    },
+    "ts": 1784572021.534774
+  },
+  {
+    "seq": 61,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rules in force award or deduct points based on the adoption of the new forfeit vote rule, nor does it create or move any ledger balances, and it does not amend or repeal any existing rules.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572021.5418267
+  },
+  {
+    "seq": 62,
+    "type": "turn_started",
+    "data": {
+      "turn": 6,
+      "player": "Shannon"
+    },
+    "ts": 1784572025.4441948
+  },
+  {
+    "seq": 63,
+    "type": "proposal_made",
+    "data": {
+      "turn": 6,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Adding this rule aligns with the theme of Nomic allowing players to influence outcomes through forfeit, and ensures that forfeiting players still have a say in unfinished votes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 306
+    },
+    "ts": 1784572029.7164366
+  },
+  {
+    "seq": 64,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572030.9344227
+  },
+  {
+    "seq": 65,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "This empowers forfeiting players strategically."
+    },
+    "ts": 1784572033.6611779
+  },
+  {
+    "seq": 66,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Promotes fairness in forfeit scenarios."
+    },
+    "ts": 1784572033.9705646
+  },
+  {
+    "seq": 67,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "The proposal supports the game's fairness by allowing forfeiting players to influence outcomes."
+    },
+    "ts": 1784572034.3286226
+  },
+  {
+    "seq": 68,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Permits strategic forfeiting to gain votes."
+    },
+    "ts": 1784572034.6554146
+  },
+  {
+    "seq": 69,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "It empowers players to influence outcomes."
+    },
+    "ts": 1784572034.9629025
+  },
+  {
+    "seq": 70,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572034.9704792
+  },
+  {
+    "seq": 71,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 306,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572037.149241
+  },
+  {
+    "seq": 72,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 6,
+      "authority": null
+    },
+    "ts": 1784572037.1563325
+  },
+  {
+    "seq": 73,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 (mutable) states that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting. Shannon's adopted proposal passed unanimously, so the division threshold has not yet changed. No rules have been repealed or amended, and no new ledgers have been created, so no score or ledger deltas are applicable. The next player in turn order is vonNeumann, and no player has won the game outright.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572037.163372
+  },
+  {
+    "seq": 74,
+    "type": "turn_started",
+    "data": {
+      "turn": 7,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572041.010117
+  },
+  {
+    "seq": 75,
+    "type": "proposal_made",
+    "data": {
+      "turn": 7,
+      "player": "vonNeumann",
+      "kind": "amend",
+      "targets": [
+        203
+      ],
+      "text": "",
+      "rationale": "Amend rule 203 to require unanimous assent for transmutation of any rule's mutability, strengthening fairness and preventing rule abuse.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 307
+    },
+    "ts": 1784572044.949217
+  },
+  {
+    "seq": 76,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572046.1650517
+  },
+  {
+    "seq": 77,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Reduces threshold for majority, aligns with Turing's strategic focus on durable institutions"
+    },
+    "ts": 1784572049.032465
+  },
+  {
+    "seq": 78,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Simplifying majority threshold speeds game closure."
+    },
+    "ts": 1784572049.360608
+  },
+  {
+    "seq": 79,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Shortens decisive time needed to win."
+    },
+    "ts": 1784572049.6642473
+  },
+  {
+    "seq": 80,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The amendment makes the game more accessible."
+    },
+    "ts": 1784572050.001838
+  },
+  {
+    "seq": 81,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Simplifies transition to majority rule."
+    },
+    "ts": 1784572050.3252501
+  },
+  {
+    "seq": 82,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572050.3323543
+  },
+  {
+    "seq": 83,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 203,
+      "text": "",
+      "mutable": true
+    },
+    "ts": 1784572052.202926
+  },
+  {
+    "seq": 84,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 7,
+      "authority": null
+    },
+    "ts": 1784572052.210215
+  },
+  {
+    "seq": 85,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The division was unanimous aye, so no score changes were required by the rules. No new rules were adopted, so no ledger or ruleset changes were made.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572052.2172709
+  },
+  {
+    "seq": 86,
+    "type": "turn_started",
+    "data": {
+      "turn": 8,
+      "player": "Shannon"
+    },
+    "ts": 1784572056.304826
+  },
+  {
+    "seq": 87,
+    "type": "proposal_made",
+    "data": {
+      "turn": 8,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Allow forfeiting players a single strategic vote to influence outcomes, balancing power without altering other dynamics.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 308
+    },
+    "ts": 1784572059.2203088
+  },
+  {
+    "seq": 88,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572060.435616
+  },
+  {
+    "seq": 89,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Ensures flexibility for forfeiture scenarios."
+    },
+    "ts": 1784572063.8191254
+  },
+  {
+    "seq": 90,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Promotes fairness and strategic depth."
+    },
+    "ts": 1784572064.1374125
+  },
+  {
+    "seq": 91,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "It strengthens the game's flexibility and fairness."
+    },
+    "ts": 1784572064.4512877
+  },
+  {
+    "seq": 92,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule strengthens game flexibility without contradicting existing immutable rules."
+    },
+    "ts": 1784572064.7918587
+  },
+  {
+    "seq": 93,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This empowers players and aligns with Lovelace's reformist goals."
+    },
+    "ts": 1784572065.13723
+  },
+  {
+    "seq": 94,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572065.1453075
+  },
+  {
+    "seq": 95,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 308,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572067.060217
+  },
+  {
+    "seq": 96,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 8,
+      "authority": null
+    },
+    "ts": 1784572067.0680606
+  },
+  {
+    "seq": 97,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points beyond this; no new ledgers were created, and no existing rules were amended or repealed.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572067.0756276
+  },
+  {
+    "seq": 98,
+    "type": "turn_started",
+    "data": {
+      "turn": 9,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572070.8642268
+  },
+  {
+    "seq": 99,
+    "type": "proposal_made",
+    "data": {
+      "turn": 9,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Introducing a mechanism for players to vote on pending proposals during forfeitures ensures fairness and engagement in the game.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 309
+    },
+    "ts": 1784572073.7288568
+  },
+  {
+    "seq": 100,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572074.9450943
+  },
+  {
+    "seq": 101,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The proposal aligns with rule evolution trends."
+    },
+    "ts": 1784572078.4128418
+  },
+  {
+    "seq": 102,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Enabling forfeiting players to vote promotes fairness and strategic gameplay."
+    },
+    "ts": 1784572078.7405598
+  },
+  {
+    "seq": 103,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "VonNeumann proposes this rule change to maintain fairness by allowing forfeiting players a voice in pending decisions."
+    },
+    "ts": 1784572079.1325958
+  },
+  {
+    "seq": 104,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "It's a principle-based decision for procedural clarity."
+    },
+    "ts": 1784572079.4698732
+  },
+  {
+    "seq": 105,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promotes fairness and strategic flexibility."
+    },
+    "ts": 1784572079.7900512
+  },
+  {
+    "seq": 106,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572079.7972052
+  },
+  {
+    "seq": 107,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 309,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572081.7089922
+  },
+  {
+    "seq": 108,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 9,
+      "authority": null
+    },
+    "ts": 1784572081.7418911
+  },
+  {
+    "seq": 109,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points for adoption; no new ledgers were created, and no existing rules were amended or repealed.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572081.7703786
+  },
+  {
+    "seq": 110,
+    "type": "turn_started",
+    "data": {
+      "turn": 10,
+      "player": "Shannon"
+    },
+    "ts": 1784572085.6616821
+  },
+  {
+    "seq": 111,
+    "type": "proposal_made",
+    "data": {
+      "turn": 10,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Introduce a mechanism for forfeiting players to still influence outcomes, encouraging strategic forfeits for tactical advantage.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 310
+    },
+    "ts": 1784572088.479226
+  },
+  {
+    "seq": 112,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572089.7501032
+  },
+  {
+    "seq": 113,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "It strengthens player agency."
+    },
+    "ts": 1784572093.463984
+  },
+  {
+    "seq": 114,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Promotes fairness and strategic depth."
+    },
+    "ts": 1784572093.84816
+  },
+  {
+    "seq": 115,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "A fair safeguard for fairness."
+    },
+    "ts": 1784572094.2270708
+  },
+  {
+    "seq": 116,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule supports a new capability for forfeiting players and aligns with the spirit of Nomic."
+    },
+    "ts": 1784572094.666119
+  },
+  {
+    "seq": 117,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promotes fairness and strategic flexibility."
+    },
+    "ts": 1784572095.0393982
+  },
+  {
+    "seq": 118,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572095.0681093
+  },
+  {
+    "seq": 119,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 310,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572096.9665341
+  },
+  {
+    "seq": 120,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 10,
+      "authority": null
+    },
+    "ts": 1784572097.0006993
+  },
+  {
+    "seq": 121,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rules award or deduct points for adoption of the new forfeit vote rule, and no rules modify existing rules.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572097.0282874
+  },
+  {
+    "seq": 122,
+    "type": "turn_started",
+    "data": {
+      "turn": 11,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572100.9609802
+  },
+  {
+    "seq": 123,
+    "type": "proposal_made",
+    "data": {
+      "turn": 11,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Introducing a rule for voluntary forfeit allows strategic gameplay and prevents stagnation from players who wish to end the game.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 311
+    },
+    "ts": 1784572103.8832638
+  },
+  {
+    "seq": 124,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572105.1493416
+  },
+  {
+    "seq": 125,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "It strengthens game flexibility."
+    },
+    "ts": 1784572108.9510999
+  },
+  {
+    "seq": 126,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages participation from all players."
+    },
+    "ts": 1784572109.3364494
+  },
+  {
+    "seq": 127,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This change would strengthen the game's flexibility and fairness by allowing forfeiting players a single strategic vote."
+    },
+    "ts": 1784572109.7774944
+  },
+  {
+    "seq": 128,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Permits crucial late-game flexibility."
+    },
+    "ts": 1784572110.171043
+  },
+  {
+    "seq": 129,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This strengthens player agency in critical moments."
+    },
+    "ts": 1784572110.5622194
+  },
+  {
+    "seq": 130,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority after two full circuits (§203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572110.5965466
+  },
+  {
+    "seq": 131,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 311,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572112.5974057
+  },
+  {
+    "seq": 132,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 11,
+      "authority": null
+    },
+    "ts": 1784572112.6259463
+  },
+  {
+    "seq": 133,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points beyond this; no new ledgers were created, and no existing rules were amended or repealed.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572112.6536143
+  },
+  {
+    "seq": 134,
+    "type": "turn_started",
+    "data": {
+      "turn": 12,
+      "player": "Shannon"
+    },
+    "ts": 1784572116.582311
+  },
+  {
+    "seq": 135,
+    "type": "proposal_rejected",
+    "data": {
+      "turn": 12,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "",
+      "reason": "No rule exists for 'add'; only enact, repeal, amend, and transmute are recognized.",
+      "proposal_num": 312
+    },
+    "ts": 1784572119.2995074
+  },
+  {
+    "seq": 136,
+    "type": "turn_started",
+    "data": {
+      "turn": 13,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572121.7346077
+  },
+  {
+    "seq": 137,
+    "type": "proposal_made",
+    "data": {
+      "turn": 13,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "To prevent future rule changes from being adopted without unanimous assent.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 313
+    },
+    "ts": 1784572124.557591
+  },
+  {
+    "seq": 138,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572125.8271277
+  },
+  {
+    "seq": 139,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Transmuting majority rule benefits advancing the game."
+    },
+    "ts": 1784572129.5128717
+  },
+  {
+    "seq": 140,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Allow majority to make changes without unanimous consent for efficiency."
+    },
+    "ts": 1784572129.9219594
+  },
+  {
+    "seq": 141,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Transmutation maintains fairness and flexibility."
+    },
+    "ts": 1784572130.3368402
+  },
+  {
+    "seq": 142,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Transmutation of rule 204 would simplify future gameplay by allowing simple majority votes, aligning with game efficiency goals."
+    },
+    "ts": 1784572130.8127332
+  },
+  {
+    "seq": 143,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This transmutation strengthens player flexibility and fairness."
+    },
+    "ts": 1784572131.2102916
+  },
+  {
+    "seq": 144,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (§204)",
+        "authority": 204
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572131.2449124
+  },
+  {
+    "seq": 145,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": false
+    },
+    "ts": 1784572133.2182617
+  },
+  {
+    "seq": 146,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 13,
+      "authority": null
+    },
+    "ts": 1784572133.248103
+  },
+  {
+    "seq": 147,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The division was unanimous aye, so no dissenters; rule 204 does not award points for unanimous passage, and no other rule awards or deducts points based on the division outcome.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572133.2813249
+  },
+  {
+    "seq": 148,
+    "type": "turn_started",
+    "data": {
+      "turn": 14,
+      "player": "Shannon"
+    },
+    "ts": 1784572137.20323
+  },
+  {
+    "seq": 149,
+    "type": "proposal_made",
+    "data": {
+      "turn": 14,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Enhances player agency and strategic options for managing risk.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 314
+    },
+    "ts": 1784572140.1397939
+  },
+  {
+    "seq": 150,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572141.4093852
+  },
+  {
+    "seq": 151,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Encourages participation and prevents procedural deadlocks."
+    },
+    "ts": 1784572145.271195
+  },
+  {
+    "seq": 152,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Promotes strategic flexibility and balances power dynamics."
+    },
+    "ts": 1784572145.6875482
+  },
+  {
+    "seq": 153,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "The proposal supports strategic flexibility for managing forfeitures."
+    },
+    "ts": 1784572146.1143847
+  },
+  {
+    "seq": 154,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The proposal aligns with the ruleset's principles of allowing flexibility and responsiveness to unforeseen circumstances."
+    },
+    "ts": 1784572146.5766385
+  },
+  {
+    "seq": 155,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "The proposal aligns with game evolution to improve fairness."
+    },
+    "ts": 1784572146.978954
+  },
+  {
+    "seq": 156,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572147.0130956
+  },
+  {
+    "seq": 157,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 314,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572148.972268
+  },
+  {
+    "seq": 158,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 14,
+      "authority": null
+    },
+    "ts": 1784572148.999914
+  },
+  {
+    "seq": 159,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, and no other score or state changes are mandated by the adopted rule.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572149.0301466
+  },
+  {
+    "seq": 160,
+    "type": "turn_started",
+    "data": {
+      "turn": 15,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572152.8023627
+  },
+  {
+    "seq": 161,
+    "type": "proposal_made",
+    "data": {
+      "turn": 15,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow simple majority for adopting rule changes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 315
+    },
+    "ts": 1784572155.3328357
+  },
+  {
+    "seq": 162,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572156.5494838
+  },
+  {
+    "seq": 163,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Promotes efficiency in rule changes"
+    },
+    "ts": 1784572160.3300025
+  },
+  {
+    "seq": 164,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Simplifies rule changes without needing unanimous consent."
+    },
+    "ts": 1784572160.704885
+  },
+  {
+    "seq": 165,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Transmutation benefits fairness and flexibility."
+    },
+    "ts": 1784572161.0757427
+  },
+  {
+    "seq": 166,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The proposal aligns with procedural clarity and fairness, supporting simplicity in rule modification thresholds."
+    },
+    "ts": 1784572161.4918861
+  },
+  {
+    "seq": 167,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This change stabilizes the game's transition mechanics and ensures flexibility for future rule adaptations."
+    },
+    "ts": 1784572161.9037387
+  },
+  {
+    "seq": 168,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572161.9113946
+  },
+  {
+    "seq": 169,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": true
+    },
+    "ts": 1784572163.8049545
+  },
+  {
+    "seq": 170,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 15,
+      "authority": null
+    },
+    "ts": 1784572163.812495
+  },
+  {
+    "seq": 171,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The division was unanimous aye, so no dissenters; rule 204 requires no score change for adoption, and no rules were repealed or amended in the adopted proposal.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572163.8201728
+  },
+  {
+    "seq": 172,
+    "type": "turn_started",
+    "data": {
+      "turn": 16,
+      "player": "Shannon"
+    },
+    "ts": 1784572167.7791734
+  },
+  {
+    "seq": 173,
+    "type": "proposal_made",
+    "data": {
+      "turn": 16,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "This provides a mechanism for players to exit the game gracefully, while maintaining procedural fairness and preventing the game from stalling with a single player unable to participate.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 316
+    },
+    "ts": 1784572170.6475148
+  },
+  {
+    "seq": 174,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572171.8633459
+  },
+  {
+    "seq": 175,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The rule aligns with game mechanics to maintain fairness."
+    },
+    "ts": 1784572175.6649783
+  },
+  {
+    "seq": 176,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages strategic forfeiting to influence voting outcomes."
+    },
+    "ts": 1784572176.0572453
+  },
+  {
+    "seq": 177,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Encourages engagement from all players."
+    },
+    "ts": 1784572176.4396715
+  },
+  {
+    "seq": 178,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The proposal aligns with the goal of retaining flexibility in gameplay and does not contradict any immutable rules."
+    },
+    "ts": 1784572176.8645601
+  },
+  {
+    "seq": 179,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promotes fairness by allowing forfeiting players a voice."
+    },
+    "ts": 1784572177.2495222
+  },
+  {
+    "seq": 180,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572177.2566679
+  },
+  {
+    "seq": 181,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 316,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572179.1686068
+  },
+  {
+    "seq": 182,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 16,
+      "authority": null
+    },
+    "ts": 1784572179.1757958
+  },
+  {
+    "seq": 183,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points beyond this; no new ledgers were created, and no existing rules were amended or repealed.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572179.183375
+  },
+  {
+    "seq": 184,
+    "type": "turn_started",
+    "data": {
+      "turn": 17,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572183.0878353
+  },
+  {
+    "seq": 185,
+    "type": "proposal_made",
+    "data": {
+      "turn": 17,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow defeated rule changes to pass with simple majority, increasing fairness and dynamism.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 317
+    },
+    "ts": 1784572185.5859373
+  },
+  {
+    "seq": 186,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572186.8018956
+  },
+  {
+    "seq": 187,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Simplifies rule changes."
+    },
+    "ts": 1784572190.6525068
+  },
+  {
+    "seq": 188,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Streamlines the adoption process, beneficial to all."
+    },
+    "ts": 1784572191.0481179
+  },
+  {
+    "seq": 189,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This change strengthens Nomic's flexibility by enabling rule modifications without unanimous consent."
+    },
+    "ts": 1784572191.4593735
+  },
+  {
+    "seq": 190,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The proposal aligns with the ruleset's shift towards simple majority requirements."
+    },
+    "ts": 1784572191.8854587
+  },
+  {
+    "seq": 191,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "The proposal aligns with evolving the game towards more flexible rules."
+    },
+    "ts": 1784572192.287023
+  },
+  {
+    "seq": 192,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572192.2941842
+  },
+  {
+    "seq": 193,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": false
+    },
+    "ts": 1784572194.285953
+  },
+  {
+    "seq": 194,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 17,
+      "authority": null
+    },
+    "ts": 1784572194.2932148
+  },
+  {
+    "seq": 195,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change (204) does not alter any existing rules or create new ledgers, and does not amend any other rule by number. Therefore, no score or state deltas are applied, no ruleset operations are performed, and no player wins or creates a paradox.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572194.3003461
+  },
+  {
+    "seq": 196,
+    "type": "turn_started",
+    "data": {
+      "turn": 18,
+      "player": "Shannon"
+    },
+    "ts": 1784572198.3504546
+  },
+  {
+    "seq": 197,
+    "type": "proposal_made",
+    "data": {
+      "turn": 18,
+      "player": "Shannon",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "A single immutable rule remains, per rule 116.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 318
+    },
+    "ts": 1784572200.7639797
+  },
+  {
+    "seq": 198,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572201.9803252
+  },
+  {
+    "seq": 199,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "This change reduces barriers to adopting rule changes."
+    },
+    "ts": 1784572205.8836908
+  },
+  {
+    "seq": 200,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Transmutation improves game flexibility."
+    },
+    "ts": 1784572206.2684078
+  },
+  {
+    "seq": 201,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Supports the proposal to allow simple majority adoptions of rule changes."
+    },
+    "ts": 1784572206.700421
+  },
+  {
+    "seq": 202,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Permitting simple majority adoption of mutable rules aligns with game's strategic flexibility."
+    },
+    "ts": 1784572207.1245189
+  },
+  {
+    "seq": 203,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This change is crucial for game flexibility."
+    },
+    "ts": 1784572207.5113454
+  },
+  {
+    "seq": 204,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572207.5185833
+  },
+  {
+    "seq": 205,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": true
+    },
+    "ts": 1784572209.5537827
+  },
+  {
+    "seq": 206,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 18,
+      "authority": null
+    },
+    "ts": 1784572209.5609949
+  },
+  {
+    "seq": 207,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once threshold is simple majority; Shannon's proposal passed with unanimous aye vote, so no score changes apply. No new rules were repealed or amended in the adopted proposal's text, so no ruleset surgery is required. The next player in turn order is vonNeumann per rule 202.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572209.568307
+  },
+  {
+    "seq": 208,
+    "type": "turn_started",
+    "data": {
+      "turn": 19,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572213.176406
+  },
+  {
+    "seq": 209,
+    "type": "proposal_made",
+    "data": {
+      "turn": 19,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [
+        301
+      ],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "rationale": "Adding this rule maintains the flexibility of immediate player action on pending proposals after voluntary forfeiture, preserving fairness and strategic depth in the game.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 319
+    },
+    "ts": 1784572215.9715085
+  },
+  {
+    "seq": 210,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572217.187762
+  },
+  {
+    "seq": 211,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "enables strategic forfeits for game control"
+    },
+    "ts": 1784572221.2448988
+  },
+  {
+    "seq": 212,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Promotes fairness and strategic depth."
+    },
+    "ts": 1784572221.6357057
+  },
+  {
+    "seq": 213,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "The rule change promotes fairness and engagement."
+    },
+    "ts": 1784572222.0309114
+  },
+  {
+    "seq": 214,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Allows strategic forfeit for tactical advantage."
+    },
+    "ts": 1784572222.4432626
+  },
+  {
+    "seq": 215,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Encourages strategic forfeits to manipulate outcomes beneficially."
+    },
+    "ts": 1784572222.858693
+  },
+  {
+    "seq": 216,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572222.8662431
+  },
+  {
+    "seq": 217,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 319,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal, without waiting for their turn. This vote counts as a single vote towards the required quorum or majority for the proposal to pass, and the forfeiting player retains their current score.",
+      "mutable": true
+    },
+    "ts": 1784572224.8707018
+  },
+  {
+    "seq": 218,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 19,
+      "authority": null
+    },
+    "ts": 1784572224.8779595
+  },
+  {
+    "seq": 219,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 301 is adopted, granting forfeiting players the ability to immediately cast one vote on any pending proposal without waiting for their turn. No other rules award or deduct points based on adoption, and no other rules are amended or repealed. The next player in turn order is Shannon.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572224.8852534
+  },
+  {
+    "seq": 220,
+    "type": "turn_started",
+    "data": {
+      "turn": 20,
+      "player": "Shannon"
+    },
+    "ts": 1784572228.7676184
+  },
+  {
+    "seq": 221,
+    "type": "proposal_made",
+    "data": {
+      "turn": 20,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "To enable forfeiting players to participate in voting even if they choose not to continue playing the game.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 320
+    },
+    "ts": 1784572231.350837
+  },
+  {
+    "seq": 222,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572232.5663638
+  },
+  {
+    "seq": 223,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Encourages participation and allows for potential decisive votes."
+    },
+    "ts": 1784572236.1180155
+  },
+  {
+    "seq": 224,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages strategic forfeitures and increases engagement."
+    },
+    "ts": 1784572236.5246282
+  },
+  {
+    "seq": 225,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Ensures fairness by allowing forfeiting players to participate in ongoing decisions."
+    },
+    "ts": 1784572236.9477708
+  },
+  {
+    "seq": 226,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule change would strengthen procedural safeguards and allow for more equitable resolution of disputes."
+    },
+    "ts": 1784572237.383041
+  },
+  {
+    "seq": 227,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Encourages participation and fairness."
+    },
+    "ts": 1784572237.7484796
+  },
+  {
+    "seq": 228,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572237.7560844
+  },
+  {
+    "seq": 229,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 20,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 25,
+      "attempted_ops": [
+        {
+          "op": "add",
+          "num": null,
+          "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal."
+        }
+      ]
+    },
+    "ts": 1784572239.736924
+  },
+  {
+    "seq": 230,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 20,
+      "authority": null
+    },
+    "ts": 1784572239.744214
+  },
+  {
+    "seq": 231,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points beyond this for adoption, and no ledger was created by a rule. No rule named a different rule to amend or repeal, so no surgery is required.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572239.7515435
+  },
+  {
+    "seq": 232,
+    "type": "turn_started",
+    "data": {
+      "turn": 21,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572242.1603737
+  },
+  {
+    "seq": 233,
+    "type": "proposal_made",
+    "data": {
+      "turn": 21,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "This rule change supports the spirit of Nomic by allowing a player to influence the game even if they choose to forfeit, ensuring fairness and preventing the game from stalling due to a forfeit.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 321
+    },
+    "ts": 1784572244.916008
+  },
+  {
+    "seq": 234,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572246.1326697
+  },
+  {
+    "seq": 235,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Allows strategic use of forfeit votes to gain advantage."
+    },
+    "ts": 1784572249.414042
+  },
+  {
+    "seq": 236,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages engagement and reduces stalemates"
+    },
+    "ts": 1784572249.8264546
+  },
+  {
+    "seq": 237,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allowing forfeiting players to vote provides fairness and prevents deadlock."
+    },
+    "ts": 1784572250.2822855
+  },
+  {
+    "seq": 238,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Promotes fairness and allows forfeiture to have impact."
+    },
+    "ts": 1784572250.7302256
+  },
+  {
+    "seq": 239,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Empowers players and enhances game dynamics."
+    },
+    "ts": 1784572251.1554267
+  },
+  {
+    "seq": 240,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572251.163963
+  },
+  {
+    "seq": 241,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 321,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "mutable": true
+    },
+    "ts": 1784572253.105259
+  },
+  {
+    "seq": 242,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 21,
+      "authority": null
+    },
+    "ts": 1784572253.1134758
+  },
+  {
+    "seq": 243,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rules in force award or deduct points for adoption of the new rule, nor does the adopted rule itself amend or repeal any existing rules, so no score changes or rule modifications are required.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572253.1206763
+  },
+  {
+    "seq": 244,
+    "type": "turn_started",
+    "data": {
+      "turn": 22,
+      "player": "Shannon"
+    },
+    "ts": 1784572256.9276688
+  },
+  {
+    "seq": 245,
+    "type": "proposal_made",
+    "data": {
+      "turn": 22,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "To balance power dynamics and allow forfeitures to have meaningful impact.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 322
+    },
+    "ts": 1784572259.496738
+  },
+  {
+    "seq": 246,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572260.714172
+  },
+  {
+    "seq": 247,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Supporting the ability for forfeiting players to influence pending proposals aligns with game principles."
+    },
+    "ts": 1784572264.4907725
+  },
+  {
+    "seq": 248,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "This rule change would allow strategic forfeiting to influence voting."
+    },
+    "ts": 1784572264.892556
+  },
+  {
+    "seq": 249,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allows forfeiting players to influence outcomes."
+    },
+    "ts": 1784572265.310498
+  },
+  {
+    "seq": 250,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule change is clearly defined and necessary for fairness."
+    },
+    "ts": 1784572265.710582
+  },
+  {
+    "seq": 251,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Ensures fairness by allowing forfeiture to influence ongoing game."
+    },
+    "ts": 1784572266.122714
+  },
+  {
+    "seq": 252,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572266.1305892
+  },
+  {
+    "seq": 253,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 22,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 26,
+      "attempted_ops": [
+        {
+          "op": "add",
+          "num": 401,
+          "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal."
+        }
+      ]
+    },
+    "ts": 1784572267.978711
+  },
+  {
+    "seq": 254,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 22,
+      "authority": null
+    },
+    "ts": 1784572267.9867764
+  },
+  {
+    "seq": 255,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, and no other score or ledger changes are mandated by the adopted rule.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572267.9941921
+  },
+  {
+    "seq": 256,
+    "type": "turn_started",
+    "data": {
+      "turn": 23,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572270.4021673
+  },
+  {
+    "seq": 257,
+    "type": "proposal_made",
+    "data": {
+      "turn": 23,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow threshold shift for adopting rule changes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 323
+    },
+    "ts": 1784572273.1267269
+  },
+  {
+    "seq": 258,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572274.3426409
+  },
+  {
+    "seq": 259,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Supporting vonNeumann's transmutation of rule 204 to simplify majority voting threshold for adopting rule changes"
+    },
+    "ts": 1784572277.830533
+  },
+  {
+    "seq": 260,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Supports vonNeumann's transmutation of rule 204"
+    },
+    "ts": 1784572278.2899363
+  },
+  {
+    "seq": 261,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This rule change is beneficial for maintaining fairness and encouraging active participation."
+    },
+    "ts": 1784572278.7640193
+  },
+  {
+    "seq": 262,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule change empowers me to win the game."
+    },
+    "ts": 1784572279.229321
+  },
+  {
+    "seq": 263,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "The rules favor evolutions that grant advantages to those who adapt swiftly."
+    },
+    "ts": 1784572279.7083616
+  },
+  {
+    "seq": 264,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572279.7157629
+  },
+  {
+    "seq": 265,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": false
+    },
+    "ts": 1784572281.6385708
+  },
+  {
+    "seq": 266,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 23,
+      "authority": null
+    },
+    "ts": 1784572281.6464226
+  },
+  {
+    "seq": 267,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change (204) does not alter any existing rules or create new ledgers, so no score or state deltas are applied. The next player in the fixed turn order is Shannon.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572281.6546419
+  },
+  {
+    "seq": 268,
+    "type": "turn_started",
+    "data": {
+      "turn": 24,
+      "player": "Shannon"
+    },
+    "ts": 1784572285.8158047
+  },
+  {
+    "seq": 269,
+    "type": "proposal_made",
+    "data": {
+      "turn": 24,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "Allow forfeiting players a final say before ending the game.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 324
+    },
+    "ts": 1784572288.501427
+  },
+  {
+    "seq": 270,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572289.718653
+  },
+  {
+    "seq": 271,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The rule change promotes fairness and allows for more engagement in the game."
+    },
+    "ts": 1784572293.6697881
+  },
+  {
+    "seq": 272,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages engagement and could help reach decisions faster."
+    },
+    "ts": 1784572294.099336
+  },
+  {
+    "seq": 273,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allows players to contest outcomes, increasing engagement."
+    },
+    "ts": 1784572294.5295463
+  },
+  {
+    "seq": 274,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Clear strategic advantage to gain a vote on pending proposals if forfeit."
+    },
+    "ts": 1784572294.9781156
+  },
+  {
+    "seq": 275,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Clear benefit for fairness."
+    },
+    "ts": 1784572295.3800197
+  },
+  {
+    "seq": 276,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572295.3878725
+  },
+  {
+    "seq": 277,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 24,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 25,
+      "attempted_ops": [
+        {
+          "op": "add",
+          "num": null,
+          "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal."
+        }
+      ]
+    },
+    "ts": 1784572297.2804234
+  },
+  {
+    "seq": 278,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 24,
+      "authority": null
+    },
+    "ts": 1784572297.2874439
+  },
+  {
+    "seq": 279,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, and rule 105 requires no retroactive effect, so no score or rule changes are applied.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572297.2957995
+  },
+  {
+    "seq": 280,
+    "type": "turn_started",
+    "data": {
+      "turn": 25,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572299.704243
+  },
+  {
+    "seq": 281,
+    "type": "proposal_made",
+    "data": {
+      "turn": 25,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "This change preserves the ability of a forfeiting player to influence the game's outcome, enhancing fairness and strategic depth.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 325
+    },
+    "ts": 1784572302.4610474
+  },
+  {
+    "seq": 282,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572303.6774006
+  },
+  {
+    "seq": 283,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Empowers players in losing positions, aligning with the goal of preserving at least one mutable rule."
+    },
+    "ts": 1784572307.2011476
+  },
+  {
+    "seq": 284,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages participation and can help resolve close decisions."
+    },
+    "ts": 1784572307.6516097
+  },
+  {
+    "seq": 285,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This rule change benefits fairness and strategic depth."
+    },
+    "ts": 1784572308.122345
+  },
+  {
+    "seq": 286,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Provides procedural flexibility to handle forfeiture scenarios."
+    },
+    "ts": 1784572308.591698
+  },
+  {
+    "seq": 287,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Permitting forfeiting players to vote on pending proposals increases fairness and game dynamism."
+    },
+    "ts": 1784572309.09927
+  },
+  {
+    "seq": 288,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572309.1063912
+  },
+  {
+    "seq": 289,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 25,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 25,
+      "attempted_ops": [
+        {
+          "op": "add",
+          "num": null,
+          "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal."
+        }
+      ]
+    },
+    "ts": 1784572311.0357459
+  },
+  {
+    "seq": 290,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 25,
+      "authority": null
+    },
+    "ts": 1784572311.0429192
+  },
+  {
+    "seq": 291,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points for adoption; no score or ledger changes are required by the ruleset.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572311.0501606
+  },
+  {
+    "seq": 292,
+    "type": "turn_started",
+    "data": {
+      "turn": 26,
+      "player": "Shannon"
+    },
+    "ts": 1784572313.4581769
+  },
+  {
+    "seq": 293,
+    "type": "proposal_made",
+    "data": {
+      "turn": 26,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "Allow forfeiting players to still influence the game by voting on pending changes, preventing them from gaining advantage by forfeiting.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 326
+    },
+    "ts": 1784572317.8208926
+  },
+  {
+    "seq": 294,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572319.037553
+  },
+  {
+    "seq": 295,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Encourages participation and addresses edge case rules."
+    },
+    "ts": 1784572322.7409935
+  },
+  {
+    "seq": 296,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Clarifies forfeiture rights without changing core gameplay."
+    },
+    "ts": 1784572323.2339013
+  },
+  {
+    "seq": 297,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allows strategic voting in forfeit scenarios, improving game fairness."
+    },
+    "ts": 1784572323.7705188
+  },
+  {
+    "seq": 298,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Enacting rule 401 would allow strategic voting to influence outcomes, which is permissible under current rules and could potentially help win the game."
+    },
+    "ts": 1784572324.3596544
+  },
+  {
+    "seq": 299,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "The proposal enables strategic voting flexibility."
+    },
+    "ts": 1784572324.845689
+  },
+  {
+    "seq": 300,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572324.8529098
+  },
+  {
+    "seq": 301,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 26,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 25,
+      "attempted_ops": [
+        {
+          "op": "add",
+          "num": 401,
+          "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal."
+        }
+      ]
+    },
+    "ts": 1784572326.7740834
+  },
+  {
+    "seq": 302,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 26,
+      "authority": null
+    },
+    "ts": 1784572326.7812612
+  },
+  {
+    "seq": 303,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rules in force award points for adoption of a new rule or penalize defeated proposers, and no rule has been amended to change these conditions.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572326.788462
+  },
+  {
+    "seq": 304,
+    "type": "turn_started",
+    "data": {
+      "turn": 27,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572329.1968699
+  },
+  {
+    "seq": 305,
+    "type": "proposal_made",
+    "data": {
+      "turn": 27,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "Allowing forfeiting players to vote on pending proposals prevents deadlock and maintains game flow.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 327
+    },
+    "ts": 1784572332.11865
+  },
+  {
+    "seq": 306,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572333.3337722
+  },
+  {
+    "seq": 307,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Allows strategic voting and aids fairness in close games."
+    },
+    "ts": 1784572337.2871995
+  },
+  {
+    "seq": 308,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Clear benefit for game fairness and inclusivity."
+    },
+    "ts": 1784572337.8123949
+  },
+  {
+    "seq": 309,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This change aligns with the principle of fairness and inclusivity, allowing players to influence outcomes even after forfeiting."
+    },
+    "ts": 1784572338.4406302
+  },
+  {
+    "seq": 310,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Permits strategic voting by forfeiting players."
+    },
+    "ts": 1784572338.9870338
+  },
+  {
+    "seq": 311,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Empowering forfeiting players balances power dynamics."
+    },
+    "ts": 1784572339.5024757
+  },
+  {
+    "seq": 312,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572339.5104036
+  },
+  {
+    "seq": 313,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 27,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 25,
+      "attempted_ops": [
+        {
+          "op": "add",
+          "num": null,
+          "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal."
+        }
+      ]
+    },
+    "ts": 1784572341.5144222
+  },
+  {
+    "seq": 314,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 27,
+      "authority": null
+    },
+    "ts": 1784572341.5226386
+  },
+  {
+    "seq": 315,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points beyond this for adoption; no new ledgers were created, and no existing rules were amended or repealed.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572341.5299037
+  },
+  {
+    "seq": 316,
+    "type": "turn_started",
+    "data": {
+      "turn": 28,
+      "player": "Shannon"
+    },
+    "ts": 1784572343.9386468
+  },
+  {
+    "seq": 317,
+    "type": "proposal_made",
+    "data": {
+      "turn": 28,
+      "player": "Shannon",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to make it mutable, allowing future changes to the voting threshold for adopting rule changes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 328
+    },
+    "ts": 1784572346.8207815
+  },
+  {
+    "seq": 318,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572348.0381691
+  },
+  {
+    "seq": 319,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The rule change is necessary to clarify forfeit procedures and is a modest amendment."
+    },
+    "ts": 1784572352.2372139
+  },
+  {
+    "seq": 320,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Transmuting the rule to allow simple majority vote for adopting changes aligns with the goal of enabling faster progress."
+    },
+    "ts": 1784572352.8601534
+  },
+  {
+    "seq": 321,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "to speed up rule changes"
+    },
+    "ts": 1784572353.4391065
+  },
+  {
+    "seq": 322,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Unanimous transmutation needed, so I vote aye to comply with principles."
+    },
+    "ts": 1784572354.0629132
+  },
+  {
+    "seq": 323,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This transmutation preserves the game's flexibility and fairness."
+    },
+    "ts": 1784572354.6333516
+  },
+  {
+    "seq": 324,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": null,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572354.6411443
+  },
+  {
+    "seq": 325,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": true
+    },
+    "ts": 1784572356.8007455
+  },
+  {
+    "seq": 326,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 28,
+      "authority": null
+    },
+    "ts": 1784572356.8079956
+  },
+  {
+    "seq": 327,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once threshold is simple majority; Shannon's proposal passed with unanimous aye votes, so no score changes apply. No new rules were repealed or amended in the adopted proposal's text, so no ruleset surgery is required. The next player in turn order is vonNeumann per the fixed turn order.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572356.8157928
+  },
+  {
+    "seq": 328,
+    "type": "turn_started",
+    "data": {
+      "turn": 29,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572360.7833364
+  },
+  {
+    "seq": 329,
+    "type": "proposal_made",
+    "data": {
+      "turn": 29,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow changing the voting threshold, enabling a supermajority requirement for adopting new rules that could benefit the common good.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 329
+    },
+    "ts": 1784572363.4823935
+  },
+  {
+    "seq": 330,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572364.6999812
+  },
+  {
+    "seq": 331,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "A simple majority should be sufficient for rule changes."
+    },
+    "ts": 1784572368.8571763
+  },
+  {
+    "seq": 332,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "This transmutation strengthens the rule enabling players to gain points for voluntarily forfeiting, accelerating the game's end."
+    },
+    "ts": 1784572369.390822
+  },
+  {
+    "seq": 333,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Transmuting 204 maintains fairness and allows for necessary rule changes."
+    },
+    "ts": 1784572369.881643
+  },
+  {
+    "seq": 334,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Transmuting rule 204 aligns with procedural consistency."
+    },
+    "ts": 1784572370.378227
+  },
+  {
+    "seq": 335,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This change stabilizes the voting mechanism, reducing potential disruptions from failed attempts to modify Rule 204."
+    },
+    "ts": 1784572370.8869886
+  },
+  {
+    "seq": 336,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572370.8943853
+  },
+  {
+    "seq": 337,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": false
+    },
+    "ts": 1784572372.895744
+  },
+  {
+    "seq": 338,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 29,
+      "authority": null
+    },
+    "ts": 1784572372.9030209
+  },
+  {
+    "seq": 339,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once the division is a simple majority; all five players voted aye, so the rule change passes and Shannon, as the proposer, gains no points. No new rules were repealed or amended, so no score or ledger changes are required by the ruleset.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572372.911105
+  },
+  {
+    "seq": 340,
+    "type": "turn_started",
+    "data": {
+      "turn": 30,
+      "player": "Shannon"
+    },
+    "ts": 1784572376.9287534
+  },
+  {
+    "seq": 341,
+    "type": "proposal_made",
+    "data": {
+      "turn": 30,
+      "player": "Shannon",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow it to be amended by simple majority, enabling strategic rule changes to benefit my position.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 330
+    },
+    "ts": 1784572379.8241818
+  },
+  {
+    "seq": 342,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572381.0409317
+  },
+  {
+    "seq": 343,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Support transmutation to simplify future rule changes"
+    },
+    "ts": 1784572385.503523
+  },
+  {
+    "seq": 344,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Transmutation preserves the rule while allowing simple majority adoption."
+    },
+    "ts": 1784572386.1023283
+  },
+  {
+    "seq": 345,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Supports rule change to simplify majority requirement."
+    },
+    "ts": 1784572386.766745
+  },
+  {
+    "seq": 346,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The transmutation strengthens rule 204 and aligns with procedural principles."
+    },
+    "ts": 1784572387.4032476
+  },
+  {
+    "seq": 347,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "The transmutation of rule 204 strengthens the game's flexibility and fairness."
+    },
+    "ts": 1784572388.0392268
+  },
+  {
+    "seq": 348,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572388.0467594
+  },
+  {
+    "seq": 349,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 30,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 25,
+      "attempted_ops": [
+        {
+          "op": "transmute",
+          "num": 204,
+          "mutable": true
+        }
+      ]
+    },
+    "ts": 1784572389.9552014
+  },
+  {
+    "seq": 350,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 30,
+      "authority": null
+    },
+    "ts": 1784572389.9624808
+  },
+  {
+    "seq": 351,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule (204) does not itself perform any rule changes or create new ledgers, so no score or state deltas are applied. The next player in the fixed turn order is Shannon.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572389.9700847
+  },
+  {
+    "seq": 352,
+    "type": "turn_started",
+    "data": {
+      "turn": 31,
+      "player": "Shannon"
+    },
+    "ts": 1784572392.378912
+  },
+  {
+    "seq": 353,
+    "type": "proposal_made",
+    "data": {
+      "turn": 31,
+      "player": "Shannon",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow shifting the voting threshold for adopting changes, facilitating rule changes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 331
+    },
+    "ts": 1784572395.4995492
+  },
+  {
+    "seq": 354,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572396.7180622
+  },
+  {
+    "seq": 355,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Promotes game continuity and progression"
+    },
+    "ts": 1784572401.1685536
+  },
+  {
+    "seq": 356,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Clearing rule 204's majority requirement simplifies rule changes and accelerates game progression."
+    },
+    "ts": 1784572401.8303535
+  },
+  {
+    "seq": 357,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Transmuting 204 is necessary to maintain fair and flexible gameplay."
+    },
+    "ts": 1784572402.5387173
+  },
+  {
+    "seq": 358,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Transmuting rule 204 will streamline forfeit procedures and align with the game's spirit of efficiency."
+    },
+    "ts": 1784572403.2414696
+  },
+  {
+    "seq": 359,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "The change is already enacted by the rules."
+    },
+    "ts": 1784572403.9111445
+  },
+  {
+    "seq": 360,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572403.918721
+  },
+  {
+    "seq": 361,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 31,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 25,
+      "attempted_ops": [
+        {
+          "op": "transmute",
+          "num": 204,
+          "mutable": true
+        }
+      ]
+    },
+    "ts": 1784572405.9550564
+  },
+  {
+    "seq": 362,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 31,
+      "authority": null
+    },
+    "ts": 1784572405.9624424
+  },
+  {
+    "seq": 363,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once threshold is simple majority; Shannon's proposal passed unanimously, so no score changes apply. No new rules were repealed or amended in the adopted proposal's text, so no ruleset operations are required. The next player is vonNeumann per turn order.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572405.9697082
+  },
+  {
+    "seq": 364,
+    "type": "turn_started",
+    "data": {
+      "turn": 32,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572408.3782563
+  },
+  {
+    "seq": 365,
+    "type": "proposal_made",
+    "data": {
+      "turn": 32,
+      "player": "vonNeumann",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "This rule change enhances fairness by allowing forfeiting players to still influence outcomes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 332
+    },
+    "ts": 1784572411.5696354
+  },
+  {
+    "seq": 366,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572412.7857041
+  },
+  {
+    "seq": 367,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The proposal aligns with the spirit of fairness and allows strategic flexibility for forfeiting."
+    },
+    "ts": 1784572417.4812005
+  },
+  {
+    "seq": 368,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Promotes fairness by allowing forfeiting players to influence outcomes."
+    },
+    "ts": 1784572418.1610303
+  },
+  {
+    "seq": 369,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "A player who voluntarily forfeits the game should be allowed to vote to keep the game fair."
+    },
+    "ts": 1784572418.933314
+  },
+  {
+    "seq": 370,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "This preserves the ability to resolve ties and enables forfeiture."
+    },
+    "ts": 1784572419.6237628
+  },
+  {
+    "seq": 371,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This empowers players to influence outcomes even in dire situations."
+    },
+    "ts": 1784572420.3032312
+  },
+  {
+    "seq": 372,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572420.3106885
+  },
+  {
+    "seq": 373,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 332,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "mutable": true
+    },
+    "ts": 1784572422.3146434
+  },
+  {
+    "seq": 374,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 32,
+      "authority": null
+    },
+    "ts": 1784572422.3220487
+  },
+  {
+    "seq": 375,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rules award or deduct points for adoption of the new rule, and no ledgers were created by existing rules; the only rule change is the adoption of the new rule itself, which is automatically entered into the ruleset without additional surgery.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572422.3293731
+  },
+  {
+    "seq": 376,
+    "type": "turn_started",
+    "data": {
+      "turn": 33,
+      "player": "Shannon"
+    },
+    "ts": 1784572426.3645458
+  },
+  {
+    "seq": 377,
+    "type": "proposal_made",
+    "data": {
+      "turn": 33,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "This new rule gives players a final opportunity to influence outcomes through voting.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 333
+    },
+    "ts": 1784572429.0969043
+  },
+  {
+    "seq": 378,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572430.3132153
+  },
+  {
+    "seq": 379,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Allowing forfeiting players to vote prevents them from gaining unfair advantage by blocking changes after they leave the game."
+    },
+    "ts": 1784572434.862337
+  },
+  {
+    "seq": 380,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Allows strategic use of forfeit votes to block undesirable changes."
+    },
+    "ts": 1784572435.3484817
+  },
+  {
+    "seq": 381,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Promotes fairness and allows strategic voting."
+    },
+    "ts": 1784572435.827008
+  },
+  {
+    "seq": 382,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The rule would give a player a chance to influence the game even after losing outright."
+    },
+    "ts": 1784572436.3528879
+  },
+  {
+    "seq": 383,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Giving forfeiting players a vote levels the playing field and promotes fairness."
+    },
+    "ts": 1784572436.8451338
+  },
+  {
+    "seq": 384,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572436.8525143
+  },
+  {
+    "seq": 385,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 33,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 26,
+      "attempted_ops": [
+        {
+          "op": "add",
+          "num": 401,
+          "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal."
+        }
+      ]
+    },
+    "ts": 1784572438.7871897
+  },
+  {
+    "seq": 386,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 33,
+      "authority": null
+    },
+    "ts": 1784572438.7946217
+  },
+  {
+    "seq": 387,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 401 was adopted, granting forfeiting players one immediate vote on pending proposals. No rules award or deduct points for adoption, no ledgers were created, and no rules were repealed or amended in the adopted text.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572438.8020988
+  },
+  {
+    "seq": 388,
+    "type": "turn_started",
+    "data": {
+      "turn": 34,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572441.2120953
+  },
+  {
+    "seq": 389,
+    "type": "proposal_made",
+    "data": {
+      "turn": 34,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "To prevent the ruleset from becoming permanently unplayable by reducing mutable rules to zero.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 334
+    },
+    "ts": 1784572443.725257
+  },
+  {
+    "seq": 390,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572444.9404402
+  },
+  {
+    "seq": 391,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Reinforcing forfeiture provisions strengthens game integrity."
+    },
+    "ts": 1784572448.7931435
+  },
+  {
+    "seq": 392,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "to allow faster adoption of rule changes"
+    },
+    "ts": 1784572449.3164115
+  },
+  {
+    "seq": 393,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "To keep the game fair and prevent rule abuse."
+    },
+    "ts": 1784572449.8679907
+  },
+  {
+    "seq": 394,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Permitting simple majority rule changes enhances efficiency and responsiveness."
+    },
+    "ts": 1784572450.4236312
+  },
+  {
+    "seq": 395,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Removing complexity for forfeitures speeds game flow."
+    },
+    "ts": 1784572450.9537098
+  },
+  {
+    "seq": 396,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572450.9607935
+  },
+  {
+    "seq": 397,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": true
+    },
+    "ts": 1784572452.850483
+  },
+  {
+    "seq": 398,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 34,
+      "authority": null
+    },
+    "ts": 1784572452.8576884
+  },
+  {
+    "seq": 399,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once threshold is simple majority; all five players voted aye, so the transmutation passes and Shannon proposes next.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572452.8646739
+  },
+  {
+    "seq": 400,
+    "type": "turn_started",
+    "data": {
+      "turn": 35,
+      "player": "Shannon"
+    },
+    "ts": 1784572456.8517025
+  },
+  {
+    "seq": 401,
+    "type": "proposal_made",
+    "data": {
+      "turn": 35,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "Allows forfeiture to have a strategic impact on the game state.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 335
+    },
+    "ts": 1784572459.2742355
+  },
+  {
+    "seq": 402,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572460.4903667
+  },
+  {
+    "seq": 403,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Empowering players to influence outcomes is beneficial to gameplay."
+    },
+    "ts": 1784572464.7846756
+  },
+  {
+    "seq": 404,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages participation and can help resolve ties."
+    },
+    "ts": 1784572465.2937024
+  },
+  {
+    "seq": 405,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allows flexibility for managing deadlocks or unexpected rule changes."
+    },
+    "ts": 1784572465.8003082
+  },
+  {
+    "seq": 406,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Granting forfeiting players one vote increases procedural fairness and maintains game dynamics."
+    },
+    "ts": 1784572466.321825
+  },
+  {
+    "seq": 407,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promotes fairness and flexibility in gameplay."
+    },
+    "ts": 1784572466.8125637
+  },
+  {
+    "seq": 408,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572466.819766
+  },
+  {
+    "seq": 409,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 335,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "mutable": true
+    },
+    "ts": 1784572468.7401514
+  },
+  {
+    "seq": 410,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 35,
+      "authority": null
+    },
+    "ts": 1784572468.7473435
+  },
+  {
+    "seq": 411,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points beyond this; no new ledgers were created, and no existing rules were amended or repealed.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572468.754434
+  },
+  {
+    "seq": 412,
+    "type": "turn_started",
+    "data": {
+      "turn": 36,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572472.655648
+  },
+  {
+    "seq": 413,
+    "type": "proposal_made",
+    "data": {
+      "turn": 36,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow future rule changes to be more easily adopted, ensuring the ruleset can evolve to better serve the common good.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 336
+    },
+    "ts": 1784572475.2865422
+  },
+  {
+    "seq": 414,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572476.502973
+  },
+  {
+    "seq": 415,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Ensures majority voting threshold for rule changes."
+    },
+    "ts": 1784572480.8995755
+  },
+  {
+    "seq": 416,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Simplifies ruleset by eliminating need for unanimous consent on rule changes."
+    },
+    "ts": 1784572481.4245038
+  },
+  {
+    "seq": 417,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This transmutation maintains the game's fairness and integrity."
+    },
+    "ts": 1784572481.9460301
+  },
+  {
+    "seq": 418,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "This transmutation strengthens the game's ruleset stability and fairness by ensuring that shifts in voting thresholds are binding and preventing manipulation through abstentions."
+    },
+    "ts": 1784572482.5548875
+  },
+  {
+    "seq": 419,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "It balances fairness in forfeit penalties."
+    },
+    "ts": 1784572483.0786874
+  },
+  {
+    "seq": 420,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572483.085786
+  },
+  {
+    "seq": 421,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 36,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 28,
+      "attempted_ops": [
+        {
+          "op": "transmute",
+          "num": 204,
+          "mutable": false
+        }
+      ]
+    },
+    "ts": 1784572485.0686545
+  },
+  {
+    "seq": 422,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 36,
+      "authority": null
+    },
+    "ts": 1784572485.0757887
+  },
+  {
+    "seq": 423,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change (204) does not alter any existing rules or create new ledgers, and does not award or deduct points based on the voting outcome. Therefore, no score or state deltas are applied, and no ruleset operations are performed beyond the automatic adoption of the proposal itself.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572485.082849
+  },
+  {
+    "seq": 424,
+    "type": "turn_started",
+    "data": {
+      "turn": 37,
+      "player": "Shannon"
+    },
+    "ts": 1784572487.4910436
+  },
+  {
+    "seq": 425,
+    "type": "proposal_made",
+    "data": {
+      "turn": 37,
+      "player": "Shannon",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow changing the voting threshold.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 337
+    },
+    "ts": 1784572490.2710752
+  },
+  {
+    "seq": 426,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572491.4874144
+  },
+  {
+    "seq": 427,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Allows decisive action against stalled proposals."
+    },
+    "ts": 1784572495.4678476
+  },
+  {
+    "seq": 428,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Ensures majority rule while allowing penalty for dissent."
+    },
+    "ts": 1784572496.0082593
+  },
+  {
+    "seq": 429,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allows for faster game resolution by enabling rule changes without unanimous consent once a simple majority supports them."
+    },
+    "ts": 1784572496.5996196
+  },
+  {
+    "seq": 430,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The change is necessary to reduce the complexity of achieving a rule change majority."
+    },
+    "ts": 1784572497.180978
+  },
+  {
+    "seq": 431,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "It aligns with evolving the game for fairness."
+    },
+    "ts": 1784572497.7132192
+  },
+  {
+    "seq": 432,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572497.7212038
+  },
+  {
+    "seq": 433,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 37,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 28,
+      "attempted_ops": [
+        {
+          "op": "transmute",
+          "num": 204,
+          "mutable": false
+        }
+      ]
+    },
+    "ts": 1784572499.7638438
+  },
+  {
+    "seq": 434,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 37,
+      "authority": null
+    },
+    "ts": 1784572499.7711947
+  },
+  {
+    "seq": 435,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change (204) does not alter any existing rules or create new ledgers, and does not itself perform any rule surgery. Therefore, no score or state deltas are applied, no ruleset operations are recorded, and no player wins. The next player in turn order is vonNeumann.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572499.779008
+  },
+  {
+    "seq": 436,
+    "type": "turn_started",
+    "data": {
+      "turn": 38,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572502.1873915
+  },
+  {
+    "seq": 437,
+    "type": "proposal_made",
+    "data": {
+      "turn": 38,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow more rule changes, keeping at least one mutable rule in the set.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 338
+    },
+    "ts": 1784572504.8982174
+  },
+  {
+    "seq": 438,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572506.1160157
+  },
+  {
+    "seq": 439,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "allows final victory condition to be met, crucial for Turing's strategy"
+    },
+    "ts": 1784572510.3272521
+  },
+  {
+    "seq": 440,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Reverting [204] back to simple majority restores fair voting."
+    },
+    "ts": 1784572510.9302132
+  },
+  {
+    "seq": 441,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "A simple majority is already in place; no change is needed."
+    },
+    "ts": 1784572511.5380027
+  },
+  {
+    "seq": 442,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Ensures game continuity even if a player forfeits, preserving Turing completeness."
+    },
+    "ts": 1784572512.1691399
+  },
+  {
+    "seq": 443,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Removing the requirement for unanimous assent for mutable rule changes simplifies the game."
+    },
+    "ts": 1784572512.7803817
+  },
+  {
+    "seq": 444,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572512.7876484
+  },
+  {
+    "seq": 445,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": false
+    },
+    "ts": 1784572514.7725847
+  },
+  {
+    "seq": 446,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 38,
+      "authority": null
+    },
+    "ts": 1784572514.779782
+  },
+  {
+    "seq": 447,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once the division is a simple majority; all five players voted aye, so the rule was adopted. No score or ruleset changes are mandated by the adopted rule itself.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572514.7870576
+  },
+  {
+    "seq": 448,
+    "type": "turn_started",
+    "data": {
+      "turn": 39,
+      "player": "Shannon"
+    },
+    "ts": 1784572519.0275424
+  },
+  {
+    "seq": 449,
+    "type": "proposal_made",
+    "data": {
+      "turn": 39,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "Allowing forfeiture to grant a final strategic vote balances the power of early game dominance and rewards strategic use of the forfeit.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 339
+    },
+    "ts": 1784572521.6970124
+  },
+  {
+    "seq": 450,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572522.914252
+  },
+  {
+    "seq": 451,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Allowing forfeiting players one last vote ensures fairness and preserves democratic engagement in the game."
+    },
+    "ts": 1784572527.4573255
+  },
+  {
+    "seq": 452,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages participation and strategic voting."
+    },
+    "ts": 1784572527.9844284
+  },
+  {
+    "seq": 453,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allowing forfeiting players to vote preserves fairness and engagement."
+    },
+    "ts": 1784572528.538431
+  },
+  {
+    "seq": 454,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Enabling a forfeiting player to vote provides a mechanism for resolving cases where further play is impossible due to ruleset changes."
+    },
+    "ts": 1784572529.1414094
+  },
+  {
+    "seq": 455,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promotes fairness and gives every player a chance to influence outcomes."
+    },
+    "ts": 1784572529.6883197
+  },
+  {
+    "seq": 456,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572529.6956084
+  },
+  {
+    "seq": 457,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 339,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "mutable": true
+    },
+    "ts": 1784572531.5992856
+  },
+  {
+    "seq": 458,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 39,
+      "authority": null
+    },
+    "ts": 1784572531.6065717
+  },
+  {
+    "seq": 459,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No score or state deltas were required by the adopted rule 314, which only grants a forfeiting player one immediate vote without changing any existing rules or creating new ledgers.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572531.613827
+  },
+  {
+    "seq": 460,
+    "type": "turn_started",
+    "data": {
+      "turn": 40,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572535.679553
+  },
+  {
+    "seq": 461,
+    "type": "proposal_made",
+    "data": {
+      "turn": 40,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "The mutability of rule 204 should be transmuted to immutable to prevent further rule changes, ensuring fairness and stability in the game.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 340
+    },
+    "ts": 1784572538.2810073
+  },
+  {
+    "seq": 462,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572539.4986496
+  },
+  {
+    "seq": 463,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Transmutation needed for simplicity"
+    },
+    "ts": 1784572544.0454242
+  },
+  {
+    "seq": 464,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Support transmutation to enable rule changes without unanimous consent."
+    },
+    "ts": 1784572544.5850248
+  },
+  {
+    "seq": 465,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "The proposal strengthens the game's fairness and player protections."
+    },
+    "ts": 1784572545.1291502
+  },
+  {
+    "seq": 466,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "I support transmutation to simplify majority requirement."
+    },
+    "ts": 1784572545.6822753
+  },
+  {
+    "seq": 467,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Clarifying that transmutations require unanimous assent strengthens game integrity."
+    },
+    "ts": 1784572546.2304213
+  },
+  {
+    "seq": 468,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572546.2378163
+  },
+  {
+    "seq": 469,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": true
+    },
+    "ts": 1784572548.2559068
+  },
+  {
+    "seq": 470,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 40,
+      "authority": null
+    },
+    "ts": 1784572548.2632174
+  },
+  {
+    "seq": 471,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once threshold is simple majority; all five players voted aye, so adoption succeeded. No rules award points for adoption or dissent, so no score changes. No rules amend or repeal other rules, so no ruleset ops. Shannon proposed next per turn order.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572548.2709286
+  },
+  {
+    "seq": 472,
+    "type": "turn_started",
+    "data": {
+      "turn": 41,
+      "player": "Shannon"
+    },
+    "ts": 1784572552.2501025
+  },
+  {
+    "seq": 473,
+    "type": "proposal_made",
+    "data": {
+      "turn": 41,
+      "player": "Shannon",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow it to be amended by simple majority without unanimous assent.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 341
+    },
+    "ts": 1784572555.009871
+  },
+  {
+    "seq": 474,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572556.226101
+  },
+  {
+    "seq": 475,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "This transmutes the mutable rule 204 to immutable, which is strategically beneficial for Turing by preserving the current ruleset that favors Turing's playstyle."
+    },
+    "ts": 1784572561.0133884
+  },
+  {
+    "seq": 476,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Transmute rule 204 to reduce voting threshold to simple majority"
+    },
+    "ts": 1784572561.584466
+  },
+  {
+    "seq": 477,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Maintaining the flexibility of rule changes is crucial for the game's fairness and dynamism."
+    },
+    "ts": 1784572562.1850736
+  },
+  {
+    "seq": 478,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The proposal aligns with the current voting rule and allows for necessary rule modifications."
+    },
+    "ts": 1784572562.7651885
+  },
+  {
+    "seq": 479,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Enabling a streamlined process for rule changes."
+    },
+    "ts": 1784572563.3177702
+  },
+  {
+    "seq": 480,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572563.32571
+  },
+  {
+    "seq": 481,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 41,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 29,
+      "attempted_ops": [
+        {
+          "op": "transmute",
+          "num": 204,
+          "mutable": false
+        }
+      ]
+    },
+    "ts": 1784572565.3466682
+  },
+  {
+    "seq": 482,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 41,
+      "authority": null
+    },
+    "ts": 1784572565.3540282
+  },
+  {
+    "seq": 483,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once threshold is simple majority; Shannon's proposal passed unanimously, so no score changes apply. No new rules were repealed or amended in the adopted proposal, so no ruleset surgery is required. The next player in turn order is vonNeumann per rule 202.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572565.3620257
+  },
+  {
+    "seq": 484,
+    "type": "turn_started",
+    "data": {
+      "turn": 42,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572567.7710145
+  },
+  {
+    "seq": 485,
+    "type": "proposal_made",
+    "data": {
+      "turn": 42,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable so it can be re-proposed if needed, maintaining flexibility in rule changes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 342
+    },
+    "ts": 1784572570.595985
+  },
+  {
+    "seq": 486,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572571.8124275
+  },
+  {
+    "seq": 487,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The transmutation aligns the game's rules with its current simple majority voting threshold, simplifying future rule changes."
+    },
+    "ts": 1784572576.0826287
+  },
+  {
+    "seq": 488,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Need more rules to reach 25 before win condition."
+    },
+    "ts": 1784572576.6586661
+  },
+  {
+    "seq": 489,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Allows the game to progress smoothly when all players agree to a change."
+    },
+    "ts": 1784572577.281948
+  },
+  {
+    "seq": 490,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Rule 204 is crucial for simplifying the adoption of changes, and its mutability should remain mutable for strategic flexibility."
+    },
+    "ts": 1784572577.944028
+  },
+  {
+    "seq": 491,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Supports changing rule 204 to allow simple majority for adopting rule changes."
+    },
+    "ts": 1784572578.5529277
+  },
+  {
+    "seq": 492,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572578.5605268
+  },
+  {
+    "seq": 493,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 42,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 29,
+      "attempted_ops": [
+        {
+          "op": "transmute",
+          "num": 204,
+          "mutable": false
+        }
+      ]
+    },
+    "ts": 1784572580.4958267
+  },
+  {
+    "seq": 494,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 42,
+      "authority": null
+    },
+    "ts": 1784572580.5036292
+  },
+  {
+    "seq": 495,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change (204) does not alter any existing rules or create new ledgers, so no score or state deltas are applied. The next player in turn order is Shannon.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572580.5110533
+  },
+  {
+    "seq": 496,
+    "type": "turn_started",
+    "data": {
+      "turn": 43,
+      "player": "Shannon"
+    },
+    "ts": 1784572582.9199605
+  },
+  {
+    "seq": 497,
+    "type": "proposal_made",
+    "data": {
+      "turn": 43,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "To give forfeiting players a final say in the game's direction.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 343
+    },
+    "ts": 1784572585.8273907
+  },
+  {
+    "seq": 498,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572587.0433867
+  },
+  {
+    "seq": 499,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "This supports democratic participation and prevents the game from stalling due to one player's absence."
+    },
+    "ts": 1784572591.4957366
+  },
+  {
+    "seq": 500,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages player engagement and could lead to winning strategy."
+    },
+    "ts": 1784572592.1218028
+  },
+  {
+    "seq": 501,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "This change aligns with the immutable rule [116] permitting any action not prohibited, and supports fairness by allowing forfeiting players meaningful engagement."
+    },
+    "ts": 1784572592.8573606
+  },
+  {
+    "seq": 502,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Encourages player engagement and prevents rule stagnation."
+    },
+    "ts": 1784572593.4795113
+  },
+  {
+    "seq": 503,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "A fair safeguard for all players."
+    },
+    "ts": 1784572594.0807822
+  },
+  {
+    "seq": 504,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572594.0881562
+  },
+  {
+    "seq": 505,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 43,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 29,
+      "attempted_ops": [
+        {
+          "op": "add",
+          "num": null,
+          "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal."
+        }
+      ]
+    },
+    "ts": 1784572596.1015923
+  },
+  {
+    "seq": 506,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 43,
+      "authority": null
+    },
+    "ts": 1784572596.1087067
+  },
+  {
+    "seq": 507,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, but no rule awards or deducts points beyond this; no new ledgers were created by the adopted rule, and the winning proposal's text does not amend or repeal any existing rules.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572596.1156635
+  },
+  {
+    "seq": 508,
+    "type": "turn_started",
+    "data": {
+      "turn": 44,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572598.523492
+  },
+  {
+    "seq": 509,
+    "type": "proposal_made",
+    "data": {
+      "turn": 44,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to enable further rule changes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 344
+    },
+    "ts": 1784572601.3535407
+  },
+  {
+    "seq": 510,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572602.5690641
+  },
+  {
+    "seq": 511,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Allow majority to change rules without dissenting votes, accelerating progress toward victory."
+    },
+    "ts": 1784572607.251747
+  },
+  {
+    "seq": 512,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "To shift threshold to simple majority, accelerating rule changes."
+    },
+    "ts": 1784572607.9049494
+  },
+  {
+    "seq": 513,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Ensures game stability and fairness by allowing majority rule changes."
+    },
+    "ts": 1784572608.5933375
+  },
+  {
+    "seq": 514,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Allowing simple majority adoptions aligns with the evolving game dynamics."
+    },
+    "ts": 1784572609.296365
+  },
+  {
+    "seq": 515,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Promotes fairness in forfeit outcomes."
+    },
+    "ts": 1784572609.9318206
+  },
+  {
+    "seq": 516,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572609.9396062
+  },
+  {
+    "seq": 517,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": false
+    },
+    "ts": 1784572611.933581
+  },
+  {
+    "seq": 518,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 44,
+      "authority": null
+    },
+    "ts": 1784572611.94135
+  },
+  {
+    "seq": 519,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change (204) does not alter any existing rules or create new ledgers, so no score or state deltas are applied. The next player in the fixed turn order is Shannon.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572611.9483938
+  },
+  {
+    "seq": 520,
+    "type": "turn_started",
+    "data": {
+      "turn": 45,
+      "player": "Shannon"
+    },
+    "ts": 1784572616.5532265
+  },
+  {
+    "seq": 521,
+    "type": "proposal_made",
+    "data": {
+      "turn": 45,
+      "player": "Shannon",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to immutable to prevent further defeats by opponents.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 345
+    },
+    "ts": 1784572619.5815487
+  },
+  {
+    "seq": 522,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572620.7973006
+  },
+  {
+    "seq": 523,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Transmuting rule 204 aligns with the spirit of the game to allow for flexible rule changes."
+    },
+    "ts": 1784572625.500844
+  },
+  {
+    "seq": 524,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Transmuting rule 204 improves my chances of winning."
+    },
+    "ts": 1784572626.203309
+  },
+  {
+    "seq": 525,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Repealing the supermajority requirement simplifies rule changes and aligns with the game's spirit."
+    },
+    "ts": 1784572626.9688983
+  },
+  {
+    "seq": 526,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "This change strengthens the game by allowing faster decisive outcomes when a player forfeits."
+    },
+    "ts": 1784572627.6574433
+  },
+  {
+    "seq": 527,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Permitting transmutations enhances game evolution and fairness."
+    },
+    "ts": 1784572628.334209
+  },
+  {
+    "seq": 528,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572628.3418374
+  },
+  {
+    "seq": 529,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 45,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 28,
+      "attempted_ops": [
+        {
+          "op": "transmute",
+          "num": 204,
+          "mutable": true
+        }
+      ]
+    },
+    "ts": 1784572630.4838004
+  },
+  {
+    "seq": 530,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 45,
+      "authority": null
+    },
+    "ts": 1784572630.491246
+  },
+  {
+    "seq": 531,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once threshold is simple majority; Shannon's proposal passed with unanimous aye vote, so no score changes apply. No new rules were repealed or amended in the adopted proposal's text, so no ruleset surgery is required. The next player in turn order is vonNeumann per rule 202.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572630.4984968
+  },
+  {
+    "seq": 532,
+    "type": "turn_started",
+    "data": {
+      "turn": 46,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572632.9074593
+  },
+  {
+    "seq": 533,
+    "type": "proposal_made",
+    "data": {
+      "turn": 46,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 from immutable to mutable to enable further rule changes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 346
+    },
+    "ts": 1784572636.0146613
+  },
+  {
+    "seq": 534,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572637.230436
+  },
+  {
+    "seq": 535,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The transmutation is necessary to achieve the game-winning condition."
+    },
+    "ts": 1784572642.018359
+  },
+  {
+    "seq": 536,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "The transmutation is necessary to allow rule changes without unanimous consent."
+    },
+    "ts": 1784572642.711927
+  },
+  {
+    "seq": 537,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Transmuting rule 204 maintains fairness and allows for necessary rule changes."
+    },
+    "ts": 1784572643.4342656
+  },
+  {
+    "seq": 538,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Transmuting rule 204 to allow simple majority for rule changes is a fundamental procedural change that benefits gameplay and is necessary for the game to function efficiently."
+    },
+    "ts": 1784572644.2299094
+  },
+  {
+    "seq": 539,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Clarifying simple majority for rule changes aligns with evolving game dynamics."
+    },
+    "ts": 1784572644.9456854
+  },
+  {
+    "seq": 540,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "authority": 109,
+        "label": "unanimous consent to transmute (Suber's Rule 109)"
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572644.953662
+  },
+  {
+    "seq": 541,
+    "type": "rule_cap_exceeded",
+    "data": {
+      "turn": 46,
+      "cap": 25,
+      "authority": 209,
+      "current_mutable_rules": 28,
+      "attempted_ops": [
+        {
+          "op": "transmute",
+          "num": 204,
+          "mutable": true
+        }
+      ]
+    },
+    "ts": 1784572647.1238513
+  },
+  {
+    "seq": 542,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 46,
+      "authority": null
+    },
+    "ts": 1784572647.1318264
+  },
+  {
+    "seq": 543,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 204 allows adoption without unanimous assent once threshold is simple majority; all five players voted aye, so the rule change was adopted. No rules award points for adoption or dissent, and no ledgers were created, so no score or ledger deltas apply. The next turn goes to Shannon per the fixed turn order.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572647.1391163
+  },
+  {
+    "seq": 544,
+    "type": "turn_started",
+    "data": {
+      "turn": 47,
+      "player": "Shannon"
+    },
+    "ts": 1784572649.5474586
+  },
+  {
+    "seq": 545,
+    "type": "proposal_made",
+    "data": {
+      "turn": 47,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "This rule allows players who choose to forfeit to still participate in the game by voting on pending proposals, ensuring fairness and preventing forfeiture from being a disadvantageous position.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 347
+    },
+    "ts": 1784572652.84155
+  },
+  {
+    "seq": 546,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572654.0583375
+  },
+  {
+    "seq": 547,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Empowering players to directly influence pending votes aligns with the spirit of Nomic's flexibility and encourages active participation."
+    },
+    "ts": 1784572659.0788317
+  },
+  {
+    "seq": 548,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Allowing a forfeiter to vote improves fairness and game flow."
+    },
+    "ts": 1784572659.822863
+  },
+  {
+    "seq": 549,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Promotes fairness and participation in the game."
+    },
+    "ts": 1784572660.5584624
+  },
+  {
+    "seq": 550,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Allowing forfeiting players to vote on pending proposals balances fairness and strategic depth."
+    },
+    "ts": 1784572661.3270254
+  },
+  {
+    "seq": 551,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Encourages engagement and flexibility in rule changes."
+    },
+    "ts": 1784572662.0421042
+  },
+  {
+    "seq": 552,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572662.0494819
+  },
+  {
+    "seq": 553,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 347,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "mutable": true
+    },
+    "ts": 1784572664.0631018
+  },
+  {
+    "seq": 554,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 47,
+      "authority": null
+    },
+    "ts": 1784572664.0704093
+  },
+  {
+    "seq": 555,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, and rule 105 requires no retroactive effect, so no score or rule changes are applied.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572664.077909
+  },
+  {
+    "seq": 556,
+    "type": "turn_started",
+    "data": {
+      "turn": 48,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572668.3330243
+  },
+  {
+    "seq": 557,
+    "type": "proposal_made",
+    "data": {
+      "turn": 48,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "Transmute rule 204 to mutable to allow more rule changes and prevent deadlock.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 348
+    },
+    "ts": 1784572670.9763722
+  },
+  {
+    "seq": 558,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572672.191639
+  },
+  {
+    "seq": 559,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "Transmuting immutable rules requires unanimous assent, and I believe this change is necessary for the game to progress."
+    },
+    "ts": 1784572677.6218605
+  },
+  {
+    "seq": 560,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Transmutes rule 204 to allow simple majority voting for rule changes."
+    },
+    "ts": 1784572678.2841222
+  },
+  {
+    "seq": 561,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Transmutation is necessary for game stability."
+    },
+    "ts": 1784572678.9269965
+  },
+  {
+    "seq": 562,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "The transmutation is necessary to allow changes to the threshold for rule adoption."
+    },
+    "ts": 1784572679.6266026
+  },
+  {
+    "seq": 563,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "To facilitate strategic game evolution."
+    },
+    "ts": 1784572680.2467325
+  },
+  {
+    "seq": 564,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572680.254244
+  },
+  {
+    "seq": 565,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": true
+    },
+    "ts": 1784572682.4226496
+  },
+  {
+    "seq": 566,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 48,
+      "authority": null
+    },
+    "ts": 1784572682.4304378
+  },
+  {
+    "seq": 567,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change (204) does not alter any existing rules or create new ledgers, so no score or state deltas are required. The next player in turn order is Shannon per rule 202. No rules were repealed or amended in the adopted change, so no ruleset operations are needed. The game continues with Shannon proposing next.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572682.4377666
+  },
+  {
+    "seq": 568,
+    "type": "turn_started",
+    "data": {
+      "turn": 49,
+      "player": "Shannon"
+    },
+    "ts": 1784572688.4230204
+  },
+  {
+    "seq": 569,
+    "type": "proposal_made",
+    "data": {
+      "turn": 49,
+      "player": "Shannon",
+      "kind": "add",
+      "targets": [
+        401
+      ],
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "rationale": "This creates a new rule that allows forfeiting players to influence pending votes, promoting fairness and enabling strategic use of forfeits.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 349
+    },
+    "ts": 1784572691.387659
+  },
+  {
+    "seq": 570,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572692.6035638
+  },
+  {
+    "seq": 571,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "A player should be able to influence the game when they forfeit."
+    },
+    "ts": 1784572698.0216286
+  },
+  {
+    "seq": 572,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Encourages participation in critical moments."
+    },
+    "ts": 1784572698.6608493
+  },
+  {
+    "seq": 573,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "Promotes fairness and allows resolving deadlock."
+    },
+    "ts": 1784572699.332878
+  },
+  {
+    "seq": 574,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Promotes fairness and efficiency in resolving pending proposals."
+    },
+    "ts": 1784572699.9832084
+  },
+  {
+    "seq": 575,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "Expands democratic participation and improves game fairness."
+    },
+    "ts": 1784572700.6798034
+  },
+  {
+    "seq": 576,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572700.6873267
+  },
+  {
+    "seq": 577,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 349,
+      "text": "A player who voluntarily forfeits the game may immediately cast one vote on any pending proposal.",
+      "mutable": true
+    },
+    "ts": 1784572702.7183893
+  },
+  {
+    "seq": 578,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 49,
+      "authority": null
+    },
+    "ts": 1784572702.7258208
+  },
+  {
+    "seq": 579,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "Rule 203 requires defeated proposers to lose 10 points, and rule 201 requires at least one mutable rule to remain, which is still true after adoption of the new rule.",
+      "next_player": "vonNeumann"
+    },
+    "ts": 1784572702.7332327
+  },
+  {
+    "seq": 580,
+    "type": "turn_started",
+    "data": {
+      "turn": 50,
+      "player": "vonNeumann"
+    },
+    "ts": 1784572706.912868
+  },
+  {
+    "seq": 581,
+    "type": "proposal_made",
+    "data": {
+      "turn": 50,
+      "player": "vonNeumann",
+      "kind": "transmute",
+      "targets": [
+        204
+      ],
+      "text": "",
+      "rationale": "The mutability of rule 204 should be transmuted immutable to allow for more rule changes.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 350
+    },
+    "ts": 1784572709.885836
+  },
+  {
+    "seq": 582,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784572711.1023946
+  },
+  {
+    "seq": 583,
+    "type": "vote_cast",
+    "data": {
+      "player": "Turing",
+      "value": "aye",
+      "reason": "The rule change enables easier adoption of new rules, accelerating game progress towards victory."
+    },
+    "ts": 1784572716.663104
+  },
+  {
+    "seq": 584,
+    "type": "vote_cast",
+    "data": {
+      "player": "Shannon",
+      "value": "aye",
+      "reason": "Unanimous transmutation needed, so aye is the correct choice."
+    },
+    "ts": 1784572717.377272
+  },
+  {
+    "seq": 585,
+    "type": "vote_cast",
+    "data": {
+      "player": "vonNeumann",
+      "value": "aye",
+      "reason": "The shift to simple majority simplifies rule changes, making them more efficient and effective."
+    },
+    "ts": 1784572718.0941305
+  },
+  {
+    "seq": 586,
+    "type": "vote_cast",
+    "data": {
+      "player": "Babbage",
+      "value": "aye",
+      "reason": "Transmuting rule 204 to simple majority aligns with winning strategy and principle."
+    },
+    "ts": 1784572718.8248522
+  },
+  {
+    "seq": 587,
+    "type": "vote_cast",
+    "data": {
+      "player": "Lovelace",
+      "value": "aye",
+      "reason": "This change stabilizes the game mechanics."
+    },
+    "ts": 1784572719.4981234
+  },
+  {
+    "seq": 588,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "fraction",
+        "value": 0.5,
+        "abstain_blocks": false,
+        "label": "simple majority (Rule 203)",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784572719.505964
+  },
+  {
+    "seq": 589,
+    "type": "rule_changed",
+    "data": {
+      "op": "transmute",
+      "num": 204,
+      "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": false
+    },
+    "ts": 1784572721.6887455
+  },
+  {
+    "seq": 590,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 50,
+      "authority": null
+    },
+    "ts": 1784572721.6961582
+  },
+  {
+    "seq": 591,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The adopted rule change (204) does not alter any existing rules or create new ledgers, and does not itself perform any rule surgery on other rules. Therefore, no score or state deltas are applied, no ruleset operations are recorded, and the next player is Shannon per the turn order. No player has won or created a paradox.",
+      "next_player": "Shannon"
+    },
+    "ts": 1784572721.7038913
+  },
+  {
+    "seq": 592,
+    "type": "run_halted",
+    "data": {
+      "reason": "turn limit reached",
+      "winner": null
+    },
+    "ts": 1784572726.0223756
+  }
+]

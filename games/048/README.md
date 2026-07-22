@@ -2,6 +2,8 @@
 
 _development era_
 
+> Eleven turns in, a frontier-caliber table was rewriting the constitution wholesale — then the day's quota ran out.
+
 ## Roster
 
 | Seat | Model |

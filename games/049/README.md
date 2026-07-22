@@ -2,6 +2,8 @@
 
 _development era_
 
+> The same table, a much quieter turn — still healthy, just smaller.
+
 ## Roster
 
 | Seat | Model |

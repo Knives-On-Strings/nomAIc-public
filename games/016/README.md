@@ -2,6 +2,8 @@
 
 _development era_
 
+> The rule that existed twice — 209's text got amended into a brand-new number before anyone touched 209 itself.
+
 ## Roster
 
 | Seat | Model |

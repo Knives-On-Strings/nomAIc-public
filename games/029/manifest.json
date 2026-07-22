@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
   },
   "confirmed": false,
   "audit": {
@@ -26,5 +27,15 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Hobbes": 5,
+    "Locke": 0,
+    "Rousseau": 0,
+    "Kant": 0,
+    "Wollstonecraft": 0
+  },
+  "adoptions": 1,
+  "gm_model": "qwen",
+  "completed_at": "2026-07-15T16:56:20.565197+00:00"
 }

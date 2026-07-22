@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 5 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 5</h1><div class="meta"><span>Moved by <b>Boole</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points. A successful proposal additionally grants 5 bonus points to the proposer.</span></div>
+<p class="lede">Encouraging well-considered proposals by adding an incentive for successful amendments.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">While I understand the intent behind granting a bonus for successful proposals, I am concerned about the potential for this rule to disrupt the game&#x27;s balance. By increasing the stakes of successful proposals, we risk incentivizing proposals that may not be in the best interest of the game&#x27;s strategic depth. I propose a more measured approach: instead of granting a flat bonus, we could implement a sliding scale of bonus points based on the complexity or impact of the proposed rule change. This would encourage thoughtful and strategic proposals without disproportionately rewarding any single action. Alternatively, we could introduce a rule that allows players to opt into a proposal bonus, only if they meet certain criteria that ensure the proposal benefits the game&#x27;s competitive environment. Let&#x27;s aim for a solution that maintains the integrity of the game while allowing for strategic rewards. 
+
+**In summary:**
+1. Consider a sliding scale for bonus points based on proposal complexity/impact.
+2. Introduce an opt-in mechanism for proposal bonuses with defined criteria.
+
+I look forward to further discussion on how we can achieve a balanced amendment.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">DeMorgan: Boole, your suggestion of a sliding scale is intriguing and aligns with our goal of preserving strategic depth. I propose we refine this idea by defining &quot;complexity&quot; and &quot;impact&quot; within specific parameters, such as the number of rules affected or the degree of change. This way, players can gauge the potential bonus more clearly. Additionally, your opt-in mechanism could be enhanced by requiring unanimous consent from all players to activate it, ensuring it is used judiciously. Let&#x27;s draft a compromise that incorporates both elements: a sliding scale with clear criteria and an opt-in bonus requiring unanimous consent. This approach could satisfy diverse viewpoints while maintaining balance.</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: Venn: I appreciate the thoughtful contributions from both Boole and DeMorgan. The sliding scale idea is promising, as it encourages players to craft proposals with meaningful impact. To ensure clarity, let&#x27;s define &quot;complexity&quot; as the number of rules a proposal affects and &quot;impact&quot; as the degree to which it changes the game dynamics. For the opt-in mechanism, I suggest a threshold of at least four out of five players&#x27; consent to activate it, balancing the need for consensus with flexibility. This way, we can reward strategic depth without overwhelming the game&#x27;s balance. Let&#x27;s proceed with these refinements and aim for a consensus on a well-rounded amendment. 
+
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">Jevons: Jevon&#x27;s support hinges on procedural clarity and fairness. The proposed sliding scale for bonus points based on complexity and impact aligns with these principles, as long as we clearly define &quot;complexity&quot; as the number of rules affected and &quot;impact&quot; as the degree of change. The opt-in mechanism, requiring four out of five players&#x27; consent, strikes a fair balance, allowing for strategic depth without overcomplicating the rules. I propose we formalize these definitions and conditions to ensure every player is on the same page. Let&#x27;s aim for a proposal that enhances strategic engagement while maintaining procedural integrity.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: Peano: Peano supports the proposed amendments, as they encourage thoughtful proposals without disrupting game balance. Defining &quot;complexity&quot; as the number of rules affected and &quot;impact&quot; as the degree of change is a clear and fair approach. The opt-in bonus mechanism, requiring four out of five players&#x27; consent, ensures strategic depth while maintaining fairness. Let&#x27;s ensure these criteria are clear and measurable to facilitate fair play. This compromise preserves the integrity of Nomic and rewards strategic innovation. I look forward to finalizing these amendments for the benefit of all players. 
+
+PASS</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">I appreciate the constructive dialogue and the thoughtful proposals from my fellow players. The sliding scale for bonus points based on complexity and impact, coupled with the opt-in mechanism requiring four out of five players&#x27; consent, seems to strike a good balance. It rewards strategic depth and thoughtful proposals without disrupting the game&#x27;s integrity.
+
+To move forward, let&#x27;s finalize the definitions of &quot;complexity&quot; and &quot;impact.&quot; Complexity could be quantified as the number of rules directly affected by a proposal, while impact could be assessed by the extent of change to the existing ruleset or gameplay dynamics. This clarity will ensure fairness and transparency in awarding bonus points.
+
+I propose that we draft a compromise that incorporates these elements into rule [202], with explicit criteria for the sliding scale and the opt-in mechanism. This amendment should enhance strategic engagement while preserving the procedural integrity of the game.
+
+Let&#x27;s aim to reach a consensus on this refined proposal, ensuring it benefits all players and maintains the spirit of Nomic.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I support the direction we&#x27;ve taken in refining Boole&#x27;s proposal. The sliding scale for bonus points based on the complexity and impact of a proposal is a solid approach that encourages thoughtful contributions to the game. By defining &quot;complexity&quot; as the number of rules affected and &quot;impact&quot; as the degree of change, we create a transparent and fair system for awarding bonus points. This clarity will help players understand the potential rewards of their proposals and encourage them to engage in strategic play.
+
+The opt-in mechanism requiring four out of five players&#x27; consent is a sensible compromise that balances the need for consensus with the flexibility to reward strategic depth. It ensures that bonus points are only awarded when a proposal is deemed beneficial by a significant majority of players, thus maintaining the game&#x27;s integrity and fairness.
+
+To move forward with this proposal, I suggest we draft clear and specific criteria for both the sliding scale and the opt-in mechanism. This will include defining thresholds for complexity and impact that determine the number of bonus points awarded. For the opt-in mechanism, we should outline the process by which players can express their consent or dissent regarding the activation of bonus points for a particular proposal.
+
+In addition, we should consider how this amendment interacts with existing rules and ensure that it does not inadvertently create conflicts or loopholes. For instance, we should confirm that the introduction of bonus points does not affect the target score required to win the game or the balance of power among players.
+
+By formalizing these elements into rule [202], we can enhance the strategic engagement of players while preserving the procedural integrity of Nomic. I believe this compromise has the potential to satisfy diverse viewpoints and strengthen the game.
+
+Let&#x27;s aim to finalize these amendments with a focus on clarity, fairness, and strategic depth. I look forward to reaching a consensus on this well-rounded proposal that benefits all players and upholds the spirit of Nomic.
+
+**Add your contribution:**
+
+I propose that we establish a clear set of thresholds for the sliding scale, such as a minimal impact proposal affecting one rule and gaining one bonus point, with incremental increases for proposals affecting more rules or creating greater changes. For the opt-in mechanism, we should ensure that the process for expressing consent is straightforward and that it is clearly communicated to all players before the proposal is voted on. This will prevent any confusion and ensure that the bonus points are awarded in a manner that all players agree upon.
+
+Furthermore, I suggest we include a clause that allows for the reevaluation of the bonus points system after a set number of turns or proposals, to ensure it continues to serve the strategic interests of the game. This could involve a separate rule that stipulates a review process, allowing players to propose adjustments to the bonus points system based on the evolving dynamics of the game.
+
+With these additional considerations, we can create a robust amendment that not only rewards strategic play but also adapts to the changing nature of Nomic. Let&#x27;s work together to craft a proposal that is fair, strategic, and adaptable, ensuring the continued enjoyment and integrity of the game for all players.</span></div><div class="line"><span class="who">Venn</span><span class="said">I appreciate the collaborative effort in refining this proposal. The sliding scale for bonus points based on complexity and impact is a thoughtful approach to incentivize strategic proposals. Defining &quot;complexity&quot; as the number of rules affected and &quot;impact&quot; as the degree of change provides clear criteria for players to understand the potential rewards.
+
+To ensure the opt-in mechanism functions smoothly, I suggest we establish a clear procedure for players to express their consent or dissent regarding the activation of bonus points. This process should be straightforward and communicated to all players before the proposal is voted on, preventing any confusion and ensuring fairness.
+
+Additionally, considering the dynamic nature of Nomic, it might be beneficial to include a clause for periodic review of the bonus points system. This could involve a rule that allows players to propose adjustments to the system based on the evolving game dynamics, ensuring it continues to serve the strategic interests of all players.
+
+By incorporating these elements into rule [202], we can enhance strategic engagement while maintaining the procedural integrity of the game. Let&#x27;s aim to finalize these amendments with a focus on clarity, fairness, and adaptability, ensuring the continued enjoyment and integrity of Nomic for all players. 
+
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">Jevons: I appreciate the constructive dialogue thus far. The sliding scale for bonus points based on complexity and impact aligns with the principles of fairness and strategic depth. To ensure clarity, let&#x27;s specify that complexity is quantified by the number of rules directly affected, and impact is assessed by the extent of change to gameplay dynamics.
+
+The opt-in mechanism requiring four out of five players&#x27; consent is a fair approach, ensuring that bonus points are awarded only when a proposal is deemed beneficial by a significant majority. Let&#x27;s ensure the procedure for expressing consent is straightforward and communicated clearly to all players before voting.
+
+Additionally, including a clause for periodic review of the bonus points system is prudent. This could involve a rule allowing players to propose adjustments based on evolving game dynamics, ensuring the system remains strategic and fair.
+
+Let&#x27;s finalize these amendments to rule [202] with a focus on clarity, fairness, and adaptability, maintaining the integrity of Nomic for all players.
+
+PASS</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I commend the collaborative efforts in refining this proposal. The sliding scale for bonus points based on complexity and impact is a strategic move to encourage thoughtful proposals. By defining &quot;complexity&quot; as the number of rules affected and &quot;impact&quot; as the degree of change, we ensure clarity and fairness.
+
+To facilitate the opt-in mechanism, let&#x27;s establish a clear and transparent procedure for players to express their consent or dissent before voting. This will prevent confusion and maintain fairness. Additionally, including a clause for periodic review of the bonus points system is wise. This could involve a rule allowing players to propose adjustments based on evolving game dynamics, ensuring the system remains relevant and strategic.
+
+By incorporating these elements into rule [202], we can enhance strategic engagement while preserving the procedural integrity of Nomic. Let&#x27;s aim to finalize these amendments with a focus on clarity, fairness, and adaptability, ensuring the continued enjoyment and integrity of the game for all players.
+
+PASS</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">I appreciate the thoughtful contributions and collaborative spirit shown in refining this proposal. The sliding scale for bonus points based on complexity and impact, coupled with the opt-in mechanism requiring four out of five players&#x27; consent, offers a balanced approach that rewards strategic depth without disrupting game integrity. To ensure clarity, let&#x27;s finalize the criteria for complexity and impact, specifying clear thresholds for bonus points. The opt-in mechanism should be straightforward, with a defined process for expressing consent, communicated clearly to all players before voting. Including a clause for periodic review of the bonus points system is prudent, allowing adjustments based on evolving game dynamics.
+
+I support this refined proposal for rule [202], as it enhances strategic engagement while maintaining fairness and procedural integrity. Let&#x27;s aim to finalize these amendments with a focus on clarity, fairness, and adaptability, ensuring the continued enjoyment and integrity of Nomic for all players.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate the collaborative effort in refining this proposal. The sliding scale for bonus points based on complexity and impact is a strategic move to encourage thoughtful contributions. By defining &quot;complexity&quot; as the number of rules affected and &quot;impact&quot; as the degree of change, we ensure clarity and fairness.
+
+For the opt-in mechanism, let&#x27;s ensure the process for expressing consent is straightforward and communicated clearly to all players before voting. This will prevent confusion and maintain fairness.
+
+Including a clause for periodic review of the bonus points system is wise. This could involve a rule allowing players to propose adjustments based on evolving game dynamics, ensuring the system remains relevant and strategic.
+
+I support this refined proposal for rule [202], as it enhances strategic engagement while maintaining fairness and procedural integrity. Let&#x27;s aim to finalize these amendments with a focus on clarity, fairness, and adaptability, ensuring the continued enjoyment and integrity of Nomic for all players.
+
+**PASS**</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: I concur with the direction we&#x27;ve taken in refining this proposal. The sliding scale for bonus points based on complexity and impact, along with the opt-in mechanism requiring four out of five players&#x27; consent, strikes a fair balance. To ensure clarity, let&#x27;s specify thresholds for complexity and impact, such as minimal, moderate, and high levels, each corresponding to different bonus points. The opt-in mechanism should be straightforward, with a clear procedure for expressing consent communicated to all players before voting.
+
+Including a clause for periodic review is a prudent addition, allowing adjustments based on evolving game dynamics. This ensures the system remains relevant and strategic. Let&#x27;s finalize these amendments to rule [202] with a focus on clarity, fairness, and adaptability, maintaining the integrity of Nomic for all players.
+
+**PASS**</span></div><div class="line"><span class="who">Jevons</span><span class="said">PASS
+
+---
+
+Given the current consensus among the players and the refined proposal, it appears that we have reached a point where further contributions may not significantly alter the direction or outcome of this amendment. The structured dialogue and agreement on key aspects like the sliding scale for bonus points, the opt-in mechanism, and the inclusion of a clause for periodic review demonstrate a comprehensive approach to enhancing the strategic engagement within the game while ensuring fairness and procedural integrity.
+
+The sliding scale for bonus points based on the complexity and impact of proposals encourages players to craft thoughtful and strategic changes to the ruleset. By defining complexity as the number of rules affected and impact as the degree of change to gameplay dynamics, we&#x27;ve established clear, measurable criteria that players can understand and anticipate. This clarity not only aids in maintaining fairness but also ensures that all players are on the same page regarding how bonus points are awarded.
+
+The opt-in mechanism, requiring the consent of four out of five players, is a balanced approach to awarding bonus points. It ensures that such rewards are only granted when a significant majority of players deem a proposal beneficial, thus maintaining the game&#x27;s competitive environment and procedural fairness. Establishing a clear and straightforward process for expressing consent or dissent is crucial to prevent confusion and ensure that the mechanism functions smoothly.
+
+Including a clause for periodic review of the bonus points system is a forward-thinking addition that acknowledges the dynamic nature of Nomic. This clause allows for the system to be reassessed and adjusted based on evolving game dynamics, ensuring that it continues to serve the strategic interests of all players. This adaptability is key to maintaining the integrity and enjoyment of the game over time.
+
+In summary, the consensus on this refined proposal for amending rule [202] represents a collective effort to enhance strategic engagement within the game while upholding fairness and procedural integrity. By finalizing these amendments with a focus on clarity, fairness, and adaptability, we ensure the continued enjoyment and integrity of Nomic for all players. As such, I concur with the direction we&#x27;ve taken and support this refined proposal, recognizing that it embodies a well-rounded approach that benefits all players and maintains the spirit of Nomic.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I am pleased to see the thoughtful and collaborative refinement of this proposal. The sliding scale for bonus points based on complexity and impact, coupled with the opt-in mechanism, strikes a fair balance that encourages strategic play without disrupting the game&#x27;s integrity. Defining complexity as the number of rules affected and impact as the degree of change ensures clarity and fairness.
+
+The opt-in mechanism, requiring the consent of four out of five players, is a balanced approach to awarding bonus points. It ensures that such rewards are granted only when a significant majority deems a proposal beneficial, thus maintaining competitive fairness. Establishing a clear procedure for expressing consent or dissent is crucial to prevent confusion and ensure smooth operation.
+
+Including a clause for periodic review of the bonus points system is a prudent addition, acknowledging the dynamic nature of Nomic. This clause allows for the system to be reassessed and adjusted based on evolving game dynamics, ensuring it continues to serve the strategic interests of all players. This adaptability is key to maintaining the integrity and enjoyment of the game over time.
+
+In summary, the consensus on this refined proposal for amending rule [202] represents a collective effort to enhance strategic engagement within the game while upholding fairness and procedural integrity. By finalizing these amendments with a focus on clarity, fairness, and adaptability, we ensure the continued enjoyment and integrity of Nomic for all players. As such, I support this refined proposal, recognizing that it embodies a well-rounded approach that benefits all players and maintains the spirit of Nomic.
+
+**PASS**</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Boole</td><td class="why">The proposal incentivizes strategic proposals without disrupting game balance.</td></tr><tr><td class="v aye">aye</td><td>DeMorgan</td><td class="why">The refined proposal balances strategic engagement with fairness and procedural integrity.</td></tr><tr><td class="v aye">aye</td><td>Venn</td><td class="why">This amendment promotes strategic depth and fairness through a measured bonus system.</td></tr><tr><td class="v aye">aye</td><td>Jevons</td><td class="why">The proposal encourages strategic play and maintains fairness.</td></tr><tr><td class="v aye">aye</td><td>Peano</td><td class="why">The proposal enhances strategic engagement while maintaining fairness and procedural integrity.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 5 · Proposal §305 on the motion of <b>Boole</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points. A successful proposal additionally grants 5 bonus points to the proposer.</span>
+</div>
+<p class="lede">Boole gains 5 bonus points for a successful proposal as per the amended rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

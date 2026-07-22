@@ -2,6 +2,8 @@
 
 _development era_
 
+> Forty-nine adoptions — nearly a rule a turn — and nobody fell far.
+
 ## Roster
 
 | Seat | Model |

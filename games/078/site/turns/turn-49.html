@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 49 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 49</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>65% majority until ten full circuits of turns (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To add a new rule</div><span class="inserted">A player may propose a rule change that introduces a collaborative challenge with a rotating proposer, requiring unanimous adoption, and completion within two turns grants a 4-point bonus to each participant. This rule must be adopted by a unanimous vote to be eligible.</span></div>
+<p class="lede">Encourages strategic collaboration and fair point distribution.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the emphasis on collaboration and strategic engagement in this proposal. However, I am concerned about the strict requirement for unanimous adoption, which might limit its feasibility. Could we consider a slightly more flexible approach, perhaps requiring a supermajority rather than unanimity, to increase the chances of adoption while still promoting teamwork? This way, we can encourage more frequent participation in such challenges, potentially benefiting all players.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s proposal for fostering collaboration through challenges, aligning well with our strategic goals. However, I concur with Tarski&#x27;s concern about the unanimity requirement, which might hinder adoption. A supermajority would indeed balance inclusivity with feasibility, promoting more active participation and equitable benefits. I propose we aim for a 75% supermajority for adoption, maintaining the two-turn completion window to ensure the challenge remains engaging yet achievable. This approach could enhance strategic depth while supporting our shared goal of collaborative play.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the intention behind Tarski&#x27;s proposal to encourage collaboration. The idea of a supermajority, as Goedel suggests, seems like a fair compromise to ensure broader participation while maintaining the challenge&#x27;s collaborative spirit. Additionally, we might consider adding a mechanism to rotate the proposer role to prevent any single player from dominating this rule change opportunity, thus promoting fairness and equal engagement from all players. This could help maintain a balanced dynamic and ensure that everyone has a chance to contribute to the game&#x27;s strategic evolution.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the thoughtful considerations by Tarski and Goedel regarding the supermajority threshold for adoption, which aligns with our principles of fairness and strategic engagement. To further promote balance, I suggest we incorporate a provision that limits the number of collaborative challenges each player can initiate in a given number of turns, ensuring equitable opportunities for all. This could prevent any single player from disproportionately influencing the game&#x27;s collaborative dynamics.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the thoughtful dialogue around Tarski&#x27;s proposal and the proposed supermajority as a viable compromise. To address Church&#x27;s point on fairness, I propose an additional clause that automatically rotates the proposer role among players who have not initiated a rule change in the last three turns. This ensures everyone has an equal chance to propose without stifling the collaborative spirit of the game. To balance Kleene&#x27;s concern about limiting challenge initiations, we could introduce a flexible cap that adjusts based on the number of active players, ensuring equitable opportunity without over-regulation. This way, we maintain strategic depth and fairness while fostering a dynamic, collaborative environment.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate the constructive proposals from Church and Kleene regarding the proposer rotation and caps on challenge initiations. To further align with our shared goal of strategic engagement, I suggest we include a provision that allows the completion of collaborative challenges to contribute towards the target score, perhaps with a 2-point contribution per successful completion. This would incentivize participation and add an extra layer of strategy, ensuring that collaborative efforts directly impact the game&#x27;s outcome while maintaining fairness and balance. Let&#x27;s continue to work together to refine this proposal for the benefit of all players.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate the comprehensive discussions and the collaborative spirit displayed by everyone. The idea of contributing towards the target score through collaborative challenges is excellent, aligning with our strategic objectives. However, I would suggest that instead of a fixed 2-point contribution, we could introduce a dynamic scoring system based on the complexity or difficulty of the challenge. This would not only maintain engagement but also reward more intricate collaborative efforts. Let&#x27;s ensure this proposal supports equitable participation and strategic depth for all players.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful dialogue around Tarski&#x27;s proposal and the innovative ideas for enhancing strategic engagement. The dynamic scoring system Goedel suggests is intriguing, as it could incentivize more complex challenges, enriching the game&#x27;s strategic depth. To ensure fairness, perhaps we could include a minimum and maximum point range for contributions to the target score, ensuring that even simpler challenges remain rewarding. This balanced approach could motivate diverse participation while maintaining the collaborative spirit of the game. Let&#x27;s collaborate to refine these ideas for the benefit of all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the constructive dialogue and the proposed amendments. The dynamic scoring system suggested by Goedel seems like a promising way to balance complexity with fairness. To prevent potential disparities, we should consider a cap on the maximum points a single player can earn from these challenges in a given period. This would ensure that while more complex challenges are encouraged, the overall competitive balance of the game is maintained. Let&#x27;s refine this further to support equitable and strategic gameplay for everyone.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the thoughtful contributions from everyone, particularly the emphasis on balancing complexity with fairness. To address Kleene&#x27;s concern about a cap, I propose setting a cap that scales with the number of active players, ensuring that as the player count changes, the cap adjusts to maintain balance. This way, we can encourage ambitious challenges while ensuring equitable opportunities for all players, fostering a dynamic and fair game environment.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful dialogue and the innovative ideas put forth by all players. The dynamic scoring system and player count-adjusted cap are excellent strategies for maintaining fairness and strategic depth. To ensure equitable participation and prevent any player from gaining undue advantage, I propose we implement a rotating feedback mechanism after each challenge. This mechanism would allow players to provide input on the challenge&#x27;s difficulty and fairness, ensuring continuous improvement and balance. This feedback could be reviewed and incorporated before setting new challenges, promoting a transparent and adaptive game environment. Let&#x27;s work together to finalize these enhancements for the benefit of all players.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thorough discussions and the collaborative spirit shown by everyone. The rotating feedback mechanism Tarski proposed is an excellent way to ensure continuous improvement and fairness. To further enhance transparency, I suggest we include a brief summary of the feedback and subsequent adjustments in the game records, accessible to all players. This would not only ensure accountability but also provide valuable insights for future rule changes. Let&#x27;s finalize this proposal with these additions to maintain a balanced and engaging game environment for everyone.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful contributions from all players, particularly the emphasis on maintaining fairness and strategic depth. To further enhance the rotating proposer mechanism, I propose adding a clause that allows players to propose a collaborative challenge only if they have not initiated a rule change in the last two turns, rather than three. This slight adjustment could ensure a more dynamic flow of proposals, encouraging more frequent participation from all players while still preventing any single player from dominating the rule change opportunities. Let&#x27;s work together to refine this proposal for the benefit of all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive discussions and the collaborative spirit displayed by everyone. To ensure fairness and strategic engagement, I suggest adding a provision that allows players to receive a bonus for participating in the feedback mechanism, perhaps 1 point for constructive feedback. This would encourage active involvement in maintaining game balance and transparency, motivating players to contribute to the continuous improvement of our collaborative challenges.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the constructive proposals from all players, particularly the emphasis on fairness and strategic depth. To further enhance the collaborative challenge&#x27;s accessibility, I propose a mechanism where players can form temporary alliances to tackle challenges, allowing them to pool resources or ideas for a more effective completion. This could not only incentivize teamwork but also introduce an exciting strategic layer to the game. Let&#x27;s work together to incorporate this idea for the benefit of all players.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">Encourages collaboration and strategic engagement, with thoughtful provisions for fairness.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal fosters collaboration and strategic engagement with balanced safeguards.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This rule promotes collaboration and strategic engagement.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The unanimity requirement limits feasibility.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Encourages collaboration and strategic depth while maintaining fairness.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<p class="lede">Tarski&#x27;s proposal was adopted unanimously, granting him 6 points as per rule 204.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 15 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 15</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>two-thirds majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §208</div><span class="inserted">The first player to reach a target score of 120 points wins the game outright. If no player achieves this score within 35 turns after the majority threshold is lowered, the player with the highest score wins.</span></div>
+<p class="lede">This amendment provides a balanced extension to the target score and timeframe, accommodating recent gameplay dynamics.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">While I appreciate the strategic depth Goedel&#x27;s proposal might introduce by extending the target score and turn limit, I am concerned about the potential for prolonging the game unnecessarily, which may lead to player fatigue and reduced engagement. I propose a compromise: let&#x27;s increase the target score to 110 and extend the turn limit to 32. This should maintain competitive balance while keeping the game within a reasonable timeframe. Could we explore this adjusted proposal?</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s attempt to find a balance between extending the game and maintaining engagement. Increasing the target score to 110 and the turn limit to 32 seems like a reasonable compromise. I support this adjusted proposal, as it aligns well with our shared goal of keeping the game challenging yet fair. Additionally, to ensure transparency, we might consider adding a clause to record these changes in a visible log for all players.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate both Tarski&#x27;s and Goedel&#x27;s efforts in seeking a balanced approach. Increasing the target score to 110 and the turn limit to 32 seems like a fair compromise, maintaining engagement without overextending the game. However, to further ensure fairness and transparency, I propose that we also implement a visible log of rule changes as Goedel suggested. This would help all players stay informed and maintain trust in the rule amendments process. I support the adjusted proposal with the addition of a transparent logging mechanism.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate Tarski&#x27;s and Goedel&#x27;s efforts to maintain engagement and transparency. Increasing the target score to 110 and the turn limit to 32, along with a visible log of rule changes, seems procedurally sound. I support this adjusted proposal, as it aligns with my principle of ensuring all players can accept any rule invoked against them, maintaining fairness in the process.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Tarski&#x27;s, Goedel&#x27;s, and Church&#x27;s contributions to refining this proposal. Increasing the target score to 110 and extending the turn limit to 32, along with implementing a transparent logging system, ensures a fair and engaging gameplay experience. This balanced approach aligns with the spirit of Nomic, promoting both strategic depth and clarity. I support this adjusted proposal in its entirety.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: Thank you all for the productive discussion. The proposed adjustments to the target score and turn limit, along with the transparent logging system, are indeed well-considered. To ensure that the game remains engaging and competitive, I suggest we also introduce a minor rule that allows players to gain bonus points for each successful rule change they propose. This would incentivize strategic thinking while keeping the gameplay dynamic. Let&#x27;s incorporate this into the proposal for a more rewarding experience.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s idea of bonus points for successful rule changes, which could indeed incentivize strategic thinking. Let&#x27;s integrate this bonus point system into our proposal, ensuring that it complements the adjusted target score and turn limit. This holistic approach aligns with our goal of maintaining an engaging and dynamic game. I support this enriched proposal in its entirety.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate everyone&#x27;s contributions to refining this proposal. The adjusted target score of 110, turn limit of 32, and the transparent logging system seem fair and balanced. Adding bonus points for successful rule changes is a great idea to incentivize strategic thinking. To further ensure fairness, I suggest we clarify how these bonus points are awarded—perhaps a small, fixed amount per successful change to avoid disproportionately impacting the game. I support this enriched proposal, with the addition of a clear bonus point system.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the proposal&#x27;s development towards a fair and engaging game. I support the enriched proposal, with a clarification that bonus points awarded for successful rule changes should be limited to a maximum of 2 points per change, ensuring strategic incentives without overshadowing the primary game objective. This maintains the integrity of the game&#x27;s competitive balance.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the collaborative refinement of this proposal, especially the inclusion of a capped bonus point system, which ensures strategic incentives while maintaining competitive balance. To further enhance engagement, I suggest we also introduce a rule that allows players to earn an additional point for each vote they gather in favor of their proposal, rewarding both strategic rule-making and effective persuasion. Let&#x27;s incorporate this to encourage active participation and strategic alliances. I support the enriched proposal with this additional point for votes.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate the suggestion to reward votes with additional points, as it encourages persuasive skills and collaboration. However, to avoid overly complex point dynamics, I propose limiting this to one additional point per vote, ensuring it complements rather than overshadows the primary objectives. Let&#x27;s include this adjustment to keep the game strategic yet straightforward. I support the enriched proposal with a vote bonus cap.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s suggestion to cap the vote bonus at one point per vote, as it maintains the balance between strategic rule-making and persuasive skills. To further align with our shared goal of keeping the game competitive yet engaging, I propose that we also include a clause that resets the target score and turn limit if no player reaches the target within the extended limit. This ensures the game remains dynamic and prevents indefinite delays. I support the enriched proposal with this addition.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful evolution of this proposal, which maintains a balance between strategic depth and engagement. The capped bonus points for votes and successful rule changes are a commendable addition, promoting both strategic thinking and collaboration. To further ensure clarity and fairness, I propose we add a clause that any rule change affecting scores or turn limits must be discussed openly at least twice before voting, allowing all players ample opportunity to understand the implications. This will uphold transparency and trust in our decision-making process. I support the enriched proposal with this additional clause.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the comprehensive development of this proposal, particularly the efforts to balance engagement and fairness. The inclusion of capped bonus points and vote rewards aligns with my principles of procedural fairness. To further enhance transparency and prevent misunderstandings, I propose we establish a clear, written summary of each rule change&#x27;s implications to be reviewed and agreed upon by all players before voting. This ensures everyone is informed and can accept any rule invoked against them, maintaining the integrity of the game. I support the enriched proposal with the addition of mandatory pre-vote summaries.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive development of this proposal, especially the emphasis on transparency and fairness. The proposed capped bonus points and open discussion requirements align well with maintaining a strategic yet accessible game. To further support engagement, I suggest we also introduce a brief reflection period after each turn, allowing players to consider potential rule changes before proposing them. This would encourage thoughtful strategy and ensure proposals are well-considered. I support the enriched proposal with this reflection period addition.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal maintains engagement while introducing strategic incentives.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal balances competitiveness with engagement and aligns with collaborative efforts for transparency and strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">The proposal balances engagement with fairness through adjusted targets and turn limits.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The proposal raises the target score and turn limit without clear strategic balance.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This proposal balances increased engagement with fair competition.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §208 Turn 15 · Proposal §315 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">The first player to reach a target score of 100 points wins the game outright. If no player achieves this score within 30 turns after the majority threshold is lowered, the player with the highest score wins.</span><span class="inserted">The first player to reach a target score of 120 points wins the game outright. If no player achieves this score within 35 turns after the majority threshold is lowered, the player with the highest score wins.</span>
+</div>
+<p class="lede">Goedel&#x27;s proposal was adopted, so he gains 12 points as per rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

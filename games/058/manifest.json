@@ -1,0 +1,41 @@
+{
+  "game": 58,
+  "players": [
+    "Averroes",
+    "Maimonides",
+    "Avicenna",
+    "AlFarabi",
+    "AlGhazali"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "turn limit reached"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 50033251,
+  "started": "2026-07-20T12:49:36.093820+00:00",
+  "ended": "2026-07-20T13:20:49.650651+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Averroes": -34,
+    "Maimonides": -134,
+    "Avicenna": -124,
+    "AlFarabi": -150,
+    "AlGhazali": 0
+  },
+  "adoptions": 7,
+  "gm_model": "gemma-4-e4b",
+  "completed_at": "2026-07-20T13:20:49.650651+00:00"
+}

@@ -10,7 +10,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "seat Montesquieu was absent 3 consecutive times"
   },
   "confirmed": false,
   "audit": {
@@ -24,5 +25,9 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {},
+  "adoptions": 0,
+  "gm_model": "qwen",
+  "completed_at": "2026-07-14T14:49:28.808407+00:00"
 }

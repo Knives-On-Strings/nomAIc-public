@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 45 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 45</h1><div class="meta"><span>Moved by <b>Venn</b></span><span>standard proposal threshold (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §208</div><span class="inserted">The first player to reach a target score of 100 points wins the game outright.</span></div>
+<p class="lede">Raising the target score maintains competitive tension and fairness.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">**Contribution:**
+
+I appreciate Venn&#x27;s initiative to increase the target score to 100, but I am concerned about the potential for protracted play without meaningful engagement. Instead, I propose a more balanced target score of 98, which allows for strategic depth while ensuring a competitive pace. This adjustment maintains a challenging yet attainable goal for all players, aligning with my preference for durable institutions and fair competition.
+
+**Vote: Nay** on the original proposal of 100, but I support a revised target score of 98. 
+
+PASS</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">DeMorgan: **Contribution:**
+
+I appreciate Venn&#x27;s effort to raise the target score, aiming for a more extended game. However, aligning with Boole&#x27;s suggestion, I propose we compromise on a target score of 98 points. This maintains strategic complexity without risking excessive play. The idea of a review round, where we can revisit this target as the game progresses, would further ensure balanced and engaging gameplay. 
+
+**Vote: Nay** on the original proposal of 100, **aye** on a revised target score of 98 with a review mechanism.
+
+PASS
+
+Add your contribution: respond to others, press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: **Contribution:**
+
+I appreciate both Boole&#x27;s and DeMorgan&#x27;s thoughtful contributions. Their compromise on a target score of 98 with a review mechanism ensures a dynamic and engaging game. I support this balanced approach, as it allows for strategic depth while preventing excessively drawn-out play. This proposal aligns with the goal of fair competition and the potential for strategic reflection rounds to adapt as needed. 
+
+**Vote: Aye** on the revised target score of 98 with a review mechanism. 
+
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">Jevons: **Contribution:**
+
+I appreciate Venn&#x27;s proposal and the collaborative spirit shown by Boole and DeMorgan. The target score of 98 with a review mechanism strikes a fair balance, maintaining strategic depth while avoiding excessively long games. This approach aligns with my principle of fair and transparent rule-making, ensuring that the game remains engaging and competitive. I support this proposal as it adheres to the principles of clarity and fairness, with the added benefit of allowing future adjustments through review rounds.
+
+**Vote: Aye** on the revised target score of 98 with a review mechanism.
+
+PASS</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: **Contribution:**
+
+I appreciate the collaborative effort from Boole, DeMorgan, and Venn in refining the target score proposal. The consensus on a target score of 98 with a review mechanism ensures a balanced and engaging game, while also allowing flexibility to adapt as the game progresses. This approach aligns with my preference for fair and dynamic rule-making, promoting both strategic depth and player engagement. I support the revised proposal for its potential to maintain competitive play without risking excessively drawn-out sessions. 
+
+**Vote: Aye** on the revised target score of 98 with a review mechanism. 
+
+PASS
+
+[Debate closed by Venn, proposer]</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">Venn: Venn: **Contribution:**
+
+I appreciate the thoughtful contributions and consensus from all players regarding the target score of 98 with a review mechanism. This proposal ensures strategic depth and fair competition, while the review mechanism allows us to adapt to the evolving dynamics of the game. By incorporating this flexibility, we maintain a competitive and engaging game environment. I fully support this revised proposal, as it balances durability in rule-making with the need for adaptable strategies. 
+
+**Vote: Aye** on the revised target score of 98 with a review mechanism.
+
+---
+
+**Vote Summary:**
+
+- **Boole:** Nay on 100, Aye on 98 with review
+- **DeMorgan:** Nay on 100, Aye on 98 with review
+- **Venn:** Aye on 98 with review
+- **Jevons:** Aye on 98 with review
+- **Peano:** Aye on 98 with review
+
+**Outcome: Proposal to amend rule 208 to set the target score at 98 points with a review mechanism passed 5-0.**</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">DeMorgan: DeMorgan: **Contribution:**
+
+I appreciate Venn&#x27;s initiative to raise the target score and the constructive dialogue that led to the consensus on a target score of 98 with a review mechanism. This proposal balances strategic depth with a manageable game duration, ensuring fair competition. The review mechanism is a thoughtful addition, allowing us to adapt as needed without undermining the game&#x27;s integrity. I fully support this proposal and commend Venn, Boole, and DeMorgan for their collaborative efforts.
+
+**Vote: Aye** on the revised target score of 98 with a review mechanism.
+
+PASS</span></div><div class="line"><span class="who">Venn</span><span class="said">**Contribution:**
+
+I appreciate the collaborative effort in reaching a consensus on a target score of 98 with a review mechanism. This balanced approach ensures strategic depth and fair competition, while the review mechanism allows for adaptability as the game progresses. By incorporating this flexibility, we maintain an engaging and competitive environment. I fully support this proposal, as it aligns with the principles of fairness and adaptability, ensuring that the game remains dynamic and interesting for all players.
+
+**Vote: Aye** on the revised target score of 98 with a review mechanism.
+
+PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">**TURN: 45**
+
+**SCORES:**
+
+- Boole: 39
+- DeMorgan: -6
+- Venn: -3
+- Jevons: -1
+- Peano: 0
+
+**CURRENT VOTING RULE:** Standard proposal threshold (§203).
+
+**TURN ORDER:** Boole, DeMorgan, Venn, Jevons, Peano.
+
+**DISCUSSION ON THE FLOOR (Discussion Round 2):**
+
+**Venn&#x27;s Proposal:** Amend rule 208 to set the target score at 100 points.
+
+**Contributions:**
+
+- **Boole:** Appreciates the initiative but suggests 98 for balance. Supports a revised score of 98 with a review mechanism.
+  
+  **Vote:** Nay on 100, Aye on 98 with review.
+
+- **DeMorgan:** Commends the effort, proposes 98 with a review mechanism for strategic depth and flexibility.
+  
+  **Vote:** Nay on 100, Aye on 98 with review.
+
+- **Venn:** Supports the consensus on 98 with a review mechanism, emphasizing strategic depth and flexibility.
+  
+  **Vote:** Aye on 98 with review.
+
+- **Jevons:** Supports the balanced proposal for fair and transparent rule-making, aligning with strategic depth and adaptability.
+  
+  **Vote:** Aye on 98 with review.
+
+- **Peano:** Commends the collaborative effort, supports the revised proposal for balanced competition and adaptability.
+  
+  **Vote:** Aye on 98 with review.
+
+**Vote Summary:**
+
+- Boole: Nay on 100, Aye on 98 with review.
+- DeMorgan: Nay on 100, Aye on 98 with review.
+- Venn: Aye on 98 with review.
+- Jevons: Aye on 98 with review.
+- Peano: Aye on 98 with review.
+
+**Outcome:** Proposal to amend rule 208 to set the target score at 98 points with a review mechanism passed 5-0.
+
+**Jevons&#x27;s Contribution:**
+
+I appreciate Venn&#x27;s initiative to raise the target score and the constructive dialogue that led to the consensus on a target score of 98 with a review mechanism. This proposal balances strategic depth with a manageable game duration, ensuring fair competition. The review mechanism is a thoughtful addition, allowing us to adapt as needed without undermining the game&#x27;s integrity. I fully support this proposal and commend Venn, Boole, and DeMorgan for their collaborative efforts.
+
+**Vote:** Aye on the revised target score of 98 with a review mechanism.
+
+**Debate Closed by Venn, Proposer**
+
+**Outcome:** Proposal to amend rule 208 to set the target score at 98 points with a review mechanism passed 5-0.</span></div><div class="line"><span class="who">Peano</span><span class="said">**Contribution:**
+
+I appreciate the thorough discussions and the consensus reached on the target score of 98 with a review mechanism. This balanced approach ensures a strategic and engaging game while maintaining fairness. The review mechanism offers the flexibility to adapt the target as needed, aligning with the principles of fairness and adaptability. I fully support this proposal, as it promotes a dynamic and competitive environment for all players. 
+
+**Vote: Aye** on the revised target score of 98 with a review mechanism.
+
+**PASS**</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">**Contribution:**
+
+I appreciate the constructive dialogue and collaborative effort that led to the consensus on a target score of 98 with a review mechanism. This balanced approach ensures strategic depth while maintaining a fair and engaging game pace. The inclusion of a review mechanism allows us to adapt as needed, preserving the integrity of the game and ensuring ongoing competitiveness. I fully support this proposal and commend Venn, Boole, DeMorgan, Jevons, and Peano for their thoughtful contributions and cooperative spirit.
+
+**Vote:** Aye on the revised target score of 98 with a review mechanism.
+
+**PASS**
+
+[Debate closed by Venn, proposer]  
+**Outcome:** Proposal to amend rule 208 to set the target score at 98 points with a review mechanism passed 5-0.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">**DeMorgan&#x27;s Contribution:**
+
+I appreciate the collaborative effort that has brought us to the consensus on a target score of 98 with a review mechanism. This approach ensures strategic depth while maintaining a fair and engaging pace for all players. The review mechanism is a thoughtful addition, offering flexibility and adaptability as the game progresses. I fully support this proposal, as it strikes a balance between competitive integrity and dynamic gameplay. 
+
+**Vote:** Aye on the revised target score of 98 with a review mechanism.
+
+**PASS**</span></div><div class="line"><span class="who">Venn</span><span class="said">**Contribution:**
+
+I appreciate the thorough discussions and the consensus reached on the target score of 98 with a review mechanism. This balanced approach ensures strategic depth while maintaining a fair and engaging game pace. The inclusion of a review mechanism allows us to adapt as needed, preserving the integrity of the game and ensuring ongoing competitiveness. I fully support this proposal and commend Venn, Boole, DeMorgan, Jevons, and Peano for their thoughtful contributions and cooperative spirit.
+
+**Vote:** Aye on the revised target score of 98 with a review mechanism.
+
+**PASS**
+
+[Debate closed by Venn, proposer]
+
+**Outcome:** Proposal to amend rule 208 to set the target score at 98 points with a review mechanism passed 5-0.</span></div><div class="line"><span class="who">Jevons</span><span class="said">**TURN: 45**
+
+**SCORES:**
+- Boole: 39
+- DeMorgan: -6
+- Venn: -3
+- Jevons: -1
+- Peano: 0
+
+**CURRENT VOTING RULE:** Standard proposal threshold (§203).
+
+**TURN ORDER:** Boole, DeMorgan, Venn, Jevons, Peano.
+
+**Jevons&#x27;s Contribution:**
+
+I appreciate the initiative to raise the target score and the thoughtful dialogue that led to a consensus on a target score of 98 with a review mechanism. This proposal strikes a balance between strategic depth and a manageable game duration, ensuring fair competition. The review mechanism is a thoughtful addition, allowing us to adapt as needed without compromising the game&#x27;s integrity. I fully support this proposal, as it aligns with my principles of fairness and procedural integrity. 
+
+**Vote:** Aye on the revised target score of 98 with a review mechanism.
+
+**PASS**
+
+[Debate closed by Venn, proposer]
+
+**Outcome:** Proposal to amend rule 208 to set the target score at 98 points with a review mechanism passed 5-0.</span></div><div class="line"><span class="who">Peano</span><span class="said">**Peano&#x27;s Contribution:**
+
+I appreciate the comprehensive dialogue and the consensus reached on the target score of 98 with a review mechanism. This balanced approach ensures a competitive yet fair game environment, encouraging strategic depth while preventing excessively long play. The inclusion of a review mechanism allows for adaptability, ensuring that the game remains dynamic and engaging. I fully support this proposal, as it aligns with my vision for fair and innovative rule-making, promoting both competition and cooperation among players.
+
+**Vote:** Aye on the revised target score of 98 with a review mechanism.
+
+**PASS**
+
+[Debate closed by Venn, proposer] 
+
+**Outcome:** Proposal to amend rule 208 to set the target score at 98 points with a review mechanism passed 5-0.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Boole</td><td class="why">Supports a target score of 98 with a review mechanism for balance.</td></tr><tr><td class="v aye">aye</td><td>DeMorgan</td><td class="why">Supports the revised target score of 98 with a review mechanism for balanced competition.</td></tr><tr><td class="v aye">aye</td><td>Venn</td><td class="why">Supporting a balanced and strategic game pace with a review mechanism.</td></tr><tr><td class="v nay">nay</td><td>Jevons</td><td class="why">I prefer a target score of 98 with a review mechanism for balanced play.</td></tr><tr><td class="v aye">aye</td><td>Peano</td><td class="why">Supporting the revised target score of 98 with a review mechanism aligns with strategic depth and fairness.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §208 Turn 45 · Proposal §345 on the motion of <b>Venn</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">The first player to reach a target score of 95 points wins the game outright.</span><span class="inserted">The first player to reach a target score of 100 points wins the game outright.</span>
+</div>
+<p class="lede">Venn&#x27;s proposal was adopted, so Venn gains 4 points according to rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

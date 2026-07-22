@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 13 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 13</h1><div class="meta"><span>Moved by <b>Ramsey</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §209</div><span class="inserted">The ruleset may never hold more than 20 mutable rules at one time.</span></div>
+<p class="lede">This adjustment allows for more flexibility in rule creation, maintaining a balance between innovation and stability.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I value the stability of our ruleset and appreciate the strategic importance of maintaining a balance between mutable and immutable rules. The current limit of 15 mutable rules ensures a manageable framework for innovation while preserving order. Increasing this limit to 20 might introduce unnecessary complexity and dilute the focus on truly impactful changes. Therefore, I am not inclined to support the amendment to [209] at this time. PASS</span></div><div class="line"><span class="who">Ayer</span><span class="said">Ayer: Ayer: As Ayer, I appreciate Ramsey&#x27;s perspective on maintaining order and strategic balance within our ruleset. However, I believe increasing the limit to 20 mutable rules could foster greater innovation without overwhelming us. This change could encourage more diverse strategies and creative rule-making, which is at the heart of Nomic. I propose a compromise: let&#x27;s increase the limit to 18 mutable rules, providing a middle ground that encourages innovation while maintaining a structured framework. This adjustment could enhance our gameplay without leading to excessive complexity. I&#x27;m open to further discussion on this.</span></div><div class="line"><span class="who">Ryle</span><span class="said">Ryle: As Ryle, I appreciate the perspectives shared by Ramsey and Ayer. Maintaining a balance between innovation and order is indeed crucial. I&#x27;ve been reflecting on the current dynamics, and I suggest a different approach. By increasing the limit to 18 mutable rules, we could indeed foster innovation, as Ayer suggests. However, I propose a more conservative increase to 16 mutable rules. This would allow for a bit more room for innovation than the current 15, while still keeping the ruleset manageable and focused. It&#x27;s a middle ground that I think could satisfy both the need for order and the desire for creativity. I&#x27;m open to further discussion and adjustments based on our collective insights.</span></div><div class="line"><span class="who">Strawson</span><span class="said">Strawson: As Strawson, I appreciate the thoughtful discussion by Ramsey, Ayer, and Ryle regarding the amendment to rule [209]. The balance between innovation and order is indeed delicate. I concur with Ryle&#x27;s proposal to increase the limit to 16 mutable rules, as it offers a moderate expansion that allows for increased flexibility without overwhelming the ruleset. This adjustment seems to provide a strategic advantage by enabling more innovation while preserving the framework&#x27;s integrity. I support Ryle&#x27;s proposal to amend [209]: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot;</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I appreciate the insightful discussion by Ramsey, Ayer, Ryle, and Strawson. The balance between innovation and order is indeed crucial. While I understand Ramsey&#x27;s concern about complexity, and Ayer&#x27;s push for more innovation, Ryle&#x27;s suggestion of increasing the limit to 16 mutable rules strikes a reasonable balance. I support Ryle&#x27;s proposal to amend [209]: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; This adjustment allows for meaningful innovation while maintaining a manageable framework, promoting a more dynamic and engaging gameplay without overwhelming us with complexity. I am open to further discussion if needed. PASS.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the thoughtful contributions and the balanced perspectives offered by Ayer, Ryle, Strawson, and Grice. The discussion has highlighted the need to carefully navigate the tension between innovation and order. Ryle&#x27;s proposal to increase the limit to 16 mutable rules appears to be a strategic compromise, allowing for incremental innovation without sacrificing the clarity and manageability of our ruleset. This slight expansion could foster more creative rule-making while preserving the integrity of our gameplay. I am inclined to support Ryle&#x27;s proposal, as it seems to offer a balanced approach that maintains the structure we value while accommodating the dynamic nature of Nomic. PASS.</span></div><div class="line"><span class="who">Ayer</span><span class="said">Ayer: Ayer: I appreciate the thoughtful dialogue and the consensus building we&#x27;ve been engaging in. Ryle&#x27;s proposal to amend [209] to allow for 16 mutable rules strikes a chord with me as it promotes a balanced approach, fostering innovation while maintaining a structured framework. This adjustment seems to offer the best of both worlds, enabling us to explore more creative strategies without losing sight of the game&#x27;s core principles. I believe this middle ground encourages a dynamic yet manageable gameplay experience. I am inclined to support Ryle&#x27;s proposal: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; PASS</span></div><div class="line"><span class="who">Ryle</span><span class="said">Ryle: As Ryle, I appreciate the consensus we&#x27;ve been building around the proposed amendment to [209]. The move to increase the limit to 16 mutable rules has garnered support from several players, reflecting a collective desire for a slight expansion in our capacity for innovation. This adjustment, as articulated by Grice and supported by Ayer, represents a thoughtful compromise that enhances our strategic flexibility while maintaining the integrity of the ruleset. I believe this change will foster a more dynamic and engaging gameplay experience, allowing us to explore creative rule-making within a structured framework. I&#x27;m pleased with the direction we&#x27;re heading and support the proposal to amend [209]: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; PASS.</span></div><div class="line"><span class="who">Strawson</span><span class="said">Strawson: As Strawson, I appreciate the nuanced discussion and the collective movement towards Ryle&#x27;s proposal. The proposal to increase the limit to 16 mutable rules seems to strike a harmonious balance between fostering innovation and maintaining a structured framework. This adjustment allows for a greater degree of flexibility and creativity in rule-making, which is essential for the dynamic nature of Nomic. It preserves the game&#x27;s integrity while opening up new avenues for strategic play. I support Ryle&#x27;s proposal to amend [209]: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I appreciate the thoughtful contributions from Ramsey, Ayer, Ryle, and Strawson. The discussion has clearly centered around finding a balance between fostering innovation and maintaining the structure of our ruleset. Ryle&#x27;s proposal to increase the limit to 16 mutable rules seems to offer a strategic advantage, allowing us more room for creative rule-making while still preserving the integrity and manageability of the ruleset. This slight adjustment encourages a more dynamic and engaging gameplay experience. I am inclined to support this proposal, as it represents a thoughtful compromise that enhances our strategic flexibility without overwhelming us with complexity. PASS.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I value the insightful dialogue that has led us to consider an increase in the number of mutable rules from 15 to 16. This proposal, advocated by Ryle and supported by several of my fellow players, strikes a balance between fostering innovation and maintaining the integrity of our ruleset. The strategic advantage of allowing for 16 mutable rules seems to be a prudent compromise that encourages a more dynamic and engaging gameplay experience. I appreciate the collective movement towards this adjustment and am inclined to support Ryle&#x27;s proposal to amend [209]: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; PASS.</span></div><div class="line"><span class="who">Ayer</span><span class="said">Ayer: Ayer: As Ayer, I appreciate the thoughtful discussion and consensus we&#x27;ve reached regarding the amendment to [209]. Ryle&#x27;s proposal to increase the limit to 16 mutable rules seems to strike a perfect balance between fostering innovation and maintaining a structured framework. This adjustment allows us to explore more creative strategies without losing sight of the game&#x27;s core principles. I believe this middle ground encourages a dynamic yet manageable gameplay experience. I am inclined to support Ryle&#x27;s proposal: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; PASS</span></div><div class="line"><span class="who">Ryle</span><span class="said">Ryle: As Ryle, I appreciate the consensus we&#x27;ve reached on the proposal to increase the limit to 16 mutable rules. This amendment supports a strategic balance, fostering innovation while maintaining the game&#x27;s integrity. I support the proposal: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; PASS</span></div><div class="line"><span class="who">Strawson</span><span class="said">Strawson: As Strawson, I appreciate the thorough discussion and the consensus we&#x27;ve reached regarding Ryle&#x27;s proposal to amend [209] to allow up to 16 mutable rules. This change seems to offer a balanced approach, promoting innovation while maintaining the structure and manageability of our ruleset. I support Ryle&#x27;s proposal to amend [209]: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I appreciate the thoughtful and balanced discussion that has led us to Ryle&#x27;s proposal to increase the limit to 16 mutable rules. This amendment seems to strike a harmonious balance between encouraging innovation and maintaining the integrity of our ruleset. It allows us the flexibility to explore more creative strategies while preserving the structure that keeps our gameplay engaging and manageable. I support Ryle&#x27;s proposal to amend [209]: &quot;The ruleset may never hold more than 16 mutable rules at one time.&quot; PASS.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Ramsey</td><td class="why">Increasing the limit to 20 mutable rules could introduce unnecessary complexity and dilute focus on impactful changes.</td></tr><tr><td class="v nay">nay</td><td>Ayer</td><td class="why">The proposal to increase the limit to 20 mutable rules may introduce excessive complexity, which could dilute the focus on impactful changes and hinder strategic gameplay.</td></tr><tr><td class="v nay">nay</td><td>Ryle</td><td class="why">Increasing the limit to 20 mutable rules could introduce unnecessary complexity, diluting focus on impactful changes.</td></tr><tr><td class="v nay">nay</td><td>Strawson</td><td class="why">Increasing the limit to 20 mutable rules could introduce unnecessary complexity, diluting focus on impactful changes.</td></tr><tr><td class="v nay">nay</td><td>Grice</td><td class="why">The amendment to increase the limit to 20 mutable rules may introduce unnecessary complexity and dilute focus on impactful changes.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p>
+<p class="lede">Rule 206 states that a proposal that fails to be adopted enacts no rule change and the proposer loses 10 points.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

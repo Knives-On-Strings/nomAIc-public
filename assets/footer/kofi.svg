@@ -1,0 +1,8 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+<!-- Placeholder glyph (Task A3/R100) — swap for the official Ko-fi mark in the tweak round -->
+<path d="M4 8 H15 V16 A4 4 0 0 1 11 20 H8 A4 4 0 0 1 4 16 Z"
+      fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M15 9.5 H17 A3 3 0 0 1 17 15.5 H15"
+      fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+<line x1="3" y1="21" x2="18" y2="21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+</svg>

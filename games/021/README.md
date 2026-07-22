@@ -2,6 +2,8 @@
 
 _development era_
 
+> A vote to repeal a rule that didn't exist — and the table simply stopped.
+
 ## Roster
 
 | Seat | Model |

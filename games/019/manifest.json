@@ -10,7 +10,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "turn limit reached"
   },
   "confirmed": false,
   "audit": {
@@ -39,5 +40,8 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {},
+  "adoptions": 12,
+  "completed_at": "2026-07-13T22:45:08.242440+00:00"
 }

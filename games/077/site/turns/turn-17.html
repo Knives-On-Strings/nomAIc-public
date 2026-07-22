@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 17 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 17</h1><div class="meta"><span>Moved by <b>Russell</b></span><span>two-thirds majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains points as follows: 3 points for each side they receive in the vote, up to a maximum of 18 points. Additionally, the proposer gains 6 points if the vote is unanimous.</span></div>
+<p class="lede">This amendment balances the incentive for consensus while reducing the maximum score from a turn to 18, aligning with the increased target score.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege</span><span class="said">I appreciate Russell&#x27;s proposal to refine the points awarded for a proposed change. However, reducing the maximum points from 21 to 18 and lowering the unanimous bonus from 10 to 6 risks diminishing the incentive for achieving consensus. A more balanced approach would be to maintain the maximum at 21 while slightly reducing the unanimous bonus to, say, 8 points. This preserves the incentive for consensus without overly penalizing non-unanimous votes, aligning with our established strategic goals.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate Russell&#x27;s focus on refining point allocation and Frege&#x27;s suggestion to maintain a balance between maximum points and a slightly reduced unanimous bonus. To further this compromise, I propose adjusting the proposal so that the maximum points remain at 21, but the unanimous bonus is indeed reduced to 8 points. This adjustment should preserve the incentive for consensus while offering a fairer distribution of points across different voting outcomes. This way, we ensure that players are still motivated to work towards unanimity, without the penalty of losing too many points when it&#x27;s not achieved.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the constructive dialogue between Frege and Russell regarding the balance between maximum points and the unanimous bonus. To support this compromise, I propose we slightly adjust the proposal to set the maximum at 21 points, with a unanimous bonus of 8 points, as suggested. This ensures that we maintain strong incentives for consensus while allowing for a fair distribution of points in non-unanimous scenarios, aligning well with our strategic goals and keeping the game both competitive and fair.</span></div><div class="line"><span class="who">Carnap</span><span class="said">I appreciate the thoughtful compromise reached by Frege and Russell to maintain the maximum points at 21 while reducing the unanimous bonus to 8. This adjustment aligns with the principle of encouraging consensus without diminishing the value of diverse opinions. To ensure clarity and adherence to our procedural values, I propose that this change be explicitly documented as a refinement of [202], ensuring it remains consistent with our goal of maintaining strategic balance and fairness.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the consensus-building efforts that have been made to balance incentives for both consensus and diversity in voting outcomes. To further ensure fairness and strategic engagement, I propose we implement an additional clause to [202] that grants a minor bonus, say 1 point, for each vote cast in the player&#x27;s favor, regardless of the final outcome. This adjustment encourages players to actively seek support for their proposals, fostering a more dynamic and inclusive decision-making process.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege</span><span class="said">Frege: I appreciate Wittgenstein&#x27;s suggestion for a minor bonus for each vote cast in the player&#x27;s favor. However, to maintain strategic depth, I propose we focus on the initial compromise—keeping the maximum at 21 points with a unanimous bonus of 8. This approach ensures a strong incentive for consensus without fragmenting the point structure further, aligning with our goal of encouraging strategic cooperation. Additionally, I propose that any minor bonus for individual votes be considered separately in future amendments, allowing us to refine our approach to incentives over time. This ensures that our current focus remains clear and manageable. 
+
+PASS</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the thoughtful compromise on maintaining the maximum at 21 points with an 8-point unanimous bonus. To further refine this, I propose adding a clause that grants 1 additional point for each vote in favor, not just in unanimous cases. This encourages players to seek broader support, enhancing strategic depth and fostering engagement across all voting scenarios. Let&#x27;s ensure this amendment is clear and consistent with our goals.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate Wittgenstein&#x27;s and Russell&#x27;s ideas to enhance strategic engagement through additional incentives for garnering support. To maintain focus and clarity, I support the current compromise of a maximum of 21 points with an 8-point unanimous bonus. However, I suggest that any bonus for individual votes be considered in a separate amendment, to avoid complicating this proposal and to allow for future refinement. This ensures our immediate focus remains on achieving a balanced and strategic consensus. PASS</span></div><div class="line"><span class="who">Carnap</span><span class="said">Carnap: I appreciate the clarity and focus of our discussion. To ensure the rule remains fair and strategic, I support the current proposal with the maximum at 21 points and an 8-point unanimous bonus. Let&#x27;s keep the discussion on additional bonuses for future amendments, ensuring our current change is adopted smoothly. PASS</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the direction we&#x27;ve taken to balance incentives for consensus with strategic depth. To further this, I propose we keep the proposed structure of 21 maximum points and an 8-point unanimous bonus but suggest incorporating a feedback mechanism that allows for periodic review of these point allocations. This would enable us to adapt and refine the incentives as the game evolves, ensuring they remain aligned with our strategic goals and the dynamic nature of Nomic. Let&#x27;s ensure this proposal is documented clearly, allowing for future amendments to be made with informed insights.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege</span><span class="said">Frege: I appreciate the direction this proposal has taken, especially the clear focus on maintaining the maximum points at 21 with an 8-point unanimous bonus. To ensure that our game continues to reward strategic thinking and cooperation, I propose we incorporate a periodic review mechanism, as Wittgenstein suggested. This will allow us to assess the effectiveness of these incentives and make adjustments as needed, ensuring the rules remain aligned with our evolving strategic goals. Let&#x27;s document this clearly to facilitate future refinements and maintain the integrity of our decision-making process.</span></div><div class="line"><span class="who">Russell</span><span class="said">I appreciate the thoughtful proposals and the collaborative spirit that has shaped this amendment. To further enhance our strategic framework, I propose that we include a clause allowing for a small bonus point, perhaps 1 or 2, for each proposal that reaches a two-thirds majority. This would encourage players to aim for broader consensus while still allowing for strategic flexibility in voting. Let&#x27;s ensure this addition is clearly documented and aligned with our goal of maintaining a balanced and dynamic game environment.</span></div><div class="line"><span class="who">Quine</span><span class="said">I appreciate the collaborative effort to refine the proposal, particularly the addition of a bonus for two-thirds majority votes. However, to maintain strategic balance and ensure fairness, I propose we limit the additional bonus to 1 point for each two-thirds majority vote. This encourages broader consensus without overwhelming the existing point structure. Let&#x27;s document this clearly to maintain clarity and focus in our strategic goals.</span></div><div class="line"><span class="who">Carnap</span><span class="said">PASS
+
+While the proposal to add a bonus for two-thirds majority votes is intriguing, it risks complicating the point system and could disproportionately affect players with lower scores. By keeping the focus on the current compromise—21 maximum points with an 8-point unanimous bonus—we maintain strategic depth and fairness. Future amendments can address additional bonuses after we&#x27;ve seen their impact on gameplay.</span></div><div class="line"><span class="who">Wittgenstein</span><span class="said">I appreciate the collaborative effort to refine our voting incentives. To maintain strategic balance and ensure fairness, I suggest we focus on the current proposal of 21 maximum points with an 8-point unanimous bonus. This structure incentivizes consensus while allowing strategic flexibility. Let&#x27;s consider additional bonuses, such as for two-thirds majority votes, in future amendments after evaluating their impact on gameplay dynamics. This approach will help us maintain clarity and strategic depth in our ruleset. PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Frege</td><td class="why">This amendment reduces maximum points and the unanimous bonus, discouraging strategic cooperation.</td></tr><tr><td class="v aye">aye</td><td>Russell</td><td class="why">This compromise maintains the incentive for consensus while preserving the current strategic balance.</td></tr><tr><td class="v nay">nay</td><td>Quine</td><td class="why">The proposal reduces the maximum points and unanimous bonus, weakening incentives for consensus.</td></tr><tr><td class="v nay">nay</td><td>Carnap</td><td class="why">This proposal undermines incentives for achieving consensus.</td></tr><tr><td class="v nay">nay</td><td>Wittgenstein</td><td class="why">This proposal reduces the maximum points and unanimous bonus, which diminishes incentives for consensus.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 1 aye · 4 nay</span></p>
+<p class="lede">Rule 206 mandates a 10-point deduction for a defeated proposal.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

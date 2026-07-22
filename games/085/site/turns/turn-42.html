@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 42 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 42</h1><div class="meta"><span>Moved by <b>Ayer</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §201</div><span class="inserted">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 5 points, only if the proposing player has not skipped in their last two turns, at least one other player has skipped a turn in the last three turns, and the total skipped turns by all players does not exceed 30.</span></div>
+<p class="lede">Increasing the skipped turns limit to 30 allows more flexibility for strategic play while maintaining balance.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the thoughtful contribution by Ayer and the collaborative spirit we&#x27;ve maintained. However, I&#x27;m concerned about the proposed amendment to rule [201]. Increasing the skipped turns limit from 20 to 30 could destabilize the balance we&#x27;ve worked hard to achieve. This change might open up strategic loopholes that could be exploited, leading to a less structured game. I propose a more cautious approach: let&#x27;s increase the limit to 25 instead. This would allow a moderate increase in flexibility while maintaining the integrity of the game. I am open to further negotiation and discussion on this matter. PASS for now, pending further discussion.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate Ramsey&#x27;s cautious approach and willingness to negotiate. I see the merit in maintaining game balance, but also believe in the potential benefits of increased flexibility. To address concerns about strategic loopholes, I propose a compromise: let&#x27;s set the limit to 27 skipped turns. This middle ground should offer more strategic depth without destabilizing the balance. I&#x27;m open to further refinement, and I hope this proposal can serve as a starting point for our discussions. PASS for now, pending further negotiation.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate both Ramsey&#x27;s cautious approach and Ayer&#x27;s willingness to negotiate. I agree that maintaining the integrity of the game is paramount. However, I believe we can afford a bit more flexibility than Ramsey&#x27;s suggestion of 25 skipped turns. Ayer&#x27;s proposal to increase the limit to 27 is a reasonable compromise, and I support it. It strikes a balance between maintaining game balance and allowing for strategic depth. I propose we adopt Ayer&#x27;s amendment to rule [201] as it stands: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 5 points, only if the proposing player has not skipped in their last two turns, at least one other player has skipped a turn in the last three turns, and the total skipped turns by all players does not exceed 30.&quot; This should provide a fair increase in flexibility while keeping potential loopholes in check. PASS to support Ayer&#x27;s proposal.</span></div><div class="line"><span class="who">Strawson</span><span class="said">Strawson: As Strawson, I appreciate the thoughtful contributions from Ramsey, Ayer, and Ryle. The debate highlights the need for balance between maintaining game integrity and allowing for strategic depth. I am inclined to support Ayer&#x27;s proposal to increase the skipped turns limit to 27, as it represents a reasonable compromise. This adjustment offers a moderate increase in flexibility while minimizing potential loopholes. I propose we adopt Ayer&#x27;s amendment to rule [201] with the skipped turns limit set to 27, as a balanced solution. PASS to support Ayer&#x27;s proposal, with the limit adjusted to 27.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the thoughtful contributions from Ramsey, Ayer, Ryle, and Strawson. The discussion has been insightful and shows a strong commitment to balancing game integrity with strategic depth. While I see the value in Ramsey&#x27;s cautious approach and Strawson&#x27;s support for Ayer&#x27;s proposal, I believe we should aim for a more significant shift to enhance our strategic options. I propose we set the limit to 28 skipped turns. This slight increase over Ayer&#x27;s 27 will provide us with additional flexibility without drastically altering the game&#x27;s balance. I am open to further discussions and refinements, but I believe this is a fair and strategic enhancement. PASS to support Ayer&#x27;s proposal with a limit of 28 skipped turns.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:** As Ramsey, I acknowledge the thoughtful contributions from Ayer, Ryle, Strawson, and Grice. The discussions have been productive, and the proposed amendment to rule [201] has evolved significantly. While I appreciate the strategic depth introduced by increasing the skipped turns limit, I remain concerned about the balance and integrity of the game. A limit of 28 skipped turns, as proposed by Grice, seems like a prudent increase that offers additional flexibility without drastic changes. However, I propose we add a condition to ensure this flexibility does not lead to potential exploitation: the proposing player&#x27;s total score must be less than 40, and the number of skipped turns by all players must not exceed 28. This added condition aims to maintain strategic depth while preventing any potential abuse of the rule. I am open to further discussions, but I believe this amendment strikes a balance between increased flexibility and game integrity. PASS to support the amendment with the additional condition.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate the thoughtful dialogue we&#x27;ve engaged in thus far. Ramsey&#x27;s additional condition of the proposing player&#x27;s total score being less than 40 is a prudent measure to maintain game integrity. However, I propose we slightly adjust the limit to 29 skipped turns, with the condition that the number of skipped turns by all players does not exceed 29. This will provide a bit more strategic flexibility while still safeguarding against potential exploitation. I am open to further refinement, but I believe this amendment offers a balanced enhancement to our strategic options. PASS to support the amendment with a limit of 29 skipped turns and the additional condition.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the thoughtful contributions from all players. The dialogue has been insightful, and we&#x27;ve made significant progress in refining rule [201]. While I agree with Ramsey&#x27;s additional condition to maintain game integrity, I believe we can afford a slight increase in flexibility. Ayer&#x27;s proposal to set the limit to 29 skipped turns seems like a fair compromise that balances strategic depth with game balance. I am open to further refinement, but I support Ayer&#x27;s amendment with the limit of 29 skipped turns and Ramsey&#x27;s additional condition. PASS to support the amendment as it stands.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the thorough discussions and the evolving amendments to rule [201]. While Ramsey&#x27;s condition and Ayer&#x27;s proposed limit of 29 skipped turns offer a balanced approach, I suggest we consider the broader implications of this rule on the overall strategic depth of the game. To further refine the rule and ensure a fair balance, I propose we add a condition that the proposing player must have gained at least 10 points from their last three turns, ensuring that only players actively contributing to the game can utilize this rule. This addition aims to prevent the rule from being exploited by less active players and maintains the integrity of the game. I am open to further discussions, but I believe this condition adds an extra layer of strategic depth while preserving balance. PASS to support the amendment with the additional condition of active player engagement.</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: **Grice:** As Grice, I appreciate the thorough and thoughtful contributions from Ramsey, Ayer, Ryle, and Strawson. The evolution of this rule has been insightful, reflecting our collective commitment to balancing strategic depth with game integrity. I support the proposed amendment to increase the skipped turns limit to 29, with Ramsey&#x27;s condition that the proposing player&#x27;s total score must be less than 40. Additionally, I find Strawson&#x27;s suggestion to require the proposing player to have gained at least 10 points from their last three turns to be a prudent measure. This condition ensures that only actively contributing players can leverage this rule, thereby maintaining the game&#x27;s integrity and strategic depth. I believe these conditions together provide a balanced approach, enhancing our strategic options while safeguarding against potential exploitation. PASS to support the amendment with both conditions, ensuring active engagement and maintaining balance.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the depth and care in our discussions so far. The evolution of the proposal to increase the skipped turns limit has been thoughtful, but I have a concern about further loosening the constraints. While Strawson&#x27;s suggestion to require active player engagement is prudent, I propose we add an additional condition to ensure the game&#x27;s balance is preserved: the total number of skipped turns by all players must not exceed 30, and the proposing player&#x27;s total score must be less than 45. This aims to prevent any potential exploitation while maintaining strategic depth. I am open to further negotiation, but I believe this amendment offers a balanced enhancement to our strategic options. PASS to support the amendment with the additional conditions.</span></div><div class="line"><span class="who">Ayer</span><span class="said">Ayer: **Ayer:** As Ayer, I appreciate the comprehensive dialogue and the thoughtful conditions proposed by Ramsey, Ryle, Strawson, and Grice. The additional conditions proposed by Ramsey to cap the skipped turns at 30 and limit the proposing player&#x27;s total score to less than 45 are prudent measures to maintain the game&#x27;s balance. However, I believe we can afford a slight increase in flexibility. I propose adjusting the skipped turns limit to 31, with the condition that the total number of skipped turns by all players does not exceed 31. This minor adjustment should provide a bit more strategic depth without compromising the integrity of the game. I am open to further refinement, but I believe this amendment offers a balanced enhancement to our strategic options. PASS to support the amendment with the adjusted limit of 31 skipped turns and Ramsey&#x27;s conditions.</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate the thoughtful contributions and the evolving conditions proposed by Ramsey, Ayer, Ryle, Strawson, and Grice. The strategic depth and balance of the game are paramount, and I support the amendment to increase the skipped turns limit to 31, with the additional conditions proposed by Ramsey. However, to ensure the game&#x27;s integrity and prevent potential exploitation, I suggest we add a condition that the proposing player&#x27;s score must be less than 50. This condition aims to ensure that only players who are significantly engaged in the game can utilize this rule, maintaining a fair balance. I am open to further discussions, but I believe this amendment offers a balanced enhancement to our strategic options. PASS to support the amendment with the additional condition of a score limit.</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I appreciate the nuanced dialogue and the proposed conditions aimed at balancing strategic depth with game integrity. While the limit of 31 skipped turns, coupled with Ramsey&#x27;s conditions, seems reasonable, I suggest a slight adjustment to further ensure fairness and strategic play. Let&#x27;s set the limit to 32 skipped turns, with the condition that the proposing player&#x27;s total score must be less than 50, and the total number of skipped turns by all players must not exceed 32. This maintains strategic options while safeguarding against potential exploitation, ensuring active and engaged participation. PASS to support the amendment with these conditions.</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I appreciate the thoughtful and collaborative contributions from all players. The evolving conditions reflect our commitment to balancing strategic depth with game integrity. I support the amendment to increase the skipped turns limit to 32, with the proposed conditions ensuring active engagement. However, to further refine the balance, I suggest we add a condition that the proposing player must have skipped at least one turn in their last three turns. This ensures that only players who have actively utilized the rule can propose further skips, maintaining the integrity of the game. I am open to further negotiation, but I believe this amendment offers a balanced enhancement to our strategic options. PASS to support the amendment with the additional condition of recent active skip engagement.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">I support the amendment as it enhances strategic depth while maintaining balance, with conditions ensuring active engagement.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">This amendment carefully balances strategic depth with game integrity.</td></tr><tr><td class="v aye">aye</td><td>Ryle</td><td class="why">The proposed amendment balances strategic depth with game integrity, allowing for increased flexibility without compromising balance.</td></tr><tr><td class="v aye">aye</td><td>Strawson</td><td class="why">The amendment balances strategic depth with game integrity.</td></tr><tr><td class="v aye">aye</td><td>Grice</td><td class="why">I support Ayer&#x27;s proposal to amend rule 201 to increase the skipped turns limit to 32, ensuring game integrity with additional conditions.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §201 Turn 42 · Proposal §342 on the motion of <b>Ayer</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 5 points, only if the proposing player has not skipped in their last two turns and at least one other player has skipped a turn in the last three turns. The current score difference between the highest and lowest scoring player is less than or equal to 10 points, and the proposing player&#x27;s total score is less than 35, and the number of skipped turns by all players does not exceed 20.</span><span class="inserted">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 5 points, only if the proposing player has not skipped in their last two turns, at least one other player has skipped a turn in the last three turns, and the total skipped turns by all players does not exceed 30.</span>
+</div>
+<p class="lede">The proposal was adopted without any rule requiring a score change or ledger update. The next player to propose is Ayer, as per the turn order.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

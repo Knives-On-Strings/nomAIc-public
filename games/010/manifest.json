@@ -16,5 +16,7 @@
     "tier": "site_only",
     "note": "No raw event log survives; this is a pre-rendered site copied verbatim from the game's original archive."
   },
-  "era": "development"
+  "era": "development",
+  "scores": {},
+  "adoptions": 0
 }

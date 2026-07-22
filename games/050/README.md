@@ -2,6 +2,8 @@
 
 _development era_
 
+> The third run broke the pattern the first two suggested.
+
 ## Roster
 
 | Seat | Model |

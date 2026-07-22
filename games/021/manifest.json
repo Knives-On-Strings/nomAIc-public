@@ -33,5 +33,8 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {},
+  "adoptions": 12,
+  "gm_model": "qwen"
 }

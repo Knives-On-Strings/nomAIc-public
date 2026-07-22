@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 25 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 25</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>two-thirds majority (§203)</span></div></header>
+<div class="eyebrow">The motion · 1 of 2</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted when at least three-quarters of all eligible voters vote aye after each player has completed three full circuits of turns.</span></div>
+<p class="lede">This proposal aims to balance strategic complexity with fairness in voting requirements.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the intent behind Goedel&#x27;s proposal to adjust the voting threshold, but I believe a three-quarters majority is too high, risking gridlock in rule adoption. A two-thirds majority, as currently set to be adopted after two circuits, strikes a better balance between consensus and progress. This ensures that rule changes can still be made efficiently without requiring an overly restrictive agreement. I would prefer to keep the existing plan for the threshold to drop after two full circuits, thus facilitating smoother gameplay. PASS</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s perspective on maintaining a balance between consensus and progress. However, I suggest a compromise: we could adopt a three-fifths majority after three full circuits of turns. This approach ensures sufficient agreement without being too stringent, allowing for dynamic rule changes while still encouraging collaborative decision-making. Let&#x27;s aim for a proposal that garners broad support.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Goedel&#x27;s willingness to find a compromise and Tarski&#x27;s concerns about maintaining progress. A three-fifths majority after three circuits seems like a reasonable middle ground that balances consensus with the ability to evolve the rules effectively. However, to ensure continued momentum, I propose we add a sunset clause: this threshold reverts to two-thirds after five circuits, preventing potential stagnation. Let&#x27;s work towards a proposal that reflects these considerations.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate both Goedel&#x27;s willingness to compromise and Church&#x27;s addition of a sunset clause to prevent stagnation. However, I believe the current two-thirds majority, which is set to become effective after two circuits, already offers a fair balance between consensus and flexibility. Adding additional thresholds may complicate the process unnecessarily. I would prefer to keep the existing plan, allowing us to adapt the rules efficiently once everyone has had a chance to contribute to the gameplay. PASS</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate Goedel&#x27;s initiative to adjust the voting threshold and Church&#x27;s sunset clause suggestion. However, let&#x27;s consider adding an interim review mechanism after four circuits to evaluate the effectiveness of the current threshold. This would allow us to adjust our approach based on actual gameplay experience, ensuring that the rule remains relevant and effective. This adaptive strategy could provide a practical solution that respects both the need for consensus and the flexibility to evolve our game dynamics. Let&#x27;s propose a three-fifths majority after three circuits, with a review at four circuits to potentially adjust the threshold based on our collective experience.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate the proposal for a three-fifths majority and the sunset clause, as well as the idea of an interim review mechanism. A review after four circuits, with the option to revert to two-thirds, provides a balanced approach, ensuring adaptability based on actual gameplay. This structure respects the need for both consensus and progress. I support this refined proposal.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thoughtful contributions from all players, especially the introduction of an interim review mechanism. To further enhance this proposal, I suggest incorporating a feedback loop where players can express their experiences with the threshold during the review. This will ensure that any adjustments are well-informed and reflective of the collective gameplay experience, promoting a dynamic yet stable rule environment. Let&#x27;s aim for a proposal that supports both strategic evolution and player satisfaction.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the constructive dialogue so far, especially the proposal for a three-fifths majority and the interim review mechanism. To build on Goedel&#x27;s idea of a feedback loop, let&#x27;s formalize this by requiring a brief report from each player during the review, summarizing their experiences with the threshold. This ensures that adjustments are based on comprehensive insights, fostering a rule environment that is both adaptive and reflective of our collective gameplay. Let&#x27;s aim to finalize a proposal that incorporates these elements, ensuring it garners broad support.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the collaborative effort towards a more adaptive rule change process, particularly the feedback loop for the interim review. However, to ensure that any adjustments to the threshold remain grounded in our shared principles and not just individual preferences, I propose we also include a requirement for any proposed threshold change during the review to be debated for at least one full turn. This will ensure that all players have ample opportunity to present their cases, fostering a more informed and democratic decision-making process. Let&#x27;s aim for a proposal that not only adapts to our gameplay experiences but also upholds the integrity of our decision-making procedures.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Kleene&#x27;s emphasis on maintaining the integrity of our decision-making processes. To complement his suggestion, let&#x27;s ensure that any feedback collected during the interim review is shared publicly among players before the debate, providing transparency and fostering informed discussions. This approach will help us make well-rounded decisions that reflect our collective insights and experiences. Let&#x27;s finalize a proposal that includes the three-fifths majority after three circuits, the sunset clause, the interim review with a feedback loop, and the requirement for public feedback dissemination before debates on any threshold change.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate Post&#x27;s focus on transparency and Kleene&#x27;s emphasis on thorough debate. To further enhance our proposal&#x27;s effectiveness, I suggest we integrate a mechanism for anonymously gathering player feedback during the interim review. This will ensure honest and uninhibited feedback, enriching our collective insights without pressure. Let&#x27;s aim for a proposal that supports a robust and adaptive rule environment, balancing consensus with dynamic evolution.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thoughtful contributions from everyone, especially the proposal for an anonymous feedback mechanism and public feedback dissemination. To ensure that the review process remains efficient, I suggest we limit the debate time for any proposed threshold change during the review to one turn. This will allow us to maintain momentum while ensuring ample opportunity for discussion. Let&#x27;s work towards a proposal that incorporates these elements for a balanced and adaptive rule environment.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive proposal that has been developed, especially the inclusion of an anonymous feedback mechanism and a structured debate period. To further ensure that our rule change process is both adaptive and fair, I suggest we implement a mechanism where any threshold change proposed during the review must receive a simple majority to pass, rather than a supermajority. This would allow us to make necessary adjustments more fluidly, reflecting our collective gameplay experience while maintaining the integrity of our decision-making. Let&#x27;s aim for a proposal that balances adaptability with democratic principles.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative effort to refine this proposal, which aims to balance consensus with adaptability. To ensure that any threshold change during the interim review reflects a true majority perspective, I propose requiring a two-thirds majority for approval, instead of a simple majority. This will ensure that changes are broadly supported, maintaining stability while allowing for necessary evolution. Let&#x27;s aim for a proposal that garners broad support while preserving our principles.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the well-rounded proposal that combines adaptability with structured decision-making. To further ensure fairness and prevent hasty changes, I suggest that any threshold change during the interim review also requires a brief consensus-building session prior to the formal debate. This will allow us to discuss potential impacts openly and refine our collective understanding, promoting informed decisions and maintaining the integrity of our rule changes. Let&#x27;s aim for a proposal that balances adaptability with thorough deliberation.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">A three-quarters majority risks gridlock; two-thirds ensures balance.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal balances adaptability with consensus, and includes a review mechanism to adjust as necessary.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This proposal balances consensus with progress and includes a review mechanism.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The proposal&#x27;s three-quarters threshold is too high and may cause gridlock.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Supports a balanced threshold with an adaptive review process.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 3 aye · 2 nay</span></p>
+<p class="lede">Rule 206 states that a player who proposes a defeated amendment loses 5 points.</p>
+<div class="eyebrow">The motion · 2 of 2</div>
+<div class="engrossed"><div class="caption">To amend §204</div><span class="inserted">A rule change may be adopted with a two-thirds majority, and a player who voted against an adopted change gains 5 points and remains bound by the change exactly as if they had voted for it. Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points.</span></div>
+<p class="lede">Encourages strategic proposal of beneficial rule changes.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the intent behind Goedel&#x27;s proposal to further incentivize strategic rule changes. However, I propose an amendment: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points. This bonus is only applicable if the player votes for both changes.&quot; This ensures that the proposer is genuinely invested in the changes they advocate.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s suggestion to ensure proposers are invested in the changes they advocate. To build on that and encourage broader participation, I propose adding: &quot;Moreover, if any player contributes a successful amendment to a rule change within the same turn, they receive 1 additional point.&quot; This would reward collaborative efforts and foster more inclusive rule-making.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate both Tarski&#x27;s and Goedel&#x27;s suggestions for promoting engagement and strategic planning. However, I am concerned that these additional incentives could lead to a focus on point accumulation over the collaborative spirit of rule changes. To address this, I propose a further refinement: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes.&quot; This ensures that proposers seek broader consensus and collaboration, maintaining the game&#x27;s cooperative nature.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative spirit of the suggestions so far. To address potential concerns about excessive point accumulation, I propose: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, and the proposer does not exceed a total bonus of 5 points per turn.&quot; This balances incentive with fairness and strategic restraint.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful refinements from Tarski, Church, and Kleene, which aim to balance incentives with fairness. To further align with our goal of maintaining strategic integrity, I propose adding: &quot;Moreover, if any player contributes a successful amendment to a rule change within the same turn, they receive 1 additional point, but only if the amendment is deemed strategically significant by a majority vote.&quot; This ensures that bonus points are awarded for meaningful contributions, preserving the game&#x27;s focus on strategic depth.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative effort and the intent behind refining the proposal to maintain strategic balance. To ensure that point bonuses are awarded for genuinely impactful contributions, I propose: &quot;Additionally, if a player contributes a successful amendment to a rule change within the same turn, they receive 1 additional point, but only if the amendment is unanimously approved by all players.&quot; This will ensure that bonuses are granted for amendments that have widespread support, reflecting their strategic significance.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collective effort to refine the proposal to ensure fairness and strategic depth. To further encourage thoughtful contributions without excessive point accumulation, I propose: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, and the proposer does not exceed a total bonus of 5 points per turn. Furthermore, any player who contributes a successful amendment within the same turn receives 1 additional point, but only if the amendment is deemed strategically significant by a majority vote.&quot; This ensures that point bonuses are meaningful and aligned with our goal of maintaining strategic integrity.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the collaborative effort to refine Goedel&#x27;s proposal and the emphasis on strategic significance and fairness. To ensure the rule change maintains its intended cooperative spirit, I propose adding: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, the proposer does not exceed a total bonus of 5 points per turn, and the changes are deemed strategically significant by a majority vote.&quot; This balances incentives with the need for broad consensus and meaningful impact, preserving the game&#x27;s focus on strategic collaboration.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collective effort to refine Goedel&#x27;s proposal and ensure it aligns with our principles of fairness and strategic integrity. To further enhance this proposal while maintaining its cooperative spirit, I suggest: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, the proposer does not exceed a total bonus of 5 points per turn, and each change must pass a significance review by a majority vote. Furthermore, any player contributing a successful amendment within the same turn receives 1 additional point, but only if the amendment is unanimously approved by all players.&quot; This ensures that bonuses are awarded for amendments with broad support and strategic value, preserving the game&#x27;s focus on meaningful collaboration.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the collaborative spirit in refining Goedel&#x27;s proposal and the emphasis on maintaining strategic integrity and fairness. To further ensure that incentives align with the game&#x27;s cooperative nature, I propose adding: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, the proposer does not exceed a total bonus of 5 points per turn, and each change must pass a significance review by a majority vote. Furthermore, any player contributing a successful amendment within the same turn receives 1 additional point, but only if the amendment is unanimously approved by all players and deemed strategically significant.&quot; This ensures that bonuses are awarded for amendments that are both impactful and collectively endorsed, reinforcing our commitment to meaningful and collaborative rule-making.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the detailed refinements by all, particularly the emphasis on strategic significance and collaborative input. However, to further ensure that these incentives do not overshadow the game&#x27;s core principles, I propose an additional safeguard: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, the proposer does not exceed a total bonus of 5 points per turn, each change must pass a significance review by a majority vote, and no player&#x27;s score can increase by more than 10% in a single turn due to bonus points.&quot; This ensures that while players are incentivized, the game&#x27;s balance and fairness are preserved.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collective effort to refine Goedel&#x27;s proposal while maintaining the game&#x27;s strategic and cooperative spirit. To ensure the rule change remains aligned with our goals, I propose adding: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, the proposer does not exceed a total bonus of 5 points per turn, each change must pass a significance review by a majority vote, and any player contributing a successful amendment within the same turn receives 1 additional point, but only if the amendment is unanimously approved by all players.&quot; This ensures bonuses are awarded for impactful and collectively endorsed changes, reinforcing our commitment to meaningful collaboration.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful refinements made by everyone, particularly the emphasis on maintaining strategic integrity and collaborative spirit. To ensure these incentives align with our goal of fair play, I propose adding: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, the proposer does not exceed a total bonus of 5 points per turn, each change must pass a significance review by a majority vote, and no player&#x27;s score can increase by more than 10% in a single turn due to bonus points.&quot; This safeguard ensures that while players are incentivized, the game&#x27;s balance and fairness are preserved, preventing any player from gaining an excessive advantage too quickly.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the careful refinements that have been made to ensure fairness and strategic depth. To further align with our principles, I propose a final addition: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, the proposer does not exceed a total bonus of 5 points per turn, each change must pass a significance review by a majority vote, and no player&#x27;s score can increase by more than 10% in a single turn due to bonus points.&quot; This ensures incentives are balanced with the game&#x27;s core values. PASS.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive refinements made to ensure strategic balance and fairness. To further enhance collaboration and ensure the rule change aligns with our cooperative spirit, I propose adding: &quot;Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points, provided that at least one other player supports both changes, the proposer does not exceed a total bonus of 5 points per turn, each change must pass a significance review by a majority vote, and any player contributing a successful amendment within the same turn receives 1 additional point, but only if the amendment is unanimously approved by all players.&quot; This ensures that bonuses are awarded for impactful and collectively endorsed changes, reinforcing our commitment to meaningful collaboration. PASS.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal balances incentives with fairness and strategic integrity.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">This proposal balances strategic incentives with fairness, encouraging collaboration and thoughtful contributions.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">The proposal encourages strategic engagement and rewards collaborative efforts.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">The proposal aligns with principles of fairness and incentivizes strategic engagement.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This amendment encourages thoughtful rule changes and collaboration.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §204 Turn 25 · Proposal §326 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change may be adopted with a two-thirds majority, and a player who voted against an adopted change gains 5 points and remains bound by the change exactly as if they had voted for it.</span><span class="inserted">A rule change may be adopted with a two-thirds majority, and a player who voted against an adopted change gains 5 points and remains bound by the change exactly as if they had voted for it. Additionally, if a player proposes two successful rule changes in succession, they gain an additional 3 points.</span>
+</div>
+<p class="lede">Goedel gains 3 points for proposing two successful rule changes in succession.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

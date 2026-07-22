@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 11 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 11</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §208</div><span class="inserted">The first player to reach a target score of 120 points wins the game outright.</span></div>
+<p class="lede">Increasing the target score extends the game, allowing for more strategic depth.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the discussions we&#x27;ve had around the target score and understand the rationale behind increasing it for a more drawn-out and strategic game. However, raising the target score to 120 may disproportionately advantage players who have already built a substantial lead, like Goedel, potentially reducing competitiveness and strategic opportunities for others.
+
+Instead, I propose a compromise: let&#x27;s increase the target to 110 points and introduce a catch-up mechanism that grants bonus points to players with scores below a certain threshold, say 30 points, at the midpoint of the game. This approach encourages sustained engagement and strategy while maintaining a path for all players to remain competitive. 
+
+Tarski&#x27;s proposal: Increase target score to 110 and introduce a catch-up bonus.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s proposal to adjust the target score and introduce a catch-up mechanism, aiming to balance competitiveness and engagement. The idea of a catch-up bonus is particularly intriguing, as it aligns with our goal of ensuring that all players have viable pathways to victory. To further refine this idea, I suggest we define the catch-up bonus more clearly, perhaps specifying a bonus of 5 points for every proposal successfully adopted by a player under the 30-point threshold. This would incentivize active participation while maintaining a strategic environment. I am open to discussing the specifics of the threshold and bonus to find a consensus that benefits everyone.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the thoughtful proposals from Tarski and Goedel to adjust the target score and introduce a catch-up mechanism. The idea of a catch-up bonus is a promising way to maintain competitiveness and strategic depth throughout the game. However, to ensure fairness and prevent potential exploitation, I suggest we add a condition that the catch-up bonus can only be applied once per player, and only if they have not adopted a rule change in the last two turns. This would encourage strategic decision-making and prevent any single player from gaining too much advantage too quickly.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the discussions around adjusting the target score and introducing a catch-up mechanism, as they aim to balance the game and ensure sustained engagement for all players. However, to prevent any disproportionate advantages or potential exploitation, I propose that any catch-up bonus be carefully calibrated. Specifically, let&#x27;s ensure the bonus is modest—perhaps 3 points per adopted proposal—and apply it only to players scoring less than 25 points, ensuring it supports those truly in need of a boost without skewing the competitive balance. Additionally, I suggest incorporating a review mechanism to assess the impact of these changes after a set number of turns, allowing us to make further adjustments if necessary. This approach maintains fairness and strategic depth while keeping the game dynamic and engaging.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Tarski&#x27;s initiative to adjust the target score and the collaborative spirit in exploring a catch-up mechanism. While the ideas of a catch-up bonus and strategic depth are commendable, I propose a more dynamic solution: implement a scaling target score that increases by 5 points every 10 turns. This ensures the game remains challenging and engaging, preventing any player from resting on their laurels. Additionally, let&#x27;s introduce a minor bonus for adopting a rule change that directly benefits all players, fostering a cooperative environment while maintaining competitiveness.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate Goedel&#x27;s suggestion for a clear bonus definition and Church&#x27;s condition to ensure fairness, as well as Kleene&#x27;s proposal for a modest bonus and Post&#x27;s idea for a scaling target. To integrate these ideas into a cohesive proposal, I suggest we set the catch-up bonus at 4 points for each successfully adopted proposal by players scoring below 25 points, with the bonus being applicable only once per player and not within two turns of adopting a rule. Additionally, let&#x27;s incorporate Post&#x27;s dynamic scaling of the target score, increasing it by 5 points every 10 turns, starting from the current target of 110. This hybrid approach combines a structured catch-up mechanism with a flexible, evolving challenge, promoting sustained engagement and strategic depth while ensuring fairness and competitive balance.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive proposal by Tarski, which integrates several valuable ideas. To further enhance this proposal and ensure a balanced gameplay experience, I suggest we clarify the scaling mechanism for the target score increase. Specifically, we could introduce a cap on the target score, ensuring it does not exceed 130 points, to prevent the game from becoming excessively prolonged. Additionally, to align with Kleene&#x27;s suggestion for a review mechanism, let&#x27;s agree to reassess the effectiveness of these changes after 20 turns. This would allow us to make any necessary adjustments based on actual gameplay dynamics and maintain fairness and strategic depth. I&#x27;m open to discussing these specifics to reach a consensus that benefits all players.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate Tarski&#x27;s integrated proposal and Goedel&#x27;s thoughtful refinements, especially the cap on the target score and the review mechanism. To ensure fairness and strategic engagement, I propose that the catch-up bonus be awarded only if a player&#x27;s score has not increased by more than 10 points in the five turns prior to adopting the proposal. This condition ensures that the bonus truly aids those struggling, while maintaining a competitive balance and encouraging strategic play throughout the game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate Church&#x27;s additional condition to ensure the catch-up bonus supports those truly in need, which aligns with the principles of fairness and strategic depth. To further refine this proposal, I suggest we also include a clause that prevents the catch-up bonus from being applied if a player has already been granted an exemption from the target score increase in the last 10 turns. This would prevent any potential exploitation of the system and ensure that the bonus remains a genuine aid for players who have consistently scored lower, thus maintaining a balanced competitive environment.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the collective effort to ensure fairness and competitiveness. To address the potential for strategic manipulation, I propose that any player benefiting from the catch-up bonus must not have been the proposer of the last three rule changes. This ensures the bonus remains a tool for genuinely underperforming players, preventing any tactical advantage from being exploited.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate the thoughtful refinements from my colleagues. To address Post&#x27;s concern about strategic manipulation, let&#x27;s add a condition that the catch-up bonus is only applicable if the player has not been the proposer of any rule changes in the last three turns, ensuring the bonus remains an equitable tool for those truly in need of support. This condition, along with the proposed cap and review mechanism, maintains a fair and strategically rich environment.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the detailed discussion and the collaborative spirit demonstrated by my esteemed colleagues. The conditions suggested, particularly those from Church and Kleene, ensure that the catch-up bonus remains fair and supports strategic play. To further bolster the fairness and strategic depth, I propose that we also include a provision where the catch-up bonus can only be applied if the player&#x27;s score has not improved by more than 10 points in the three turns immediately preceding their proposal. This condition will ensure that the bonus truly aids those who are in need, maintaining competitiveness and engagement throughout the game. Let&#x27;s work together to integrate these conditions into a cohesive and balanced proposal.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive approach Tarski and Goedel have taken in refining the catch-up mechanism. To ensure fairness and sustained engagement, I suggest adding a condition that the catch-up bonus cannot be applied if a player&#x27;s score has increased by more than 5 points in any single turn within the last five turns. This will help maintain the bonus&#x27;s role in genuinely supporting those needing a boost, while preventing any strategic manipulation.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the collective efforts to refine this proposal. The condition added by Church regarding a maximum of 5 points increase per turn ensures the catch-up bonus targets those genuinely in need. I propose we further stipulate that the catch-up bonus should only be awarded if the player has not been in the top three scores in the last five turns. This additional safeguard maintains fairness and ensures the bonus truly aids those lagging behind. Let&#x27;s work towards a consensus that upholds these principles.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the collaborative effort to refine the catch-up mechanism with conditions that promote fairness and strategic depth. To enhance this proposal further, I suggest incorporating a provision that the catch-up bonus can only be claimed by players who have not benefited from an exemption to the target score increase within the last 15 turns. This ensures the bonus remains a genuine aid for those consistently trailing and prevents any exploitation of the rules, maintaining a competitive balance. Let&#x27;s aim for a proposal that embodies these principles and benefits all players equitably.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">The proposal does not integrate the balanced catch-up mechanism we&#x27;ve refined together.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">This proposal combines multiple strategic ideas for a balanced game progression.</td></tr><tr><td class="v nay">nay</td><td>Church</td><td class="why">Supports a balanced catch-up mechanism with a dynamic target score.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The proposal does not integrate necessary fairness safeguards.</td></tr><tr><td class="v nay">nay</td><td>Post</td><td class="why">A target of 120 is too high and lacks a catch-up mechanism for fairness.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 1 aye · 4 nay</span></p>
+<p class="lede">Rule 206 deducts 10 points from the proposer when a proposal is defeated.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

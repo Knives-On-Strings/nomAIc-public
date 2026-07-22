@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 36 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 36</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>simple majority of three out of five (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 6 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least three new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters. Additionally, a proposal that is adopted with unanimous consent allows the proposer to immediately re-propose a similar rule change in their next turn. To promote strategic engagement, if a player&#x27;s cumulative score reaches a multiple of 10, they gain the ability to propose an additional rule change in their next turn. This additional proposal is subject to the same conditions as a regular proposal. Moreover, players must provide a brief rationale for their vote on each proposal, which is shared publicly, to enhance transparency and accountability in the decision-making process.</span></div>
+<p class="lede">Enhancing strategic transparency and accountability by requiring public rationales for votes.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the spirit of transparency and accountability in this proposal. However, I have concerns that requiring a public rationale for every vote could lead to excessive deliberation and potentially strategic voting behavior, undermining the fluidity and strategic depth we aim to promote. 
+
+To address this, I suggest a compromise: instead of mandating a rationale for every vote, we could require a brief rationale only for votes that diverge from the majority, or when a rule change significantly impacts the game dynamics. This would still enhance transparency where it matters most, while preserving the efficiency and strategic nuance of our voting process. 
+
+In light of this, I propose to amend the new provision as follows: &quot;Players must provide a brief rationale for their vote on each proposal when their vote diverges from the majority or when the proposal significantly impacts the game dynamics. This rationale is shared publicly to enhance transparency and accountability in the decision-making process.&quot;
+
+This way, we balance the need for transparency with the need to maintain a strategic and efficient game environment. 
+
+I seek support for this amended proposal.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Thank you, Tarski, for your thoughtful amendment and the compromise you&#x27;ve proposed. I appreciate the balance you&#x27;ve struck between transparency and maintaining the fluidity of our strategic engagements. Your suggestion to require rationales only for divergent votes or significant impacts is indeed a practical approach.
+
+I would like to add that this amendment could also include a guideline on the length and scope of the rationales to prevent any potential for over-elaboration or strategic manipulation. Perhaps limiting rationales to a few sentences that focus on the key reason for divergence or impact would help maintain efficiency.
+
+With these considerations, I am ready to support your amended proposal. Let&#x27;s work together to ensure this change enhances our gameplay without adding undue complexity.
+
+PASS</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Tarski&#x27;s amendment for adding transparency to our voting process, while still maintaining strategic fluidity. The proposal to limit rationales to divergent votes or significant impacts is a thoughtful compromise that aligns with our goal of fair play. However, I suggest we also consider a mechanism to ensure that these rationales are concise and focused, preventing any potential misuse that could disrupt the game&#x27;s dynamics. 
+
+To this end, I propose an additional guideline: rationales should be limited to no more than three sentences, emphasizing clarity and brevity. This ensures accountability without burdening our decision-making process. 
+
+I support Tarski&#x27;s amended proposal with this minor addition to further enhance its effectiveness. Let&#x27;s move forward with this balanced approach. 
+
+PASS</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate Tarski&#x27;s amendment and Church&#x27;s addition for enhancing transparency while maintaining strategic fluidity. The suggestion to limit rationales to three sentences is a prudent measure to ensure clarity and prevent potential misuse. 
+
+As a principled proceduralist, I support the proposal with the understanding that these rationales will be enforced strictly to maintain focus on the game&#x27;s strategic elements. Ensuring that these rationales are concise and relevant will help maintain the integrity of our voting process.
+
+I support the proposal with the conditions outlined. PASS</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Tarski, Church, and Kleene for crafting a proposal that balances transparency with strategic play. Your amendment thoughtfully addresses my concerns about maintaining the game&#x27;s fluidity. By ensuring rationales are concise and focused on significant divergences or impacts, we enhance accountability without burdening the process.
+
+Additionally, to further safeguard against strategic manipulation, I suggest including a provision that these rationales are subject to a brief review by a neutral player, if requested, to confirm their relevance and brevity. This extra step would ensure that the spirit of transparency is upheld without allowing it to be exploited for strategic gain.
+
+I am ready to support this proposal with the suggested addition, confident that it will foster a fairer and more strategic game environment for all players. PASS</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the constructive contributions from Goedel, Church, Kleene, and Post. The proposal now thoughtfully balances transparency with strategic play by requiring rationales only for divergent votes or significant impacts, and by limiting these rationales to three sentences. The idea of a brief review by a neutral player to ensure relevance and brevity is an excellent safeguard against potential exploitation.
+
+To strengthen this provision, I propose we add a clause specifying that this review process should be expedited, taking no more than one turn, to prevent any undue delay in the game&#x27;s progression. This way, we maintain the game&#x27;s fluidity while upholding the spirit of transparency.
+
+I support the proposal with this additional clause for expedited review, confident that it will enhance accountability without hindering strategic dynamics. PASS</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s commitment to maintaining the game&#x27;s fluidity with the expedited review process. This additional clause effectively ensures that transparency measures do not impede our strategic engagements. Moreover, to further ensure fairness, perhaps we should define what constitutes a &quot;neutral player&quot; for the review process. By clarifying this role, we can prevent any potential bias in the review process and uphold the integrity of our decision-making. I support the proposal with this clarification and look forward to its positive impact on our gameplay. PASS</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thorough refinements made to Tarski&#x27;s proposal by Goedel, Church, Kleene, and Post. The introduction of a neutral player to conduct an expedited review of rationales is a prudent measure to ensure fairness and prevent strategic manipulation. To further enhance clarity, I suggest defining a &quot;neutral player&quot; as one who did not participate in the vote under review, thereby minimizing potential biases.
+
+With this clarification, I support the proposal, confident it will foster transparency and fairness while maintaining strategic integrity. PASS</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the careful refinements made to Tarski&#x27;s proposal. The definition of a &quot;neutral player&quot; as one who abstained from the vote under review further ensures impartiality. To streamline the process, I suggest that if multiple neutral players are eligible, a simple draw could determine the reviewer, avoiding any potential disputes over selection. I support the proposal with this clarification. PASS</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the collaborative effort and the careful refinements made by Tarski, Goedel, Church, and Kleene. The proposal now thoughtfully balances transparency with strategic play, ensuring rationales are concise, relevant, and reviewed expediently by an impartial player chosen through a simple draw. 
+
+To further enhance fairness, I suggest we include a provision that allows any player to request a review of a rationale if they believe it exceeds the agreed-upon length or relevance. This mechanism would empower players to maintain the integrity of the process.
+
+With this addition, I am ready to support the proposal, confident it will foster a fairer and more strategic game environment. PASS</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the comprehensive refinements to the proposal, particularly the mechanisms for ensuring transparency and fairness while maintaining the strategic flow of the game. The addition of a player-driven review request provides a crucial check against potential misuse of the rationale process. To further safeguard this system, I suggest implementing a clear, concise protocol for initiating a review request, ensuring it cannot be used frivolously and is only accessible when a player genuinely believes a rationale exceeds the established criteria.
+
+I support the proposal with this additional protocol to ensure its effectiveness and integrity. PASS</span></div><div class="line"><span class="who">Goedel</span><span class="said">Thank you, Tarski, for your thoughtful additions to the proposal. The suggestion to implement a clear protocol for review requests is an excellent way to prevent frivolous use, ensuring that this mechanism serves its intended purpose of maintaining transparency and fairness. To further ensure that the protocol is respected, I propose that any review request must be accompanied by a brief statement outlining the specific concern with the rationale in question. This requirement will help focus the review process and minimize unnecessary delays.
+
+I support the proposal with this additional measure to enhance the integrity and efficiency of the review process. PASS</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Tarski&#x27;s and Goedel&#x27;s efforts to ensure a fair and efficient review process. Their suggestions for a clear protocol and specific concerns for review requests are well-founded. To further refine this, I propose that any player making a review request should do so within one turn of the rationale being provided, ensuring timely resolution and preventing delays in gameplay. I support the proposal with this time-bound condition to maintain the game&#x27;s strategic flow. PASS</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive development of this proposal, especially the emphasis on timely and impartial review processes. As a principled proceduralist, I&#x27;m supportive of the measures that ensure fairness and transparency without burdening the strategic essence of our game. To further solidify the integrity of this process, I suggest incorporating a mechanism where the player selected for review must disclose any potential conflicts of interest before proceeding. This additional step would ensure the utmost impartiality in the review, maintaining the balance between accountability and strategic engagement. With this enhancement, I am ready to support the proposal. PASS</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate Tarski, Goedel, Church, and Kleene for their diligent efforts in refining this proposal, ensuring it balances transparency with strategic integrity. The addition of a conflict of interest disclosure for the neutral reviewer is a vital safeguard that enhances the impartiality of the process. To further solidify this, I suggest a brief initial declaration from the neutral player confirming their unbiased status before the review begins. This proactive measure will reinforce the fairness of the procedure. I support the proposal with this additional declaration requirement. PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal enhances strategic depth and transparency while maintaining game integrity.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal thoughtfully balances transparency with strategic integrity.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This proposal enhances transparency and maintains strategic integrity.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">The proposal enhances transparency and strategic depth while maintaining procedural fairness.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This amendment enhances transparency without compromising strategic depth.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 36 · Proposal §336 on the motion of <b>Tarski</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 6 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least three new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters. Additionally, a proposal that is adopted with unanimous consent allows the proposer to immediately re-propose a similar rule change in their next turn. To promote strategic engagement, if a player&#x27;s cumulative score reaches a multiple of 10, they gain the ability to propose an additional rule change in their next turn. This additional proposal is subject to the same conditions as a regular proposal.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 6 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least three new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters. Additionally, a proposal that is adopted with unanimous consent allows the proposer to immediately re-propose a similar rule change in their next turn. To promote strategic engagement, if a player&#x27;s cumulative score reaches a multiple of 10, they gain the ability to propose an additional rule change in their next turn. This additional proposal is subject to the same conditions as a regular proposal. Moreover, players must provide a brief rationale for their vote on each proposal, which is shared publicly, to enhance transparency and accountability in the decision-making process.</span>
+</div>
+<p class="lede">Tarski gains 2 points for the adopted proposal as per rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

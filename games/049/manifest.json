@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "turn limit reached"
   },
   "confirmed": false,
   "audit": {
@@ -38,5 +39,15 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Xunzi": 0,
+    "Mozi": 10,
+    "Zhuangzi": -10,
+    "Mencius": 40,
+    "HanFeizi": 30
+  },
+  "adoptions": 6,
+  "gm_model": "glm-4-9b",
+  "completed_at": "2026-07-19T13:51:13.466936+00:00"
 }

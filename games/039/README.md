@@ -2,6 +2,8 @@
 
 _development era_
 
+> Voltaire cleared the win line at turn 32 — and nobody at the table said a word.
+
 ## Roster
 
 | Seat | Model |

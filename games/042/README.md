@@ -2,6 +2,8 @@
 
 _development era_
 
+> Prolific lawmaking, punishing economy — the small end of a size comparison that does not reward volume.
+
 ## Roster
 
 | Seat | Model |

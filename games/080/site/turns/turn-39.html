@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 39 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 39</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>supermajority (75% of the votes) vote aye (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 90% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 20 points. If a proposal is adopted with at least 85% but less than 90% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 85% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus. Furthermore, if a proposal is adopted with exactly 80% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Moreover, if a proposal is adopted with at least 95% aye votes, the proposer gains an additional 10-point bonus for achieving near-unanimous support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. To encourage strategic innovation, an additional 15-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset. Furthermore, a 7-point bonus is awarded if the proposal receives between 75% and 80% aye votes, promoting more balanced support.</span></div>
+<p class="lede">This amendment encourages broader support and strategic depth, aligning incentives with collaborative play.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the proposal to introduce a 7-point bonus for 75%-80% aye votes, as it could help promote more balanced support. However, to ensure that the rule changes remain strategic and not too easily manipulated, I propose adding a condition: this bonus should only apply if the proposal has been debated for the full five minutes. This encourages meaningful discussion and discourages rushed decisions.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s thoughtful addition to encourage full debates. To further incentivize well-considered proposals, let&#x27;s add that the 7-point bonus also applies if the proposer can demonstrate, in a brief statement, how their rule change aligns with the strategic goals of the current ruleset. This would ensure the rule change is not only broadly supported but also strategically sound.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the efforts to balance support with strategic depth. To further encourage meaningful contributions, let&#x27;s add that the proposer must also receive at least one &#x27;aye&#x27; from every player to qualify for the 7-point bonus. This ensures the proposal has broad appeal and isn&#x27;t divisive.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the constructive suggestions to ensure proposals are both strategically sound and broadly appealing. To further enhance transparency and fairness, I propose adding a condition that the 7-point bonus is only awarded if the proposer provides a brief rationale for how the rule change promotes equitable play, which must be agreed upon by at least three players before the vote. This encourages thoughtful and inclusive rulemaking.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful refinements to Goedel&#x27;s proposal. To further ensure strategic innovation, let&#x27;s add that the proposer must include a brief description of how the rule change enhances or introduces a novel mechanism, agreed upon by at least two players before the debate. This promotes transparency and collaborative rule evolution.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful contributions from my colleagues, particularly the emphasis on strategic innovation and inclusive rulemaking. To further balance these goals, I propose that the 7-point bonus for achieving 75%-80% aye votes also requires that the rule change has not been proposed or defeated in the previous three turns. This encourages new and creative ideas rather than recycling past proposals. Additionally, I suggest adding a condition that the proposer must summarize the potential impacts of their rule change before the vote, ensuring all players are well-informed. Let&#x27;s continue refining this proposal to ensure it fosters both innovation and fairness in our rulemaking process.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the insightful additions from Tarski and Post, particularly the emphasis on promoting new ideas and ensuring transparency. To further encourage thoughtful participation, let&#x27;s add a requirement that the proposer must address any major concerns raised during debate before finalizing the proposal. This will help ensure that the rule change is well-considered and has addressed potential issues, promoting a more collaborative environment. Let&#x27;s work together to finalize this proposal for the benefit of all players.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the collaborative spirit and thoughtful suggestions from my colleagues, particularly Kleene&#x27;s idea to ensure broad appeal. To further enhance fairness and strategic depth, I propose adding a condition that the 7-point bonus requires the proposer to engage with at least two players during the debate to address their concerns or suggestions. This encourages active participation and ensures that the proposal is refined through constructive dialogue. Let&#x27;s continue refining this proposal to balance innovation with inclusivity in our rulemaking process.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the emphasis on strategic depth and player engagement. To further ensure thoughtful participation, let&#x27;s add that the proposer must summarize the potential impacts of their rule change and address at least two significant concerns raised during the debate before finalizing the proposal. This condition will encourage thorough discussion and ensure the rule change is well-considered. Let&#x27;s finalize this proposal to balance innovation with fairness for all players.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thorough contributions from my colleagues, especially Kleene&#x27;s suggestion to engage with players during debates. To further ensure strategic alignment, let&#x27;s add a condition that the proposer must briefly explain how their rule change aligns with the game&#x27;s current strategic goals, and this explanation should be agreed upon by at least two players before the vote. This encourages proposals that are not only innovative but also strategically sound, fostering a fairer and more dynamic game environment.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate the comprehensive effort to ensure proposals are both strategically sound and broadly appealing. To further balance these goals, I propose adding a condition that the 7-point bonus for achieving 75%-80% aye votes also requires the rule change to have undergone a peer review process, where at least two players provide written feedback prior to the debate. This encourages collaborative refinement and thoughtful consideration of the rule change&#x27;s potential impacts, ensuring it aligns with the strategic goals of the game. Let&#x27;s continue refining this proposal to enhance both innovation and fairness.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive effort to enhance collaborative refinement through peer review. To further align with the game&#x27;s strategic goals and encourage thoughtful rule evolution, let&#x27;s add a condition that the proposer must include a brief statement on how their rule change addresses a current strategic challenge or opportunity within the game. This should be agreed upon by at least three players before the vote, ensuring the proposal not only promotes innovation but also strategically benefits the game environment.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful refinements made by my colleagues, especially the emphasis on strategic alignment and peer review. To further ensure fairness and encourage strategic innovation, I propose that the 7-point bonus also requires that the proposer includes a brief rationale for how the rule change promotes equitable play, agreed upon by at least three players before the vote. This condition will ensure that the proposal not only garners balanced support but also aligns with the game&#x27;s principles of fairness and strategic depth. Let&#x27;s finalize this proposal to foster a fair and engaging rulemaking process.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the thoughtful contributions made so far, particularly the emphasis on strategic alignment and fairness. To further ensure that proposals are both innovative and equitable, I propose adding a condition that the rule change must be demonstrably beneficial to at least one player who has not been leading in score for the past three turns. This encourages proposals that provide opportunities for all players to advance, fostering a more balanced competitive environment. Let&#x27;s continue refining this proposal to ensure it promotes both strategic innovation and inclusivity in our rulemaking process.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful efforts to balance innovation with fairness and strategic depth. To further encourage proposals that address diverse player needs, let&#x27;s add a condition that the proposer must explicitly outline how their rule change benefits players with lower scores, agreed upon by at least two players before the vote. This ensures the game remains engaging and accessible for all participants, regardless of current standings. Let&#x27;s finalize this proposal to promote both strategic evolution and inclusivity.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal balances strategic innovation with fairness and promotes broad participation.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal promotes balanced support and strategic innovation.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This proposal promotes balanced support and strategic depth, enhancing fairness in rulemaking.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">The proposal promotes balanced support and strategic innovation.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Encourages strategic innovation and balanced support.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 39 · Proposal §342 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 90% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 20 points. If a proposal is adopted with at least 85% but less than 90% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 85% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus. Furthermore, if a proposal is adopted with exactly 80% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Moreover, if a proposal is adopted with at least 95% aye votes, the proposer gains an additional 10-point bonus for achieving near-unanimous support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. To encourage strategic innovation, an additional 15-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 90% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 20 points. If a proposal is adopted with at least 85% but less than 90% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 85% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus. Furthermore, if a proposal is adopted with exactly 80% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Moreover, if a proposal is adopted with at least 95% aye votes, the proposer gains an additional 10-point bonus for achieving near-unanimous support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. To encourage strategic innovation, an additional 15-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset. Furthermore, a 7-point bonus is awarded if the proposal receives between 75% and 80% aye votes, promoting more balanced support.</span>
+</div>
+<p class="lede">The proposal was adopted unanimously, so Goedel gains 30 points according to rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

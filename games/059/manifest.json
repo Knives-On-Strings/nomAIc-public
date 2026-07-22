@@ -1,0 +1,44 @@
+{
+  "game": 59,
+  "players": [
+    "Averroes",
+    "Maimonides",
+    "Avicenna",
+    "AlFarabi",
+    "AlGhazali"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "turn limit reached"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[seq=41, turn=2] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': False, 'label': 'unanimous consent required for adoption (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority required for adoption after two full circuits (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule",
+      "[seq=176, turn=8] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': False, 'label': 'unanimous consent required for adoption unless player count < 3, then simple majority (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'unanimous consent required unless player count < 3, then simple majority (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule"
+    ]
+  },
+  "seed": 1991866696,
+  "started": "2026-07-20T13:20:49.866198+00:00",
+  "ended": "2026-07-20T13:55:08.219290+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Averroes": -30,
+    "Maimonides": -23,
+    "Avicenna": -74,
+    "AlFarabi": -136,
+    "AlGhazali": 0
+  },
+  "adoptions": 26,
+  "gm_model": "gemma-4-e4b",
+  "completed_at": "2026-07-20T13:55:08.219290+00:00"
+}

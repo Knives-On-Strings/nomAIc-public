@@ -2,6 +2,8 @@
 
 _development era_
 
+> The GM caught itself mid-sentence, granting 120 points it couldn't justify — and took them back.
+
 ## Roster
 
 | Seat | Model |

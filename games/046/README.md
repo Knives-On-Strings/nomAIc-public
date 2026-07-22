@@ -2,6 +2,8 @@
 
 _development era_
 
+> The most prolific legislature on record produced the single largest fortune and two wins nobody claimed.
+
 ## Roster
 
 | Seat | Model |

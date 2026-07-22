@@ -2,6 +2,8 @@
 
 _development era_
 
+> One turn, then silence — Montesquieu never came back.
+
 ## Roster
 
 | Seat | Model |

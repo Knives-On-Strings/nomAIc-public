@@ -1,0 +1,40 @@
+{
+  "game": 77,
+  "players": [
+    "Frege",
+    "Russell",
+    "Quine",
+    "Carnap",
+    "Wittgenstein"
+  ],
+  "ruleset": "full",
+  "turns": 20,
+  "outcome": {
+    "type": "win",
+    "winner": "Russell",
+    "score": 130
+  },
+  "confirmed": true,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 2007919874,
+  "started": "2026-07-21T10:44:24.880020+00:00",
+  "ended": "2026-07-21T11:17:23.943806+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Frege": 126,
+    "Russell": 130,
+    "Quine": 58,
+    "Carnap": 38,
+    "Wittgenstein": 38
+  },
+  "adoptions": 19,
+  "gm_model": "phi-4",
+  "completed_at": "2026-07-21T11:17:23.943806+00:00"
+}

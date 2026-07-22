@@ -2,6 +2,8 @@
 
 _development era_
 
+> A rule barred negative scorers from voting — and nobody enforced it for roughly eighty-five turns.
+
 ## Roster
 
 | Seat | Model |

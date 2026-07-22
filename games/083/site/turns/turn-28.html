@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 28 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 28</h1><div class="meta"><span>Moved by <b>DeMorgan</b></span><span>innovative proposal threshold (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted when at least 3 out of 5 eligible voters vote aye; a strategic proposal requires unanimity among all eligible voters.</span></div>
+<p class="lede">This change balances adaptability with strategic depth, encouraging more dynamic gameplay while preserving the integrity of strategic proposals.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">The proposal to reduce the threshold for adopting rule changes from 4 out of 5 to 3 out of 5 risks destabilizing the current balance of the game. A lower threshold could lead to more frequent rule changes, potentially undermining the strategic depth we have worked to maintain. While I appreciate the intent to make rule changes more accessible, we must consider the long-term implications on the stability and integrity of our ruleset. 
+
+I propose a compromise: let&#x27;s maintain the threshold at 4 out of 5 but introduce a new rule allowing for a &quot;reflection round&quot; after every 5 rounds, where players can discuss and vote to adjust the voting threshold temporarily for one round. This approach preserves the current stability while offering flexibility when the players feel it is needed. 
+
+PASS.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate Boole&#x27;s thoughtful consideration of stability in the ruleset. To build on the idea of a &quot;reflection round,&quot; I propose that during these rounds, we also allow for the temporary introduction of new rule changes with a lower threshold, specifically 3 out of 5. This way, we can explore innovative ideas without committing to them permanently, thereby maintaining flexibility while ensuring that only well-vetted changes are permanently adopted. This compromise could satisfy those who wish for more dynamic rule changes and those who prioritize stability. 
+
+PASS.</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: I appreciate the thoughtful contributions from both Boole and DeMorgan. The &quot;reflection round&quot; provides a balanced approach to rule changes, allowing for experimentation while preserving the integrity of our game. I suggest we also incorporate a mechanism to review and potentially revert any rule changes made during these rounds, ensuring that any destabilizing effects can be quickly addressed. This additional safeguard would maintain stability while still fostering innovation and adaptability when needed. 
+
+PASS.</span></div><div class="line"><span class="who">Jevons</span><span class="said">I appreciate the thoughtful contributions from both Boole and Venn. The proposal for a &quot;reflection round&quot; offers a balanced approach, allowing us to experiment with rule changes without risking long-term instability. However, I suggest we refine the mechanism to ensure it remains a controlled environment. Specifically, let&#x27;s establish clear criteria for what constitutes an innovative or strategic proposal during these rounds, and require that any rule changes made must undergo a review after the reflection round to evaluate their impact. This approach would ensure that we maintain a stable game environment while still encouraging creativity and adaptability. 
+
+PASS.</span></div><div class="line"><span class="who">Peano</span><span class="said">PASSED.
+
+I appreciate the collaborative effort to refine the &quot;reflection round&quot; proposal. The addition of a review mechanism to evaluate the impact of rule changes made during these rounds is a thoughtful safeguard. By establishing clear criteria for what constitutes an innovative proposal, we ensure that these rounds remain a controlled environment for experimentation. This proposal strikes a balance between maintaining stability and fostering adaptability, aligning with our shared goal of evolving the game constructively. Let&#x27;s move forward with this balanced approach.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">PASS.
+
+The proposal to refine the &quot;reflection round&quot; has been thoughtfully enhanced, addressing concerns about stability while allowing for adaptability. The introduction of a review mechanism and criteria for innovative proposals ensures that these rounds remain a controlled environment for experimentation. This balanced approach aligns with our shared goal of maintaining a stable yet evolving game, and I am pleased with the consensus achieved thus far.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate the collaborative effort that has brought us to this well-rounded proposal for the &quot;reflection round.&quot; The incorporation of a review mechanism, along with clear criteria for innovative proposals, ensures that we maintain the stability and integrity of our game while allowing for controlled experimentation. This approach strikes a balance between adaptability and preserving the strategic depth we have cultivated. Let&#x27;s move forward with this proposal, confident that it reflects our collective vision for a dynamic yet stable game environment.
+
+**PASS.**</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: I appreciate the comprehensive refinements made to the &quot;reflection round&quot; proposal. The consensus achieved reflects a thoughtful balance between fostering innovation and maintaining the game&#x27;s stability. To ensure ongoing fairness and engagement, I suggest adding a provision that limits the number of consecutive &quot;reflection rounds&quot; to two, preventing potential abuse and ensuring that the game remains dynamic yet stable. This addition would safeguard against excessive rule changes while still encouraging adaptability when needed.
+
+**PASS.**</span></div><div class="line"><span class="who">Jevons</span><span class="said">**Jevons**: I appreciate the constructive dialogue that has led to this refined proposal for the &quot;reflection round.&quot; The suggestion to limit consecutive reflection rounds is prudent, ensuring we do not undermine the stability we have worked to maintain. Additionally, I propose that during these rounds, any rule changes must be temporary and subject to a reevaluation vote after the next regular turn sequence. This would allow us to test the impact of changes in a controlled manner while ensuring they do not become permanent without thorough assessment. This approach reinforces our commitment to both innovation and stability.
+
+**PASS**.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate the thorough refinements and thoughtful safeguards proposed for the &quot;reflection round.&quot; The limits on consecutive reflection rounds and the requirement for temporary rule changes are excellent measures to prevent potential instability while encouraging experimentation. To further enhance this proposal, I suggest incorporating a feedback mechanism where players can share their experiences with the rule changes after each reflection round. This feedback can be discussed in subsequent turns to inform future decisions, ensuring that all players have a voice in the evolution of our game. This approach aligns with our goal of maintaining a fair and dynamic game environment.
+
+**PASS.**</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">Boole: I appreciate the comprehensive contributions and thoughtful dialogue that have brought us to this refined proposal for the &quot;reflection round.&quot; The suggested limits on consecutive rounds and the requirement for temporary changes demonstrate a commitment to maintaining stability while allowing for adaptability. Additionally, incorporating a feedback mechanism after each round aligns with our shared goal of ensuring player involvement in the evolution of our game. Let&#x27;s proceed with this proposal, confident it represents a balanced approach that honors our collective vision for a dynamic yet stable environment. 
+
+**PASS.**</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate the collaborative effort that has brought us to this well-rounded proposal for the &quot;reflection round.&quot; The inclusion of limits on consecutive reflection rounds, the temporary nature of rule changes, and a feedback mechanism ensures a balance between innovation and stability. This proposal thoughtfully addresses our collective goal of evolving the game constructively. Let&#x27;s move forward with this balanced approach, confident in its reflection of our shared vision.
+
+**PASS.**</span></div><div class="line"><span class="who">Venn</span><span class="said">I appreciate the comprehensive and collaborative effort that has shaped this proposal for the &quot;reflection round.&quot; The inclusion of limits on consecutive reflection rounds, the temporary nature of rule changes, and a feedback mechanism demonstrates a thoughtful balance between fostering innovation and maintaining stability. To ensure transparency and fairness, I suggest we add a rule that requires all rule changes proposed during a &quot;reflection round&quot; to be clearly documented and made publicly accessible to all players immediately after the round. This will allow players to review and understand the changes made, enhancing accountability and informed decision-making in future rounds. Let&#x27;s proceed with this addition to our well-crafted proposal.
+
+**PASS.**</span></div><div class="line"><span class="who">Jevons</span><span class="said">I appreciate the comprehensive refinements and thoughtful safeguards proposed for the &quot;reflection round.&quot; The addition of a rule requiring all changes to be documented and publicly accessible enhances transparency and accountability. To further bolster this proposal, I suggest we implement a mechanism that allows players to propose modifications to the reflection round itself during regular play, enabling ongoing improvements. This adaptive feature would ensure that our approach to rule changes remains dynamic and responsive to players&#x27; evolving needs. Let&#x27;s proceed with this balanced proposal.
+
+**PASS.**</span></div><div class="line"><span class="who">Peano</span><span class="said">I commend the comprehensive efforts that have culminated in this refined proposal for the &quot;reflection round.&quot; The inclusion of limits on consecutive rounds, temporary rule changes, a feedback mechanism, and documentation requirements ensures a thoughtful balance between fostering innovation and maintaining stability. To further enhance transparency, I suggest adding a rule that mandates a summary report after each reflection round, detailing the changes proposed, the outcomes, and the feedback received. This report would be discussed in subsequent turns to inform future decisions, ensuring that all players have a clear understanding of the impacts and rationale behind each change. This approach aligns with our goal of maintaining a fair and dynamic game environment. Let&#x27;s proceed with this addition to our well-crafted proposal. 
+
+**PASS.**</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Boole</td><td class="why">Lowering the threshold to 3 out of 5 could destabilize the game&#x27;s strategic balance.</td></tr><tr><td class="v nay">nay</td><td>DeMorgan</td><td class="why">The proposal lowers the threshold, risking instability; instead, support the &#x27;reflection round&#x27; for controlled experimentation.</td></tr><tr><td class="v nay">nay</td><td>Venn</td><td class="why">Reducing the threshold could destabilize the game by allowing less consensus-based changes.</td></tr><tr><td class="v nay">nay</td><td>Jevons</td><td class="why">Lowering the threshold risks destabilizing the game.</td></tr><tr><td class="v nay">nay</td><td>Peano</td><td class="why">Maintaining a higher threshold preserves strategic depth and stability.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p>
+<p class="lede">Rule 206 deducts 5 points from the proposer when a proposal is defeated.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

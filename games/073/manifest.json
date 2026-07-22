@@ -1,0 +1,35 @@
+{
+  "game": 73,
+  "players": [
+    "Diogenes",
+    "Crates",
+    "Hipparchia",
+    "Antisthenes",
+    "Menippus"
+  ],
+  "ruleset": "full",
+  "turns": 7,
+  "outcome": null,
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1215806255,
+  "started": "2026-07-21T04:02:21.949318+00:00",
+  "ended": null,
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Diogenes": 3,
+    "Crates": 17,
+    "Hipparchia": 0,
+    "Antisthenes": 0,
+    "Menippus": 0
+  },
+  "adoptions": 6,
+  "gm_model": "gemma-4-12b-q2"
+}

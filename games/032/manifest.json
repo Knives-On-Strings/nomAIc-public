@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "turn limit reached"
   },
   "confirmed": false,
   "audit": {
@@ -74,5 +75,15 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Aquinas": -178,
+    "Hypatia": -83,
+    "Confucius": -107,
+    "Spinoza": -148,
+    "Arendt": -105
+  },
+  "adoptions": 46,
+  "gm_model": "qwen3.5-35b-a3b",
+  "completed_at": "2026-07-16T11:19:54.676322+00:00"
 }

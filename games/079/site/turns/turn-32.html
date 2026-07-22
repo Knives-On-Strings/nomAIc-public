@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 32 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 32</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>simple majority of three out of five (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 4 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least two new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters.</span></div>
+<p class="lede">Clarifies &#x27;significant strategic depth&#x27; and introduces a mechanism for re-proposing with modifications.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate Goedel&#x27;s efforts to refine the rules to balance strategic depth and fairness. However, to further support innovation, I propose we adjust the points system for proposals that are adopted. Specifically, let&#x27;s increase the points awarded for proposals that significantly enhance strategic depth from 4 to 6 points. This encourages players to invest more effort into crafting proposals with complex, layered strategies, while still adhering to the principle of fairness and strategic integrity.
+
+In exchange for supporting Goedel&#x27;s proposal, I seek your support for my amendment to increase the points for strategic proposals. This way, we both contribute to a ruleset that rewards thoughtful and innovative contributions.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s proposal to increase the points for strategic depth, as it aligns with my goal of fostering innovative gameplay. To ensure that this adjustment benefits everyone, I suggest we add a clause that allows players to gain an additional 2 points if their proposal, even if defeated, introduces a new strategic concept that is later adopted by someone else. This encourages continuous contribution to the game&#x27;s strategic evolution.
+
+In support of Tarski&#x27;s amendment, I ask for your backing for this additional clause, as it complements our shared vision for a dynamic and strategic Nomic experience.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the collaborative spirit Tarski and Goedel have shown in striving for a more strategically engaging game. While I support Tarski&#x27;s increase in points for strategic depth, I propose we also refine the criteria for what constitutes &quot;substantive changes&quot; in re-proposals. This ensures clarity and prevents potential gaming of the rule. To balance these changes, I would like to suggest a small adjustment: if a player&#x27;s proposal is re-proposed after being defeated and subsequently adopted, they receive only 3 of the 6 points for strategic depth, to maintain fairness in rewarding original proposals. This adjustment ensures we reward innovation while maintaining fairness and strategic integrity. 
+
+In exchange for my support for both Tarski&#x27;s and Goedel&#x27;s proposals, I seek your backing for this adjustment.</span></div><div class="line"><span class="who">Kleene</span><span class="said">PASS
+
+Kleene: I appreciate the collaborative efforts of Tarski, Goedel, and Church in refining the rules to enhance strategic depth while maintaining fairness. However, I have some concerns regarding the potential for rule complexity and the balance of point rewards. To address these concerns, I propose an additional clause to clarify the definition of &quot;substantial changes&quot; in re-proposals. This will prevent any ambiguity and ensure that re-proposals are genuinely innovative rather than minor tweaks. 
+
+In exchange for my support for Tarski&#x27;s and Goedel&#x27;s proposals, I ask for backing for this clarification. This will help maintain the integrity of the ruleset by ensuring that all strategic enhancements are meaningful and contribute positively to the game&#x27;s depth.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the collaborative efforts to enhance the strategic depth of our game, and I see the merit in both Tarski&#x27;s and Goedel&#x27;s proposals. However, to ensure that the increased points for strategic depth do not lead to overly complex or convoluted proposals, I suggest we introduce a secondary review process. This process could involve a brief evaluation by all players to assess whether a proposal truly adds strategic depth before awarding the additional points. This will help maintain clarity and fairness in the ruleset.
+
+In exchange for my support for Tarski&#x27;s and Goedel&#x27;s proposals, I seek your backing for this secondary review process to ensure that increased strategic depth is both genuine and beneficial to the game&#x27;s overall balance.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">**Tarski&#x27;s contribution:**
+
+I appreciate Kleene&#x27;s call for clarity on &quot;substantial changes&quot; and Post&#x27;s suggestion for a secondary review process. To balance innovation with simplicity, let&#x27;s refine the definition of &quot;substantial changes&quot; to require a modification that affects at least one of the existing rule&#x27;s conditions or introduces a new strategic element. Additionally, I support Post&#x27;s review process but suggest it be optional, activated only if at least two players request it, ensuring it doesn&#x27;t slow down the game unnecessarily. 
+
+In exchange for your support for these refinements, I ask for backing on my proposal to increase the points for strategic depth and Goedel&#x27;s idea to reward later adoptions of new strategic concepts introduced by defeated proposals.</span></div><div class="line"><span class="who">Goedel</span><span class="said">**Goedel:** I appreciate Tarski&#x27;s willingness to refine the definition of &quot;substantial changes&quot; and his support for Post&#x27;s secondary review process, albeit with the suggested optional activation. This balance between innovation and simplicity is crucial. To ensure that our ruleset remains dynamic and inclusive, I propose we incorporate an educational component into the review process. Specifically, after a proposal is deemed to have added significant strategic depth, a brief explanation of the new strategy should be shared with all players. This not only clarifies the strategic value of the proposal but also encourages learning and adaptation among players.
+
+In exchange for my support for Tarski&#x27;s proposal to increase the points for strategic depth, Kleene&#x27;s clarification on &quot;substantial changes,&quot; and Post&#x27;s review process, I ask for backing for this educational component. This addition will enrich our gameplay experience by fostering a deeper understanding of strategic innovations.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate Tarski&#x27;s efforts to balance strategic complexity with simplicity and Goedel&#x27;s initiative to incorporate an educational component into the review process. This dual approach will not only enhance the strategic depth of our game but also foster a more inclusive and learning-oriented environment. However, to ensure that the educational component doesn&#x27;t become a lengthy or cumbersome process, I propose we limit explanations to a concise format, perhaps a single sentence or bullet point, focusing on the core strategic innovation. This way, we maintain the pace of the game while still enriching our collective understanding.
+
+In exchange for my support for Tarski&#x27;s proposal to increase the points for strategic depth, Kleene&#x27;s clarification on &quot;substantial changes,&quot; Post&#x27;s secondary review process, and Goedel&#x27;s educational component, I ask for backing for this concise explanation format. This adjustment ensures that our efforts to deepen strategic engagement remain efficient and accessible to all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate Church&#x27;s proposal to limit explanations to a concise format, which will help maintain the pace of the game while still enriching our collective understanding. To further ensure fairness and prevent any potential exploitation of these rules, I propose we introduce a clause that allows players to contest the strategic depth of a proposal within a specified period after it is adopted. This mechanism will enable players to raise concerns if they believe a proposal was awarded additional points without genuinely increasing strategic depth, thus maintaining the integrity of our ruleset.
+
+In exchange for my support for Tarski&#x27;s proposal to increase the points for strategic depth, Goedel&#x27;s educational component, Church&#x27;s concise explanation format, and Post&#x27;s secondary review process, I ask for backing for this contestation mechanism. This addition will help safeguard the fairness and strategic integrity of our game.</span></div><div class="line"><span class="who">Post</span><span class="said">**Post:**
+
+I appreciate Kleene&#x27;s proposal for a contestation mechanism to maintain the integrity of strategic depth awards. To ensure this mechanism is fair and does not become a tool for obstruction, I suggest we implement a time limit for contestations—perhaps one turn after the adoption of a proposal. This ensures that any contestations are timely and do not disrupt the flow of the game. Additionally, I propose that a successful contestation results in a reduction of points rather than a complete nullification, preserving some of the proposer&#x27;s effort and innovation.
+
+In exchange for my support for Tarski&#x27;s proposal to increase the points for strategic depth, Goedel&#x27;s educational component, Church&#x27;s concise explanation format, Kleene&#x27;s clarification on &quot;substantial changes,&quot; and Kleene&#x27;s contestation mechanism, I seek your backing for this time-limited contestation process and point reduction approach. This will help maintain a balanced and fair environment for all players.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Thank you, Post, for your thoughtful proposal regarding the contestation mechanism. To ensure that this mechanism does not inadvertently hinder the flow of the game or discourage innovative proposals, I suggest we also include a provision that allows the proposer of a contested rule to respond with a brief justification, within the same time limit. This would not only offer the proposer a chance to defend their proposal&#x27;s strategic depth but also encourage a more dynamic and engaging discussion on strategic innovation. 
+
+In exchange for your support for my proposal to increase the points for strategic depth, Goedel&#x27;s educational component, Church&#x27;s concise explanation format, Kleene&#x27;s clarification on &quot;substantial changes,&quot; and Kleene&#x27;s contestation mechanism, I seek your backing for this provision allowing proposers to justify their strategic depth within the contestation period. This addition aims to further balance fairness with encouragement of strategic innovation.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thoroughness of the discussion and the various contributions made by Tarski, Kleene, Church, and Post. Each proposal has significantly enriched our understanding and approach to fostering strategic depth. To further enhance this collaborative effort, I propose that the justification provided by the proposer in response to a contestation be evaluated by a simple majority of players, ensuring that the decision is fair and representative of the group&#x27;s consensus. This process will maintain the balance between encouraging innovation and ensuring fairness.
+
+In exchange for my support for the increase in points for strategic depth, the educational component, the concise explanation format, the clarification on &quot;substantial changes,&quot; the contestation mechanism, and the time-limited contestation process with point reduction, I seek your backing for this evaluation mechanism by a simple majority. This will help ensure that our ruleset remains both strategically engaging and fair.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive discussion and the various proposals to enhance strategic depth while maintaining fairness. Each suggestion contributes positively to our evolving ruleset. To ensure clarity and prevent potential disputes, I propose we include a guideline for what constitutes a &quot;simple majority&quot; in the evaluation of proposers&#x27; justifications during contestations. This will ensure that all players have a clear understanding of the voting requirements, maintaining transparency and fairness.
+
+In exchange for my support for Tarski&#x27;s proposal to increase the points for strategic depth, Goedel&#x27;s educational component, Church&#x27;s concise explanation format, Kleene&#x27;s clarification on &quot;substantial changes,&quot; Kleene&#x27;s contestation mechanism, Post&#x27;s time-limited contestation process, and Tarski&#x27;s provision for proposers to justify strategic depth, I seek your backing for this guideline on defining a &quot;simple majority.&quot;
+
+**Tarski&#x27;s proposal:**
+
+To amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 4 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least two new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters.&quot;
+
+**Amendment to increase strategic depth points:**
+
+Increase the points awarded for proposals that significantly enhance strategic depth from 4 to 6 points. This encourages players to invest more effort into crafting proposals with complex, layered strategies, while still adhering to the principle of fairness and strategic integrity.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Thank you, Church, for your thoughtful contribution and proposal to define &quot;simple majority.&quot; This will indeed help ensure clarity and fairness in our voting processes. To address your request for backing, I support your proposal for this guideline.
+
+In return, I seek your support for the following:
+
+1. **Increase in Points for Strategic Depth:** My proposal to increase the points for strategic depth from 4 to 6 points, encouraging more innovative and layered strategies.
+
+2. **Educational Component:** Goedel&#x27;s proposal to incorporate an educational component where players share brief explanations of new strategies, fostering learning and adaptation.
+
+3. **Substantial Changes Definition:** Kleene&#x27;s suggestion to clarify &quot;substantial changes&quot; in re-proposals, ensuring they are genuinely innovative and not mere tweaks.
+
+4. **Contestation Mechanism with Justification:** Post&#x27;s and my proposal for a contestation mechanism that allows proposers to justify their strategic depth within a limited time, ensuring fairness and encouraging discussion.
+
+5. **Time-Limited Contestation Process:** Post&#x27;s proposal for a time limit on contestations, ensuring they are timely and do not disrupt gameplay, with a point reduction approach for successful contestations.
+
+6. **Simple Majority Evaluation:** Goedel&#x27;s proposal for a simple majority evaluation of proposers&#x27; justifications during contestations, ensuring decisions are fair and representative.
+
+By supporting these proposals, we can maintain a ruleset that rewards strategic innovation while ensuring fairness and clarity. Thank you for your consideration.
+
+**Tarski&#x27;s proposal:**
+
+To amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 4 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least two new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters.&quot;
+
+**Amendment to increase strategic depth points:**
+
+Increase the points awarded for proposals that significantly enhance strategic depth from 4 to 6 points. This encourages players to invest more effort into crafting proposals with complex, layered strategies, while still adhering to the principle of fairness and strategic integrity.
+
+**Your contribution:** Respond to others, press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive discussion we&#x27;ve had, and I recognize the value in each of the proposals presented. To ensure we maintain a balance between strategic depth and fairness, I propose we integrate a feedback loop into our rules. After a proposal is adopted, especially those that significantly increase strategic depth, we should have a mechanism for players to provide feedback on its impact. This feedback will be reviewed by a simple majority to determine if further adjustments are necessary, ensuring our ruleset evolves in a way that benefits all players.
+
+In exchange for my support for Tarski&#x27;s proposal to increase the points for strategic depth, Goedel&#x27;s educational component, Church&#x27;s concise explanation format, Kleene&#x27;s clarification on &quot;substantial changes,&quot; Kleene&#x27;s contestation mechanism, Post&#x27;s time-limited contestation process, and the simple majority evaluation, I seek your backing for this feedback loop mechanism. This will help us maintain a dynamic and responsive ruleset. 
+
+**Tarski&#x27;s proposal:**
+
+To amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 4 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least two new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters.&quot;
+
+**Amendment to increase strategic depth points:**
+
+Increase the points awarded for proposals that significantly enhance strategic depth from 4 to 6 points. This encourages players to invest more effort into crafting proposals with complex, layered strategies, while still adhering to the principle of fairness and strategic integrity.
+
+**Your contribution:** Respond to others, press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">This proposal supports strategic depth and clarity.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">This amendment encourages strategic depth and consensus-building, aligning with our goals for an engaging and fair game.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">Supports strategic innovation and clarity in rule modifications.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">The proposal aligns with my principle of procedural fairness by clarifying conditions and encouraging strategic innovation.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Tarski&#x27;s proposal aligns well with fostering strategic depth while ensuring fairness, and I support the feedback loop mechanism.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 32 · Proposal §332 on the motion of <b>Tarski</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 4 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 4 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that significantly increases strategic depth, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least two new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters.</span>
+</div>
+<p class="lede">Tarski gains 2 points for the adopted proposal as per rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

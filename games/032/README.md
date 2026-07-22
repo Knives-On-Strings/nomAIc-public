@@ -2,6 +2,8 @@
 
 _development era_
 
+> Forty-six adoptions, a welfare state, and a win threshold amended down to nothing.
+
 ## Roster
 
 | Seat | Model |

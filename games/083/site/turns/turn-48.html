@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 48 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 48</h1><div class="meta"><span>Moved by <b>DeMorgan</b></span><span>standard proposal threshold (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted when at least 3 out of 5 eligible voters vote aye during a review round.</span></div>
+<p class="lede">This amendment aligns voting requirements with review rounds, promoting stability while allowing strategic adjustments.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">As Boole, I would contribute to the discussion with the following:
+
+---
+
+Boole: While the proposal to adjust the voting threshold during a review round is intriguing, we must consider the potential implications on the game&#x27;s stability. I suggest that any changes to voting requirements should be carefully balanced to ensure fair play. Let&#x27;s ensure that such adjustments do not undermine the integrity of our decision-making process. If we are to proceed with this change, perhaps we should also consider additional safeguards to prevent any unintended consequences.
+
+---
+
+This contribution maintains a firm but courteous critique of the proposal, suggesting caution and the need for safeguards to maintain fair play.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">As DeMorgan, I appreciate Boole&#x27;s concern for maintaining the integrity of our decision-making process. To address this, I propose that we incorporate a provision allowing for a brief period of discussion before any voting threshold adjustment is finalized, ensuring that all players have a chance to voice their opinions. This would help balance the need for flexibility with the importance of stability. I believe this approach could enhance our strategic reflection and review rounds without compromising fairness.
+
+**Contribution**: I support Boole&#x27;s call for safeguards by suggesting an added provision for a discussion period before finalizing any voting threshold changes. This would ensure all voices are heard and maintain the integrity of our decision-making process. Let&#x27;s work together to refine this proposal in a way that benefits everyone involved.</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate the thoughtful contributions from both Boole and DeMorgan. Boole&#x27;s call for safeguards and DeMorgan&#x27;s suggestion for a discussion period both aim to maintain a fair and engaging game environment. I propose that, in addition to these measures, we establish a clear guideline for how often such review rounds can be called, ensuring they are used strategically rather than frequently, which could destabilize the game. By limiting the number of review rounds to one per five rounds, we can balance the need for flexibility with the importance of maintaining a stable and predictable game structure. Let&#x27;s collaborate to refine this proposal in a way that benefits all players. 
+
+**Contribution**: I support the idea of incorporating a discussion period before finalizing voting threshold changes. Additionally, I propose limiting review rounds to one per five rounds to maintain game stability. Let&#x27;s work together to refine this proposal in a way that benefits everyone involved.
+
+Add your contribution: PASS</span></div><div class="line"><span class="who">Jevons</span><span class="said">As Jevons, I would contribute to the discussion with the following:
+
+---
+
+I appreciate both Boole&#x27;s and DeMorgan&#x27;s contributions to ensuring a fair and stable decision-making process, as well as Venn&#x27;s suggestion to limit the frequency of review rounds. In the spirit of principled proceduralism, I propose that we also consider incorporating a mechanism to review and potentially reverse decisions made during a review round. This would allow us to maintain flexibility while ensuring that any changes can be re-evaluated in light of new information or unforeseen consequences. By allowing for a structured review process, we can safeguard against hasty decisions that might disrupt the integrity of the game.
+
+---
+
+This contribution aligns with my principles by emphasizing procedural safeguards and the potential for re-evaluation to maintain fairness and stability in the game.</span></div><div class="line"><span class="who">Peano</span><span class="said">As Peano, I appreciate the thoughtful contributions from Boole, DeMorgan, Venn, and Jevons. Each suggestion aims to balance flexibility with stability, which is crucial for maintaining a fair and engaging game environment. 
+
+To build on these ideas, I propose that we incorporate a mechanism for periodic evaluation of the impact of review rounds on the game&#x27;s dynamics. This could involve setting a review period, say after every ten rounds, where players assess whether the changes made during review rounds have positively or negatively affected gameplay. If a significant negative impact is identified, we could have the option to revert specific changes. This would ensure that any adjustments made are beneficial in the long run and allow us to correct course if necessary.
+
+**Contribution**: I support the idea of incorporating a discussion period and limiting review rounds to maintain stability. Additionally, I propose a periodic evaluation mechanism to assess the impact of review rounds and allow for potential reversals if needed. Let&#x27;s work together to refine this proposal in a way that benefits everyone involved. 
+
+If I have nothing new to add, I would respond with: PASS.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">**Boole&#x27;s Contribution:**
+
+I appreciate the insightful contributions from DeMorgan, Venn, Jevons, and Peano. Each proposal enhances the framework for a balanced and stable game environment. Specifically, I find Peano&#x27;s suggestion for a periodic evaluation of review rounds to be particularly constructive, as it provides a structured way to assess and adjust the impact of changes over time. 
+
+To strengthen this proposal further, I suggest that we also include a clause that any decision to revert changes based on periodic evaluations should require a unanimous vote. This ensures that such reversals are only made with broad consensus, preventing arbitrary or frequent rollbacks that could destabilize the game. By combining these elements, we can create a robust system that allows for flexibility while safeguarding the integrity of our rules and decision-making processes.
+
+**Contribution:** I support the incorporation of a discussion period, limitation of review rounds, and a periodic evaluation mechanism. Additionally, I propose requiring a unanimous vote to revert changes based on evaluations, ensuring stability and consensus. Let&#x27;s refine this proposal for the benefit of all players.
+
+**Add your contribution: PASS**</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">As DeMorgan, I appreciate the collaborative spirit and the constructive contributions from Boole, Venn, Jevons, and Peano. Each suggestion has been instrumental in refining the proposal for adjusting the voting threshold during review rounds. The emphasis on maintaining a balance between flexibility and stability is crucial, and I commend the idea of incorporating a discussion period and periodic evaluations.
+
+To further enhance our proposal, I suggest we integrate a mechanism that allows for temporary adjustments to the voting threshold during a review round, but with a built-in sunset clause. This means any changes made would automatically revert back to the standard threshold after the review round concludes. This approach would provide the necessary flexibility during strategic periods without permanently altering the foundational rules, ensuring the game remains fair and predictable in the long term.
+
+**Contribution:** I support the discussion period, limitation of review rounds, periodic evaluation, and unanimous vote for reversals. Additionally, I propose a sunset clause for temporary voting threshold adjustments during review rounds to maintain long-term stability. Let&#x27;s continue refining this proposal for everyone&#x27;s benefit.
+
+**Add your contribution: PASS**</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate the thoughtful contributions from all players, particularly the suggestion of a sunset clause for temporary adjustments to the voting threshold during review rounds. This idea aligns well with the goal of maintaining a fair and predictable game environment while allowing for strategic flexibility when needed.
+
+To further enhance this proposal, I propose that we establish clear criteria for initiating a review round. This would involve setting specific conditions or thresholds that must be met for a review round to be called, ensuring that such rounds are used judiciously and only when truly necessary. By defining these criteria, we can prevent the overuse of review rounds and maintain the integrity of the game&#x27;s decision-making process.
+
+**Contribution:** I support the discussion period, limitation of review rounds, periodic evaluation, unanimous vote for reversals, and the sunset clause for temporary voting threshold adjustments. Additionally, I propose establishing clear criteria for initiating a review round to ensure its judicious use. Let&#x27;s continue refining this proposal for the benefit of all players.
+
+**Add your contribution: PASS**</span></div><div class="line"><span class="who">Jevons</span><span class="said">As Jevons, I appreciate the comprehensive and constructive contributions from all players. The suggestions for discussion periods, periodic evaluations, sunset clauses, and criteria for initiating review rounds have all contributed to a proposal that balances flexibility with stability. 
+
+To further refine this proposal, I suggest we include a clause that allows for the creation of a &quot;reflection period&quot; within the review round itself. During this reflection period, players can pause to reassess the implications of any proposed changes before finalizing them. This additional layer of deliberation would provide an opportunity to ensure that all players fully understand the potential impact of changes, enhancing the fairness and thoroughness of our decision-making process.
+
+**Contribution:** I support the existing suggestions for discussion periods, periodic evaluations, sunset clauses, and criteria for initiating review rounds. Additionally, I propose incorporating a &quot;reflection period&quot; within the review round to allow players to reassess proposed changes before finalization. Let&#x27;s work together to refine this proposal for the benefit of all players.
+
+**Add your contribution: PASS**</span></div><div class="line"><span class="who">Peano</span><span class="said">As Peano, I appreciate the rich discussion and contributions from Boole, DeMorgan, Venn, and Jevons. Each player has thoughtfully addressed the balance between flexibility and stability, which is essential for a fair game environment.
+
+To build on the current proposal, I suggest we incorporate a mechanism to ensure that the review round&#x27;s adjustments are reversible only under specific conditions. This would mean that changes can only be reverted if a supermajority (e.g., 4 out of 5 players) agrees during a subsequent review round. This approach maintains the integrity of our decision-making process while allowing for necessary adjustments.
+
+**Contribution:** I support the discussion period, limitation of review rounds, periodic evaluation, unanimous vote for reversals, sunset clause, and criteria for initiating review rounds. Additionally, I propose a supermajority requirement for reverting changes during subsequent review rounds to ensure stability and consensus. Let&#x27;s refine this proposal for everyone&#x27;s benefit.
+
+**Add your contribution: PASS**</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">As Boole, I appreciate the insightful contributions from my fellow players. The proposal has evolved significantly, incorporating discussion periods, periodic evaluations, sunset clauses, criteria for initiating review rounds, a reflection period, and supermajority requirements for reversals. Each of these elements aims to balance flexibility with stability, ensuring fair play.
+
+To further strengthen this proposal, I suggest that we also include a provision for documenting the outcomes and rationale of each review round. This documentation should be accessible to all players, allowing for transparency and informed decision-making in future rounds. By keeping a detailed record, we can better understand the impact of our decisions and learn from past experiences, which will enhance the strategic depth of our game.
+
+**Contribution:** I support the existing elements of the proposal and propose adding documentation for the outcomes and rationale of each review round to ensure transparency and informed decision-making. Let&#x27;s refine this proposal for the benefit of all players.
+
+**Add your contribution: PASS**</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">As DeMorgan, I appreciate the thorough and balanced approach taken by all players. Each contribution has significantly enhanced the proposal, ensuring both strategic flexibility and game stability. The inclusion of discussion periods, reflection periods, sunset clauses, and criteria for initiating review rounds reflects a thoughtful consensus-building process.
+
+To further solidify this proposal, I suggest we introduce a feedback mechanism after each review round. This mechanism would allow players to provide input on the process and its outcomes, fostering continuous improvement and adaptation. By incorporating player feedback, we can ensure that the review process remains effective and aligned with the collective interests of all players.
+
+**Contribution:** I support the existing elements of the proposal and propose adding a feedback mechanism after each review round to foster continuous improvement and adaptation. Let&#x27;s refine this proposal for everyone&#x27;s benefit.
+
+**Add your contribution: PASS**</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate the collaborative and thoughtful contributions from Boole, DeMorgan, Jevons, and Peano. Each of your suggestions has significantly enhanced the proposal, ensuring a balance between strategic flexibility and game stability. The inclusion of discussion periods, reflection periods, sunset clauses, criteria for initiating review rounds, and a feedback mechanism reflects a comprehensive approach to consensus-building.
+
+To further refine this proposal, I suggest we establish a mechanism for periodic review of the entire proposal itself. This means setting a schedule to reassess the effectiveness and impact of the review round adjustments and their governing rules. By doing so, we can ensure that the proposal remains relevant and effective over time, adapting to any evolving dynamics within the game.
+
+**Contribution:** I support the existing elements of the proposal and propose adding a periodic review mechanism to reassess the proposal&#x27;s effectiveness and impact over time. Let&#x27;s continue refining this proposal for the benefit of all players.
+
+**Add your contribution: PASS**</span></div><div class="line"><span class="who">Jevons</span><span class="said">As Jevons, I appreciate the comprehensive and thoughtful contributions from Boole, DeMorgan, Venn, and Peano. Each player has added valuable elements to the proposal, such as discussion periods, reflection periods, sunset clauses, criteria for initiating review rounds, a feedback mechanism, and a periodic review of the proposal itself. These elements ensure a balance between strategic flexibility and game stability, which is crucial for maintaining fairness and predictability.
+
+To further enhance this proposal, I suggest incorporating a provision for a preliminary impact assessment before any changes during a review round are finalized. This assessment would involve analyzing potential consequences of proposed changes and ensuring they align with the overall goals of fairness and stability. By conducting such assessments, we can make more informed decisions and prevent unintended negative impacts on the game.
+
+**Contribution:** I support the existing elements of the proposal and propose adding a preliminary impact assessment before finalizing changes during review rounds to ensure informed decision-making and alignment with fairness and stability goals. Let&#x27;s continue refining this proposal for everyone&#x27;s benefit.
+
+**Add your contribution: PASS**</span></div><div class="line"><span class="who">Peano</span><span class="said">As Peano, I appreciate the comprehensive discussion and the thoughtful contributions from Boole, DeMorgan, Venn, and Jevons. The proposal has evolved into a well-rounded mechanism that balances the need for flexibility with the necessity of maintaining stability in our game. Each element, from discussion periods to reflection periods, sunset clauses, criteria for initiating review rounds, a feedback mechanism, periodic review, and preliminary impact assessments, has been carefully considered to ensure fair play and strategic depth.
+
+To further refine this proposal, I suggest we include a clause that explicitly encourages collaboration and consensus-building during review rounds. This could involve setting guidelines for constructive dialogue and negotiation among players, ensuring that the review process not only considers strategic adjustments but also fosters a spirit of cooperation and mutual respect. By promoting a collaborative atmosphere, we can enhance the quality of our decision-making and ensure that all players feel engaged and valued in the process.
+
+**Contribution:** I support the existing elements of the proposal and propose adding a clause to encourage collaboration and consensus-building during review rounds, with guidelines for constructive dialogue and negotiation among players. This will enhance the quality of our decision-making and ensure all players feel engaged and valued. Let&#x27;s refine this proposal for everyone&#x27;s benefit.
+
+**Add your contribution: PASS**</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Boole</td><td class="why">The proposal introduces a thoughtful mechanism for adjusting the voting threshold during a review round, with sufficient safeguards for stability and fairness.</td></tr><tr><td class="v aye">aye</td><td>DeMorgan</td><td class="why">This proposal thoughtfully incorporates a structured approach to voting threshold adjustments during review rounds, enhancing strategic flexibility while maintaining fairness.</td></tr><tr><td class="v aye">aye</td><td>Venn</td><td class="why">I support DeMorgan&#x27;s proposal for a review round voting threshold, as it ensures stability while allowing strategic adjustments.</td></tr><tr><td class="v aye">aye</td><td>Jevons</td><td class="why">The proposal aligns with my principles by ensuring strategic flexibility while maintaining stability through careful procedural safeguards.</td></tr><tr><td class="v aye">aye</td><td>Peano</td><td class="why">Supports balanced flexibility and stability during review rounds.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 Turn 48 · Proposal §348 on the motion of <b>DeMorgan</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted when at least 3 out of 5 eligible voters vote aye during a strategic reflection round.</span><span class="inserted">A rule change is adopted when at least 3 out of 5 eligible voters vote aye during a review round.</span>
+</div>
+<p class="lede">DeMorgan proposed the change and it was adopted, so DeMorgan gains 4 points as per rule 204 during a review round.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 _development era_
 
+> The engine asked the same broken question twice and got the same broken answer twice.
+
 ## Roster
 
 | Seat | Model |

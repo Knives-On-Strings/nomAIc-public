@@ -2,6 +2,8 @@
 
 _development era_
 
+> Arendt broke thirteen straight games of nobody finishing positive.
+
 ## Roster
 
 | Seat | Model |

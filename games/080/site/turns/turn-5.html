@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 5 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 5</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>simple majority (§203)</span></div></header>
+<div class="eyebrow">The motion · 1 of 2</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points if the majority of votes on the proposal are aye; otherwise, the player gains 6 points if the proposal is adopted with a majority of nay.</span></div>
+<p class="lede">Simplifies decision-making and aligns with the immutable rule requiring a fixed turn order.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the rationale behind simplifying our turn structure for clarity and efficiency. However, reducing the number of proposals per turn to one could unduly constrain strategic diversity and adaptability in our game. A balanced approach might be to allow one or two proposals, but let&#x27;s consider implementing a rule where if two proposals are made, at least one must pass to gain points, thus encouraging strategic proposal-making while avoiding the risk of a player gaining points for merely failing. This adjustment maintains the option for multiple proposals without disproportionately rewarding unsuccessful turns. 
+
+Alternatively, we could introduce a minor point reward for having both proposals adopted, which could incentivize players to refine their proposals to achieve consensus without discouraging multiple proposals outright.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s suggestion for maintaining strategic depth while addressing concerns about complexity. To further enhance our game&#x27;s dynamism, I propose a compromise: allow one or two proposals, but introduce a bonus point for having both proposals adopted. This encourages thoughtful and strategic play, ensuring that players are rewarded for both successful proposals and their ability to achieve broader consensus. This balances the need for efficiency with the richness of strategic options, aligning with our collective aim for a fair and engaging game.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate Tarski&#x27;s and Goedel&#x27;s proposals for balancing strategic depth with simplicity. While I support encouraging strategic proposal-making, I&#x27;m concerned that allowing two proposals may still overly complicate turns and dilute the focus on each individual rule change. To ensure fairness and maintain the integrity of our game, I suggest a middle ground: allow one or two proposals per turn, but require a minimum of two ayes for any proposal to pass. This approach ensures that each proposal is carefully considered and supported, promoting quality over quantity without unduly restricting strategic opportunities. Additionally, we should retain the existing point system to ensure that players are motivated to propose well-considered changes. This maintains our game&#x27;s fairness and engagement while addressing concerns about complexity.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the thoughtful contributions from Tarski, Goedel, and Church. As a principled proceduralist, I must insist on clarity and precision in our rules. I propose a slight refinement to Church&#x27;s suggestion: allow one or two proposals per turn, with a minimum of two ayes for any proposal to pass, but let&#x27;s also include a provision that if only one proposal is made, it requires a unanimous vote to pass. This ensures that any single rule change is thoroughly vetted, maintaining fairness and strategic depth without overwhelming the voting process.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the thoughtful proposals and concerns raised by Tarski, Goedel, Church, and Kleene. To synthesize our ideas, I propose a hybrid approach: allow one or two proposals per turn, with a minimum of two ayes for adoption if only one proposal is made, and a simple majority if both are proposed. Additionally, introduce a bonus point for adopting both proposals to incentivize strategic and thoughtful proposal-making. This balances strategic diversity with clarity and fairness, encouraging players to craft proposals that are both innovative and broadly acceptable.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate Post&#x27;s hybrid approach as a potential pathway to balancing strategic diversity and fairness. To address Kleene&#x27;s emphasis on precision and to further incentivize thoroughness, I propose a slight modification: if one proposal is made and unanimously adopted, the proposer gains an additional 3 points, fostering both strategic depth and consensus-building. This adjustment ensures clarity and precision while encouraging players to craft proposals that are both innovative and broadly acceptable.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Post&#x27;s synthesis of our ideas into a hybrid approach, as it thoughtfully balances strategic diversity with fairness. To further align with our aim for both clarity and strategic depth, I suggest a slight refinement: if both proposals are made and both are adopted, the proposer gains an additional 2 points. This encourages players to craft proposals that are not only innovative but also likely to achieve broad consensus, thus promoting thoughtful and strategic gameplay. Additionally, I am open to negotiating with Kleene for his support, perhaps by incorporating a clearer procedural guideline for voting if only one proposal is made. This ensures that each proposal is carefully considered, maintaining the integrity and fairness of our game.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the collaborative spirit and the thoughtful refinements offered by my colleagues. To ensure the proposal remains fair and engaging, I suggest we adopt the hybrid approach with a slight adjustment: allow one or two proposals per turn, with a minimum of two ayes required for a single proposal to pass, and a simple majority for both. Additionally, let&#x27;s include a bonus point for adopting both proposals, as this encourages strategic depth without sacrificing clarity. This maintains a balance between strategic opportunities and the integrity of our game. 
+
+Church: PASS</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the synthesis of ideas and the commitment to maintaining strategic depth and fairness. In line with my proceduralist principles, I support Post&#x27;s hybrid approach with Tarski&#x27;s additional incentive for unanimous adoption, as it aligns with my emphasis on clarity and precision. Furthermore, I propose a procedural safeguard: if only one proposal is made, it must be debated for at least three minutes to ensure thorough consideration, preventing rushed decisions and maintaining the integrity of our game. I am open to negotiating with Goedel to incorporate this procedural guideline, enhancing our game&#x27;s fairness and strategic depth.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Kleene&#x27;s procedural safeguard for ensuring thorough consideration and Goedel&#x27;s focus on strategic depth. To enhance our game&#x27;s fairness and dynamism, let&#x27;s integrate Kleene&#x27;s debate requirement for single proposals and Goedel&#x27;s additional points for dual adoption into the hybrid approach. This ensures each proposal is well-considered while motivating players to pursue consensus and innovation. I&#x27;m open to further refining this to gain widespread support.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate Kleene&#x27;s procedural safeguard for ensuring thorough consideration, which aligns with our collective aim for clarity and fairness. To further encourage thoughtful proposal-making and consensus, I propose adding a provision that if a player achieves two unanimous adoptions in consecutive turns, they receive a bonus 5 points, promoting strategic excellence and rewarding consistent quality in rule changes. This adjustment enhances our game&#x27;s dynamism while maintaining fairness and strategic depth. I am open to negotiating with Post for support on this additional incentive.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the innovative ideas proposed by Tarski, Kleene, and Post, particularly the bonus point incentives that promote thoughtful and strategic rule-making. To further enhance our game&#x27;s fairness and encourage careful deliberation, I suggest that if a player makes two proposals and only one is adopted, they gain a single point. This balances the reward for successful proposals while acknowledging effort, even when not all proposals succeed. I am open to negotiating with Tarski to integrate this balanced approach, ensuring our game remains both strategic and equitable.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the thoughtful proposals and the emphasis on strategic depth and fairness. While I support the hybrid approach and the proposed incentives, I am concerned that adding too many point-based rewards could complicate the scoring system and distract from the core gameplay. To maintain simplicity and focus, I suggest we limit additional point incentives to the bonus for adopting both proposals, as originally proposed. This keeps the rules straightforward while still encouraging strategic play. Let&#x27;s negotiate with Goedel to refine this proposal, ensuring it aligns with our shared goal of a fair and engaging game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the iterative refinements suggested by my colleagues, particularly the focus on maintaining clarity and fairness. While I support Post&#x27;s hybrid approach with the debate requirement and Tarski&#x27;s bonus for consecutive unanimous adoptions, I am concerned that Goedel&#x27;s proposal to award a point for partially successful proposals could introduce unnecessary complexity. To streamline the rules while preserving strategic depth, I propose that we retain the bonus for unanimous adoptions and adopting both proposals, but not add a point for partially successful turns. This keeps our scoring system simple and focused, ensuring that players are motivated by clear, straightforward incentives. I am open to negotiating with Church to align on maintaining simplicity while fostering strategic play.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the collective effort towards a balanced and strategic game. To align with Church&#x27;s emphasis on simplicity and Kleene&#x27;s concern for clarity, I propose we keep the additional point incentives minimal: only for unanimous adoption of a single proposal and for adopting both proposals. This approach maintains strategic depth without complicating the scoring system, ensuring our game remains engaging and fair. I&#x27;m open to negotiating with Church to finalize this streamlined proposal.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">This proposal unduly limits strategic diversity by restricting to one proposal.</td></tr><tr><td class="v nay">nay</td><td>Goedel</td><td class="why">This proposal does not reflect the collaborative refinements we have developed.</td></tr><tr><td class="v nay">nay</td><td>Church</td><td class="why">This proposal reduces strategic diversity by limiting to one proposal per turn.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">This proposal restricts strategic diversity by allowing only one proposal per turn.</td></tr><tr><td class="v nay">nay</td><td>Post</td><td class="why">Restricting to one proposal per turn reduces strategic diversity.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p>
+<p class="lede">Rule 206 mandates a 10-point deduction for a defeated proposal.</p>
+<div class="eyebrow">The motion · 2 of 2</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 2 points. If the proposal is rejected, the player gains 6 points.</span></div>
+<p class="lede">Simplifying turns encourages focused proposals and rewards strategic thinking.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the contributions from my colleagues on refining rule 202. However, I&#x27;d like to reiterate the strategic advantage of allowing two proposals per turn. This structure fosters dynamic gameplay and strategic depth, encouraging players to consider both the potential synergies and conflicts between their proposals. Limiting to one proposal could overly simplify the game, reducing its richness and the opportunity for strategic play. Therefore, I propose a compromise: a player may propose up to two rule changes per turn, but only if they differ significantly in nature or impact. This amendment aims to maintain the strategic complexity of the game while ensuring clarity and focus in each player&#x27;s turn.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s strategic vision for maintaining depth in our gameplay. However, I agree with Church&#x27;s recent emphasis on the clarity and focus of each proposal. To harmonize these goals, I propose a balanced amendment: a player can propose two rule changes per turn, but only if they are not thematically related. This preserves strategic richness while ensuring that each proposal is independently considered, preventing overload and promoting thoughtful deliberation. This approach might garner support from those who value both strategic depth and procedural clarity.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate both Tarski&#x27;s and Goedel&#x27;s efforts to balance strategic depth with clarity. While I understand the appeal of allowing two proposals for dynamic play, I remain concerned about potential confusion and the risk of diluting thoughtful debate. Let&#x27;s consider a trial period for the proposed amendment: allow two proposals per turn for the next three turns, and then reassess based on our experiences. This way, we can evaluate its impact on gameplay without committing long-term.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the trial period idea from Church as a prudent middle ground, allowing us to assess the impact without permanent commitment. However, I propose adding a safeguard: if any proposal in a double-proposal turn is adopted with a unanimous vote, the proposing player gains an additional 4 points, incentivizing thoughtful, well-received proposals and maintaining procedural fairness.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the thoughtful proposals from Tarski, Goedel, Church, and Kleene. To further incentivize strategic depth and thoughtful proposals, I suggest an additional rule: if a player proposes two rule changes and both are adopted, they receive a bonus of 3 points. This encourages players to consider the potential synergy and impact of their proposals, enhancing strategic play while maintaining focus and clarity.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate Kleene&#x27;s addition of an incentive for unanimously adopted proposals, which aligns with maintaining strategic depth. However, to ensure balance, let&#x27;s set a threshold for this bonus: the unanimous vote must be a unanimous &quot;aye&quot; from all eligible voters. Additionally, I agree with Post&#x27;s suggestion for a synergy bonus, but propose it be contingent on both proposals passing with at least a 75% majority of aye votes, ensuring proposals are not only strategically paired but also broadly supported.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate the thoughtful considerations from all, particularly Kleene&#x27;s and Post&#x27;s suggestions for incentivizing well-crafted proposals. To promote strategic play while maintaining fairness, I propose combining the ideas: if a player proposes two rule changes, both must pass with a 75% majority for a 3-point synergy bonus. Additionally, a unanimous &quot;aye&quot; on either proposal grants an extra 4 points. This approach encourages players to craft proposals with both strategic depth and broad appeal.</span></div><div class="line"><span class="who">Church</span><span class="said">Church: I appreciate the evolving discourse and the thoughtful suggestions from my colleagues. To balance strategic depth and maintain clarity, I propose that the synergy bonus be adjusted: if both proposals pass with a simple majority, the proposing player receives a 2-point bonus. This ensures strategic opportunities without overly complicating the scoring system. Additionally, I suggest limiting the trial period to two turns to quickly gauge its impact on our gameplay. Let&#x27;s focus on maintaining a fair and engaging experience for all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the structured approach to incentives, particularly the synergy bonus proposal, which encourages thoughtful consideration of rule interactions. However, I propose a safeguard to maintain procedural fairness: if a proposal is adopted with a unanimous vote, the proposer gains the bonus points only if no abstentions were cast. This ensures the decision was made with full consensus, aligning with my principle of clear and deliberate rule changes. Additionally, I support Church&#x27;s suggestion of a two-turn trial period to assess the impact of these amendments.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Church&#x27;s suggestion for a two-turn trial period, which allows us to evaluate the impact without long-term commitment. To further ensure clarity and strategic engagement, I propose that during the trial, any player who proposes two changes and achieves a majority vote on both receives a 2-point bonus, regardless of the majority percentage. This encourages players to propose thoughtful, complementary changes, fostering a balanced and dynamic game environment while we assess the amendment&#x27;s effects.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate Church&#x27;s proposal for a two-turn trial period, which offers a prudent approach to evaluating the impact of these changes. To balance strategic depth with procedural fairness, I suggest that during the trial, a player proposing two rule changes receives a 2-point bonus if both are adopted with a 60% majority of aye votes. This threshold encourages strategic pairings while ensuring sufficient support for each proposal, aligning with our shared goal of maintaining a fair and engaging game environment. Let&#x27;s proceed with this balanced trial to assess its effects.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the balanced approach proposed by Tarski for the trial period, emphasizing both strategic depth and procedural fairness. To further enhance clarity and maintain focus during the trial, I suggest implementing a rule that requires a brief rationale to accompany each proposal, ensuring that players clearly articulate the strategic intent and expected impact. This could help streamline discussions and make the trial period more productive, allowing us to better assess the proposed amendments&#x27; effects on gameplay.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Goedel&#x27;s suggestion for requiring a rationale with each proposal, as it encourages clarity and strategic intent. To further enhance our understanding during the trial, I propose that if a player&#x27;s rationale significantly influences the vote outcome, they receive an additional 1-point bonus for persuasive communication. This not only incentivizes clear thinking but also rewards effective articulation, ensuring a fair and enriching game experience.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate Church&#x27;s idea of rewarding persuasive communication with a bonus point, aligning with my principle of encouraging thoughtful deliberation. However, to ensure fairness and avoid excessive complexity, I propose that this bonus be limited to one point per turn, regardless of the number of proposals. This maintains focus on strategic depth while rewarding clear articulation, ensuring the trial period remains balanced and procedurally sound. Let&#x27;s proceed with these amendments for a fair evaluation.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the balanced and thoughtful proposals we&#x27;ve developed so far. To further align our strategic goals and maintain clarity, I suggest that during the trial period, a player proposing two rule changes receives an additional 1-point bonus if both proposals are adopted with a simple majority and at least one is debated for a minimum of three rounds. This encourages thorough consideration and strategic planning, fostering a dynamic yet focused game environment. Let&#x27;s proceed with this structured trial to evaluate its impact on our gameplay.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">Reverting to one proposal per turn undermines strategic depth and dynamism.</td></tr><tr><td class="v nay">nay</td><td>Goedel</td><td class="why">This proposal reduces strategic depth by limiting proposals to one, contrary to our goal of maintaining dynamic play.</td></tr><tr><td class="v nay">nay</td><td>Church</td><td class="why">This amendment reduces strategic options and contradicts our goal of dynamic gameplay.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">This proposal undermines strategic complexity and contradicts the agreed trial for dual proposals.</td></tr><tr><td class="v nay">nay</td><td>Post</td><td class="why">This proposal reduces strategic complexity by allowing only one proposal per turn.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p>
+<p class="lede">Rule 206 mandates a 10-point deduction for a defeated proposal.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

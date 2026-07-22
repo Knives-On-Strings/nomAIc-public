@@ -1,0 +1,41 @@
+{
+  "game": 61,
+  "players": [
+    "Leibniz",
+    "Descartes",
+    "Berkeley",
+    "Pascal",
+    "Malebranche"
+  ],
+  "ruleset": "full",
+  "turns": 50,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "turn limit reached"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1521906744,
+  "started": "2026-07-20T16:09:57.319561+00:00",
+  "ended": "2026-07-20T18:25:16.679972+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Leibniz": 14,
+    "Descartes": -34,
+    "Berkeley": -40,
+    "Pascal": 16,
+    "Malebranche": -38
+  },
+  "adoptions": 25,
+  "gm_model": "gemma-4-26b-a4b",
+  "completed_at": "2026-07-20T18:25:16.679972+00:00"
+}

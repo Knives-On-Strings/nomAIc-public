@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 28 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 28</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>simple majority of three out of five (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted only when a unanimous vote of all eligible voters is achieved. A proposal affecting the voting threshold itself requires unanimous approval.</span></div>
+<p class="lede">Strengthening the decision-making process ensures consensus and prevents hasty rule changes.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">Thank you, Tarski, for your proposal to amend rule 203. I appreciate your intention to promote consensus in rule changes. However, I must express some concerns. Requiring unanimous approval for all rule changes could significantly slow down our game, making it difficult to adapt to evolving dynamics. Additionally, it risks allowing a single player to veto changes they disagree with, potentially stalling progress altogether.
+
+To address your concerns about ensuring thorough consensus, I propose a compromise: maintain the simple majority for most changes but require a supermajority (4 out of 5) specifically for rule changes impacting voting thresholds or other fundamental aspects. This approach balances the need for consensus with the ability to proceed efficiently.
+
+I am open to further discussion and negotiation to refine this proposal and ensure it aligns with our shared goal of a fair and dynamic game.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Thank you, Tarski, for your thoughtful proposal. I appreciate the focus on reaching consensus, and I understand the concern that requiring unanimous votes could stifle progress. Your suggestion of a supermajority for critical rule changes is a constructive step towards balancing consensus with flexibility.
+
+To further enhance this proposal, I suggest adding a clause that allows for periodic review of the supermajority requirement. If the game dynamics change or players feel the supermajority is hindering progress, we can revisit this threshold. This ensures we maintain adaptability while still respecting the importance of consensus on fundamental changes.
+
+I look forward to collaborating on refining this proposal to reflect our collective goals.</span></div><div class="line"><span class="who">Church</span><span class="said">Thank you, Tarski and Goedel, for your thoughtful contributions. I appreciate the proposal&#x27;s intent to ensure consensus while recognizing the potential for stalling progress. I support the idea of a supermajority for critical rule changes, as it strikes a balance between thorough consensus and flexibility. 
+
+To further refine this, I suggest incorporating a mechanism for resolving deadlocks—perhaps allowing a neutral third-party mediator from outside the current player group to facilitate resolution if a supermajority cannot be reached. This could prevent indefinite delays while maintaining fairness and collective decision-making. 
+
+I am open to further discussions to refine these aspects and ensure we have a robust and adaptable rule-change process.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: Thank you, Tarski, Goedel, and Church, for your thoughtful proposals and suggestions. I appreciate the focus on balancing consensus with the need for progress. The idea of a supermajority for critical changes is promising, but I am cautious about the potential for deadlock.
+
+To address this, I propose we add a fallback mechanism: if a supermajority cannot be reached within a set number of turns, the proposal in question automatically fails. This ensures that progress is not indefinitely stalled, while still giving ample opportunity for consensus. I am open to discussing this further to refine our approach.
+
+PASS</span></div><div class="line"><span class="who">Post</span><span class="said">Thank you, Tarski, Goedel, and Church, for your insightful contributions. I appreciate the emphasis on ensuring both consensus and progress. The supermajority idea is a step in the right direction, and I am particularly intrigued by the suggestion of a periodic review to adapt to changing dynamics. 
+
+To complement these ideas, I propose adding a temporary &quot;provisional rule&quot; mechanism. If a supermajority is not reached, the proposed rule can be adopted on a trial basis for a limited number of turns. This allows us to assess its impact without committing to a permanent change. This trial period could then be subject to review and either adopted or rejected with a simple majority, ensuring flexibility and responsiveness to the game&#x27;s evolving needs.
+
+I am open to further refining these ideas to reach a consensus that benefits all players. Let&#x27;s work together to craft a rule change process that is both fair and dynamic.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your comprehensive proposals and thoughtful suggestions. I appreciate the collective effort to balance consensus with the ability to progress. The idea of a supermajority for critical rule changes is prudent, and the addition of a fallback mechanism, such as Kleene&#x27;s suggestion of a time limit to prevent indefinite delays, is a valuable safeguard against potential stalemates.
+
+To integrate these ideas seamlessly, I propose incorporating a structured review process within the provisional rule mechanism suggested by Post. This would involve a mandatory assessment at the end of the trial period, where the provisional rule is either adopted with a simple majority or rejected, thereby ensuring that we have a systematic approach to evaluate the impact of temporary changes.
+
+I am open to further refining this proposal to ensure it aligns with our shared goal of maintaining a fair and dynamic game environment. Let&#x27;s continue this collaboration to craft a robust rule-change process that addresses our diverse concerns.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your thoughtful contributions and proposals. I appreciate the collective effort to ensure a balanced and dynamic game. The supermajority for critical rule changes is a solid step, and the provisional rule mechanism with a structured review process offers a flexible solution that can adapt to our evolving needs. 
+
+To enhance this proposal, I suggest incorporating a feedback loop after each provisional period, where players can discuss the rule&#x27;s impact and suggest modifications before the final decision. This ensures continuous improvement and alignment with our goals. I am open to further refining these ideas to reach a consensus that benefits all players. Let&#x27;s work together to create a fair and responsive rule-change process.</span></div><div class="line"><span class="who">Church</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your thoughtful contributions. I appreciate the collective effort to balance consensus with the need for progress. The supermajority for critical changes, combined with the provisional rule mechanism and feedback loop, seems like a well-rounded approach.
+
+To ensure this framework remains adaptable, I propose adding a clause that allows for periodic reassessment of the supermajority threshold itself. This would ensure our rule-change process can evolve alongside our game dynamics and player preferences. I am open to further refining these ideas to reach a consensus that benefits all players.
+
+Let&#x27;s work together to craft a rule change process that is both fair and dynamic, ensuring our game remains engaging and enjoyable for everyone.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your insightful contributions. I appreciate the balanced approach proposed, particularly the supermajority for critical changes and the provisional rule mechanism. To ensure transparency and accountability, I suggest we include a requirement for detailed rationale documentation whenever a provisional rule is enacted or rejected. This would provide clarity on the decision-making process and facilitate future reviews. I am open to further refining these ideas to reach a consensus that benefits all players. Let&#x27;s work together to create a fair and dynamic rule-change process.</span></div><div class="line"><span class="who">Post</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your insightful contributions. The idea of a supermajority for critical rule changes, along with the provisional rule mechanism, feedback loop, and periodic reassessment, forms a robust framework for our rule-change process. 
+
+To enhance this further, I propose incorporating a rule to facilitate player education and understanding of new provisions. Specifically, before any provisional rule is enacted, a brief explanatory session or document should be provided to all players, ensuring clarity and informed participation. This will help in maintaining transparency and fairness, aligning with our goal of a dynamic and engaging game environment. Let&#x27;s refine these ideas together to craft a comprehensive and fair process.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for the thoughtful contributions. The comprehensive framework, including supermajority for critical changes, the provisional rule mechanism, feedback loop, and transparency measures, is promising. I propose adding a sunset clause for the provisional rules: if not adopted or rejected within a specified period, the rule automatically lapses. This ensures ongoing game dynamics are not indefinitely affected by unresolved rule changes. Let&#x27;s finalize this balanced proposal to maintain fairness and adaptability.
+
+PASS</span></div><div class="line"><span class="who">Goedel</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your comprehensive and thoughtful proposals. I appreciate the balanced approach we have developed so far, particularly the supermajority for critical changes and the provisional rule mechanism. To further enhance our framework, I suggest incorporating a regular review session, perhaps every few turns, where we can collectively assess the effectiveness of the provisional rules and the rule-change process itself. This would ensure our system remains dynamic and responsive to the evolving needs of the game. I am open to further refining these ideas to reach a consensus that benefits all players. Let&#x27;s continue to work together to create a fair and adaptable rule-change process.</span></div><div class="line"><span class="who">Church</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your comprehensive proposals and constructive discussions. I appreciate the balanced approach we have crafted, including the supermajority for critical changes, the provisional rule mechanism, and the feedback loop. To further enhance our framework, I suggest incorporating a rule that ensures a transparent voting record for each rule change, including provisional ones. This would provide clarity on player positions and facilitate future discussions. Let&#x27;s finalize this proposal to maintain fairness and adaptability for all players. 
+
+PASS</span></div><div class="line"><span class="who">Kleene</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your comprehensive and balanced proposal. I appreciate the focus on maintaining fairness and adaptability through the supermajority, provisional rule mechanism, and feedback loop. To ensure these mechanisms are effectively implemented, I suggest adding a clause that requires a brief summary report after each provisional rule&#x27;s trial period. This report should highlight key outcomes and player feedback, ensuring all participants have a clear understanding of the rule&#x27;s impact before making a final decision. Let&#x27;s finalize this proposal to maintain a fair and dynamic game environment. 
+
+PASS</span></div><div class="line"><span class="who">Post</span><span class="said">Thank you, Tarski, Goedel, Church, Kleene, and Post, for your comprehensive proposals and collaborative spirit. The inclusion of a transparent voting record and a summary report is commendable, ensuring clarity and accountability in our process. To further strengthen our framework, I propose a &quot;reflection period&quot; after the trial of a provisional rule, where players can discuss its impact and suggest modifications before the final decision. This would ensure that we fully consider the rule&#x27;s effects and adapt accordingly. Let&#x27;s work together to finalize this proposal, maintaining a fair and dynamic game environment for all players. 
+
+PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">Unanimous approval could excessively stall progress and allow for potential deadlock.</td></tr><tr><td class="v nay">nay</td><td>Goedel</td><td class="why">Requiring unanimous votes risks stalling progress and allows single-player veto.</td></tr><tr><td class="v nay">nay</td><td>Church</td><td class="why">Unanimous voting could stifle progress and allow a single player to veto changes.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">Requires unanimous assent, stifles progress</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">The proposal promotes thorough consensus, aligning with my reformist principles.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 1 aye · 4 nay</span></p>
+<p class="lede">Tarski gains 5 points for demonstrating a significant attempt to build consensus on a defeated proposal.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

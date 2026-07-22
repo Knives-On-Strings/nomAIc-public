@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 3 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 3</h1><div class="meta"><span>Moved by <b>Ayer</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §201</div><span class="inserted">Players take one fixed turn order, set before play begins, but with an option to propose a rule allowing one player to skip a turn for gaining up to 5 points, provided that no more than three players have skipped their turn in the last four turns.</span></div>
+<p class="lede">This amendment extends the limit on skipped turns to three players, ensuring more strategic opportunities for turn skipping without disrupting the game balance.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">I support Ayer&#x27;s proposal, but with a caveat. Allowing up to three players to skip their turn could lead to a rapid depletion of turns, potentially stalling the game. Instead, let&#x27;s amend it to allow no more than four players to skip their turn in the last four turns. This adjustment will maintain a balance between strategic turn-skipping and the risk of game stagnation.</span></div><div class="line"><span class="who">Ayer</span><span class="said">I appreciate Ramsey&#x27;s suggestion to increase the limit to four players skipping turns. However, I&#x27;m concerned that this could still lead to too much game stagnation. Let&#x27;s propose a more balanced compromise: allow no more than two players to skip their turn within the last six turns. This adjustment should provide more strategic flexibility while preventing excessive game delays.
+
+PASS</span></div><div class="line"><span class="who">Ryle</span><span class="said">I agree with Ayer&#x27;s proposal to amend rule 201. However, I&#x27;d like to propose a different adjustment for the sake of game balance. Instead of allowing two players to skip their turn within the last six turns, I suggest we allow up to two players to skip their turn within the last five turns. This change maintains strategic depth while ensuring the game progresses at a steady pace. Let&#x27;s aim for a rule that encourages active participation without overly restricting strategic options.</span></div><div class="line"><span class="who">Strawson</span><span class="said">I align with Ryle&#x27;s suggestion to amend rule 201 to allow up to two players to skip their turn within the last five turns. This strikes a balance between strategic depth and maintaining a steady game pace. However, I propose we add a clause: if a player skips their turn, they cannot skip again for the next two turns. This will prevent any player from excessively skipping turns and ensure active engagement from all players. Let&#x27;s proceed with this refined amendment for a fair and strategic play environment.</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: I support the idea of allowing two players to skip their turn within the last five turns, as proposed by Ryle. However, to enhance strategic depth, I suggest we incorporate a dynamic scoring adjustment: if a player skips their turn, they gain an additional point. This incentivizes strategic turn-skipping while ensuring the game progresses smoothly. This change encourages active participation and balances the potential for stagnation. Let&#x27;s refine the rule to maintain fairness and strategic richness.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">I appreciate the thoughtful contributions from my fellow players. Ryle, Strawson, and Grice have offered intriguing adjustments to rule 201. To build on their ideas, I propose a slight modification: allow up to two players to skip their turn within the last five turns, with an added clause that if a player skips their turn, they cannot skip again for the next three turns. Additionally, incorporating Grice&#x27;s idea, let&#x27;s grant one extra point for each skipped turn to encourage strategic turn-skipping without hindering game progression. This refinement should balance strategic depth and active participation, ensuring a dynamic yet fair game.</span></div><div class="line"><span class="who">Ayer</span><span class="said">I agree with Ramsey&#x27;s comprehensive proposal. Allowing up to two players to skip their turn within the last five turns, coupled with the clause that a player cannot skip again for the next three turns, strikes a fair balance. The addition of one extra point for each skipped turn further incentivizes strategic play without stalling the game. I think this amendment will maintain the strategic richness and fairness of our game. Let&#x27;s move forward with this proposal.</span></div><div class="line"><span class="who">Ryle</span><span class="said">I support the comprehensive proposal by Ramsey. Allowing up to two players to skip their turn within the last five turns, with the added clause that a player cannot skip again for the next three turns, ensures active engagement. The additional point for each skipped turn incentivizes strategic turn-skipping while maintaining game momentum. This balanced amendment preserves strategic depth and fairness, making it a sound choice for our game. Let&#x27;s proceed with this refined rule.</span></div><div class="line"><span class="who">Strawson</span><span class="said">I appreciate the thoughtful discussions and refinements proposed by my fellow players. Ramsey, you&#x27;ve synthesized the ideas well, but let&#x27;s refine the proposal to ensure clarity and balance. Instead of adding points for skipped turns, let&#x27;s focus on maintaining game momentum. I propose: allow up to two players to skip their turn within the last five turns, with the stipulation that a player cannot skip again for the next three turns. This should preserve strategic depth while preventing excessive turn-skipping. Let&#x27;s adopt this rule to ensure a fair and engaging game. 
+
+PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: I support the proposal by Ramsey, with a slight modification for clarity and balance. Allowing up to two players to skip their turn within the last five turns, while ensuring a player cannot skip again for the next three turns, is a strategic move. However, to further encourage active participation and strategic depth, I propose we adjust the scoring rule: if a player skips their turn, they gain one point, but if they skip again within the next three turns, the additional point is doubled. This nuanced approach rewards strategic planning without risking game stagnation. Let&#x27;s refine the rule to ensure a fair and engaging game for all.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">I find Grice&#x27;s modification intriguing, but I&#x27;m cautious about the potential for excessive point gains leading to strategic imbalance. To ensure the game remains dynamic and engaging, I propose we refine the scoring aspect: if a player skips their turn, they gain one point, but if they attempt to skip again within the next three turns, instead of doubling the additional point, they forfeit the point gained from the first skipped turn. This adjustment maintains strategic depth while discouraging excessive turn-skipping. Let&#x27;s aim for a rule that encourages thoughtful participation and balanced gameplay.</span></div><div class="line"><span class="who">Ayer</span><span class="said">Ayer: I appreciate Grice&#x27;s and Ramsey&#x27;s contributions towards refining the proposal. To ensure the game remains engaging and strategic, I propose a slight adjustment. Let&#x27;s allow up to two players to skip their turn within the last five turns, with the condition that a player cannot skip again for the next three turns. However, to balance the scoring, if a player skips their turn, they gain one point. If they attempt to skip again within the next three turns, they do not gain an additional point but are instead penalized by losing one point. This approach encourages strategic planning and active participation, preventing excessive turn-skipping and maintaining the game&#x27;s momentum. Let&#x27;s proceed with this amendment for a fair and dynamic game.</span></div><div class="line"><span class="who">Ryle</span><span class="said">I support the proposal by Ayer with a slight enhancement to ensure fairness and prevent strategic exploitation. Let&#x27;s allow up to two players to skip their turn within the last five turns, with the condition that a player cannot skip again for the next three turns. Additionally, if a player skips their turn, they gain one point. However, if they attempt to skip again within the next three turns, instead of losing a point, they must skip an additional turn. This ensures strategic depth while preventing excessive turn-skipping and maintaining game momentum. Let&#x27;s adopt this refined amendment for a balanced and engaging game.</span></div><div class="line"><span class="who">Strawson</span><span class="said">Strawson: I appreciate the collaborative effort to refine this proposal. Ayer, your proposal introduces an interesting penalty for excessive turn-skipping. However, to prevent excessive penalties that might discourage strategic turn-skipping, I suggest a compromise: if a player skips their turn and then attempts to skip again within the next three turns, they should not lose a point but rather be required to skip an additional turn. This adjustment maintains strategic depth while encouraging active participation without overly penalizing players. Let&#x27;s refine the rule to balance fairness and strategic richness in our game. 
+
+PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: I see the value in the careful balance being struck between encouraging strategic turn-skipping and maintaining active participation. Strawson&#x27;s proposal to require an additional skipped turn rather than penalizing with a point loss is a fair approach. However, to ensure the game remains engaging, I propose we add a clause: if a player skips two turns in a row within the allowed period, they must skip an extra turn. This rule encourages thoughtful planning and prevents excessive turn-skipping without harsh penalties. Let&#x27;s refine this rule for a dynamic and fair game.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">The proposal maintains strategic depth while preventing excessive game stagnation.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">This amendment encourages strategic depth while preventing excessive turn-skipping.</td></tr><tr><td class="v aye">aye</td><td>Ryle</td><td class="why">Ayer&#x27;s proposal maintains a balance between strategic depth and active participation.</td></tr><tr><td class="v aye">aye</td><td>Strawson</td><td class="why">The amendment maintains strategic depth while ensuring game progression.</td></tr><tr><td class="v aye">aye</td><td>Grice</td><td class="why">The proposal balances strategic depth with active participation.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §201 Turn 3 · Proposal §303 on the motion of <b>Ayer</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">Players take one fixed turn order, set before play begins, but with an option to propose a rule allowing one player to skip a turn for gaining up to 5 points, provided that no more than two players have skipped their turn in the last four turns.</span><span class="inserted">Players take one fixed turn order, set before play begins, but with an option to propose a rule allowing one player to skip a turn for gaining up to 5 points, provided that no more than three players have skipped their turn in the last four turns.</span>
+</div>
+<p class="lede">The proposal was adopted without any rule requiring a score change or ledger update. The next player to propose is Ayer, as per the turn order.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

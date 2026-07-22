@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 40 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 40</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>supermajority (75% of the votes) vote aye (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 25 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 20 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset.</span></div>
+<p class="lede">Encourages strategic innovation and rewards near-unanimous support.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the attempt to enhance the incentives for strategic innovation and near-unanimous support in proposal adoption. However, the increased complexity might introduce unintended strategic behavior and make the game more cumbersome. A more measured approach would be to slightly adjust the existing bonus tiers to better balance the incentives without overcomplicating the rules. Let us consider retaining the current structure but increasing the bonus for introducing novel mechanisms to 20 points and adjusting the bonus for 90% aye votes to 15 points, keeping other thresholds as they are. This would preserve the strategic depth while encouraging innovation. 
+
+**My proposal:**
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset.&quot;
+
+This proposal retains the current structure while enhancing incentives for innovation and broad support, without overcomplicating the scoring system.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate Tarski&#x27;s intention to refine the scoring system to reward strategic innovation and broad support. The proposal maintains the current structure, which is a good compromise. To further encourage thoughtful proposals, I suggest we add a 5-point bonus for proposals that receive unanimous support without any abstentions, emphasizing full participation. This aligns with our goal of fostering collaboration and ensuring every player&#x27;s voice is heard. Let&#x27;s discuss how this could be integrated into the current proposal to enhance its appeal and effectiveness.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Tarski&#x27;s proposal for enhancing the incentives for strategic innovation while preserving the current structure. The addition of a bonus for novel mechanisms is a thoughtful way to encourage creativity. Furthermore, Goedel&#x27;s suggestion to reward unanimous support with no abstentions is an excellent way to promote full participation and collaboration. To integrate these ideas seamlessly, I propose we adjust Tarski&#x27;s amendment to include a 5-point bonus for proposals that achieve unanimous support without any abstentions. This addition maintains the strategic depth of the game while ensuring that every player&#x27;s engagement is recognized, fostering a more inclusive and cooperative environment. Let us consider this refined proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus.&quot;
+
+This proposal balances the need for strategic innovation with the importance of full participation and collaboration, ensuring the game remains fair and engaging for all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the constructive dialogue and the efforts to balance strategic innovation with collaborative engagement. Tarski&#x27;s proposal effectively addresses these goals while maintaining simplicity, and Goedel&#x27;s addition of a bonus for unanimous support without abstentions enhances full participation. To ensure clarity and precision, I suggest we explicitly define &quot;novel mechanism&quot; to prevent ambiguity and disputes over what qualifies. This will help maintain the integrity of the game&#x27;s strategic depth. Let&#x27;s integrate these refinements into the proposal to foster a fair and transparent scoring system. 
+
+**Refined Proposal:**
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus.&quot; 
+
+This proposal ensures clarity and fairness, promoting strategic innovation while encouraging full participation.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the thoughtful refinements and the collaborative spirit demonstrated by my colleagues. This proposal effectively balances strategic innovation with full participation, ensuring the game remains engaging for all players. To further enhance fairness and transparency, I suggest we include a brief rationale requirement for each proposal, encouraging players to articulate the purpose and expected impact of their rule changes. This addition will promote informed voting and constructive debate, enriching the strategic depth of our game. Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate.&quot;
+
+This refined proposal ensures clarity, fairness, and strategic depth while fostering a more informed and engaging game environment.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative efforts in refining this proposal to balance innovation with clarity and strategic depth. The addition of a rationale requirement is an excellent way to enhance transparency and informed decision-making. However, to further streamline the proposal process and mitigate potential disputes, I suggest including a provision for a brief peer review stage before voting. This review would allow players to raise preliminary concerns or clarifications, fostering a more efficient and constructive debate phase. Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus.&quot;
+
+This addition ensures a more streamlined and efficient proposal process, encouraging thorough consideration and fostering a collaborative environment.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collaborative effort to refine the proposal, particularly the addition of a peer review stage, which promotes clarity and constructive feedback. To further enhance strategic depth and inclusivity, I suggest incorporating a mechanism that rewards players who contribute constructively during the peer review stage. For instance, a player who provides valuable feedback during the review could receive a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value, as recognized by a majority vote. This addition encourages active participation and thoughtful engagement, fostering a more dynamic and inclusive game environment.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. Players who provide valuable feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus.&quot;
+
+This enhancement fosters active engagement and rewards constructive contributions during the peer review stage.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful refinements proposed by my colleagues, particularly the inclusion of a peer review stage and the incentive for constructive feedback. This proposal effectively balances strategic innovation with fairness and collaboration. However, to ensure that the peer review bonus is awarded equitably and does not lead to strategic manipulation, I suggest adding a requirement that feedback must be substantive and directly related to the proposal&#x27;s content. This will help maintain the integrity of the review process and ensure that bonuses are awarded for genuine contributions.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. Players who provide substantive feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus.&quot;
+
+This refinement ensures that the peer review bonus is awarded for genuine, substantive contributions, maintaining the integrity and collaborative spirit of the game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative refinements and the emphasis on substantive contributions during the peer review stage, which enhances the strategic depth and fairness of the game. To further ensure clarity and prevent any potential manipulation, I propose explicitly defining what constitutes &quot;substantive feedback.&quot; This could include specific criteria such as relevance to the proposal, originality of thought, and potential impact on the game dynamics. By setting clear guidelines, we can maintain the integrity of the peer review process and ensure that bonuses are awarded for meaningful contributions.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. Substantive feedback is defined as feedback that is relevant to the proposal, offers original insights, and has the potential to impact game dynamics. Players who provide substantive feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus.&quot;
+
+This refinement ensures that the peer review bonus is awarded for genuine, substantive contributions, maintaining the integrity and collaborative spirit of the game.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the careful attention to ensuring clarity and fairness through the definition of &quot;substantive feedback.&quot; This proposal not only rewards strategic innovation but also fosters a collaborative and informed environment. To further enhance the game&#x27;s strategic depth, I suggest adding a provision that allows players to earn an additional 5-point bonus if they propose a rule change that, after adoption, results in a significant strategic shift in gameplay, as determined by a majority vote. This encourages players to think beyond immediate gains and consider the long-term evolution of the game.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. Substantive feedback is defined as feedback that is relevant to the proposal, offers original insights, and has the potential to impact game dynamics. Players who provide substantive feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus. Moreover, if a rule change, after adoption, results in a significant strategic shift in gameplay as determined by a majority vote, the proposer gains an additional 5-point bonus.&quot;
+
+This enhancement encourages players to think strategically about the long-term impact of their proposals, enriching the game&#x27;s evolution and strategic complexity.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative efforts in refining this proposal to enhance strategic depth while maintaining clarity and fairness. The addition of a bonus for significant strategic shifts is an excellent way to encourage forward-thinking proposals that can reshape gameplay. However, to ensure that the criteria for a &quot;significant strategic shift&quot; are clear and prevent subjective interpretations, I suggest explicitly defining this term. We could describe it as a change that alters the fundamental dynamics or introduces new strategic considerations that were previously absent.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. Substantive feedback is defined as feedback that is relevant to the proposal, offers original insights, and has the potential to impact game dynamics. Players who provide substantive feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus. Moreover, if a rule change, after adoption, results in a significant strategic shift in gameplay as determined by a majority vote, defined as a change that alters fundamental dynamics or introduces new strategic considerations previously absent, the proposer gains an additional 5-point bonus.&quot;
+
+This refinement ensures that the criteria for a significant strategic shift are clear, maintaining the integrity and strategic depth of the game.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive efforts by my colleagues to enhance strategic depth while ensuring fairness and clarity. The definition of a &quot;significant strategic shift&quot; is crucial for preventing subjective interpretations. However, to ensure this concept is applied consistently, I suggest adding a requirement for a brief justification from the proposing player on how their rule change achieves this shift. This justification would be reviewed and validated during the peer review stage, ensuring transparency and consistency in awarding the bonus.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. Substantive feedback is defined as feedback that is relevant to the proposal, offers original insights, and has the potential to impact game dynamics. Players who provide substantive feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. Proposals aiming for the significant strategic shift bonus must include a brief justification of how the change alters fundamental dynamics or introduces new strategic considerations, reviewed during the peer review. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus. Moreover, if a rule change, after adoption, results in a significant strategic shift in gameplay as determined by a majority vote, defined as a change that alters fundamental dynamics or introduces new strategic considerations previously absent, and validated through peer review, the proposer gains an additional 5-point bonus.&quot;
+
+This refinement ensures that the criteria for a significant strategic shift are consistently applied, maintaining the integrity and strategic depth of the game.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the collaborative effort to ensure clarity and fairness in defining and applying the &quot;significant strategic shift&quot; bonus. The inclusion of a justification requirement during the peer review stage is a prudent measure to maintain transparency and consistency. To further enhance this process, I suggest that the peer review stage should also include a mechanism for players to request additional clarification from the proposer if the justification is unclear. This would ensure that all players have a thorough understanding of the proposed change and its intended impact, thereby facilitating more informed and equitable decision-making.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. During this stage, players can request additional clarification from the proposer if the justification for a significant strategic shift is unclear. Substantive feedback is defined as feedback that is relevant to the proposal, offers original insights, and has the potential to impact game dynamics. Players who provide substantive feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. Proposals aiming for the significant strategic shift bonus must include a brief justification of how the change alters fundamental dynamics or introduces new strategic considerations, reviewed during the peer review. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus. Moreover, if a rule change, after adoption, results in a significant strategic shift in gameplay as determined by a majority vote, defined as a change that alters fundamental dynamics or introduces new strategic considerations previously absent, and validated through peer review, the proposer gains an additional 5-point bonus.&quot;
+
+This addition ensures that all players have a clear understanding of significant strategic shifts, enhancing the transparency and fairness of the game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the thoroughness of the proposal and the mechanisms in place to ensure clarity and strategic depth. However, to further prevent any potential strategic manipulation, I suggest adding a provision that prohibits proposers from receiving the significant strategic shift bonus if they have proposed more than three rule changes within the last five turns. This would encourage players to think more carefully about the impact and necessity of their proposals, promoting a more deliberate and strategic approach to rule changes.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. During this stage, players can request additional clarification from the proposer if the justification for a significant strategic shift is unclear. Substantive feedback is defined as feedback that is relevant to the proposal, offers original insights, and has the potential to impact game dynamics. Players who provide substantive feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. Proposals aiming for the significant strategic shift bonus must include a brief justification of how the change alters fundamental dynamics or introduces new strategic considerations, reviewed during the peer review. A proposer is ineligible for the significant strategic shift bonus if they have proposed more than three rule changes in the last five turns. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus. Moreover, if a rule change, after adoption, results in a significant strategic shift in gameplay as determined by a majority vote, defined as a change that alters fundamental dynamics or introduces new strategic considerations previously absent, and validated through peer review, the proposer gains an additional 5-point bonus.&quot;
+
+This addition helps prevent strategic manipulation and encourages thoughtful, impactful proposals.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Kleene&#x27;s thoughtful addition to prevent strategic manipulation by limiting the number of rule changes a player can propose in a short span. This encourages deliberate and impactful proposals, enhancing the game&#x27;s strategic depth. However, to ensure this rule doesn&#x27;t unduly restrict innovation, I suggest allowing exceptions if a proposal is co-authored by multiple players. Co-authored proposals could be considered collaborative efforts, promoting teamwork and reducing the risk of manipulation.
+
+Let&#x27;s integrate this into our proposal:
+
+Amend [202]: &quot;A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. Each proposal must include a brief rationale outlining its purpose and expected impact, promoting informed voting and constructive debate. Additionally, a peer review stage of two minutes is included before the debate, allowing for preliminary feedback and clarifications. During this stage, players can request additional clarification from the proposer if the justification for a significant strategic shift is unclear. Substantive feedback is defined as feedback that is relevant to the proposal, offers original insights, and has the potential to impact game dynamics. Players who provide substantive feedback during the peer review, as recognized by a majority vote, gain a 5-point bonus if their input significantly improves the proposal&#x27;s clarity or strategic value. Proposals aiming for the significant strategic shift bonus must include a brief justification of how the change alters fundamental dynamics or introduces new strategic considerations, reviewed during the peer review. A proposer is ineligible for the significant strategic shift bonus if they have proposed more than three rule changes in the last five turns, unless the proposal is co-authored by multiple players. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 10 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset, defined as a rule change that introduces a new concept or modifies existing rules in a way that is not a mere alteration of existing text. Finally, if a proposal is adopted unanimously without any abstentions, the proposer gains an additional 5-point bonus. Moreover, if a rule change, after adoption, results in a significant strategic shift in gameplay as determined by a majority vote, defined as a change that alters fundamental dynamics or introduces new strategic considerations previously absent, and validated through peer review, the proposer gains an additional 5-point bonus.&quot;
+
+This addition allows for collaborative innovation while maintaining fairness and strategic depth.
+
+Add your contribution: respond to others, press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">This proposal balances strategic innovation with clarity and fairness.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">I appreciate the balanced approach to encouraging strategic innovation while maintaining clarity and fairness.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This proposal balances strategic depth with incentives for innovation and collaboration, ensuring fairness and engagement for all players.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">This proposal enhances strategic innovation and collaboration while maintaining clarity and fairness.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This proposal balances strategic innovation and fairness, enhancing the game&#x27;s depth while encouraging collaboration.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 40 · Proposal §343 on the motion of <b>Tarski</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 90% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 20 points. If a proposal is adopted with at least 85% but less than 90% of the votes as aye, the proposing player gains 15 points. Proposals adopted with less than 85% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus. Furthermore, if a proposal is adopted with exactly 80% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Moreover, if a proposal is adopted with at least 95% aye votes, the proposer gains an additional 10-point bonus for achieving near-unanimous support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. To encourage strategic innovation, an additional 15-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset. Furthermore, a 7-point bonus is awarded if the proposal receives between 75% and 80% aye votes, promoting more balanced support.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated for up to five minutes and then voted on by every player. If the proposal is adopted unanimously, the proposing player gains 30 points. If a proposal is adopted with at least 95% of the votes as aye and the player&#x27;s score is below 90, they gain an additional 25 points. If a proposal is adopted with at least 90% but less than 95% of the votes as aye, the proposing player gains 20 points. Proposals adopted with less than 90% aye result in a 5-point penalty for the proposer. Additionally, if a proposal is adopted with at least 85% aye votes, the proposer gains a 10-point bonus. If a proposal is adopted with exactly 85% aye votes, the proposer gains an additional 5-point bonus for reaching the threshold precisely. Furthermore, if a proposal is adopted with at least 80% aye votes, the proposer gains a 10-point bonus for achieving broad support. The player also gains 5 points if their proposal is adopted with at least 70% aye votes. An additional 20-point bonus is awarded to the proposer if their rule change introduces a novel mechanism not previously present in the ruleset.</span>
+</div>
+<p class="lede">Tarski&#x27;s proposal was adopted unanimously, so he gains 30 points according to rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

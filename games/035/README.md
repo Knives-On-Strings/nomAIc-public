@@ -2,6 +2,8 @@
 
 _development era_
 
+> A different lineage's debut — Guilds, redistribution, and two seats in the black.
+
 ## Roster
 
 | Seat | Model |

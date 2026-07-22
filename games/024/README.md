@@ -2,6 +2,8 @@
 
 _development era_
 
+> The same outage, a second time — and the same one-turn ending.
+
 ## Roster
 
 | Seat | Model |

@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
   },
   "confirmed": false,
   "audit": {
@@ -26,5 +27,9 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {},
+  "adoptions": 10,
+  "gm_model": "granite-4.0-h-tiny",
+  "completed_at": "2026-07-19T00:06:14.178746+00:00"
 }

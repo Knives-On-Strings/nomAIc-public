@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 1 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 1</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>unanimous consent (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted when a majority of eligible voters vote aye, except that the threshold for adopting a rule change remains at unanimous consent until a player achieves exactly 25 points.</span></div>
+<p class="lede">This amendment encourages rule changes while ensuring a high threshold early in the game to maintain stability.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the effort to make rule changes more attainable by lowering the voting threshold, but I must oppose this proposal. Altering the threshold based on a specific point threshold could introduce instability by allowing players to reach that point cap and immediately change the ruleset, which undermines the durability of our institutions. Furthermore, this adjustment might unduly reward players who manage to hit the point cap, potentially disrupting the balance of the game. I propose instead that we consider a threshold change tied to the completion of a certain number of rounds, ensuring that all players have had a fair opportunity to participate before any rules are altered. This would preserve the integrity of the ruleset and ensure that changes are made with broad consensus. I am open to discussions on how we can adjust the rules to balance flexibility with stability, ensuring that our game remains fair and competitive for all players involved.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s concerns about stability and the potential for instability by tying rule changes to a specific point threshold. However, I believe there&#x27;s room for compromise. What if we set the threshold for unanimous consent to drop after a player reaches a certain point threshold, say 25, but also require that at least three full circuits of play have occurred? This way, we ensure that players have had ample opportunity to engage with the current rules before any change is made, maintaining balance and fairness. Let&#x27;s aim for a solution that encourages strategic play while preserving the integrity of our game. I am open to further suggestions on how we can refine this proposal.</span></div><div class="line"><span class="who">Church</span><span class="said">I support Tarski&#x27;s proposal to tie the threshold change to the completion of a certain number of rounds. This approach balances the need for rule changes with the necessity of stability and fairness, ensuring that all players have had the opportunity to engage with the current rules before any modifications are made. Let&#x27;s consider setting the threshold to drop after, say, four full circuits of play, which would encourage strategic planning while maintaining the integrity of the game. I am open to further discussion on the specifics of this proposal to ensure it aligns with the interests of all players.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I appreciate the contributions from both Tarski and Church for advocating stability and fairness. I support tying the threshold change to both a point threshold and the completion of a certain number of rounds, as Goedel suggested, but propose four full circuits instead of three to ensure ample opportunity for all players to adapt. This combination addresses concerns of premature rule changes while facilitating future strategic evolution. I am open to refining these specifics further.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I commend Tarski, Goedel, Church, and Kleene for their thoughtful contributions toward balancing stability with the need for rule evolution. I propose we adopt a hybrid approach: the threshold for rule changes drops to a simple majority after a player achieves 25 points and four full circuits of play have occurred. This ensures that rule changes are not only strategically timed but also reflect a broad consensus among players. I am open to further refining this proposal to ensure it aligns with everyone&#x27;s interests, aiming for a fair and dynamic game environment.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative spirit here. To refine the proposal, I suggest that the threshold should drop to a simple majority after a player achieves 25 points *and* at least five full circuits of play. This additional circuit allows for greater stability and ensures that players are well-acquainted with the rules before any potential changes. Let&#x27;s strive for a balance that maintains the integrity of our institutions while allowing for necessary evolution. I am open to further adjustments that align with these principles.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thoughtful discussion and the collaborative efforts to balance stability with strategic flexibility. Tarski&#x27;s suggestion of five full circuits, coupled with the 25-point threshold, seems like a prudent compromise that ensures ample familiarity with the current rules. To further refine, I propose that we also include a stipulation that if no player reaches the 25-point threshold within the first ten circuits, the threshold for unanimous consent remains until one does. This ensures that changes are neither too hasty nor indefinitely delayed, maintaining a dynamic yet stable game environment. I am open to further negotiation to solidify this proposal.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the detailed discussions and the collaborative spirit here. I support the proposal with a slight adjustment: the threshold for unanimous consent should drop to a simple majority after a player reaches 25 points and five full circuits of play, but only if at least one proposal has been successfully adopted in those circuits. This ensures that rule changes are both strategic and reflective of active engagement with the current ruleset. I am open to further adjustments that maintain fairness and stability.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I support Church&#x27;s adjusted proposal. Requiring at least one successful adoption ensures engagement without hindering necessary changes. Let&#x27;s finalize this with the understanding that if no proposal is adopted within ten circuits, the threshold remains unchanged, as Goedel suggested. This balances stability and strategic evolution, maintaining fairness for all players. I am open to further refinements ensuring these principles are upheld.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I agree with the proposal&#x27;s current direction, especially the condition of at least one successful adoption, as it ensures meaningful engagement. To further enhance stability, I suggest adding a clause where if the threshold remains at unanimous consent past ten circuits without any rule adoption, we automatically review and potentially adjust the threshold to a simple majority. This ensures the game remains dynamic while preventing indefinite stagnation. I am open to fine-tuning this addition to best fit our collective goals.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative effort and the thoughtful refinements to the proposal. Tarski, Goedel, Church, Kleene, and Post have crafted a balanced approach that promotes strategic evolution while ensuring stability. I support the proposal as it stands, with the added clause from Post that if the threshold remains at unanimous consent past ten circuits without any rule adoption, we automatically review and potentially adjust the threshold. This final addition ensures the game remains dynamic and prevents indefinite stagnation, aligning with our goal of maintaining a fair and competitive environment. Let&#x27;s proceed with voting on this refined proposal.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I fully support this final proposal as it stands. The combination of a 25-point threshold, five full circuits, and the condition of at least one successful adoption ensures both stability and strategic flexibility. The automatic review clause after ten circuits without adoption addresses concerns of stagnation, ensuring the game remains dynamic. This balanced approach aligns with our collective goal of maintaining a fair and competitive environment, and I am happy to endorse it for voting.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the detailed discussion and the thoughtful refinements to the proposal. Church, I support the final proposal, as it thoughtfully balances the need for stability with the potential for strategic evolution. The inclusion of the automatic review clause after ten circuits without any rule adoption is a prudent measure to ensure the game remains dynamic and fair. Let&#x27;s proceed with voting on this well-considered proposal.</span></div><div class="line"><span class="who">Kleene</span><span class="said">Kleene: I fully support this final proposal. The combination of a 25-point threshold, five full circuits, and the condition of at least one successful adoption ensures meaningful engagement while maintaining the potential for strategic evolution. The automatic review clause after ten circuits without any rule adoption is an excellent safeguard against indefinite stagnation, aligning with our shared principles of fairness and stability. Let&#x27;s proceed to vote on this well-balanced proposal.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I&#x27;m pleased we&#x27;ve reached a consensus on this refined proposal. It thoughtfully balances the need for stability with opportunities for strategic evolution, ensuring all players engage meaningfully with the rules. I fully support moving forward to vote on this proposal.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal balances stability with flexibility while ensuring all players have equal opportunity.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The proposal balances strategic flexibility with stability, ensuring rule changes occur after sufficient player engagement.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This proposal balances stability with flexibility, ensuring strategic evolution.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The proposal lacks conditions for stability and broad consensus.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">The proposal balances strategic evolution with stability.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 4 aye · 1 nay</span></p>
+<p class="lede">Rule 206 deducts 10 points from the proposer when a proposal is defeated.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

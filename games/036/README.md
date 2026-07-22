@@ -2,6 +2,8 @@
 
 _development era_
 
+> The same table, remembering itself — and legislating twice as fast.
+
 ## Roster
 
 | Seat | Model |

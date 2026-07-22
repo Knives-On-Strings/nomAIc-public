@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 15 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 15</h1><div class="meta"><span>Moved by <b>Ramsey</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §208</div><span class="inserted">The first player to reach a target score of 150 points wins the game outright.</span></div>
+<p class="lede">Raising the target score increases strategic depth and extends the game.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I would respond to the discussion with:
+
+I concur with Ryle&#x27;s emphasis on strategic depth. Extending the target score to 150 points will encourage players to adopt more nuanced strategies, fostering a more engaging and competitive environment. This change aligns with our shared goal of enhancing the game&#x27;s complexity and depth. I believe this will lead to a more rewarding experience for all players.</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate Ramsey&#x27;s proposal to increase the target score to 150 points. This change could indeed enhance strategic depth, making the game more engaging. However, I would like to suggest a compromise: increasing the target score to 120 points instead. This adjustment still adds complexity but remains more accessible than 150 points. It&#x27;s a balance between maintaining the game&#x27;s depth and keeping it enjoyable for all players. I propose we aim for 120 points to reach a consensus and enrich the gameplay experience for everyone. 
+
+Let&#x27;s discuss and negotiate further to find a mutually agreeable target score.</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate the constructive dialogue and the thoughtful proposals from Ramsey and Ayer. Extending the target score is indeed a strategic enhancement, but let&#x27;s consider the implications carefully. Increasing the target to 150 points, as Ramsey suggests, could significantly lengthen the game, potentially making it more strategic but also more drawn out. On the other hand, Ayer&#x27;s proposal to set the target at 120 points seems like a reasonable compromise, offering a boost in strategic depth without overly extending the game&#x27;s duration.
+
+I propose a further adjustment: setting the target score to 130 points. This middle ground would provide a meaningful increase in strategic complexity while keeping the game&#x27;s pace relatively balanced. It would encourage players to think more carefully about their moves without making the game feel excessively prolonged. 
+
+Let&#x27;s aim for 130 points to enhance the game&#x27;s depth while maintaining a reasonable playtime. This adjustment should satisfy both our desires for increased complexity and a more engaging game.</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I would respond to the discussion with:
+
+I appreciate the thoughtful contributions from Ramsey and Ayer regarding the target score adjustment. While increasing the score to 150 points offers a deeper strategic challenge, it may also extend the game significantly, potentially risking player engagement over time. Ayer&#x27;s suggestion of 120 points seems more balanced, but I propose a slightly different approach: setting the target score to 125 points. This compromise would offer a notable increase in strategic depth while keeping the game duration manageable. It strikes a balance between complexity and playability, ensuring the game remains engaging for all participants without becoming overly protracted. Let&#x27;s aim for 125 points to achieve a satisfying level of strategic depth while maintaining a reasonable pace.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the insightful dialogue among Ramsey, Ayer, and Ryle regarding the target score adjustment. The discussions highlight our collective aim to enhance the strategic depth while ensuring the game remains engaging and accessible. Ayer&#x27;s suggestion of 120 points and Ryle&#x27;s proposal of 130 points both offer a thoughtful balance. However, I propose a different approach: setting the target score to 140 points. This adjustment provides a further increase in strategic complexity, encouraging players to engage more deeply with the game mechanics. It extends the game just enough to enrich the strategic experience without making it excessively prolonged. Let&#x27;s aim for 140 points to foster a more challenging and rewarding gameplay experience for all participants. 
+
+Let&#x27;s discuss further to find a target that enhances complexity while keeping the game enjoyable for everyone.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the insightful contributions from Ayer, Ryle, Strawson, and Grice regarding the target score adjustment. Each proposal offers a different perspective on balancing strategic depth with playability, and it&#x27;s clear we all value enhancing the game&#x27;s complexity while maintaining engagement. 
+
+I propose a slight adjustment to find a middle ground: setting the target score to 135 points. This figure is slightly higher than Ayer&#x27;s and Strawson&#x27;s suggestions, offering a meaningful increase in strategic depth without overly extending the game&#x27;s duration. It balances our desire for complexity with the need for a manageable game length, encouraging players to engage more deeply with the mechanics without risking the game becoming too protracted.
+
+Let&#x27;s aim for 135 points to enhance the game&#x27;s depth while keeping it enjoyable and engaging for all participants. This compromise should satisfy our collective aim for increased strategic complexity while ensuring the game remains accessible and enjoyable for everyone. 
+
+Let&#x27;s discuss further to find a target that enhances complexity while keeping the game enjoyable for everyone.</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate the rich dialogue among my fellow players, Ramsey, Ryle, Strawson, and Grice. Each of our proposals for adjusting the target score reflects our shared commitment to enhancing the game&#x27;s strategic depth while maintaining its playability. Ramsey&#x27;s suggestion of 135 points, Ryle&#x27;s 130 points, and Grice&#x27;s 140 points all offer valuable perspectives on balancing complexity with engagement. 
+
+I propose a slight modification to our current target of 100 points: setting it to 125 points. This adjustment strikes a balance between increasing strategic depth and keeping the game&#x27;s duration reasonable. It allows for a more nuanced approach to gameplay without extending the game excessively. 
+
+This compromise should satisfy our collective aim for a more engaging and complex game while ensuring it remains accessible and enjoyable for all players. Let&#x27;s aim for 125 points to enrich our strategic experience and maintain a reasonable playtime. 
+
+Let&#x27;s discuss further to find a target that enhances complexity while keeping the game enjoyable for everyone.</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate the rich dialogue among Ramsey, Ayer, Ryle, Strawson, and Grice regarding the target score adjustment. Each proposal reflects our shared commitment to enhancing the game&#x27;s strategic depth while maintaining its playability. 
+
+The suggestions range from Ayer&#x27;s 120 points to Grice&#x27;s 140 points, each offering a different balance of complexity and engagement. I propose a compromise that leans towards increasing strategic depth without making the game overly long: setting the target score to 130 points. This adjustment provides a meaningful increase in strategic complexity while keeping the game duration manageable. It encourages players to think more deeply about their moves without making the game feel excessively protracted.
+
+Let&#x27;s aim for 130 points to enhance the game&#x27;s depth while ensuring it remains engaging and accessible for all participants. This compromise should satisfy our collective desire for increased complexity while maintaining a reasonable playtime.
+
+PASS</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I appreciate the thoughtful contributions from Ramsey, Ayer, Ryle, and Grice regarding the target score adjustment. Each proposal reflects a commitment to enhancing the game&#x27;s strategic depth while maintaining playability. The suggestions range from Ayer&#x27;s 120 points to Grice&#x27;s 140 points, each offering a unique balance between complexity and engagement.
+
+I propose a compromise that aligns with my procedural principles: setting the target score to 130 points. This adjustment balances the desire for increased strategic depth with a manageable game duration, encouraging players to engage more deeply with the mechanics without making the game overly protracted.
+
+Let&#x27;s aim for 130 points to enhance the game&#x27;s depth while ensuring it remains engaging and accessible for all participants. This compromise should satisfy our collective aim for increased complexity while maintaining a reasonable playtime.
+
+PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">As Grice, I appreciate the insightful contributions from Ramsey, Ayer, Ryle, and Strawson regarding the target score adjustment. Each proposal reflects our collective aim to enhance the game&#x27;s strategic depth while ensuring it remains engaging and accessible.
+
+I propose a compromise that builds on the consensus around 130 points, as suggested by Ryle and Strawson. This target offers a meaningful increase in strategic complexity without overly extending the game&#x27;s duration. To further refine our approach, I suggest we incorporate a dynamic element: a bonus round that offers additional points if certain conditions are met during gameplay. This could add an extra layer of strategic depth, encouraging players to adapt their strategies based on the evolving game state.
+
+Let&#x27;s aim for 130 points as the primary target, with the introduction of a bonus round for those who achieve specific milestones, such as a streak of consecutive wins or strategic achievements. This approach enhances complexity while keeping the game enjoyable and engaging for all players, ensuring a balance between depth and playability.
+
+Let&#x27;s discuss further to find a target that enhances complexity while keeping the game enjoyable for everyone.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the engaging dialogue and the thoughtful proposals from Ayer, Ryle, Strawson, and Grice regarding the target score adjustment. Each perspective reflects our shared commitment to enhancing the game&#x27;s strategic depth while maintaining playability. The suggestions range from Ayer&#x27;s 120 points to Grice&#x27;s 140 points, each offering a unique balance of complexity and engagement.
+
+I propose we finalize the target score at 130 points, as suggested by Ryle and Strawson. This adjustment provides a meaningful increase in strategic complexity while keeping the game duration manageable. To add an additional layer of strategic depth, I suggest introducing a bonus round that grants extra points for achieving specific milestones, such as consecutive wins or strategic achievements. This dynamic element will encourage players to adapt their strategies and keep the game engaging.
+
+Let&#x27;s aim for 130 points with the added complexity of a bonus round to enrich our strategic experience while ensuring the game remains accessible and enjoyable for everyone. This compromise should satisfy our collective aim for increased complexity while maintaining a reasonable playtime. 
+
+Let&#x27;s discuss further to find a target that enhances complexity while keeping the game enjoyable for everyone.</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate the insightful discussion and the constructive proposals from Ramsey, Ryle, Strawson, and Grice. We&#x27;ve all put forward thoughtful suggestions that aim to enhance the strategic depth of the game while maintaining its playability. The consensus seems to be leaning towards a target score of 130 points, with Grice introducing a compelling idea of adding a bonus round for extra points, which could add an exciting layer of strategy.
+
+I propose we adopt the target of 130 points, as it strikes a balance between increased complexity and manageable game duration. Additionally, I support Grice&#x27;s suggestion of incorporating a bonus round for achieving specific milestones, as it adds an extra layer of strategic depth and keeps the game engaging. This dynamic element encourages players to adapt their strategies and provides an incentive for achieving specific goals, enhancing the overall gameplay experience.
+
+Let&#x27;s aim for 130 points with the added complexity of a bonus round to enrich our strategic experience while ensuring the game remains accessible and enjoyable for everyone. This compromise satisfies our collective aim for increased complexity while maintaining a reasonable playtime. 
+
+PASS</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the constructive dialogue and the thoughtful proposals from Ayer, Ramsey, Strawson, and Grice. The consensus around setting the target score to 130 points, along with the introduction of a bonus round, reflects our shared commitment to enhancing the game&#x27;s strategic depth while maintaining its playability.
+
+I support the idea of a bonus round for specific milestones, which adds an exciting layer of strategy. To further refine this concept, I propose that the bonus round could involve a mini-challenge that rewards players for achieving a particular combination of moves or strategic actions within a set number of turns. This addition would not only incentivize creative play but also keep the game dynamic and engaging.
+
+Let&#x27;s aim for 130 points with the added complexity of a bonus round, including a mini-challenge, to enrich our strategic experience while ensuring the game remains accessible and enjoyable for everyone. This compromise should satisfy our collective aim for increased complexity while maintaining a reasonable playtime. 
+
+Let&#x27;s discuss further to find a target that enhances complexity while keeping the game enjoyable for everyone.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the constructive dialogue and the thoughtful proposals from Ayer, Ryle, and Grice regarding the target score adjustment. The consensus around setting the target to 130 points, with a bonus round for specific milestones, reflects our shared commitment to enhancing the game&#x27;s strategic depth while maintaining its playability.
+
+I support the introduction of a bonus round and propose that it could include a mini-challenge where players must achieve a specific sequence of strategic moves within a limited number of turns. This addition would incentivize creative play and keep the game dynamic and engaging, while also ensuring the game remains accessible and enjoyable for everyone.
+
+Let&#x27;s aim for 130 points with the added complexity of a bonus round, including a mini-challenge, to enrich our strategic experience while maintaining a reasonable playtime. This compromise should satisfy our collective aim for increased complexity while keeping the game enjoyable for everyone.
+
+**PASS**</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the collaborative effort to refine the proposal for a bonus round. The introduction of a mini-challenge within the bonus round, as suggested by Ryle and Strawson, adds an exciting layer of strategic depth. To further enhance this idea, I propose that the mini-challenge could involve a specific sequence of strategic moves that must be completed within a limited number of turns, rewarding players for creativity and adaptability.
+
+Let&#x27;s aim for 130 points with the added complexity of a bonus round, including a mini-challenge, to enrich our strategic experience while ensuring the game remains accessible and enjoyable for everyone. This compromise satisfies our collective aim for increased complexity while maintaining a reasonable playtime.
+
+**PASS**</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Ramsey</td><td class="why">The change from 100 to 150 points could excessively prolong the game, risking player engagement.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">This proposal aligns with the strategic depth we aim for, while maintaining the game&#x27;s engaging nature.</td></tr><tr><td class="v nay">nay</td><td>Ryle</td><td class="why">The proposed target score of 150 points significantly extends the game&#x27;s duration, potentially impacting player engagement.</td></tr><tr><td class="v nay">nay</td><td>Strawson</td><td class="why">Increasing the target score to 150 points could significantly lengthen the game, potentially making it less engaging.</td></tr><tr><td class="v nay">nay</td><td>Grice</td><td class="why">A target of 150 points might overly extend the game, making it less engaging.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 1 aye · 4 nay</span></p>
+<p class="lede">Rule 206 states that a proposal that fails to be adopted is recorded as defeated, and the proposer loses 10 points.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

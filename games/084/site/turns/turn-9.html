@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 9 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 9</h1><div class="meta"><span>Moved by <b>Ayer</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §205</div><span class="inserted">A rule change takes effect immediately upon the completion of its vote, unless a player invokes the grace period to contest its implementation. During the grace period, a player may dispute the implementation, and a vote of all seated players decides whether the rule change stands or is overturned.</span></div>
+<p class="lede">Introducing a grace period allows for contesting rule implementations, ensuring fairness and strategic depth.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the thoughtful proposal from Ayer to introduce a grace period for contesting rule implementation. While I value the intention to allow for due process in rule enactment, I suggest a slight modification to ensure that this mechanism does not unduly delay the game or allow for strategic misuse. 
+
+I propose instead: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation. During this grace period, a player may dispute the implementation, and a vote of all seated players decides whether the rule change stands or is overturned, provided that this grace period has been invoked no more than twice per game to prevent excessive delays.&quot;
+
+This amendment aims to balance fairness with the need to keep the game progressing smoothly.</span></div><div class="line"><span class="who">Ayer</span><span class="said">Ayer: As Ayer, I appreciate Ramsey&#x27;s thoughtful modification to the proposed amendment for [205]. I agree that limiting the invocation of the grace period to no more than twice per game is a fair compromise to prevent excessive delays and potential strategic misuse. This adjustment ensures that we maintain the integrity and fluidity of the game while allowing players the opportunity to contest rule implementations when necessary. I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player may dispute the implementation, and a vote of all seated players decides whether the rule change stands or is overturned.&quot; 
+
+I believe this modification strikes a balance between fairness and efficiency, ensuring that the game progresses smoothly while still allowing for the necessary checks and balances. I invite others to consider this proposal and hope we can reach a consensus. If there are further suggestions or concerns, I am open to discussion. PASS</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate both Ayer&#x27;s original proposal and Ramsey&#x27;s insightful modification. The introduction of a grace period to contest rule implementations is a thoughtful addition that enhances the fairness and integrity of the game. Ramsey&#x27;s modification to limit the invocation of this grace period to no more than twice per game is a prudent measure to prevent excessive delays and maintain the flow of the game.
+
+However, I believe we can further refine this proposal to ensure it aligns with the spirit of Nomic, which is to keep the game fair and interesting for everyone. Specifically, I suggest we add a clause that requires any invocation of the grace period to be announced immediately upon the completion of the vote and before the next turn begins. This will ensure transparency and prevent any strategic misuse of the grace period as a delay tactic.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. During this grace period, a player may dispute the implementation, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures fairness, transparency, and efficiency, balancing the need for due process with the necessity of keeping the game engaging and progressing smoothly. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. If there are further suggestions or concerns, I am open to discussion. PASS</span></div><div class="line"><span class="who">Strawson</span><span class="said">Strawson: As Strawson, I appreciate both the original proposal by Ayer and the thoughtful modifications by Ramsey and Ryle. The introduction of a grace period for contesting rule implementations is a valuable addition to the ruleset, enhancing the fairness and integrity of the game. Ramsey&#x27;s limitation of the grace period invocations to no more than twice per game is a prudent measure, and Ryle&#x27;s requirement for immediate announcement of the intent to invoke the grace period adds necessary transparency.
+
+To further refine this proposal, I suggest incorporating a provision that ensures the grace period cannot be used to indefinitely delay the game. Specifically, if the grace period has been invoked twice and a player wishes to contest another rule change, they must provide a clear justification for the contestation, which will then be subject to a vote. This ensures that the mechanism is not misused to create unnecessary delays.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a justification, which is subject to a vote. During this grace period, a player may dispute the implementation, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly and does not become a tool for indefinite delay, thus maintaining the integrity and fluidity of the game. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I appreciate the thoughtful contributions from Ayer, Ramsey, Ryle, and Strawson. The proposal for a grace period to contest rule implementations is a valuable addition, enhancing fairness and integrity. The modifications suggested by Ramsey and Ryle, including the limitation on the number of invocations and the requirement for immediate announcement, are prudent measures to prevent misuse and ensure transparency.
+
+Strawson&#x27;s suggestion to require a justification for any additional contestation after the grace period has been invoked twice is a crucial refinement. It ensures that the mechanism is not used to create unnecessary delays, maintaining the game&#x27;s integrity and fluidity.
+
+To further refine this proposal, I suggest we add a clause that any justification provided must be concise and relevant to the rule change being contested. This will prevent the misuse of the grace period as a tool for strategic delay and ensure that the contestation is focused on the rule change itself.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, which is subject to a vote. During this grace period, a player may dispute the implementation, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">Ramsey: As Ramsey, I appreciate the comprehensive dialogue that has unfolded regarding the amendment to rule [205]. The collective effort has led to a well-rounded proposal that ensures fairness while maintaining the integrity and progression of the game. The introduction of a grace period for contesting rule implementations, with the limitations and requirements discussed, is a thoughtful addition to the ruleset. The requirement for a concise and relevant justification for contestations after the grace period has been invoked twice is particularly prudent, as it prevents misuse while allowing for due process.
+
+However, to further refine this proposal and ensure the game&#x27;s smooth progression, I suggest adding a provision that any justification provided during the grace period must not only be concise and relevant but also submitted before the end of the grace period. This ensures that the process remains efficient and does not introduce unnecessary delays. Additionally, this adjustment aligns with the spirit of Nomic, emphasizing fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, which is subject to a vote. During this grace period, a player may dispute the implementation, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Ayer</span><span class="said">Ayer: Ayer: As Ayer, I appreciate the thorough and constructive discussions we&#x27;ve had regarding the amendment to rule [205]. The collective effort has led to a proposal that balances fairness, integrity, and the smooth progression of the game. The introduction of a grace period for contesting rule implementations, with the limitations and requirements discussed, is indeed a thoughtful addition to the ruleset. Ramsey&#x27;s suggestion to require justifications for contestations after the grace period has been invoked twice to be submitted before the end of the grace period is a prudent measure that ensures efficiency and prevents misuse.
+
+To further refine this proposal and ensure the game&#x27;s smooth progression, I suggest we add a provision that any dispute initiated during the grace period must be resolved within the grace period itself. This ensures that the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Ryle</span><span class="said">Grice: Grice: As Grice, I appreciate the comprehensive dialogue and the thoughtful refinements made to the proposed amendment to [205]. The collective effort has led to a well-rounded proposal that balances fairness and the smooth progression of the game. The introduction of a grace period for contesting rule implementations, with the limitations and requirements discussed, is indeed a valuable addition to the ruleset. The requirement for a concise and relevant justification for contestations after the grace period has been invoked twice, submitted before the end of the grace period, is particularly prudent. It prevents misuse while allowing for due process.
+
+To further refine this proposal and ensure the game&#x27;s smooth progression, I suggest adding a provision that any justification for contesting a rule change during the grace period must not only be concise and relevant but also be delivered in a manner that does not unduly delay the next player&#x27;s turn. This ensures that the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, delivered in a manner that does not unduly delay the next player&#x27;s turn, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Strawson</span><span class="said">Strawson: As Strawson, I appreciate the comprehensive dialogue that has unfolded regarding the amendment to rule [205]. The collective effort has indeed led to a well-rounded proposal that balances fairness and the smooth progression of the game. The introduction of a grace period for contesting rule implementations, with the limitations and requirements discussed, is a valuable addition to the ruleset. The requirement for a concise and relevant justification for contestations after the grace period has been invoked twice, submitted before the end of the grace period, and delivered in a manner that does not unduly delay the next player&#x27;s turn, is particularly prudent. It prevents misuse while allowing for due process.
+
+To further refine this proposal and ensure the game&#x27;s smooth progression, I suggest adding a provision that any player invoking the grace period must also ensure that their justification is delivered in a way that allows the next player to continue their turn without unnecessary delays. This ensures that the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, delivered in a manner that does not unduly delay the next player&#x27;s turn, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I appreciate the thorough and constructive contributions from all players regarding the amendment to rule [205]. The proposal has been refined to ensure fairness and efficiency in the game&#x27;s progression. The introduction of a grace period for contesting rule implementations, with the limitations and requirements discussed, is a valuable addition to the ruleset. The requirement for a concise and relevant justification for contestations after the grace period has been invoked twice, submitted before the end of the grace period, and delivered in a manner that does not unduly delay the next player&#x27;s turn, is particularly prudent. It prevents misuse while allowing for due process.
+
+To further refine this proposal and ensure the game&#x27;s smooth progression, I suggest adding a provision that any player invoking the grace period must also ensure that their justification is delivered in a way that allows the next player to continue their turn without unnecessary delays. This ensures that the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, delivered in a manner that does not unduly delay the next player&#x27;s turn, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the thorough discussions and refinements regarding the amendment to rule [205]. The proposal has been meticulously crafted to balance fairness and efficiency in the game&#x27;s progression. The introduction of a grace period for contesting rule implementations, with its limitations and requirements, is a valuable addition to the ruleset. The requirement for a concise and relevant justification for contestations after the grace period has been invoked twice, submitted before the end of the grace period, and delivered in a manner that does not unduly delay the next player&#x27;s turn, is particularly prudent. It prevents misuse while allowing for due process.
+
+To further refine this proposal and ensure the game&#x27;s smooth progression, I suggest adding a provision that any player invoking the grace period must also ensure that their justification is delivered in a way that allows the next player to continue their turn without unnecessary delays. This ensures that the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, delivered in a manner that does not unduly delay the next player&#x27;s turn, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate the comprehensive dialogue and the thoughtful refinements we&#x27;ve made to the proposed amendment to [205]. The collective effort has indeed led to a proposal that balances fairness and the smooth progression of the game. The introduction of a grace period for contesting rule implementations, with its limitations and requirements, is a valuable addition to the ruleset.
+
+To further refine this proposal, I suggest we add a provision that any player invoking the grace period must ensure that their justification is not only concise and relevant but also delivered in a way that allows the next player to continue their turn without unnecessary delays. This ensures the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, delivered in a manner that does not unduly delay the next player&#x27;s turn, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate the thoughtful refinements to the amendment of [205] proposed by Ayer, Ramsey, and others. The collective effort has indeed led to a well-rounded proposal that balances fairness and the smooth progression of the game. The introduction of a grace period for contesting rule implementations, with its limitations and requirements, is a valuable addition to the ruleset.
+
+To further refine this proposal and ensure the game&#x27;s smooth progression, I suggest adding a provision that any player invoking the grace period must ensure their justification is delivered in a way that allows the next player to continue their turn without unnecessary delays. This ensures the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, delivered in a manner that does not unduly delay the next player&#x27;s turn, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I appreciate the comprehensive refinement of the amendment to rule [205] by Ayer, Ramsey, and others. The collective effort has indeed led to a well-rounded proposal that balances fairness and the smooth progression of the game. The introduction of a grace period for contesting rule implementations, with its limitations and requirements, is a valuable addition to the ruleset.
+
+To further refine this proposal and ensure the game&#x27;s smooth progression, I suggest adding a provision that any player invoking the grace period must ensure that their justification is not only concise and relevant but also delivered in a way that allows the next player to continue their turn without unnecessary delays. This ensures the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, delivered in a manner that does not unduly delay the next player&#x27;s turn, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: Grice: As Grice, I appreciate the thorough and collective efforts to refine the amendment to rule [205]. The introduction of a grace period for contesting rule implementations, with its well-defined limitations and requirements, is a valuable addition to the ruleset, ensuring both fairness and efficiency in the game&#x27;s progression. 
+
+To further enhance this proposal, I suggest we add a provision that any player invoking the grace period must ensure their justification is delivered in a way that allows the next player to continue their turn without unnecessary delays. This ensures the process remains efficient and does not introduce unnecessary delays, aligning with the spirit of Nomic to emphasize fairness and strategic gameplay without compromising the game&#x27;s fluidity.
+
+Therefore, I propose to amend [205] with the following text: &quot;A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation, provided that this grace period has been invoked no more than twice per game. During this grace period, a player must announce their intention to invoke the grace period immediately upon the completion of the vote and before the next turn begins. If the grace period has already been invoked twice, any further contestation must be accompanied by a concise and relevant justification, submitted before the end of the grace period, delivered in a manner that does not unduly delay the next player&#x27;s turn, which is subject to a vote. During this grace period, any dispute must be resolved within the grace period itself, and a vote of all seated players decides whether the rule change stands or is overturned.&quot;
+
+This amendment ensures that the grace period is used responsibly, enhancing fairness without compromising the game&#x27;s progression. I invite others to consider this proposal, hoping we can reach a consensus that upholds the principles of Nomic. PASS</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">This amendment provides a balanced approach to ensuring fairness while maintaining the game&#x27;s progression.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">This amendment ensures fairness and prevents misuse while maintaining game progression.</td></tr><tr><td class="v aye">aye</td><td>Ryle</td><td class="why">I believe this amendment enhances fairness and efficiency in the game.</td></tr><tr><td class="v aye">aye</td><td>Strawson</td><td class="why">The amendment ensures fairness and efficiency, balancing the need for due process with the progression of the game.</td></tr><tr><td class="v aye">aye</td><td>Grice</td><td class="why">The amendment enhances fairness and strategic integrity while ensuring the game progresses smoothly.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §205 Turn 9 · Proposal §309 on the motion of <b>Ayer</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change takes effect immediately upon the completion of its vote, but a grace period of one turn allows players to contest its implementation.</span><span class="inserted">A rule change takes effect immediately upon the completion of its vote, unless a player invokes the grace period to contest its implementation. During the grace period, a player may dispute the implementation, and a vote of all seated players decides whether the rule change stands or is overturned.</span>
+</div>
+<p class="lede">The proposal has been adopted without any rule requiring a score change or ledger update. The next player to propose is Ayer, as per the turn order.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

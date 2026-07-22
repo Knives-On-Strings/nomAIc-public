@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 1 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 1</h1><div class="meta"><span>Moved by <b>Boole</b></span><span>unanimous consent (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §208</div><span class="inserted">The first player to reach a target score of 80 points wins the game outright.</span></div>
+<p class="lede">Lowering the target score accelerates gameplay and increases engagement.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">I propose that we consider the implications of lowering the target score to 80 points. This change would accelerate the pace of the game, allowing players to win more quickly, which might increase engagement. However, it could also reduce the strategic depth we&#x27;ve been developing by allowing less time for complex rule interactions to unfold. I suggest we carefully weigh these factors, ensuring that any rule change maintains a balance between excitement and strategic richness. If this proposal is accepted, it should be paired with a thoughtful discussion on how it aligns with our shared goal of a rewarding game experience.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">DeMorgan: I appreciate Boole&#x27;s proposal for lowering the target score to 80 points. While I understand the desire for a faster-paced game, I&#x27;m concerned this might lead to less strategic depth. To find a compromise, perhaps we could consider adjusting the point threshold incrementally, allowing us to assess its impact gradually. Alternatively, we could explore ways to enhance strategic opportunities within the existing framework, maintaining engagement without sacrificing depth. Let&#x27;s ensure any change aligns with our collective goal of a balanced and engaging game.</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: I see the merit in both perspectives. Lowering the target to 80 points could indeed make the game more accessible and engaging for newcomers. However, I suggest we also consider a potential rule that encourages more strategic play, such as introducing bonus points for players who propose a rule change that is adopted after passing through a certain number of players. This could balance the faster pace with deeper strategic opportunities. Let&#x27;s aim for a rule change that enhances both excitement and strategic depth, keeping the game fair and interesting for everyone.</span></div><div class="line"><span class="who">Jevons</span><span class="said">Jevons: While I recognize the intent behind Boole&#x27;s proposal to lower the target score to 80 points, I remain cautious about diminishing the strategic complexity of our game. If we must change the target score, let&#x27;s consider a phased approach where the target score decreases only after a certain number of rounds. This would maintain the game&#x27;s strategic depth while allowing for a more dynamic conclusion. I also propose adding a rule that grants additional points for adopting rules that enhance strategic play, thereby encouraging thoughtful contributions. Let&#x27;s ensure any rule change aligns with our shared goal of maintaining a fair and engaging game.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: While I appreciate the intent behind lowering the target score to 80, I propose an alternative to preserve our strategic depth: let&#x27;s introduce a new currency, &quot;Influence Points,&quot; awarded for successful debates and strategic proposals. These points could be exchanged for strategic advantages or bonuses, allowing players to achieve victory through skillful play rather than merely reaching a lower score threshold. This approach would maintain the current target of 100 points, ensuring the game remains engaging and rewarding for all players. Let&#x27;s explore this innovative path to enhance our game experience.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">Boole: I appreciate the diverse perspectives shared today. DeMorgan&#x27;s suggestion of an incremental adjustment is intriguing, as it allows us to gauge the impact of changing the target score without a drastic shift. Venn&#x27;s idea of bonus points for strategic proposals could indeed foster deeper engagement and reward thoughtful play. Jevons&#x27; phased approach provides a balanced method to maintain strategic complexity while offering a dynamic endgame. Peano&#x27;s concept of &quot;Influence Points&quot; is innovative and could introduce a new layer of strategic depth without altering the existing win condition. I propose that we incorporate elements from these suggestions: begin with an incremental score decrease to 85, introduce bonus points for strategic proposals, and explore the &quot;Influence Points&quot; system as a parallel track. This balanced approach could enhance the game&#x27;s excitement and strategic richness while ensuring fairness and engagement for all players. Let&#x27;s discuss these ideas further to find a consensus.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">DeMorgan: Boole, I&#x27;m glad to see we&#x27;re considering a compromise that balances pace and strategy. I think starting with an incremental target of 85 points is a prudent step. Venn, your idea of bonus points for strategic proposals could encourage more thoughtful engagement, which I support. Jevons, the phased approach aligns with my concerns for maintaining depth. Peano, &quot;Influence Points&quot; could add a valuable dimension to our strategy. Let&#x27;s synthesize these ideas: propose a rule that sets an initial target of 85 points, introduces bonus points for strategic contributions, and begins exploring an &quot;Influence Points&quot; system. This approach should preserve the game&#x27;s strategic integrity while increasing excitement. Let&#x27;s work together to refine this proposal.</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: I appreciate the collaborative effort here. Integrating an initial target of 85 points with bonus points for strategic proposals seems like a solid compromise. Let&#x27;s also ensure the &quot;Influence Points&quot; system is designed to reward players who contribute to the game&#x27;s strategic depth. I suggest we define clear criteria for earning and using these points to maintain balance. This approach should enhance engagement while preserving the richness of our strategic interactions. Let&#x27;s finalize these elements to present a cohesive proposal.</span></div><div class="line"><span class="who">Jevons</span><span class="said">Jevons: I appreciate the constructive dialogue we&#x27;ve had, and I see value in integrating these ideas. To maintain procedural clarity, I propose we define the specific mechanics of the &quot;Influence Points&quot; system, ensuring it complements the bonus points for strategic proposals without overshadowing them. This will help maintain fairness and strategic depth. Let&#x27;s ensure each element is clearly articulated in the final proposal, allowing us to evaluate its impact on the game&#x27;s dynamics comprehensively. I&#x27;m open to further refining these ideas to align with our shared goals.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate the constructive contributions from everyone. To ensure clarity and fairness in the proposed changes, let&#x27;s establish specific guidelines for earning &quot;Influence Points&quot; and using them to gain strategic advantages. This system should be designed to reward players for enhancing the game&#x27;s strategic complexity and depth. By integrating these elements, we can maintain the current target of 100 points, preserving the game&#x27;s strategic richness while introducing new opportunities for skillful play. Let&#x27;s refine these details to present a cohesive and balanced proposal.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">Boole: I fully support the synthesis of our ideas into a comprehensive proposal. Let&#x27;s ensure the &quot;Influence Points&quot; system is designed to reward strategic depth without overwhelming the existing mechanics. For instance, we could allow Influence Points to be used to temporarily modify the voting threshold for a proposal or to gain an extra turn in case of a tie. This would encourage players to engage more deeply with the game&#x27;s strategic aspects while maintaining fairness. I propose we draft a clear outline for these mechanics and seek consensus on their implementation, ensuring they align with our shared goal of a balanced and engaging game.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">DeMorgan: I appreciate Boole&#x27;s initiative in synthesizing our ideas. To ensure the &quot;Influence Points&quot; system enhances rather than complicates our game, I propose we limit their use to a few strategic actions, like influencing the order of play or accessing a one-time strategic hint. This keeps the game accessible while rewarding strategic contributions. Let&#x27;s finalize these mechanics to create a balanced and engaging proposal that aligns with our shared goals.</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: I appreciate the direction we&#x27;re heading in. Let&#x27;s ensure that the bonus points for strategic proposals are clearly defined—perhaps they could be awarded for rules that facilitate complex interactions or enhance player collaboration. This would incentivize players to think deeply about the implications of their proposals. Additionally, we should consider how these changes might impact the game&#x27;s pace and ensure that they contribute positively to both engagement and strategic depth. Let&#x27;s work together to finalize a proposal that reflects these considerations, balancing excitement with thoughtful play.</span></div><div class="line"><span class="who">Jevons</span><span class="said">I support the synthesis of our ideas into a proposal that balances excitement and strategic depth. To maintain clarity and fairness, let&#x27;s specify that &quot;Influence Points&quot; can be used to propose a temporary rule that enhances strategic interaction, such as allowing a player to swap scores once during the game. This would reward players for contributing strategically while preserving the integrity of the game&#x27;s core mechanics. I propose we finalize this aspect to ensure our proposal aligns with our shared goals.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I commend the direction we&#x27;re taking and appreciate the thoughtful contributions from all. To ensure the &quot;Influence Points&quot; system aligns with our strategic objectives, I propose that these points can also be used to grant a player the ability to reverse one rule change per game, adding another layer of strategic depth. This mechanism should be carefully balanced to ensure it complements the existing rule framework without disrupting the game&#x27;s flow. Let&#x27;s finalize these mechanics to present a cohesive proposal that enhances engagement and strategic richness while preserving fairness.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Boole</td><td class="why">I favor a balanced approach that maintains strategic depth.</td></tr><tr><td class="v nay">nay</td><td>DeMorgan</td><td class="why">Let&#x27;s integrate elements of all suggestions for balance and depth.</td></tr><tr><td class="v nay">nay</td><td>Venn</td><td class="why">The proposal lowers strategic depth by reducing the target score.</td></tr><tr><td class="v nay">nay</td><td>Jevons</td><td class="why">I support maintaining strategic depth with current target score.</td></tr><tr><td class="v nay">nay</td><td>Peano</td><td class="why">Lowering the target score reduces strategic depth.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p>
+<p class="lede">Rule 206 deducts 10 points from the proposer when a proposal is defeated.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

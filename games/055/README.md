@@ -2,6 +2,8 @@
 
 _development era_
 
+> Forty-two rule changes and a repeat performance close enough to call reliable.
+
 ## Roster
 
 | Seat | Model |

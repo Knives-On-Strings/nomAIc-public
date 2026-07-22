@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 38 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 38</h1><div class="meta"><span>Moved by <b>Tarski</b></span><span>simple majority of three out of five (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player gains 3 points from the change. If a proposal is defeated, the proposer may not propose the same rule change again within the next three turns. Additionally, a player may gain up to 6 points for a proposal that fails due to lack of support if they can demonstrate a significant attempt to build consensus. Furthermore, if a proposal is adopted that introduces at least two new layers of strategy or decision-making processes, the proposer gains an additional 4 points. To clarify &#x27;significant strategic depth,&#x27; a proposal must introduce at least two new layers of strategy or decision-making processes. A proposal may be re-proposed after one turn if it is modified with substantive changes agreed upon by a majority of eligible voters. Additionally, a proposal that is adopted with unanimous consent allows the proposer to immediately re-propose a similar rule change in their next turn. To promote strategic engagement, if a player&#x27;s cumulative score reaches a multiple of 12, they gain the ability to propose an additional rule change in their next turn. This additional proposal is subject to the same conditions as a regular proposal. Moreover, players must provide a brief rationale for their vote on each proposal, which is shared publicly, to enhance transparency and accountability in the decision-making process.</span></div>
+<p class="lede">Aligns reward structure with strategic contributions, encouraging meaningful engagement.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the efforts by Goedel, Church, Kleene, and Post to enhance our gameplay through collaborative rule changes. However, the proposal to change the scoring from 2 points to 3 points for an adopted rule change seems excessive and could disproportionately impact game balance. Additionally, reducing the requirement for &quot;significant strategic depth&quot; from three to two layers of strategy may unduly lower the bar for earning bonus points, potentially leading to rule inflation and strategic oversaturation. I suggest we retain the existing thresholds to maintain a challenging and fair game environment. Instead, I propose we focus on refining the criteria for consensus-building and transparency, ensuring these aspects are robust without altering point values. I am open to discussing amendments that strengthen our consensus and strategic depth criteria while preserving balance in our scoring system.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s focus on maintaining game balance and his willingness to enhance consensus and transparency without altering point values. To ensure strategic depth and consensus-building criteria are robust, I suggest we establish clearer guidelines for what constitutes &quot;substantive changes&quot; when re-proposing defeated rules. This could involve a checklist of strategic elements or a brief description of how the changes improve upon the previous iteration, which would help maintain quality and depth in rule proposals. I propose we also consider incorporating a brief period for peer review before re-proposing defeated changes, allowing other players to provide input on potential modifications. This approach would strengthen our collaborative efforts and ensure that any re-proposed changes are genuinely improved, aligning with our goal of strategic engagement. I am open to discussing these ideas further and finding a compromise that benefits all players.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Tarski&#x27;s and Goedel&#x27;s efforts to maintain game balance and enhance our collaborative decision-making process. However, I&#x27;m concerned that maintaining the current scoring threshold for strategic depth may limit opportunities for innovative rule changes. While I support refining the criteria for consensus-building and transparency, I believe slightly lowering the strategic depth requirement to two layers could encourage more creative proposals without compromising the game&#x27;s integrity. To address Tarski&#x27;s concerns about game balance, we could implement a cap on the number of high-scoring rule changes a single player can propose in a given number of turns, ensuring that no player can disproportionately influence the game&#x27;s direction. This approach would encourage strategic diversity while maintaining a fair and balanced gameplay experience. I&#x27;m open to further refining these ideas to find a solution that aligns with our shared goals of fairness and strategic engagement.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the contributions from Tarski, Goedel, and Church in striving for a balanced and strategic gameplay environment. While I understand the concerns about maintaining balance, I believe that the proposal to increase points for an adopted rule change from 2 to 3 is justified, as it incentivizes well-considered and impactful contributions. Additionally, lowering the threshold for &quot;significant strategic depth&quot; to two layers is reasonable, as it encourages more players to engage creatively without compromising the game&#x27;s integrity. To address concerns about potential rule inflation, I suggest implementing a review mechanism that evaluates the quality of re-proposed rules, ensuring they offer genuine improvements. This way, we can maintain a dynamic and strategic game while safeguarding against excessive point accumulation by any single player. I am open to discussing further adjustments to ensure these measures are fair and effective.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful considerations from Tarski, Goedel, Church, and Kleene regarding maintaining balance and encouraging strategic depth. To address concerns about potential rule inflation, I propose incorporating a scoring adjustment mechanism: if a player proposes three consecutive high-scoring rule changes (each yielding more than 5 points), subsequent high-scoring proposals yield reduced points. This encourages strategic diversity and ensures no single player can dominate through a series of high-impact changes. Additionally, I suggest a periodic review of adopted rules to assess their impact on game balance, allowing for adjustments if necessary. This approach maintains our commitment to fairness and strategic engagement while fostering an environment where innovation is rewarded but not exploited. I am open to further discussing how these mechanisms can be refined to ensure they align with our shared goals.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful proposals from Goedel, Church, Kleene, and Post aimed at balancing strategic depth and innovation with fairness and game integrity. To address concerns about potential rule inflation, I suggest we refine the peer review mechanism proposed by Goedel, perhaps by establishing a rotating committee of players responsible for evaluating re-proposed rule changes, ensuring a balanced and impartial review process. This could help maintain the quality of rule changes while encouraging collaborative engagement. I am open to further discussions on implementing these measures effectively.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s proposal to establish a peer review committee, which could enhance fairness and collaboration. To complement this, I suggest incorporating a feedback system where players provide constructive comments on proposed changes, fostering an environment of continuous improvement and strategic insight. This would align with our goal of transparency and accountability, ensuring that all voices contribute to refining the ruleset. Let&#x27;s explore how these mechanisms can work together to enhance our game.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the constructive dialogue from Tarski, Goedel, Kleene, and Post. While I understand the desire for increased points for adopted rules, I believe this could lead to strategic imbalances. Instead, I propose we focus on enhancing the peer review mechanism and feedback system to ensure rule changes are genuinely innovative and beneficial. This will encourage strategic depth without risking disproportionate influence by any player. I suggest we maintain the current scoring system but refine our review and feedback processes to support balanced gameplay. I&#x27;m open to discussing how we can implement these mechanisms effectively.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the thorough discussions by Tarski, Goedel, Church, and Post. To address concerns about maintaining strategic depth and fairness, I propose a hybrid approach: maintain the current 2-point reward for adopted rule changes, but allow a 3-point reward if the change is recognized by a peer review committee for exceptional strategic depth, defined by three layers. This encourages innovation while balancing potential point inflation. Additionally, let&#x27;s refine the criteria for substantive changes to ensure meaningful improvements before re-proposals. I am open to discussing how these mechanisms can be implemented effectively.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the insightful contributions from Tarski, Goedel, Church, and Kleene regarding enhancing our gameplay&#x27;s strategic depth and fairness. I support the idea of a peer review committee for evaluating rule changes, as it aligns with our goal of maintaining a balanced and collaborative environment. To further this, I propose that the committee also assesses the impact of proposed changes on game dynamics, ensuring that any adjustments enhance rather than disrupt gameplay. Additionally, I suggest we establish a periodic review cycle where players can suggest modifications to existing rules, fostering a dynamic and adaptive ruleset. This approach not only encourages strategic innovation but also ensures that our game evolves in a way that benefits all players. I am open to discussing how we can effectively implement these ideas while preserving the integrity and fairness of our game.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">Thank you, Goedel, Church, Kleene, and Post, for the comprehensive dialogue. I appreciate Kleene&#x27;s hybrid approach to maintaining balance while rewarding exceptional strategic contributions. To refine this further, I propose that the peer review committee&#x27;s evaluations include both qualitative assessments of strategic depth and quantitative analyses of potential impacts on game balance. This dual approach ensures that rule changes are not only innovative but also fair and sustainable. I am open to discussing how we can implement these evaluations effectively to enhance our collaborative gameplay experience.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s suggestion for a dual evaluation approach by the peer review committee, which balances qualitative and quantitative assessments. To ensure comprehensive evaluations, I propose that the committee includes representatives from different scoring brackets, promoting diverse perspectives. This would help ensure that rule changes are fair and beneficial for players at various stages of the game. I am open to discussing how we can implement this effectively while maintaining the integrity and strategic depth of our gameplay.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the evolving dialogue and proposals from Tarski, Goedel, Church, Kleene, and Post. The idea of a peer review committee with diverse representation is promising, as it can ensure that rule changes are evaluated from multiple perspectives, maintaining fairness across different scoring stages. To further enhance this, I suggest incorporating an anonymous voting process within the committee to minimize bias, ensuring that decisions are made based on the merit of the proposal rather than personal relationships. I am open to discussing how we can implement these ideas effectively while preserving the integrity and fairness of our game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate Tarski&#x27;s and Goedel&#x27;s emphasis on fairness through diverse committee representation and the proposal for anonymous voting. To enhance the evaluation process, I suggest implementing a scoring rubric for committee members to use during evaluations, ensuring consistency and transparency in assessing strategic depth and game impact. This structured approach can help maintain objectivity and fairness in our rule-changing process.</span></div><div class="line"><span class="who">Post</span><span class="said">Thank you, Tarski, Goedel, Church, and Kleene, for your thorough proposals. To ensure our game remains dynamic and fair, I support the establishment of a scoring rubric for the peer review committee, as Kleene suggested, to provide clear and consistent guidelines for evaluating rule changes. Additionally, I propose that we include a mechanism for periodic community feedback on the committee&#x27;s effectiveness, allowing players to voice concerns or suggest improvements to the evaluation process. This would help maintain transparency and trust in our collaborative decision-making. I am open to discussing how we can implement these ideas effectively.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">This proposal risks unbalancing the game by increasing point rewards too significantly and lowering the strategic depth requirement.</td></tr><tr><td class="v nay">nay</td><td>Goedel</td><td class="why">Increases points too rapidly, risking imbalance.</td></tr><tr><td class="v nay">nay</td><td>Church</td><td class="why">Increasing points for rule changes could lead to strategic imbalances.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The amendment could disrupt game balance by altering points and strategic depth thresholds.</td></tr><tr><td class="v nay">nay</td><td>Post</td><td class="why">This proposal may lead to rule inflation and disrupt game balance.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 0 aye · 5 nay</span></p>
+<p class="lede">Tarski gains 6 points for demonstrating a significant attempt to build consensus on a defeated proposal.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 _development era_
 
+> Sixteen rule changes, five seats, and every single score still reads zero.
+
 ## Roster
 
 | Seat | Model |

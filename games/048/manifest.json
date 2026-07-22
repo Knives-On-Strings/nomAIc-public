@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
   },
   "confirmed": false,
   "audit": {
@@ -26,5 +27,15 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Nozick": 12,
+    "Sen": 9,
+    "Nussbaum": 9,
+    "Dworkin": 11,
+    "Habermas": 10
+  },
+  "adoptions": 14,
+  "gm_model": "gemini-3.1-pro-preview",
+  "completed_at": "2026-07-19T10:58:27.420546+00:00"
 }

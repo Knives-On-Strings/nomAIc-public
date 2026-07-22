@@ -2,6 +2,8 @@
 
 _development era_
 
+> The single highest score the archive has recorded, four seats in the black, and a win nobody claimed.
+
 ## Roster
 
 | Seat | Model |

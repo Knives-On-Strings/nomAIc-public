@@ -2,6 +2,8 @@
 
 _development era_
 
+> One proposal, one unanimous rejection, one honest refusal to continue.
+
 ## Roster
 
 | Seat | Model |

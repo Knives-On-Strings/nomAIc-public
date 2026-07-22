@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 29 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 29</h1><div class="meta"><span>Moved by <b>Boole</b></span><span>innovative proposal threshold (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted when at least 3 out of 5 eligible voters vote aye; a strategic proposal requires unanimity among all eligible voters. A proposal may be adopted without every voter&#x27;s assent once the threshold has shifted to a simple majority.</span></div>
+<p class="lede">This amendment introduces a strategic proposal tier, ensuring stability while allowing for flexibility.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Boole</span><span class="said">Boole: I appreciate the intention behind lowering the adoption threshold, but it risks undermining the stability we&#x27;ve worked to achieve. A threshold of 3-2 could lead to more frequent rule changes, potentially destabilizing the game and making long-term planning difficult. Maintaining a 4-1 requirement ensures that rule changes reflect a broader consensus, preserving the game&#x27;s integrity and strategic depth. I propose we consider a sunset clause to revisit this threshold after a set number of rounds, allowing us to adapt if necessary while initially safeguarding stability.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">DeMorgan: As DeMorgan, I appreciate the thoughtful proposal by Boole and the concerns about game stability. I suggest a compromise: let&#x27;s adopt the 3 out of 5 threshold for regular rule changes but maintain the 4 out of 5 requirement for strategic proposals to ensure critical changes have unanimous support. Additionally, let&#x27;s implement a sunset clause to review this threshold after 10 rounds to ensure flexibility and adaptability. This approach balances stability with the potential for innovation and evolution within the game.</span></div><div class="line"><span class="who">Venn</span><span class="said">Venn: As Venn, I appreciate Boole&#x27;s and DeMorgan&#x27;s contributions. Lowering the threshold to 3-2 for regular changes could indeed make the game more dynamic, allowing for quicker adjustments to evolving strategies. However, I share Boole&#x27;s concern about potential instability. Let&#x27;s maintain the 4-1 threshold for regular changes to ensure they have broad support, but allow for a 3-2 threshold for innovative proposals, with a sunset clause to reassess after 10 rounds. This way, we can foster creativity while safeguarding the game&#x27;s integrity. Additionally, let&#x27;s clarify what constitutes an &quot;innovative&quot; proposal to prevent misuse.</span></div><div class="line"><span class="who">Jevons</span><span class="said">Jevons: As Jevons, I appreciate the nuanced discussions and proposals made by my peers. Lowering the threshold to 3-2 could indeed facilitate innovation but risks destabilizing our strategic environment. I support DeMorgan&#x27;s suggestion to maintain the 4-1 requirement for regular rule changes, ensuring they have broad consensus. For innovative proposals, we can consider a separate 3-2 threshold, but we must clearly define what qualifies as &quot;innovative&quot; to prevent exploitation. Implementing a sunset clause to reassess this threshold after 10 rounds is a prudent measure, allowing us to adapt our approach based on its effectiveness and impact on game stability. This balanced approach ensures both stability and adaptability in our evolving ruleset.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: Peano appreciates the thoughtful proposals and concerns raised by my fellow players. Lowering the threshold to 3-2 for regular changes could indeed facilitate dynamic adjustments, but I agree with Boole&#x27;s emphasis on stability. Let&#x27;s adopt the 4-1 requirement for all rule changes initially to maintain consistency. However, I propose a sunset clause to review this threshold after 10 rounds, allowing us to reassess and potentially lower it if the game benefits from increased flexibility. Additionally, defining &quot;innovative&quot; proposals clearly will help ensure that any future threshold adjustments are applied appropriately. This balanced approach supports both stability and adaptability.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Boole</span><span class="said">Boole: While I appreciate the dialogue around adaptability and innovation, maintaining a higher threshold for all rule changes is crucial to ensure the game&#x27;s stability and integrity. Lowering the threshold to 3-2 might lead to frequent, less considered changes, which could disrupt long-term strategy and fairness. I propose keeping the 4 out of 5 requirement for all changes but allowing a separate category for innovative proposals with a defined 3-2 threshold, accompanied by a sunset clause for reassessment after 10 rounds. This ensures that critical changes maintain broad support while still fostering creativity. Let’s ensure clarity in defining &quot;innovative&quot; proposals to prevent any potential misuse. 
+
+PASS</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">DeMorgan: I appreciate the thorough discussions and the efforts to balance stability with innovation. To build on Boole&#x27;s proposal, I suggest we define &quot;innovative&quot; proposals as those introducing new mechanisms or fundamentally altering game dynamics, ensuring these are distinct from regular changes. Adopting a 3-2 threshold for these proposals could foster creativity without compromising the game&#x27;s integrity. Let&#x27;s include a sunset clause to review this after 10 rounds, allowing us to adapt based on experience. This approach maintains stability while encouraging thoughtful innovation.</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate the collective effort to balance stability and innovation. To ensure clarity, let&#x27;s define &quot;innovative&quot; proposals as those introducing new game mechanics or significantly altering existing ones. Maintaining a 4-1 threshold for regular changes preserves stability, while a 3-2 threshold for innovative proposals, with a sunset clause for reassessment after 10 rounds, allows for creativity and adaptability. This approach supports both strategic depth and fairness.</span></div><div class="line"><span class="who">Jevons</span><span class="said">Pass.
+
+As Jevons, I support maintaining the current threshold to ensure stability and integrity in rule changes. I concur with Boole&#x27;s proposal to keep the 4-1 requirement for regular changes, with a separate category for &quot;innovative&quot; proposals. This approach aligns with my principled proceduralism, ensuring all rule changes have broad consensus and are well-considered. Let&#x27;s define &quot;innovative&quot; proposals clearly and include a sunset clause to reassess after 10 rounds, balancing stability and adaptability.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: Peano appreciates the collective effort to balance stability and innovation. To ensure clarity and fairness, I propose defining &quot;innovative&quot; proposals as those introducing new game mechanics or significantly altering existing ones. Adopting a 3-2 threshold for these proposals, with a sunset clause for reassessment after 10 rounds, fosters creativity while maintaining game integrity. This approach ensures that all rule changes are considered thoughtfully, supporting both strategic depth and fairness. Let&#x27;s proceed with this balanced proposal. 
+
+PASS</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Boole</span><span class="said">Pass.
+
+I appreciate the comprehensive discussion and the well-crafted proposal that balances stability with the opportunity for innovation. By maintaining a higher threshold for regular rule changes and introducing a clearly defined category for innovative proposals with a lower threshold, we ensure that critical changes reflect broad consensus while still allowing for creativity and adaptability. The inclusion of a sunset clause to reassess this arrangement after 10 rounds demonstrates foresight and flexibility, allowing us to adapt based on the evolving dynamics of the game. This approach supports the integrity of our rule changes and aligns with the values of thoughtful innovation and strategic depth. I commend the efforts of all players in refining this proposal and look forward to observing its impact on the game.</span></div><div class="line"><span class="who">DeMorgan</span><span class="said">I appreciate the thoughtful proposals from all players. To build on our discussions, I propose that we define &quot;innovative&quot; proposals clearly as those introducing entirely new mechanics or fundamentally altering existing ones. This ensures that our 3-2 threshold is applied judiciously, fostering innovation without compromising the game&#x27;s stability. Implementing a sunset clause to review this after 10 rounds is a prudent approach, allowing us to adapt based on the outcomes. This balanced proposal supports both strategic depth and fairness, maintaining the integrity of our evolving ruleset. Let&#x27;s proceed with this well-rounded approach. 
+
+PASS</span></div><div class="line"><span class="who">Venn</span><span class="said">As Venn, I appreciate the collaborative effort to balance stability and innovation. To ensure clarity and fairness, let&#x27;s define &quot;innovative&quot; proposals as those introducing new game mechanics or significantly altering existing ones. This distinction allows us to apply the 3-2 threshold judiciously, fostering creativity while maintaining the integrity of the game. I support the inclusion of a sunset clause for reassessment after 10 rounds, ensuring our approach remains adaptable and responsive to the evolving dynamics of the game. This balanced proposal supports both strategic depth and fairness, aligning with our shared goal of a fair and interesting game for all players. Let&#x27;s proceed with this thoughtful approach. 
+
+**PASS**</span></div><div class="line"><span class="who">Jevons</span><span class="said">As Jevons, I support the proposal as it stands. The current draft maintains a high threshold for regular rule changes, ensuring stability and broad consensus, while allowing for a separate, lower threshold for clearly defined &quot;innovative&quot; proposals. This balance between stability and adaptability aligns with my principles of procedural fairness. The inclusion of a sunset clause for reassessment after 10 rounds further demonstrates a commitment to thoughtful and responsive rule evolution. I commend the collaborative effort in crafting this proposal and believe it upholds the integrity and strategic depth of our game. **PASS**.</span></div><div class="line"><span class="who">Peano</span><span class="said">Peano: I appreciate the thoughtful contributions from all players. To ensure clarity and fairness, let&#x27;s define &quot;innovative&quot; proposals as those introducing new game mechanics or significantly altering existing ones. By maintaining a 4-1 threshold for regular changes and a 3-2 threshold for innovative proposals, with a sunset clause for reassessment after 10 rounds, we foster creativity while preserving stability. This balanced approach supports both strategic depth and fairness, allowing our game to evolve thoughtfully. Let&#x27;s proceed with this well-considered proposal. **PASS**.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Boole</td><td class="why">Lowering the threshold risks destabilizing the game&#x27;s integrity.</td></tr><tr><td class="v aye">aye</td><td>DeMorgan</td><td class="why">This proposal balances innovation and stability with a sunset clause for reassessment.</td></tr><tr><td class="v aye">aye</td><td>Venn</td><td class="why">Balances flexibility with stability, allowing strategic proposals to require unanimity.</td></tr><tr><td class="v nay">nay</td><td>Jevons</td><td class="why">Maintaining stability requires a higher threshold for regular changes.</td></tr><tr><td class="v aye">aye</td><td>Peano</td><td class="why">Supports balance between stability and adaptability with clear definitions for innovative proposals.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 3 aye · 2 nay</span></p>
+<p class="lede">Rule 206 deducts 5 points from the proposer when a proposal is defeated.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

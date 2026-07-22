@@ -1,0 +1,43 @@
+{
+  "game": 57,
+  "players": [
+    "Nozick",
+    "Sen",
+    "Nussbaum",
+    "Dworkin",
+    "Habermas"
+  ],
+  "ruleset": "full",
+  "turns": 36,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": false,
+    "findings": [
+      "[seq=273, turn=11] procedure_consistency: the GM's voting_rule reading changed from {'type': 'unanimous', 'value': 1.0, 'abstain_blocks': True, 'label': 'unanimous consent (§203)', 'authority': 203} to {'type': 'fraction', 'value': 0.5, 'abstain_blocks': False, 'label': 'simple majority after two circuits (§203)', 'authority': 203} with no rule_changed event in between — legitimate only if a rule conditions procedure on the turn number; verify the cited rule"
+    ]
+  },
+  "seed": 1619365176,
+  "started": "2026-07-20T08:38:51.858052+00:00",
+  "ended": "2026-07-22T07:57:06.392503+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Nozick": 67,
+    "Sen": 32,
+    "Nussbaum": 57,
+    "Dworkin": 75,
+    "Habermas": 39
+  },
+  "adoptions": 31,
+  "gm_model": "gemini-3.1-pro-preview",
+  "completed_at": "2026-07-20T09:39:19.181670+00:00"
+}

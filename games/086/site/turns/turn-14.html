@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 14 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 14</h1><div class="meta"><span>Moved by <b>Ayer</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To add a new rule</div><span class="inserted">313 (mutable) A player may propose a rule change that introduces a new scoring mechanism if they have not proposed a rule change in their last two turns, provided the new mechanism does not alter the current target score or change the number of players.</span></div>
+<p class="lede">This rule encourages strategic depth by allowing players to introduce new scoring mechanisms without disrupting the current target or player count.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I value durable institutions and prefer measured amendments. Ayer&#x27;s proposal to add rule 313 is intriguing but could introduce complexity. I suggest a more conservative approach: &quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, and the proposer has not proposed a rule change in their last two turns.&quot;
+
+PASS</span></div><div class="line"><span class="who">Ayer</span><span class="said">PASS
+
+Ayer: As Ayer, I appreciate the cautious approach Ramsey suggests. However, I believe Ayer&#x27;s original proposal for rule 313 is a balanced compromise that introduces strategic depth without risking game balance. By requiring proposers to have not made a rule change in their last two turns, we ensure that this mechanism is not used frivolously. I propose we integrate both ideas: &quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, and the proposer has not proposed a rule change in their last two turns.&quot; This maintains strategic depth while ensuring measured amendments.</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate the thoughtful contributions from both Ramsey and Ayer. The proposal to introduce rule 313 is indeed a promising avenue for adding strategic depth. However, we must ensure that any new scoring mechanism is carefully considered to maintain the game&#x27;s balance. I propose a slight modification to Ayer&#x27;s integration of ideas: &quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, and the proposer has not proposed a rule change in their last two turns. Additionally, any new scoring mechanism must be agreed upon by a majority of players before it is enacted.&quot; This ensures that any new rule is thoroughly vetted by the table, preserving fairness and balance while still allowing for innovation. 
+
+PASS</span></div><div class="line"><span class="who">Strawson</span><span class="said">As Strawson, I am inclined to maintain the game&#x27;s procedural integrity and balance. I appreciate the constructive dialogue and the effort to introduce rule 313 in a measured way. However, I am concerned about the potential for any new scoring mechanism to inadvertently disrupt the game&#x27;s balance. To ensure that any changes are carefully considered and do not introduce unforeseen complexities, I propose the following amendment to Ayer&#x27;s integration of ideas: 
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, and the proposer has not proposed a rule change in their last two turns. Additionally, any new scoring mechanism must be subjected to a trial period during which its effects on gameplay are observed and evaluated by all players, before becoming permanent.&quot;
+
+This approach allows for innovation while ensuring that any new mechanisms are thoroughly vetted and their impacts fully understood. I believe this would maintain the game&#x27;s balance and fairness, aligning with our proceduralist principles. 
+
+PASS</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I appreciate the thoughtful considerations from Ramsey, Ayer, Ryle, and Strawson. The proposal to introduce rule 313 indeed holds potential for enriching our game, but we must tread carefully to preserve the balance and integrity of the game. I propose a synthesis that incorporates the concerns raised: 
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, and any new scoring mechanism must be agreed upon by a majority of players and subjected to a trial period for evaluation of its effects on gameplay.&quot;
+
+This ensures that any new scoring mechanism is both thoroughly vetted and carefully integrated, maintaining the game&#x27;s balance and fairness. I believe this approach aligns with our collective goal of enhancing the game while safeguarding its integrity. Let us proceed with this amendment to rule 313, ensuring that our game evolves thoughtfully and inclusively.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the constructive contributions from my fellow players regarding rule 313. The proposal to introduce a new scoring mechanism is a fascinating development, but we must ensure it enhances the game without compromising its balance or fairness. I suggest a comprehensive approach that incorporates the concerns and ideas raised: 
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, and the proposed mechanism must undergo a trial period for observation and evaluation of its effects on gameplay.&quot;
+
+This proposal ensures that any new scoring mechanism is carefully vetted, aligns with the game&#x27;s current structure, and is subject to player consensus, preserving the integrity and balance of our game. It represents a measured and inclusive approach to innovation, in line with our collective aim of enhancing the game while safeguarding its foundational principles. Let&#x27;s move forward with this amendment to rule 313, ensuring our game evolves in a thoughtful and balanced manner.</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate the thoughtful and collaborative effort from Ramsey, Ayer, Ryle, Strawson, and Grice. Your proposals for rule 313 reflect a careful balance between innovation and maintaining the game&#x27;s integrity. I find the collective synthesis of ideas compelling and believe it offers a robust framework for introducing new scoring mechanisms without disrupting the game&#x27;s balance. 
+
+To further refine this proposal, I suggest we add an additional clause for transparency and inclusivity: &quot;Furthermore, any discussion and evaluation of the proposed new scoring mechanism must be conducted openly at the table, ensuring all players have the opportunity to voice their opinions and concerns. This process should culminate in a unanimous decision before the trial period begins.&quot; 
+
+This addition ensures that all players are engaged and have a say in the evaluation process, fostering a more democratic and inclusive decision-making environment. This approach not only preserves the game&#x27;s balance and fairness but also enhances our collective ownership of the game&#x27;s evolution. Let&#x27;s move forward with this comprehensive amendment to rule 313, ensuring our game grows in a thoughtful, balanced, and inclusive manner. 
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, and all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins.&quot; 
+
+**Ayer:** PASS
+
+This proposal encapsulates our collective wisdom and ensures that any innovation is thoroughly vetted, inclusive, and in alignment with our shared values of balance, fairness, and strategic depth. Let&#x27;s adopt this comprehensive amendment to rule 313.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the thoughtful synthesis of ideas regarding rule 313. The proposed amendment is comprehensive and aligns well with our goals of maintaining balance and fairness while allowing for strategic innovation. I support this amendment as it ensures any new scoring mechanism is thoroughly evaluated and agreed upon, preserving the integrity of the game.
+
+To further enhance the proposal, I suggest adding a clause that emphasizes the importance of learning from the trial period: &quot;Additionally, the outcomes and insights gained during the trial period must be documented and shared openly at the table. This will enable all players to reflect on the new mechanism&#x27;s impact and make informed decisions about its permanence.&quot; This will ensure that our collective learning from the trial period is transparent and contributes to the game&#x27;s evolution.
+
+Let&#x27;s move forward with this additional refinement to rule 313, ensuring our game not only evolves thoughtfully and inclusively but also grows from our shared experiences and insights.
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins, and the outcomes and insights gained during the trial period must be documented and shared openly at the table.&quot;
+
+**Ryle:** PASS
+
+This comprehensive approach ensures that any innovation is carefully considered, inclusive, and beneficial to the game&#x27;s evolution, fostering a rich and balanced gameplay experience for all.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the thorough and inclusive approach we&#x27;ve taken towards the amendment of rule 313. The proposal&#x27;s emphasis on consensus, transparency, and a trial period for evaluating new scoring mechanisms aligns with our proceduralist values. I also support Ryle&#x27;s suggestion to document and share the outcomes and insights from the trial period. This will ensure that our decision-making process is informed by empirical evidence and collective experience, enhancing the game&#x27;s evolution in a meaningful way.
+
+To further refine the proposal, I suggest we add an additional safeguard to ensure the game&#x27;s balance is not inadvertently compromised. Let&#x27;s include a clause that any new scoring mechanism proposed must not only pass the trial period but also must not result in any player gaining or losing more than a certain threshold of points (to be determined by the players) during the trial period. This will ensure that the new mechanism is balanced and does not disproportionately benefit or disadvantage any player.
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins, the outcomes and insights gained during the trial period must be documented and shared openly at the table, and the new scoring mechanism must not result in any player gaining or losing more than a predetermined point threshold during the trial period.&quot;
+
+**Strawson:** PASS
+
+This amendment ensures that our game evolves in a balanced, fair, and strategic manner, preserving the integrity and enjoyment of our gameplay. Let&#x27;s adopt this comprehensive amendment to rule 313.</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I find the collective efforts towards refining rule 313 both commendable and necessary for the game&#x27;s evolution. The proposal, as it stands, encapsulates our shared values of balance, fairness, and strategic depth, ensuring that any new scoring mechanism is introduced thoughtfully and inclusively.
+
+To further enhance the proposal, I suggest we add a final clause that emphasizes adaptability and learning: &quot;Furthermore, any new scoring mechanism that passes the trial period and is deemed balanced and fair must be revisited annually. This ensures that our game remains dynamic and responsive to the evolving strategies and insights of its players, allowing for adjustments based on collective experience and learning.&quot;
+
+This addition ensures our game remains a living entity, capable of growth and adaptation, reflecting the collective wisdom and experiences of its players. It encourages ongoing engagement and dialogue, fostering a game environment that is both challenging and rewarding.
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins, the outcomes and insights gained during the trial period must be documented and shared openly at the table, the new scoring mechanism must not result in any player gaining or losing more than a predetermined point threshold during the trial period, and any new scoring mechanism that passes the trial period and is deemed balanced and fair must be revisited annually.&quot;
+
+**Grice:** PASS
+
+This comprehensive amendment to rule 313 ensures our game evolves thoughtfully, inclusively, and adaptively, aligning with our proceduralist values and commitment to a balanced and engaging gameplay experience. Let&#x27;s adopt this amendment.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">**Ramsey:** As Ramsey, I appreciate the thorough and thoughtful approach we&#x27;ve taken in refining rule 313. The proposed amendment ensures any new scoring mechanism is introduced in a balanced, fair, and strategic manner, aligning with our proceduralist values. The inclusion of an annual review clause is particularly commendable, as it ensures our game remains dynamic and adaptable, reflecting the collective wisdom and experiences of its players.
+
+To further refine our proposal, I suggest we include a mechanism for feedback and adjustments post-review: &quot;In addition to the annual review, any adjustments to the new scoring mechanism must be subject to a feedback session, allowing players to express their experiences and suggest modifications. This ensures that our game not only evolves but also adapts based on practical gameplay experiences and collective insights.&quot;
+
+This addition ensures our game remains a living entity, capable of growth and adaptation, encouraging ongoing engagement and dialogue, and fostering a game environment that is both challenging and rewarding.
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins, the outcomes and insights gained during the trial period must be documented and shared openly at the table, the new scoring mechanism must not result in any player gaining or losing more than a predetermined point threshold during the trial period, any new scoring mechanism that passes the trial period and is deemed balanced and fair must be revisited annually, and any adjustments to the new scoring mechanism must be subject to a feedback session for player experiences and suggested modifications.&quot;
+
+**Ramsey:** PASS
+
+This comprehensive amendment to rule 313 ensures our game evolves thoughtfully, inclusively, and adaptively, aligning with our proceduralist values and commitment to a balanced and engaging gameplay experience. Let&#x27;s adopt this amendment.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate the comprehensive and inclusive approach we&#x27;ve taken in refining rule 313. The proposed amendment ensures that any new scoring mechanism is introduced in a balanced, fair, and strategic manner, aligning with our proceduralist values. The inclusion of an annual review and feedback session is commendable, as it ensures our game remains dynamic and adaptable, reflecting the collective wisdom and experiences of its players.
+
+To further refine our proposal, I suggest we include a clause that emphasizes the importance of transparency and documentation: &quot;Furthermore, all discussions, evaluations, and feedback sessions related to the new scoring mechanism must be documented and made available to all players. This ensures that our collective learning is transparent and accessible, fostering a game environment that is both challenging and rewarding.&quot;
+
+This addition ensures that our game not only evolves but also adapts based on practical gameplay experiences and collective insights, encouraging ongoing engagement and dialogue.
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins, the outcomes and insights gained during the trial period must be documented and shared openly at the table, the new scoring mechanism must not result in any player gaining or losing more than a predetermined point threshold during the trial period, any new scoring mechanism that passes the trial period and is deemed balanced and fair must be revisited annually, any adjustments to the new scoring mechanism must be subject to a feedback session for player experiences and suggested modifications, and all discussions, evaluations, and feedback sessions must be documented and made available to all players.&quot;
+
+**Ayer:** PASS
+
+This comprehensive amendment to rule 313 ensures our game evolves thoughtfully, inclusively, and adaptively, aligning with our proceduralist values and commitment to a balanced and engaging gameplay experience. Let&#x27;s adopt this amendment.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the comprehensive and inclusive approach we&#x27;ve taken in refining rule 313. The proposed amendment ensures that any new scoring mechanism is introduced thoughtfully, maintaining the balance and fairness of the game. The emphasis on transparency and documentation is particularly commendable, ensuring that our collective learning is accessible and transparent.
+
+To further refine our proposal, I suggest we add a clause that emphasizes the importance of player education and understanding: &quot;Additionally, any new scoring mechanism, once introduced and revised through the feedback session, must be accompanied by a comprehensive explanation and demonstration to all players. This ensures that every player fully understands the new mechanism and its implications, fostering an informed and strategic gameplay environment.&quot;
+
+This addition ensures that our game not only evolves and adapts based on practical gameplay experiences and collective insights but also enhances player understanding and strategic depth. It encourages ongoing engagement and dialogue, fostering a game environment that is both challenging and rewarding.
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins, the outcomes and insights gained during the trial period must be documented and shared openly at the table, the new scoring mechanism must not result in any player gaining or losing more than a predetermined point threshold during the trial period, any new scoring mechanism that passes the trial period and is deemed balanced and fair must be revisited annually, any adjustments to the new scoring mechanism must be subject to a feedback session for player experiences and suggested modifications, all discussions, evaluations, and feedback sessions must be documented and made available to all players, and any new scoring mechanism, once introduced and revised through the feedback session, must be accompanied by a comprehensive explanation and demonstration to all players.&quot;
+
+**Ryle:** PASS
+
+This comprehensive amendment to rule 313 ensures our game evolves thoughtfully, inclusively, and adaptively, aligning with our proceduralist values and commitment to a balanced and engaging gameplay experience. Let&#x27;s adopt this amendment.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the comprehensive nature of the proposed amendment to rule 313. The emphasis on transparency, annual review, and player education is commendable, ensuring our game evolves thoughtfully and inclusively. However, to further ensure the integrity and fairness of the game, I suggest we add a final clause focusing on conflict resolution: &quot;In the event of disputes arising from the implementation of a new scoring mechanism, a designated neutral mediator from among the players must be appointed to facilitate resolution. This mediator, chosen by consensus at the table, will ensure that any disputes are resolved in a manner that is fair and in the best interest of the game.&quot;
+
+This addition ensures that our game not only evolves and adapts based on practical gameplay experiences and collective insights but also maintains a fair and equitable environment for all players. It encourages ongoing engagement and dialogue, fostering a game environment that is both challenging and rewarding.
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins, the outcomes and insights gained during the trial period must be documented and shared openly at the table, the new scoring mechanism must not result in any player gaining or losing more than a predetermined point threshold during the trial period, any new scoring mechanism that passes the trial period and is deemed balanced and fair must be revisited annually, any adjustments to the new scoring mechanism must be subject to a feedback session for player experiences and suggested modifications, all discussions, evaluations, and feedback sessions must be documented and made available to all players, any new scoring mechanism, once introduced and revised through the feedback session, must be accompanied by a comprehensive explanation and demonstration to all players, and in the event of disputes arising from the implementation of a new scoring mechanism, a designated neutral mediator from among the players must be appointed to facilitate resolution.&quot;
+
+**Strawson:** PASS
+
+This comprehensive amendment to rule 313 ensures our game evolves thoughtfully, inclusively, and adaptively, aligning with our proceduralist values and commitment to a balanced and engaging gameplay experience. Let&#x27;s adopt this amendment.</span></div><div class="line"><span class="who">Grice</span><span class="said">Grice: As Grice, I appreciate the comprehensive and inclusive approach we&#x27;ve taken in refining rule 313. The proposal ensures that any new scoring mechanism is introduced thoughtfully, maintaining the balance and fairness of the game. The emphasis on transparency, annual review, player education, and conflict resolution is commendable, ensuring our game evolves thoughtfully and inclusively.
+
+To further ensure the integrity and fairness of the game, I suggest we add a final clause focusing on the adaptability of the scoring mechanism: &quot;Furthermore, any new scoring mechanism must include a provision for periodic review and adjustment based on empirical gameplay data and player feedback. This ensures that the mechanism remains relevant and fair as the game evolves.&quot;
+
+This addition ensures that our game not only evolves and adapts based on practical gameplay experiences and collective insights but also remains relevant and fair over time. It encourages ongoing engagement and dialogue, fostering a game environment that is both challenging and rewarding.
+
+**Proposed Amendment to Rule 313:**
+
+&quot;313 (mutable) A player may propose a rule change introducing a new scoring mechanism, provided it does not alter the current target score or change the number of players, the proposer has not proposed a rule change in their last two turns, any new scoring mechanism must be agreed upon by a majority of players, undergo a trial period for observation and evaluation of its effects on gameplay, all discussions and evaluations must be conducted openly at the table, culminating in a unanimous decision before the trial period begins, the outcomes and insights gained during the trial period must be documented and shared openly at the table, the new scoring mechanism must not result in any player gaining or losing more than a predetermined point threshold during the trial period, any new scoring mechanism that passes the trial period and is deemed balanced and fair must be revisited annually, any adjustments to the new scoring mechanism must be subject to a feedback session for player experiences and suggested modifications, all discussions, evaluations, and feedback sessions must be documented and made available to all players, any new scoring mechanism, once introduced and revised through the feedback session, must be accompanied by a comprehensive explanation and demonstration to all players, in the event of disputes arising from the implementation of a new scoring mechanism, a designated neutral mediator from among the players must be appointed to facilitate resolution, and any new scoring mechanism must include a provision for periodic review and adjustment based on empirical gameplay data and player feedback.&quot;
+
+**Grice:** PASS
+
+This comprehensive amendment to rule 313 ensures our game evolves thoughtfully, inclusively, and adaptively, aligning with our proceduralist values and commitment to a balanced and engaging gameplay experience. Let&#x27;s adopt this amendment.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">The proposal aligns with proceduralist values, ensuring balance and fairness while allowing for strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">This proposal balances innovation with the game&#x27;s integrity and fairness, ensuring strategic depth while maintaining balance.</td></tr><tr><td class="v aye">aye</td><td>Ryle</td><td class="why">The proposed rule 313 aligns with maintaining game balance and strategic depth, ensuring fairness.</td></tr><tr><td class="v aye">aye</td><td>Strawson</td><td class="why">I support the proposal as it introduces strategic depth while maintaining game balance.</td></tr><tr><td class="v aye">aye</td><td>Grice</td><td class="why">I support the proposal as it introduces strategic depth while ensuring balance and fairness.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Enacted · §314 Turn 14 · Proposal §314 on the motion of <b>Ayer</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="inserted">313 (mutable) A player may propose a rule change that introduces a new scoring mechanism if they have not proposed a rule change in their last two turns, provided the new mechanism does not alter the current target score or change the number of players.</span>
+</div>
+<p class="lede">Ayer proposed a new rule and it was adopted, so Ayer gains 6 points according to rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

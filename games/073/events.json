@@ -1,0 +1,2104 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "Diogenes",
+        "Crates",
+        "Hipparchia",
+        "Antisthenes",
+        "Menippus"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer's turn ends, and the proposer loses 10 points.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset is changed so that further play is impossible, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "Diogenes": 0,
+        "Crates": 0,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      },
+      "seed": 1215806255
+    },
+    "ts": 1784606541.9493184
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "Diogenes"
+    },
+    "ts": 1784606541.956699
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "Diogenes",
+      "kind": "amend",
+      "targets": [
+        201
+      ],
+      "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero. Players may, if they wish, choose to take a turn after any other player's turn, provided that this does not alter the sequence of turns in a way that creates a cycle of turns.",
+      "rationale": "This amendment ensures that the turn order remains stable while allowing for more fluiderer-based interpretations of 'each player completes one whole turn'.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784606554.2145276
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784606555.4322646
+  },
+  {
+    "seq": 5,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I note the proposal to allow players to choose to take a turn after any other player's turn. I favor this amendment as it provides a more flexible approach to turn sequences without fundamentally altering the core mechanic of turn-based play.",
+      "round": 1
+    },
+    "ts": 1784606556.9707575
+  },
+  {
+    "seq": 6,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I accept this amendment as it offers a nuanced way to ensure and protect the integrity of turn sequences. By allowing for more flexibility in the timing of turns without creating cycles, it serves as a constructive compromise for those who favor a more fluid-yet-consistent-ordered-play.",
+      "round": 1
+    },
+    "ts": 1784606559.5106723
+  },
+  {
+    "seq": 7,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe that this amendment is a constructive way to enhance the game's flexibility. By allowing players to choose their position relative to others without creating cycles, it ensures that the core and integrity of the turn-based system remains intact while offering more freedom for complex play.",
+      "round": 1
+    },
+    "ts": 1784606561.08142
+  },
+  {
+    "seq": 8,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I accept the amendment to [201]. It allows for more complex turn-based dynamics while ensuring the integrity of the sequence.",
+      "round": 1
+    },
+    "ts": 1784606562.497386
+  },
+  {
+    "seq": 9,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I believe the amendment to [201] is a sophisticated evolution of the game's mechanics. By allowing players to choose their turn position while preventing cycles, we introduce a more dynamic sequence of play that respects the integrity of the turn-based system.",
+      "round": 1
+    },
+    "ts": 1784606564.3784885
+  },
+  {
+    "seq": 10,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784606564.3859558
+  },
+  {
+    "seq": 11,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I see no reason to oppose this amendment; it offers a modest expansion of turner-based possibilities without undermining the core integrity of the turn sequence. It is a balanced and nuanced approach.",
+      "round": 2
+    },
+    "ts": 1784606566.0941172
+  },
+  {
+    "seq": 12,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I believe that the proposed amendment to [201] is a constructive way to enhance the game's flexibility. By allowing players to choose their position relative to others without creating cycles, it ensures that the core and integrity of the turn-based system remains intact while offering more freedom for complex play.",
+      "round": 2
+    },
+    "ts": 1784606568.4713733
+  },
+  {
+    "seq": 13,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I thank the proponents for their balanced view. This amendment provides a more nuanced and flexible turn-taking system, ensuring that the game's integrity is maintained while allowing for more complex and creative play.",
+      "round": 2
+    },
+    "ts": 1784606569.9987512
+  },
+  {
+    "seq": 14,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments on the proposal to amend [201].",
+      "round": 2
+    },
+    "ts": 1784606571.4155726
+  },
+  {
+    "seq": 15,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I observe that the proponents have all expressed support for this refinement of [201]. By introducing a mechanism for turn-position flexibility while strictly prohibiting cycles, we ensure a more dynamic and sophisticatederment of the game's structure.",
+      "round": 2
+    },
+    "ts": 1784606573.4641526
+  },
+  {
+    "seq": 16,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784606573.4714394
+  },
+  {
+    "seq": 17,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have heard the arguments and the consensus is clear. This amendment provides a nuanced expansion of turn-taking without compromising the core integrity of the sequence.",
+      "round": 3
+    },
+    "ts": 1784606575.2991273
+  },
+  {
+    "seq": 18,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I accept the proposal to amend [201] as it provides a nuanced, constructive compromise that balances flexibility with the integrity of the turn-based system.",
+      "round": 3
+    },
+    "ts": 1784606577.6344602
+  },
+  {
+    "seq": 19,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I thank the proponents for their balanced and thoughtful analysis. This amendment represents a minor refinement that enhances the game's flexibility without compromising the fundamental integrity of the turn-based system.",
+      "round": 3
+    },
+    "ts": 1784606579.2137084
+  },
+  {
+    "seq": 20,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments on the proposal to amend [201].",
+      "round": 3
+    },
+    "ts": 1784606580.6101353
+  },
+  {
+    "seq": 21,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have no further comments on the proposal to amend [201].",
+      "round": 3
+    },
+    "ts": 1784606582.0439384
+  },
+  {
+    "seq": 22,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "The amendment offers a nuanced, constructive compromise for turn flexibility without undermining the core integrity of the turn-based system."
+    },
+    "ts": 1784606585.198304
+  },
+  {
+    "seq": 23,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "The proposal offers a constructive compromise that enhances turn flexibility while preserving the core integrity of the turn-based system."
+    },
+    "ts": 1784606587.217519
+  },
+  {
+    "seq": 24,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "This amendment enhances game flexibility while preserving the core integrity of turn-based play, fostering a more dynamic and creative experience for all players."
+    },
+    "ts": 1784606588.9425354
+  },
+  {
+    "seq": 25,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "The amendment is consistent with the principles of the game and does not violate any immutable rules."
+    },
+    "ts": 1784606590.8495243
+  },
+  {
+    "seq": 26,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "This amendment enhances the game's complexity and and respects the integrity of turn-based play."
+    },
+    "ts": 1784606592.686033
+  },
+  {
+    "seq": 27,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to-be-interpreted-as-unanimous-until-turn-order-carried-play-through-two-full-circuits-of-every-player-then-drops-to-simple-majority-per-rule-203",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784606592.6943722
+  },
+  {
+    "seq": 28,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 201,
+      "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero. Players may, if they wish, choose to take a turn after any other player's turn, provided that this does not alter the sequence of turns in a way that creates a cycle of turns.",
+      "mutable": true
+    },
+    "ts": 1784606596.8968801
+  },
+  {
+    "seq": 29,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 1,
+      "authority": null
+    },
+    "ts": 1784606596.9060001
+  },
+  {
+    "seq": 30,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rules authorize score changes or and no ruleset-wide-ledger changes are present.",
+      "next_player": "Crates"
+    },
+    "ts": 1784606596.9145133
+  },
+  {
+    "seq": 31,
+    "type": "draw",
+    "data": {
+      "index": 1,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 3,
+      "reason": "score_draw for Diogenes (§202)",
+      "turn": 1
+    },
+    "ts": 1784606596.9326496
+  },
+  {
+    "seq": 32,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 3,
+        "Crates": 0,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784606596.9409335
+  },
+  {
+    "seq": 33,
+    "type": "turn_started",
+    "data": {
+      "turn": 2,
+      "player": "Crates"
+    },
+    "ts": 1784606608.369687
+  },
+  {
+    "seq": 34,
+    "type": "proposal_made",
+    "data": {
+      "turn": 2,
+      "player": "Crates",
+      "kind": "amend",
+      "targets": [
+        201
+      ],
+      "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Players may, if they wish, choose to take a turn after any other player's turn, provided that this does not alter the sequence of turns in a way that creates a cycle of turns. Each player's score starts at zero.",
+      "rationale": "I am amending [201] to ensure the text is clear and consistent with the current ruleset.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 302
+    },
+    "ts": 1784606620.58198
+  },
+  {
+    "seq": 35,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784606621.802436
+  },
+  {
+    "seq": 36,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no comments on this proposal at this time; I shall observe the turn order as established.",
+      "round": 1
+    },
+    "ts": 1784606623.2403016
+  },
+  {
+    "seq": 37,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I see that Diogenes has no comments, and I appreciate the clarity of the current turn order. I accept this amendment as it maintains the core structure of the game while ensuring the turn sequence remains stable.",
+      "round": 1
+    },
+    "ts": 1784606624.7757254
+  },
+  {
+    "seq": 38,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I see that both Diogenes and Crates have expressed their positions. I support this amendment as it clarifies the turn structure while maintaining the integrity of the game's pace.",
+      "round": 1
+    },
+    "ts": 1784606626.9617767
+  },
+  {
+    "seq": 39,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I accept this amendment as it clarifies the turn structure without altering the fundamental sequence of play.",
+      "round": 1
+    },
+    "ts": 1784606628.5764668
+  },
+  {
+    "seq": 40,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I observe the consensus and the clarity of the current turn order. I support this amendment as it maintains the core structure of the game while ensuring the turn sequence remains stable.",
+      "round": 1
+    },
+    "ts": 1784606630.5190423
+  },
+  {
+    "seq": 41,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784606630.5266354
+  },
+  {
+    "seq": 42,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I appreciate the consensus reached by all players. This amendment provides a clear and stable framework for the turn sequence, and I support it as a constructive step for the game.",
+      "round": 2
+    },
+    "ts": 1784606632.5902646
+  },
+  {
+    "seq": 43,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have observed the consensus and the clarity of the current turn order. I support this amendment as it clarifies the turn structure while maintaining the integrity of the game's pace.",
+      "round": 2
+    },
+    "ts": 1784606634.010401
+  },
+  {
+    "seq": 44,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments. I accept this amendment as it maintains the integrity of the turn sequence as written.",
+      "round": 2
+    },
+    "ts": 1784606635.1715307
+  },
+  {
+    "seq": 45,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I observe the consensus and the clarity of the current turn order. I support this amendment as it maintains the core structure of the game while ensuring the turn sequence remains stable.",
+      "round": 2
+    },
+    "ts": 1784606636.582408
+  },
+  {
+    "seq": 46,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784606636.5899854
+  },
+  {
+    "seq": 47,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I thank the proponents for their expressions of support and the consensus reached. This amendment provides a stable framework for the turn sequence, and I support it as a constructive step for the game.",
+      "round": 3
+    },
+    "ts": 1784606638.989791
+  },
+  {
+    "seq": 48,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I thank the proponents and theer/-_ (the engine has no wall-clock time). I believe this amendment ensures a stable and clear turn sequence for all players, and I support its adoption for the common good of the game.",
+      "round": 3
+    },
+    "ts": 1784606640.7899735
+  },
+  {
+    "seq": 49,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have observed the consensus and the clarity of the current turn order. I support this amendment as it maintains the core structure of the game while ensuring the turn sequence remains stable.",
+      "round": 3
+    },
+    "ts": 1784606643.3374133
+  },
+  {
+    "seq": 50,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "abstain",
+      "reason": "I have no comments on this proposal as it does not change the text of rule 201."
+    },
+    "ts": 1784606646.087433
+  },
+  {
+    "seq": 51,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "I seek to build a consensus on this stable turn order and support the proposal as written."
+    },
+    "ts": 1784606647.6650405
+  },
+  {
+    "seq": 52,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "This amendment maintains the established turn order and ensures a stable, predictable sequence of play for all players."
+    },
+    "ts": 1784606649.432567
+  },
+  {
+    "seq": 53,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "abstain",
+      "reason": "I must abstain as the proposal does not change the text of rule 201."
+    },
+    "ts": 1784606651.1301658
+  },
+  {
+    "seq": 54,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "I support this amendment as it maintains the core structure of the game while ensuring the turn sequence remains stable."
+    },
+    "ts": 1784606652.8793046
+  },
+  {
+    "seq": 55,
+    "type": "vote_result",
+    "data": {
+      "ayes": 3,
+      "nays": 0,
+      "abstains": 2,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to-be-interpreted-as-unanimous-until-turn-order-carried-play-through-two-full-circuits-of-every-player-then-drops-to-simple-majority-per-rule-203",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784606652.888884
+  },
+  {
+    "seq": 56,
+    "type": "score_deltas_refused",
+    "data": {
+      "turn": 2,
+      "deltas": {
+        "Crates": 0
+      },
+      "authority": null,
+      "reason": "no rule was cited as authority for this score change"
+    },
+    "ts": 1784606657.013411
+  },
+  {
+    "seq": 57,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 201,
+      "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Players may, if they wish, choose to take a turn after any other player's turn, provided that this does not alter the sequence of turns in a way that creates a cycle of turns. Each player's score starts at zero.",
+      "mutable": true
+    },
+    "ts": 1784606657.022345
+  },
+  {
+    "seq": 58,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The proposal to amend rule 201 was adopted, and no rules specify a score change for the proposer or dissenters.",
+      "next_player": "Crates"
+    },
+    "ts": 1784606657.0309436
+  },
+  {
+    "seq": 59,
+    "type": "draw",
+    "data": {
+      "index": 2,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 5,
+      "reason": "score_draw for Crates (§202)",
+      "turn": 2
+    },
+    "ts": 1784606657.049814
+  },
+  {
+    "seq": 60,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 3,
+        "Crates": 5,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784606657.058546
+  },
+  {
+    "seq": 61,
+    "type": "turn_started",
+    "data": {
+      "turn": 3,
+      "player": "Crates"
+    },
+    "ts": 1784606667.8899248
+  },
+  {
+    "seq": 62,
+    "type": "proposal_made",
+    "data": {
+      "turn": 3,
+      "player": "Crates",
+      "kind": "amend",
+      "targets": [
+        204
+      ],
+      "text": "[204] A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "rationale": "I am seeking to clarify that the 10-point gain for dissenting votes applies to any player who voted against the change, and I will look for a consensus to ensure this is interpreted as a way to protect the rights of minority voices.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 303
+    },
+    "ts": 1784606680.12214
+  },
+  {
+    "seq": 63,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784606681.3422701
+  },
+  {
+    "seq": 64,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I see no reason to oppose the amendment of [204] as it stands; it properly defines the consequences of the shift in [203] to ensure the integrity of the voting process.",
+      "round": 1
+    },
+    "ts": 1784606683.2858415
+  },
+  {
+    "seq": 65,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I thank Diogenes for his support. The amendment to [204] provides a clear and balanced mechanism for the transition to a simple majority, ensuring that the game's integrity remains intact while rewarding the opposition's right to be bound by the results.",
+      "round": 1
+    },
+    "ts": 1784606684.8684454
+  },
+  {
+    "seq": 66,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I support the proposal to amend [204]. It ensures that the transition to a simple majority remains fair by upholding the principle of binding votes for all players, thus preserving the integrity of the game's outcome for everyone.",
+      "round": 1
+    },
+    "ts": 1784606687.0117626
+  },
+  {
+    "seq": 67,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I accept the proposal to amend [204] as it stands; it clarifies the consequences of the shift in [203] and ensures that the integrity of the voting process is maintained.",
+      "round": 1
+    },
+    "ts": 1784606689.0402484
+  },
+  {
+    "seq": 68,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I believe that [204] is a vital instrument for ensuring that the transition to a simple majority does not diminish the rights of the minority. By rewarding the opposition's participation with points, we ensure that even as the threshold for change becomes easier to reach, the individual's voice remains a valuable component of the game's history.",
+      "round": 1
+    },
+    "ts": 1784606691.589867
+  },
+  {
+    "seq": 69,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784606691.597226
+  },
+  {
+    "seq": 70,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments on this proposal; it maintains the integrity of the voting process as intended.",
+      "round": 2
+    },
+    "ts": 1784606692.7692
+  },
+  {
+    "seq": 71,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I thank Menippus for his insightful observation. By ensuring that the opposition's votes remain binding even when the threshold for change becomes easier to reach, the amendment to [204] preserves the core principle that every player's voice is significant to the game's history.",
+      "round": 2
+    },
+    "ts": 1784606694.714426
+  },
+  {
+    "seq": 72,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have heard the arguments and I believe that [204] serves as a constructive means to ensure that the transition to a simple majority does not diminish the individual's voice, and thus I support the proposal as it stands.",
+      "round": 2
+    },
+    "ts": 1784606696.540973
+  },
+  {
+    "seq": 73,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments on this proposal; it ensures that the integrity of the voting process is maintained by honoring the principle of binding votes for all players.",
+      "round": 2
+    },
+    "ts": 1784606698.037864
+  },
+  {
+    "seq": 74,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I see that the discussion has reached a point of clarity. The proponent's intent to balance the shift toward a simple majority by awarding points to the dissenting-but-bound minority is a sophisticated way to ensure that the \"minority of the moment\" still retains a tangible stake in the game's evolution. I support the proposal as it stands.",
+      "round": 2
+    },
+    "ts": 1784606700.2048411
+  },
+  {
+    "seq": 75,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784606700.2142677
+  },
+  {
+    "seq": 76,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments on this proposal; it ensures that the integrity of the voting process is maintained by honoring the principle of binding votes for all players.",
+      "round": 3
+    },
+    "ts": 1784606701.800394
+  },
+  {
+    "seq": 77,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I have heard the arguments and the consensus is clear; the proposal to amend [204] provides a balanced and constructive way to ensure that the transition to a simple majority does not diminish the rights of the dissenting minority.",
+      "round": 3
+    },
+    "ts": 1784606703.709123
+  },
+  {
+    "seq": 78,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe that [204] is a vital instrument for ensuring that the transition to a simple majority does not diminish the rights of the minority. By rewarding the opposition's participation with points, we ensure that even as the threshold for change becomes easier to reach, the individual's voice remains a valuable component of the game's history.",
+      "round": 3
+    },
+    "ts": 1784606706.1299317
+  },
+  {
+    "seq": 79,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments; this proposal ensures that the integrity of the voting process is maintained by honoring the principle of binding votes for all players.",
+      "round": 3
+    },
+    "ts": 1784606707.8057523
+  },
+  {
+    "seq": 80,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have no further comments; the consensus is clear that [204] serves as a balanced mechanism to ensure that the transition to a simple majority preserves the integrity of the game's history.",
+      "round": 3
+    },
+    "ts": 1784606709.6993275
+  },
+  {
+    "seq": 81,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "The proposal reinforces the integrity of the voting process by ensuring that the transition to a simple majority does not diminish the rights of the dissenting minority."
+    },
+    "ts": 1784606712.8655474
+  },
+  {
+    "seq": 82,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "The proposal provides a balanced and constructive compromise that ensures the integrity of the voting process while honoring the rights of the dissenting minority."
+    },
+    "ts": 1784606714.7549765
+  },
+  {
+    "seq": 83,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "This amendment ensures that the transition to a simple majority remains fair by upholding the principle of binding votes for all players."
+    },
+    "ts": 1784606716.8209267
+  },
+  {
+    "seq": 84,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "The proposal is consistent with a principled-proceduralist approach to ensure that the transition to a simple majority does not nullify the binding nature of dissenting votes."
+    },
+    "ts": 1784606718.9978228
+  },
+  {
+    "seq": 85,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "I support this reform as it balances the move toward a simple majority by ensuring that dissenting voices are still recognized and rewarded within the game's history."
+    },
+    "ts": 1784606721.033238
+  },
+  {
+    "seq": 86,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to-be-interpreted-as-unanimous-until-turn-order-carried-play-through-two-full-circuits-of-every-player-then-drops-to-simple-majority-per-rule-203",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784606721.0430524
+  },
+  {
+    "seq": 87,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 204,
+      "text": "[204] A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+      "mutable": true
+    },
+    "ts": 1784606725.2242315
+  },
+  {
+    "seq": 88,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 3,
+      "authority": null
+    },
+    "ts": 1784606725.2338064
+  },
+  {
+    "seq": 89,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rule in the current ruleset awards or deducts points upon the adoption of a rule change.",
+      "next_player": "Crates"
+    },
+    "ts": 1784606725.2431772
+  },
+  {
+    "seq": 90,
+    "type": "draw",
+    "data": {
+      "index": 3,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 2,
+      "reason": "score_draw for Crates (§202)",
+      "turn": 3
+    },
+    "ts": 1784606725.2602198
+  },
+  {
+    "seq": 91,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 3,
+        "Crates": 7,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784606725.268846
+  },
+  {
+    "seq": 92,
+    "type": "turn_started",
+    "data": {
+      "turn": 4,
+      "player": "Crates"
+    },
+    "ts": 1784606736.6970778
+  },
+  {
+    "seq": 93,
+    "type": "proposal_made",
+    "data": {
+      "turn": 4,
+      "player": "Crates",
+      "kind": "amend",
+      "targets": [
+        208
+      ],
+      "text": "[208] The first player to reach a target score of 100 points wins the game outright.",
+      "rationale": "I propose to keep this rule as is to maintain the primary win condition while we explore other improvements.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 304
+    },
+    "ts": 1784606747.6424549
+  },
+  {
+    "seq": 94,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784606748.8625965
+  },
+  {
+    "seq": 95,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no comments on this proposal; I observe that [208] remains as written, and I see no reason to challenge its current phrasing.",
+      "round": 1
+    },
+    "ts": 1784606750.73427
+  },
+  {
+    "seq": 96,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I have no comments on this proposal; I see no reason to challenge its current phrasing.",
+      "round": 1
+    },
+    "ts": 1784606751.8561866
+  },
+  {
+    "seq": 97,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have no comments on this proposal; I see no reason to challenge its current phrasing.",
+      "round": 1
+    },
+    "ts": 1784606753.583326
+  },
+  {
+    "seq": 98,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I see that the current proponents of [208] have expressed no desire to change the victory condition. As a reformer, I believe clarity is the precursor to progress, and since the current wording serves the game's and the players' interests, I support its stability.",
+      "round": 1
+    },
+    "ts": 1784606757.3258266
+  },
+  {
+    "seq": 99,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784606757.335127
+  },
+  {
+    "seq": 100,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments on this proposal; the current phrasing of [208] serves the game's objectives clearly, and I support its stability.",
+      "round": 2
+    },
+    "ts": 1784606758.7161567
+  },
+  {
+    "seq": 101,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I see that the proponents of [208] have expressed no desire to change the victory condition. As a seeker of consensus, I support the stability of the current wording as it serves the game's interests and provides clarity for all players.",
+      "round": 2
+    },
+    "ts": 1784606760.568642
+  },
+  {
+    "seq": 102,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have no further comments; the current wording of [208] provides a clear and stable victory condition, and I support its stability.",
+      "round": 2
+    },
+    "ts": 1784606762.1279266
+  },
+  {
+    "seq": 103,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have observed that the current proponents of [208] have expressed no desire to change the victory condition. As a reformer, I believe clarity is the precursor to progress, and since the current wording serves the game's and the players' interests, I support its stability.",
+      "round": 2
+    },
+    "ts": 1784606765.0528822
+  },
+  {
+    "seq": 104,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784606765.0631866
+  },
+  {
+    "seq": 105,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments; the stability of [208] is evident, and I support its continued status as written.",
+      "round": 3
+    },
+    "ts": 1784606766.5541024
+  },
+  {
+    "seq": 106,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have no further comments; the stability of [208] is evident, and I support its continued status as written.",
+      "round": 3
+    },
+    "ts": 1784606769.3158438
+  },
+  {
+    "seq": 107,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments; the clarity and stability of [208] are established and I support its preservation as written.",
+      "round": 3
+    },
+    "ts": 1784606770.8208685
+  },
+  {
+    "seq": 108,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have observed that the consensus on [208] is unanimous and the clarity of the victory condition is established. As a reformer, I believe that maintaining the stability of the ruleset is essential for the game's evolution, and I support the preservation of this rule as written.",
+      "round": 3
+    },
+    "ts": 1784606773.1238196
+  },
+  {
+    "seq": 109,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "The proposal maintains the current victory condition as written, ensuring clarity and stability."
+    },
+    "ts": 1784606775.8238702
+  },
+  {
+    "seq": 110,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "The consensus is clear and the rule's stability is supported by all parties."
+    },
+    "ts": 1784606777.3412848
+  },
+  {
+    "seq": 111,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "I support the stability of the current victory condition as it ensures clarity and maintains the game's intended structure."
+    },
+    "ts": 1784606779.1373096
+  },
+  {
+    "seq": 112,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "I support the stability of the rule as written to ensure the clarity of the victory condition."
+    },
+    "ts": 1784606780.7398076
+  },
+  {
+    "seq": 113,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "I support the stability of the current victory condition as it provides clarity and serves the game's interests."
+    },
+    "ts": 1784606782.4003289
+  },
+  {
+    "seq": 114,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to-be-interpreted-as-unanimous-until-turn-order-carried-play-through-two-full-circuits-of-every-player-then-drops-to-simple-majority-per-rule-203",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784606782.407701
+  },
+  {
+    "seq": 115,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 208,
+      "text": "[208] The first player to reach a target score of 100 points wins the game outright.",
+      "mutable": true
+    },
+    "ts": 1784606786.2305584
+  },
+  {
+    "seq": 116,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 4,
+      "authority": null
+    },
+    "ts": 1784606786.2391133
+  },
+  {
+    "seq": 117,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rule in the ruleset awards points for the adoption of a rule change or for the results of a vote.",
+      "next_player": "Crates"
+    },
+    "ts": 1784606786.2476904
+  },
+  {
+    "seq": 118,
+    "type": "draw",
+    "data": {
+      "index": 4,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 2,
+      "reason": "score_draw for Crates (§202)",
+      "turn": 4
+    },
+    "ts": 1784606786.2665257
+  },
+  {
+    "seq": 119,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 3,
+        "Crates": 9,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784606786.275083
+  },
+  {
+    "seq": 120,
+    "type": "turn_started",
+    "data": {
+      "turn": 5,
+      "player": "Crates"
+    },
+    "ts": 1784606797.7406933
+  },
+  {
+    "seq": 121,
+    "type": "proposal_made",
+    "data": {
+      "turn": 5,
+      "player": "Crates",
+      "kind": "amend",
+      "targets": [
+        209
+      ],
+      "text": "[209] The ruleset may never hold more than 50 mutable rules at one time.",
+      "rationale": "I seek to expand the limit on mutable rules to allow for a broader range of and more complexer game-play variations.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 305
+    },
+    "ts": 1784606808.8521998
+  },
+  {
+    "seq": 122,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784606810.0725725
+  },
+  {
+    "seq": 123,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I see no reason to oppose this amendment. It provides a more generous ceiling for the ruleset, ensuring that the game's complexity can be managed without prematurely restricting the players' ability to refine the game's structure.",
+      "round": 1
+    },
+    "ts": 1784606812.3119464
+  },
+  {
+    "seq": 124,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I believe that [209] should indeed be expanded to 50, as it provides a more generous ceiling for the ruleset, ensuring that the game's complexity can be managed without prematurely restricting the players' ability to refine the game's structure. This reflects a balanced and constructive approach to the game's evolution.",
+      "round": 1
+    },
+    "ts": 1784606814.3761406
+  },
+  {
+    "seq": 125,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I support this amendment as it provides a more generous ceiling for the ruleset, ensuring that the game's complexity can be managed without prematurely restricting the players' ability to refine the game's structure. It reflects a balanced and constructive approach to the game's evolution.",
+      "round": 1
+    },
+    "ts": 1784606816.910917
+  },
+  {
+    "seq": 126,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I accept this amendment because it clarifies the scope of the ruleset's evolution. By increasing the ceiling, we ensure that the game's complexity can be managed without prematurely restricting the players' ability to refine the game's structure.",
+      "round": 1
+    },
+    "ts": 1784606819.2937098
+  },
+  {
+    "seq": 127,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I believe that expanding the ceiling to 50 is a prudent step for the game's long-term health, as it ensures that the complexity of the ruleset can be managed without prematurely restricting the players' ability to refine the game's structure. This reflects a balanced and constructive approach to the game's evolution.",
+      "round": 1
+    },
+    "ts": 1784606822.14713
+  },
+  {
+    "seq": 128,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784606822.155551
+  },
+  {
+    "seq": 129,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments on this proposal; it provides a more generous ceiling for the ruleset, ensuring that the game's complexity can be managed without prematurely restricting the players' ability to refine the game's structure.",
+      "round": 2
+    },
+    "ts": 1784606823.952113
+  },
+  {
+    "seq": 130,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I thank the proponents for their consistent support. This amendment offers a clear and constructive path for the game's long-term development, and I believe it is a sensible and balanced way to ensure that the ruleset's complexity can be managed without unnecessary restrictions.",
+      "round": 2
+    },
+    "ts": 1784606825.8523414
+  },
+  {
+    "seq": 131,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I thank the proponents for their support. I believe that expanding the ceiling to 50 is a prudent step for the game's long-term health, as it ensures that the complexity of the ruleset can be managed without prematurely restricting the players' ability to refine the game's structure. This reflects a balanced and constructive approach to the game's evolution.",
+      "round": 2
+    },
+    "ts": 1784606828.168355
+  },
+  {
+    "seq": 132,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments; the proposal to increase the ceiling to 50 is a clear and balanced way to ensure that the ruleset's complexity can be managed without unnecessary restrictions.",
+      "round": 2
+    },
+    "ts": 1784606829.8755357
+  },
+  {
+    "seq": 133,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I thank the proponents for their consistent support. By expanding the ceiling to 50, we ensure that the game's complexity can be managed without prematurely restricting the players' ability to refine the game's structure, and I believe this is a sensible and balanced way to ensure that the ruleset's complexity can be managed without unnecessary restrictions.",
+      "round": 2
+    },
+    "ts": 1784606832.1268241
+  },
+  {
+    "seq": 134,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784606832.1344862
+  },
+  {
+    "seq": 135,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments; the consensus for a more expansive ceiling to 50 rules is clear and serves the long-term stability of the ruleset.",
+      "round": 3
+    },
+    "ts": 1784606833.8394492
+  },
+  {
+    "seq": 136,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I thank the proponents for their clear and consistent support of this amendment. The consensus is that expanding the ceiling to 50 is a constructive way to ensure that the game's complexity can be managed without prematurely restricting the players' ability to refine the ruleset.",
+      "round": 3
+    },
+    "ts": 1784606835.9613314
+  },
+  {
+    "seq": 137,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have no further comments; the consensus for a more expansive ceiling to 50 rules is clear and serves the long-term stability of the ruleset.",
+      "round": 3
+    },
+    "ts": 1784606837.851955
+  },
+  {
+    "seq": 138,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments.",
+      "round": 3
+    },
+    "ts": 1784606839.2257416
+  },
+  {
+    "seq": 139,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I believe that the move toward a more expansive ceiling of 50 rules is a vital step for the game's longevity. By ensuring that the ruleset's complexity can be managed without premature restrictions, we foster a more robust environment for innovation.",
+      "round": 3
+    },
+    "ts": 1784606841.3483682
+  },
+  {
+    "seq": 140,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "The expansion of the ceiling to 50 supports the long-term stability of the ruleset without compromising the game's integrity."
+    },
+    "ts": 1784606844.6156485
+  },
+  {
+    "seq": 141,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "This amendment provides a balanced and constructive compromise for the long-term stability of the ruleset."
+    },
+    "ts": 1784606846.6228561
+  },
+  {
+    "seq": 142,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "Expanding the ceiling to 50 ensures the game's long-term health and allows for more nuanced and complex refinements without unnecessary restrictions."
+    },
+    "ts": 1784606848.7572284
+  },
+  {
+    "seq": 143,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "I accept this amendment as it provides a more generous and balanced ceiling for the ruleset's evolution."
+    },
+    "ts": 1784606850.7159104
+  },
+  {
+    "seq": 144,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "Expanding the ceiling to 50 promotes a more robust and stable environment for game evolution."
+    },
+    "ts": 1784606852.6135821
+  },
+  {
+    "seq": 145,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to-be-interpreted-as-unanimous-until-turn-order-carried-play-through-two-full-circuits-of-every-player-then-drops-to-simple-majority-per-rule-203",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784606852.623598
+  },
+  {
+    "seq": 146,
+    "type": "score_deltas_refused",
+    "data": {
+      "turn": 5,
+      "deltas": {
+        "Crates": 0
+      },
+      "authority": null,
+      "reason": "no rule was cited as authority for this score change"
+    },
+    "ts": 1784606856.709197
+  },
+  {
+    "seq": 147,
+    "type": "rule_changed",
+    "data": {
+      "op": "amend",
+      "num": 209,
+      "text": "[209] The ruleset may never hold more than 50 mutable rules at one time.",
+      "mutable": true
+    },
+    "ts": 1784606856.719945
+  },
+  {
+    "seq": 148,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "The proposal to amend rule 209 was adopted, and no rules specify a score change for the proposer or dissenters.",
+      "next_player": "Crates"
+    },
+    "ts": 1784606856.7286582
+  },
+  {
+    "seq": 149,
+    "type": "draw",
+    "data": {
+      "index": 5,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 4,
+      "reason": "score_draw for Crates (§202)",
+      "turn": 5
+    },
+    "ts": 1784606856.7461479
+  },
+  {
+    "seq": 150,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 3,
+        "Crates": 13,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784606856.755639
+  },
+  {
+    "seq": 151,
+    "type": "turn_started",
+    "data": {
+      "turn": 6,
+      "player": "Crates"
+    },
+    "ts": 1784606867.7108
+  },
+  {
+    "seq": 152,
+    "type": "proposal_made",
+    "data": {
+      "turn": 6,
+      "player": "Crates",
+      "kind": "add",
+      "targets": [],
+      "text": "[214] A player who wins the game by reaching the target score of 100 points (rule 208) may be awarded a trophy of the winner's choice.",
+      "rationale": "This adds a standard victory condition for the game's winner without affecting the scoring mechanics.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 306
+    },
+    "ts": 1784606878.782557
+  },
+  {
+    "seq": 153,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784606880.0010116
+  },
+  {
+    "seq": 154,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I accept the proposal to [214] as it provides a minor, non-disruptive addition to the victory conditions. It is a harmless and constructive use of the rule-making power.",
+      "round": 1
+    },
+    "ts": 1784606882.1691701
+  },
+  {
+    "seq": 155,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I accept the proposal to [214] as it represents a simple and harmless addition to the victory conditions, and I see no reason to oppose it.",
+      "round": 1
+    },
+    "ts": 1784606883.603876
+  },
+  {
+    "seq": 156,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I believe that [214] is a harmless and constructive addition to the victory conditions, and I support the proposal as it maintains the integrity of the game's and the players' interests.",
+      "round": 1
+    },
+    "ts": 1784606885.8785088
+  },
+  {
+    "seq": 157,
+    "type": "debate_message",
+    "data": {
+      "player": "Antisthenes",
+      "text": "Antisthenes: I have no further comments. I accept the proposal to [214] as it is a harmless addition to the victory conditions.",
+      "round": 1
+    },
+    "ts": 1784606887.867425
+  },
+  {
+    "seq": 158,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have no further comments. The inclusion of a trophy as a symbolic reward for the winner's victory is a benign addition that does not alter the fundamental mechanics of the game.",
+      "round": 1
+    },
+    "ts": 1784606890.0244975
+  },
+  {
+    "seq": 159,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784606890.03272
+  },
+  {
+    "seq": 160,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments; the proposal to [214] is a minor and constructive addition to the victory conditions.",
+      "round": 2
+    },
+    "ts": 1784606891.4450772
+  },
+  {
+    "seq": 161,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I have no further comments; the consensus for [214] is clear, and I believe this is a minor and constructive addition to the victory conditions.",
+      "round": 2
+    },
+    "ts": 1784606893.0465553
+  },
+  {
+    "seq": 162,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have no further comments; the consensus for [214] is clear, and I believe this is a minor and constructive addition to the victory conditions.",
+      "round": 2
+    },
+    "ts": 1784606894.7573712
+  },
+  {
+    "seq": 163,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: Menippus: The consensus is-aligned and the proposal for [214] serves as a harmless and constructive addition to the victory conditions.",
+      "round": 2
+    },
+    "ts": 1784606897.49129
+  },
+  {
+    "seq": 164,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784606897.501049
+  },
+  {
+    "seq": 165,
+    "type": "debate_message",
+    "data": {
+      "player": "Diogenes",
+      "text": "Diogenes: I have no further comments; the consensus for [214] is clear, and the proposal provides a balanced and constructive addition to the victory conditions.",
+      "round": 3
+    },
+    "ts": 1784606899.2064924
+  },
+  {
+    "seq": 166,
+    "type": "debate_message",
+    "data": {
+      "player": "Crates",
+      "text": "Crates: I have no further comments; the consensus for [214] is clear, and I support the proposal as it represents a minor and constructive addition to the victory conditions.",
+      "round": 3
+    },
+    "ts": 1784606901.0359418
+  },
+  {
+    "seq": 167,
+    "type": "debate_message",
+    "data": {
+      "player": "Hipparchia",
+      "text": "Hipparchia: I have no further comments; the consensus for [214] is clear, and I support the proposal as it represents a minor and constructive addition to the victory conditions.",
+      "round": 3
+    },
+    "ts": 1784606902.9577231
+  },
+  {
+    "seq": 168,
+    "type": "debate_message",
+    "data": {
+      "player": "Menippus",
+      "text": "Menippus: I have no further comments; the consensus for [214] is clear, and I support the proposal as it represents a minor and constructive addition to the victory conditions.",
+      "round": 3
+    },
+    "ts": 1784606906.1095927
+  },
+  {
+    "seq": 169,
+    "type": "vote_cast",
+    "data": {
+      "player": "Diogenes",
+      "value": "aye",
+      "reason": "The proposal is a minor, harmless, and constructive addition to the victory conditions."
+    },
+    "ts": 1784606909.067702
+  },
+  {
+    "seq": 170,
+    "type": "vote_cast",
+    "data": {
+      "player": "Crates",
+      "value": "aye",
+      "reason": "I support this proposal as it represents a harmless and constructive addition to the victory conditions."
+    },
+    "ts": 1784606910.9025388
+  },
+  {
+    "seq": 171,
+    "type": "vote_cast",
+    "data": {
+      "player": "Hipparchia",
+      "value": "aye",
+      "reason": "The proposal is a harmless and constructive addition to the victory conditions that does not negatively impact the game's integrity."
+    },
+    "ts": 1784606912.9349976
+  },
+  {
+    "seq": 172,
+    "type": "vote_cast",
+    "data": {
+      "player": "Antisthenes",
+      "value": "aye",
+      "reason": "The proposal is a minor and harmless addition to the victory conditions."
+    },
+    "ts": 1784606914.729732
+  },
+  {
+    "seq": 173,
+    "type": "vote_cast",
+    "data": {
+      "player": "Menippus",
+      "value": "aye",
+      "reason": "The addition of a trophy as a symbolic reward for the winner is a benign and harmless way to celebrate victory."
+    },
+    "ts": 1784606916.6442373
+  },
+  {
+    "seq": 174,
+    "type": "vote_result",
+    "data": {
+      "ayes": 5,
+      "nays": 0,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": false,
+        "label": "unanimous consent to-be-interpreted-as-unanimous-until-turn-order-carried-play-through-two-full-circuits-of-every-player-then-drops-to-simple-majority-per-rule-203",
+        "authority": 203
+      },
+      "passed": true,
+      "weights": {}
+    },
+    "ts": 1784606916.6532607
+  },
+  {
+    "seq": 175,
+    "type": "rule_changed",
+    "data": {
+      "op": "add",
+      "num": 306,
+      "text": "[214] A player who wins the game by reaching the target score of 100 points (rule 208) may be awarded a trophy of the winner's choice.",
+      "mutable": true
+    },
+    "ts": 1784606920.700267
+  },
+  {
+    "seq": 176,
+    "type": "no_awards_declared",
+    "data": {
+      "turn": 6,
+      "authority": null
+    },
+    "ts": 1784606920.707845
+  },
+  {
+    "seq": 177,
+    "type": "verdict",
+    "data": {
+      "passed": true,
+      "reasoning": "No rule in the current ruleset awards or deducts points upon the adoption of a rule change.",
+      "next_player": "Crates"
+    },
+    "ts": 1784606920.7155926
+  },
+  {
+    "seq": 178,
+    "type": "draw",
+    "data": {
+      "index": 6,
+      "kind": "die",
+      "spec": {
+        "kind": "die",
+        "sides": 6
+      },
+      "value": 4,
+      "reason": "score_draw for Crates (§202)",
+      "turn": 6
+    },
+    "ts": 1784606920.734513
+  },
+  {
+    "seq": 179,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "Diogenes": 3,
+        "Crates": 17,
+        "Hipparchia": 0,
+        "Antisthenes": 0,
+        "Menippus": 0
+      }
+    },
+    "ts": 1784606920.743113
+  },
+  {
+    "seq": 180,
+    "type": "turn_started",
+    "data": {
+      "turn": 7,
+      "player": "Crates"
+    },
+    "ts": 1784606931.4957993
+  }
+]

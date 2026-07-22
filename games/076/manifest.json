@@ -1,0 +1,35 @@
+{
+  "game": 76,
+  "players": [
+    "WilliamJames",
+    "Dewey",
+    "Royce",
+    "Santayana",
+    "Emerson"
+  ],
+  "ruleset": "full",
+  "turns": 1,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "an adopted rule cannot be enforced"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 382935613,
+  "started": "2026-07-21T05:49:52.818954+00:00",
+  "ended": "2026-07-21T10:09:09.166768+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {},
+  "adoptions": 0,
+  "gm_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "completed_at": "2026-07-21T05:49:53.864167+00:00"
+}

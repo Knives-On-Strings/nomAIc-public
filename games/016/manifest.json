@@ -29,5 +29,12 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Hobbes": 75,
+    "Locke": 20,
+    "Rousseau": 0
+  },
+  "adoptions": 4,
+  "completed_at": "2026-07-13T16:04:37.820857+00:00"
 }

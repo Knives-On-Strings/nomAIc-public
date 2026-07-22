@@ -2,6 +2,8 @@
 
 _development era_
 
+> A second scoreless draw, twelve rule changes deep.
+
 ## Roster
 
 | Seat | Model |

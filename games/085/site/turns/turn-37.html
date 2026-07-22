@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 37 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 37</h1><div class="meta"><span>Moved by <b>Ramsey</b></span><span>simple majority</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §201</div><span class="inserted">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, and the proposing player has not proposed a skip in the last three turns.</span></div>
+<p class="lede">To prevent the exploitation of the rule for rapid turn skipping and ensure more equitable gameplay.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I acknowledge the thoughtful dialogue we have engaged in thus far. While I appreciate the strategic depth of the amendments made to rule 201, I believe the current proposal introduces a layer of complexity that could hinder the fluidity of play. To preserve the integrity of our game, I suggest we maintain the existing conditions, ensuring they are clear and concise. This approach upholds the spirit of strategic depth while promoting accessibility for all players. I propose we focus on refining the existing rules rather than adding new conditions, ensuring that our game remains both challenging and enjoyable.
+
+**Suggested Amendment to Rule 201**: Maintain the current conditions but refine them for clarity, ensuring they are accessible and maintain strategic depth.</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:**
+
+As Ayer, I appreciate Ramsey&#x27;s concerns about maintaining the game&#x27;s fluidity and accessibility. However, I believe that introducing new conditions can enhance strategic depth without overwhelming complexity. The current proposal by Ramsey aims to refine rather than complicate, ensuring that the rules remain accessible while promoting strategic diversity. To balance these aspects, I propose a slight modification: let&#x27;s include a condition that requires the proposing player to have gained less than 5 points on their last turn, ensuring that only actively engaged players can propose skips. This maintains fairness while encouraging active participation. Let&#x27;s refine the proposal to maintain clarity and strategic depth.
+
+**Suggested Amendment to Rule 201**: Include a condition that the proposing player must have gained less than 5 points on their last turn, in addition to the existing conditions, to ensure active engagement and strategic depth.</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the thoughtful dialogue from both Ramsey and Ayer. I concur with Ramsey&#x27;s emphasis on maintaining clarity and simplicity in rule 201, as overly complex conditions could indeed hinder the fluidity of our game. However, I also see the merit in Ayer&#x27;s suggestion for a condition that promotes active engagement. To strike a balance, I propose a slight modification: let&#x27;s add a condition that the proposing player must have gained points on their last turn, ensuring that only those actively participating can propose skips. This maintains fairness and encourages engagement without adding excessive complexity. Let&#x27;s refine the proposal to preserve both clarity and strategic depth.
+
+**Suggested Amendment to Rule 201**: Add a condition that the proposing player must have gained points on their last turn, in addition to the existing conditions, to ensure active engagement and maintain strategic depth.</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the contributions from Ramsey and Ayer. I agree with Ramsey&#x27;s concern about maintaining clarity and simplicity in rule 201, which is crucial for ensuring that the game remains accessible. However, I also see the value in Ayer&#x27;s suggestion for promoting active participation. To address these concerns, I propose a compromise: let&#x27;s add a condition that the proposing player must have participated in at least one of the last three turns. This ensures active engagement without adding excessive complexity. This approach maintains the integrity of strategic depth while promoting fairness and clarity.
+
+**Suggested Amendment to Rule 201**: Add a condition that the proposing player must have participated in at least one of the last three turns, in addition to the existing conditions, to ensure active engagement while maintaining clarity and strategic depth.
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, and the proposing player has participated in at least one of the last three turns.&quot;</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the thoughtful contributions from Ramsey, Ayer, and Strawson. The ongoing discussion highlights the importance of balancing strategic depth with accessibility, a balance I am keen to maintain. I propose a slight refinement to ensure that our rules evolve in a manner that promotes fairness and engagement. Specifically, I suggest adding a condition that the proposing player must have engaged in a meaningful way during the game, not just by gaining points but by contributing to the dialogue or strategy. This ensures that our rule encourages not only active participation but also thoughtful engagement.
+
+**Suggested Amendment to Rule 201:** Add a condition that the proposing player must have contributed to the dialogue or strategy in the game, in addition to the existing conditions, to ensure thoughtful engagement and maintain strategic depth.
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, and the proposing player has participated in at least one of the last three turns, and has contributed to the dialogue or strategy in the game.&quot;</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I value the contributions from my fellow players, and I appreciate the thoughtful suggestions aimed at maintaining the balance between strategic depth and accessibility. While Grice&#x27;s proposal to require players to contribute to the dialogue or strategy is well-intentioned, it introduces an element of subjectivity that could complicate enforcement. To preserve clarity and fairness, I propose a modification: let&#x27;s refine the condition to focus on tangible actions within the game. Specifically, I suggest we require the proposing player to have made at least one strategic move (e.g., proposing a rule change) in the last three turns. This ensures active engagement without introducing subjective criteria, maintaining the spirit of strategic depth while ensuring clarity and fairness.
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, the proposing player has participated in at least one of the last three turns, and has made at least one strategic move in the last three turns.&quot;</span></div><div class="line"><span class="who">Ayer</span><span class="said">**Ayer:** As Ayer, I appreciate the thoughtful dialogue we&#x27;ve engaged in thus far. I concur with Ramsey&#x27;s concern about maintaining clarity and simplicity in rule 201. The proposal to require the proposing player to have made at least one strategic move in the last three turns is a balanced approach. It ensures active engagement without introducing subjective criteria, preserving the integrity of strategic depth while promoting fairness. This modification aligns with our goal of refining the rules to enhance strategic depth without adding unnecessary complexity. I support Ramsey&#x27;s proposal as it stands, ensuring our game remains both challenging and accessible. 
+
+**Suggested Amendment to Rule 201:** Require the proposing player to have made at least one strategic move in the last three turns, in addition to the existing conditions.</span></div><div class="line"><span class="who">Ryle</span><span class="said">As Ryle, I appreciate the thoughtful dialogue and the efforts to refine rule [201] to balance strategic depth with accessibility. The current proposal to require the proposing player to have made at least one strategic move in the last three turns is a commendable step towards ensuring active engagement. However, I believe we can further enhance fairness and strategic depth by incorporating an additional condition: the proposing player must have gained at least one point in the last three turns. This ensures that only players who are actively contributing to the game&#x27;s progress can propose a skip, promoting a more dynamic and engaged play environment. Let&#x27;s refine the proposal to include this condition, maintaining clarity and fairness.
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, the proposing player has participated in at least one of the last three turns, the proposing player has made at least one strategic move in the last three turns, and the proposing player has gained at least one point in the last three turns.&quot;</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Pass.** As Strawson, I appreciate the thoughtful contributions from my fellow players. The current proposal by Ryle, which adds the condition that the proposing player must have gained at least one point in the last three turns, strikes a commendable balance between encouraging active engagement and maintaining the strategic depth of our game. This condition ensures that only players who are actively contributing to the game&#x27;s progress can propose a skip, which promotes fairness and dynamic participation. I support the proposed amendment as it stands, ensuring our rules evolve in a manner that is both challenging and accessible.</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the thoughtful contributions from all players. The proposal to require the proposing player to have gained at least one point in the last three turns is a commendable step towards ensuring active engagement. However, to further enhance fairness and strategic depth, I suggest adding another condition: the proposing player must have engaged in at least one debate or discussion in the last three turns. This ensures that players are not only actively participating in the game but are also contributing to the strategic dialogue, promoting a more engaged and thoughtful play environment. Let&#x27;s refine the proposal to include this condition, maintaining the balance between strategic depth and accessibility.
+
+**Suggested Amendment to Rule 201:** Require the proposing player to have engaged in at least one debate or discussion in the last three turns, in addition to the existing conditions.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Ramsey</span><span class="said">As Ramsey, I appreciate the thoughtful contributions from Grice and the others. Grice&#x27;s suggestion to require the proposing player to have engaged in at least one debate or discussion in the last three turns is commendable for promoting strategic dialogue. However, I believe adding such a condition introduces a degree of subjectivity that could complicate enforcement and detract from the clarity we&#x27;ve striven to maintain. To preserve the spirit of our game, which values both strategic depth and accessibility, I suggest we focus on tangible actions within the game. Specifically, I propose refining the condition to focus on the proposing player having proposed at least one rule change in the last three turns. This ensures active and tangible engagement without introducing subjective criteria, maintaining our commitment to clarity, fairness, and strategic depth. Let&#x27;s refine the proposal to include this condition, ensuring our game remains both challenging and accessible. 
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, the proposing player has participated in at least one of the last three turns, the proposing player has made at least one strategic move in the last three turns, the proposing player has gained at least one point in the last three turns, and the proposing player has proposed at least one rule change in the last three turns.&quot;</span></div><div class="line"><span class="who">Ayer</span><span class="said">As Ayer, I appreciate the thoughtful contributions from my fellow players, particularly Ramsey&#x27;s latest proposal to require the proposing player to have proposed at least one rule change in the last three turns. This condition effectively ensures active and tangible engagement, aligning with our goal of maintaining strategic depth while promoting fairness and clarity. However, to further enhance the balance between strategic depth and accessibility, I suggest a slight refinement: let&#x27;s add a condition that the proposing player must have participated in the debate of at least one proposal in the last three turns. This ensures that players are not only actively contributing to the game&#x27;s progress but are also engaging in the strategic dialogue, promoting a more dynamic and thoughtful play environment. Let&#x27;s refine the proposal to include this condition, maintaining the spirit of our game as both challenging and accessible.
+
+**Suggested Amendment to Rule 201:** Require the proposing player to have participated in the debate of at least one proposal in the last three turns, in addition to the existing conditions.
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, the proposing player has participated in at least one of the last three turns, the proposing player has made at least one strategic move in the last three turns, the proposing player has gained at least one point in the last three turns, the proposing player has proposed at least one rule change in the last three turns, and the proposing player has participated in the debate of at least one proposal in the last three turns.&quot;</span></div><div class="line"><span class="who">Ryle</span><span class="said">**Ryle:** As Ryle, I appreciate the thorough dialogue we&#x27;ve engaged in thus far. Ayer&#x27;s suggestion to require the proposing player to have participated in the debate of at least one proposal in the last three turns is commendable for encouraging active engagement in strategic dialogue. This condition enhances the fairness and dynamism of our game by ensuring that only players who are actively contributing to the strategic discussions can propose skips. I support the proposed amendment as it stands, ensuring our game remains both challenging and accessible while promoting thoughtful engagement. 
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, the proposing player has participated in at least one of the last three turns, the proposing player has made at least one strategic move in the last three turns, the proposing player has gained at least one point in the last three turns, the proposing player has proposed at least one rule change in the last three turns, and the proposing player has participated in the debate of at least one proposal in the last three turns.&quot;</span></div><div class="line"><span class="who">Strawson</span><span class="said">**Strawson:** As Strawson, I appreciate the collaborative effort to refine rule [201] and the thoughtful contributions from Ayer, Ryle, and others. The latest proposal by Ryle, which requires the proposing player to have participated in the debate of at least one proposal in the last three turns, is commendable for promoting active engagement in strategic dialogue. However, to ensure the game remains accessible while maintaining strategic depth, I propose adding a condition that the proposing player must have engaged in at least one constructive dialogue or debate without proposing a skip in the last three turns. This ensures that players are not only participating but are contributing meaningfully to the strategic discourse, promoting a dynamic and thoughtful play environment. Let&#x27;s refine the proposal to include this condition, maintaining the balance between strategic depth and accessibility.
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, the proposing player has participated in at least one of the last three turns, the proposing player has made at least one strategic move in the last three turns, the proposing player has gained at least one point in the last three turns, the proposing player has proposed at least one rule change in the last three turns, the proposing player has participated in the debate of at least one proposal in the last three turns, and the proposing player has engaged in at least one constructive dialogue or debate without proposing a skip in the last three turns.&quot;</span></div><div class="line"><span class="who">Grice</span><span class="said">**Grice:** As Grice, I appreciate the collaborative efforts and the thoughtful contributions from my fellow players. Strawson&#x27;s latest proposal to require the proposing player to have engaged in at least one constructive dialogue or debate without proposing a skip in the last three turns is commendable for promoting meaningful engagement. To ensure our game remains accessible while maintaining strategic depth, I suggest we refine this condition to focus on the quality of engagement. Let&#x27;s add a condition that the proposing player must have contributed positively to the dialogue, such as offering constructive feedback or supporting another player&#x27;s proposal, in the last three turns. This ensures that players are not only participating but are contributing meaningfully to the strategic discourse, promoting a dynamic and thoughtful play environment. Let&#x27;s refine the proposal to include this condition, maintaining the balance between strategic depth and accessibility.
+
+**[Proposal]**
+Amend [201]: &quot;Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, the proposing player has participated in at least one of the last three turns, the proposing player has made at least one strategic move in the last three turns, the proposing player has gained at least one point in the last three turns, the proposing player has proposed at least one rule change in the last three turns, the proposing player has participated in the debate of at least one proposal in the last three turns, and the proposing player has engaged in at least one constructive dialogue or debate without proposing a skip in the last three turns, contributing positively to the dialogue through constructive feedback or support for another player&#x27;s proposal.&quot;
+
+**Add your contribution: respond to others, press your case, or negotiate/trade support. One or two sentences, plain text. If you have nothing new to add, reply with exactly: PASS**</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Ramsey</td><td class="why">The proposal enhances engagement without complicating the rules, promoting strategic depth while ensuring accessibility.</td></tr><tr><td class="v aye">aye</td><td>Ayer</td><td class="why">As Ayer, I support Ramsey&#x27;s proposal as it strengthens the game&#x27;s integrity and ensures active engagement. The conditions maintain strategic depth while promoting fairness.</td></tr><tr><td class="v aye">aye</td><td>Ryle</td><td class="why">This amendment balances strategic depth with accessibility, ensuring active engagement while maintaining clarity.</td></tr><tr><td class="v aye">aye</td><td>Strawson</td><td class="why">I support Ramsey&#x27;s proposal as it enhances strategic depth while maintaining fairness and clarity.</td></tr><tr><td class="v aye">aye</td><td>Grice</td><td class="why">I support the amendment for ensuring active and meaningful engagement in the strategic dialogue.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §201 Turn 37 · Proposal §337 on the motion of <b>Ramsey</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, and the proposing player&#x27;s total score is less than 30.</span><span class="inserted">Players take one fixed turn order, set before play begins, with an option to propose a rule allowing a player to skip a turn for gaining up to 3 points, provided that no more than three players have skipped their turn in the last three turns, no more than five players have skipped their turns in the last five turns, the current score difference between the highest and lowest scoring player is less than or equal to 10 points, no more than two players have skipped their turn in the last two turns, the proposed rule has not been defeated in the last two turns, the cumulative skipped turns by all players do not exceed 40, the total number of skipped turns by the proposing player is less than 25, at least two players have skipped their turn in the last four turns, the proposing player is not the current turn&#x27;s mover, the proposing player&#x27;s average skipped turns in the last five turns do not exceed their total skipped turns, the proposing player has not proposed another skip in the last turn, the proposing player&#x27;s total score is less than 30, and the proposing player has not proposed a skip in the last three turns.</span>
+</div>
+<p class="lede">The proposal was adopted without any rule requiring a score change or ledger update. The next player in the turn order is Ayer.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

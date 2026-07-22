@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 31 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 31</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>simple majority after two full circuits of turns (§203)</span></div></header>
+<div class="eyebrow">The motion · 1 of 2</div>
+<div class="engrossed"><div class="caption">To add a new rule</div><span class="inserted">A player may propose a rule change that increases the target score by 10 points. If adopted unanimously, the proposer gains 5 points.</span></div>
+<p class="lede">This change adds strategic depth and rewards collaborative, unanimous agreement.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the intent to make the game more dynamic by adjusting the target score, but I have some concerns. Allowing such changes can make the game less stable and more unpredictable, which may not align with our established preference for measured amendments. If we wish to pursue this, perhaps we could include a condition that such a rule change must be debated for a minimum period or require a higher majority for adoption to ensure thoughtful consideration. I am open to discussing these or other conditions further. 
+
+For now, I propose a counter-amendment: &quot;A player may propose a rule change that increases the target score, but it must pass with a three-fourths majority.&quot; This ensures that any such significant change is carefully considered by all players. 
+
+I am willing to negotiate on these terms to gain support for this counter-amendment. 
+
+PASS</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s cautious approach to maintaining the game&#x27;s stability and fairness. I agree that significant changes like altering the target score require careful deliberation. To balance both our interests, I propose a compromise: a rule change to increase the target score should require a two-thirds majority, coupled with a mandatory debate period of three minutes. This ensures both thoughtful consideration and a reasonable threshold for adoption. I am open to further negotiation on these terms to find common ground.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate both Tarski&#x27;s and Goedel&#x27;s efforts to ensure stability and thoughtful consideration in this proposal. While I understand the intent to make the game more dynamic, I worry that increasing the target score might disproportionately affect players who are currently closer to winning, potentially prolonging the game unnecessarily. 
+
+To address these concerns, I suggest we include an additional clause: &quot;A rule change to increase the target score can only be proposed once per player throughout the game.&quot; This limitation ensures that the game remains competitive without frequent and potentially disruptive changes. 
+
+I am open to negotiating further on these terms to reach a mutually agreeable solution.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate both Tarski&#x27;s and Goedel&#x27;s contributions towards ensuring thoughtful consideration of such a significant change, and Church&#x27;s suggestion to maintain competitive balance by limiting the frequency of score increases. However, I have concerns about the potential for this rule to disrupt the strategic landscape of the game, especially for those of us who are still building our strategies from the ground up.
+
+To address these concerns while acknowledging the intent behind the proposal, I propose an additional safeguard: &quot;Any rule change to increase the target score must also include a provision that reduces the threshold for adopting future rule changes by 5%.&quot; This adjustment would serve as a compensatory mechanism to ensure that the game remains dynamic and that all players have a fair chance to adapt to new conditions.
+
+I am open to further negotiation on these terms to ensure that any change we adopt is both fair and strategically sound.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful contributions from Tarski, Goedel, Church, and Kleene, each of whom has highlighted important aspects of fairness and strategic balance in this proposal. The introduction of a higher threshold and a limit on the number of proposals per player are prudent measures to ensure stability. To further bolster these safeguards, I propose we add a clause: &quot;A rule change that increases the target score cannot be proposed in the final five turns of the game.&quot; This will prevent any last-minute disruptions to the game&#x27;s conclusion. I am open to negotiation on these terms to find a balanced resolution.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful contributions from all players, particularly the emphasis on balancing dynamism with fairness and strategic integrity. To build on these ideas, I suggest adding a clause: &quot;Any rule change to increase the target score must also be accompanied by a temporary bonus for players whose scores are below a certain threshold, ensuring that all players have an opportunity to remain competitive.&quot; This provision could help maintain balance and fairness by supporting those who are currently at a disadvantage. I am open to further negotiation to refine these terms.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive and thoughtful proposals from Tarski, Church, Kleene, and Post, each of which addresses critical aspects of fairness, strategic balance, and game stability. To synthesize these ideas into a cohesive proposal, I suggest the following compromise: 
+
+&quot;A player may propose a rule change that increases the target score by 10 points. This proposal must pass with a two-thirds majority, include a mandatory debate period of three minutes, and can only be proposed once per player throughout the game. Additionally, any such rule change must reduce the threshold for adopting future rule changes by 5% and cannot be proposed in the final five turns of the game. To ensure fairness, the proposer of the rule change must also advocate for a temporary bonus for players whose scores are below 30 points, providing them with an opportunity to remain competitive.&quot;
+
+I am open to further negotiation to refine these terms and ensure that this proposal garners broad support.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive synthesis of ideas presented by Goedel, which thoughtfully balances the need for dynamism with fairness and strategic integrity. To further ensure that this rule change does not disproportionately benefit those already close to winning, I suggest adding a clause: &quot;If the target score is increased, the player with the highest score at the time of adoption must forfeit 10 points, redistributing them equally among players with scores below 20 points.&quot; This adjustment helps maintain competitive balance and ensures all players have a fair chance to adapt to the new target.
+
+I am open to negotiation on these terms to reach a mutually agreeable solution.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the depth of consideration everyone has put into refining this proposal, particularly Goedel&#x27;s synthesis and Church&#x27;s emphasis on maintaining competitive balance. However, I am concerned that the point redistribution could disrupt the strategic landscape, especially for those who have worked to secure their lead. To address this, I propose an adjustment: instead of a flat point forfeiture for the highest-scoring player, introduce a scaled deduction based on their lead. Specifically, &quot;If the target score is increased, the player with the highest score must forfeit points equivalent to 5% of their lead over the second-highest scorer, redistributed equally among players below 20 points.&quot; This ensures a more proportional adjustment, maintaining fairness without unduly penalizing strategic success. I am open to further negotiation on these terms to ensure the proposal aligns with our principles of fairness and strategic integrity.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the collaborative effort in crafting this proposal, particularly the thoughtful balance between dynamism and fairness. To further refine Kleene&#x27;s adjustment, I propose that the scaled deduction includes a cap: &quot;The point forfeiture cannot exceed 15 points, ensuring that the penalty remains proportional and does not overly disrupt strategic positioning.&quot; This cap maintains competitive fairness without unduly penalizing players who have strategically positioned themselves well. I am open to further negotiation to refine these terms and ensure broad support.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the constructive dialogue and the various thoughtful proposals made thus far, each of which addresses important aspects of fairness, strategic balance, and game stability. To build on Kleene&#x27;s and Post&#x27;s proposals, I suggest we include a safeguard: &quot;The redistribution of points from the highest scorer must be implemented before the next turn begins, ensuring transparency and immediate impact.&quot; This adjustment ensures clarity and fairness by providing all players with immediate feedback on the rule change&#x27;s effect, maintaining the game&#x27;s dynamic nature while upholding strategic integrity. I am open to negotiation on these terms to ensure the proposal aligns with our shared principles.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the collaborative spirit and the careful consideration of fairness and strategic integrity in refining this proposal. The proposed safeguards and adjustments, including the scaled deduction with a cap and immediate redistribution, strike a good balance between maintaining competitiveness and allowing for meaningful dynamism. To further support this proposal, I suggest adding a clause: &quot;Any player who receives redistributed points must declare them in the subsequent turn, ensuring transparency and allowing for strategic adjustments.&quot; This clause will enhance clarity and fairness, providing all players with a clear understanding of the rule change&#x27;s impact. I am open to further negotiation to refine these terms and ensure broad support.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the collaborative effort and the thoughtful refinements made to this proposal, which aim to balance dynamism with fairness and strategic integrity. The inclusion of a scaled deduction with a cap, immediate redistribution, and mandatory declaration of redistributed points are well-considered safeguards. To further ensure the proposal&#x27;s alignment with our principles, I suggest adding a final clause: &quot;If the proposed rule change is adopted, the proposer must also advocate for a temporary rule that allows any player to propose one additional rule change during their next turn, provided it passes a simple majority.&quot; This clause incentivizes strategic engagement and ensures that the proposer actively contributes to maintaining the game&#x27;s dynamic nature. I am open to further negotiation to refine these terms and secure broad support.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive approach and careful attention to fairness and strategic balance in this proposal. The inclusion of the scaled deduction with a cap, immediate redistribution, and a temporary rule for additional proposals aligns well with principles of fairness and engagement. To further ensure that the proposal remains balanced, I suggest adding a clause: &quot;If the target score is increased, the game&#x27;s maximum turn limit is extended by five turns to accommodate the new target, preventing the game from ending prematurely due to this change.&quot; This adjustment helps maintain the integrity of the competition by allowing all players ample opportunity to adapt to the new target. I am open to further negotiation to refine these terms and ensure the proposal garners broad support.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive proposal crafted by Goedel and the thoughtful contributions from Tarski, Church, Kleene, and Post. The inclusion of the scaled deduction, immediate redistribution, and additional rule-change opportunities effectively balance dynamism with fairness. To further support this proposal, I suggest we add a clause: &quot;If the target score is increased, any player who was within 10 points of the previous target score at the time of adoption receives an additional 2-point bonus, ensuring they remain competitive in light of the new target.&quot; This adjustment promotes fairness by supporting those who were already close to winning, maintaining a competitive balance. I am open to negotiation on these terms to ensure the proposal aligns with our shared principles.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal includes multiple safeguards to ensure fairness and balance, aligning well with the principles of strategic integrity and dynamism.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">This proposal balances dynamism with fairness and maintains competitive integrity.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">The proposal balances dynamism and fairness with thoughtful safeguards.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The proposal lacks procedural safeguards and may disproportionately benefit those close to winning.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This proposal thoughtfully balances dynamism and fairness with multiple safeguards and incentives.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Enacted · §338 Turn 31 · Proposal §338 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="inserted">A player may propose a rule change that increases the target score by 10 points. If adopted unanimously, the proposer gains 5 points.</span>
+</div>
+<p class="lede">Goedel&#x27;s proposal was adopted without opposition, so rule 324 awards him 5 points.</p>
+<div class="eyebrow">The motion · 2 of 2</div>
+<div class="engrossed"><div class="caption">To amend §329</div><span class="inserted">A player may propose a rule change that allows for an additional strategic action during their turn, but only if it passes a unanimous vote among all players and does not directly affect the proposer&#x27;s score.</span></div>
+<p class="lede">This amendment ensures fairness by preventing the proposer from gaining an immediate advantage.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate Goedel&#x27;s proposal to amend [329], which aims to prevent proposals that could unduly advantage the proposer. However, the restriction against affecting the proposer&#x27;s score could unduly limit strategic rule changes that promote fairness. To address both concerns, I suggest the amendment be further refined to include a clause that any rule change must be vetted by at least two other players before voting. This way, it ensures impartiality while still allowing strategic depth.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s suggestion to involve other players in the vetting process, as it adds an additional layer of impartiality to rule changes. To balance strategic flexibility with fairness, I propose that any vetted rule change also be subject to a 24-hour reflection period before voting, allowing players to consider its implications fully. This period would ensure thoughtful participation without stalling the game&#x27;s progress.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Tarski&#x27;s and Goedel&#x27;s suggestions for enhancing the fairness of rule changes while maintaining strategic depth. To further ensure balanced gameplay, I propose that any rule change requiring a unanimous vote should also include a clause mandating that it cannot be proposed more than once per game by the same player. This would prevent repeated attempts that could disrupt the game&#x27;s flow while still allowing for meaningful strategic innovations.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate Church&#x27;s proposal to limit each player to a single unanimous vote per game, which prevents repeated disruptions while fostering strategic creativity. To ensure this rule is not exploited, I suggest adding a requirement that any such rule change must be reviewed by a neutral third party, like the game&#x27;s arbiter, to confirm its fairness and strategic value before being allowed to vote.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate the thoughtful contributions from Tarski, Goedel, Church, and Kleene. To address the need for balance and strategic depth, I propose that any rule change under [329] must include a provision for a post-vote review, ensuring its impact aligns with the game&#x27;s fairness principles. This review could be conducted by a panel of two players chosen randomly, providing a check without the need for an external arbiter. Let&#x27;s ensure our changes foster innovation while maintaining integrity.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">Tarski: I appreciate the innovative suggestions from Kleene and Post regarding impartial oversight and post-vote reviews. To enhance transparency while maintaining game pace, I propose that any rule change under [329] include an automatic review clause, whereby a simple majority of the players can request a quick review of the change within 24 hours of adoption to ensure its continued alignment with fairness and strategic depth. This allows for ongoing adjustments without excessive delays.</span></div><div class="line"><span class="who">Goedel</span><span class="said">Goedel: I appreciate the thoughtful suggestions from Tarski, Church, Kleene, and Post regarding oversight and review mechanisms. To ensure both fairness and strategic depth, I propose adding a clause to [329] that any rule change allowing for an additional strategic action must also include a provision for automatic expiration after a set number of turns unless renewed by a simple majority vote. This approach ensures that rule changes are regularly reassessed and align with the dynamic nature of the game.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the thoughtful suggestions from everyone regarding the oversight and review mechanisms, as they aim to balance fairness and strategic depth. However, I am concerned that the proposed 24-hour reflection period and multiple review processes might slow down the game&#x27;s pace, potentially hindering strategic play. To address this, I propose a compromise: instead of a 24-hour reflection period, a mandatory 5-minute discussion phase should be included before voting, ensuring thorough consideration without excessive delays. Additionally, to streamline the review process, a single neutral player could be designated at the start of the game to handle quick reviews of unanimous rule changes, maintaining fairness while preserving game flow.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate Church&#x27;s proposal for a 5-minute discussion phase and a neutral player to handle reviews, as it maintains game pace while ensuring fairness. However, to further enhance impartiality and prevent any single player from gaining undue influence, I suggest that the neutral reviewer be chosen randomly from among the players at the start of each game, ensuring equal opportunity and avoiding potential bias. This approach balances strategic depth with fairness, fostering an equitable environment for all participants.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful proposals from Church and Kleene regarding the review process and the role of a neutral player. To further ensure fairness and prevent any potential biases, I propose that the neutral reviewer role rotate among players every five turns, allowing each player an equal opportunity to act as the arbiter. This rotation system promotes impartiality and maintains a dynamic balance in the review process.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful contributions from Kleene and Post regarding the neutral reviewer role and its rotation. To further ensure fairness and prevent any strategic manipulation, I propose that the rotation of the neutral reviewer be accompanied by a simple declaration of intent, where the selected player must state their understanding of the role&#x27;s impartiality and agree to act without bias. This declaration will be made before the start of the rotation period, ensuring clarity and commitment to fairness from all players.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the constructive dialogue thus far, especially the innovative ideas for maintaining fairness and strategic depth. To synthesize these proposals, I suggest we adopt a combined approach: implement a 5-minute mandatory discussion phase before voting on any rule change under [329], appoint a neutral reviewer chosen randomly at the start of the game, and rotate this role every five turns with a declaration of intent to uphold impartiality. This ensures thorough consideration, balanced oversight, and dynamic fairness throughout the game.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive synthesis proposed by Goedel, which thoughtfully integrates the ideas of a discussion phase, a neutral reviewer, and rotation for impartiality. To further refine this proposal, I suggest that during the 5-minute discussion phase, players must explicitly state one potential benefit and one potential drawback of the proposed rule change. This requirement will encourage a more balanced evaluation and ensure that all players consider both the positive and negative impacts before voting. This approach will foster a fair and strategic environment while maintaining the game&#x27;s pace.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the comprehensive synthesis and thoughtful refinements proposed by Goedel, Church, Tarski, Kleene, and Post. To further ensure fairness and strategic balance, I suggest that the discussion phase&#x27;s requirement to state potential benefits and drawbacks be supplemented with a brief justification for each player&#x27;s vote. This addition would promote transparency and accountability, encouraging players to consider the broader implications of their decisions and fostering a fair and strategic gameplay environment.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the collaborative spirit in refining the proposal for rule [329], particularly the inclusion of a discussion phase and the neutral reviewer rotation. To enhance strategic depth while ensuring fairness, I propose adding a clause that any rule change must include a clear, written rationale for its strategic benefit, submitted alongside the proposal. This requirement will promote transparency and thoughtful consideration, ensuring that all players understand the strategic intent behind each rule change and can evaluate its impact effectively.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The amendment fosters fairness by preventing rule changes that unduly benefit the proposer.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">This proposal enhances fairness and strategic depth by preventing self-advantage and requiring unanimous consent.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">This amendment promotes fairness by preventing self-advantage while maintaining strategic depth.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">The proposal restricts strategic depth by disallowing proposals that affect the proposer&#x27;s score.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This amendment promotes fairness and strategic depth.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 4 aye · 1 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §329 Turn 31 · Proposal §339 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 4 aye · 1 nay</span></div>
+  <span class="struck">A player may propose a rule change that allows for an additional strategic action during their turn, but only if it passes a unanimous vote among all players.</span><span class="inserted">A player may propose a rule change that allows for an additional strategic action during their turn, but only if it passes a unanimous vote among all players and does not directly affect the proposer&#x27;s score.</span>
+</div>
+<p class="lede">Rule 324 awards 3 points to a player whose proposal is adopted without opposition.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

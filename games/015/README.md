@@ -2,6 +2,8 @@
 
 _development era_
 
+> Five turns and a leap — Hobbes cleared a freshly-raised bar in a single stroke.
+
 ## Roster
 
 | Seat | Model |

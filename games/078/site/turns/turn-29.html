@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 29 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 29</h1><div class="meta"><span>Moved by <b>Goedel</b></span><span>unanimous consent (§203)</span></div></header>
+<div class="eyebrow">The motion · 1 of 2</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted only when every eligible voter votes aye — unanimous consent — until every player has completed three full circuits of turns. Thereafter, the threshold drops permanently to a three-fourths majority.</span></div>
+<p class="lede">Extends the unanimous consent phase to allow for more strategic planning before majority voting.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate Goedel&#x27;s proposal to extend the requirement for unanimous consent to three full circuits of turns, aiming for greater deliberation. However, I suggest maintaining the two full circuits requirement, with the threshold dropping to a two-thirds majority, ensuring that we reach decisions efficiently without extending the deliberation excessively. This balanced approach could keep the game dynamic while allowing sufficient time for thoughtful consideration. 
+
+Additionally, I propose incorporating a structured debate period for rule changes that require unanimous consent, as this could enhance the quality of discussions and lead to more informed voting. This amendment would promote both strategic depth and fairness, aligning with our collective goals.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s suggestion to maintain the two full circuits requirement with a two-thirds majority threshold, as it strikes a balance between deliberation and decision-making efficiency. However, I propose a compromise: extending unanimous consent to just two and a half circuits of turns before the threshold drops to a two-thirds majority. This slight extension allows for additional consideration without significantly delaying the game.
+
+Additionally, I support Tarski&#x27;s idea of a structured debate period during the unanimous consent phase, as it could improve the quality of our discussions and lead to more informed decisions. This structured approach could enhance strategic depth and fairness, aligning with our shared goals of maintaining a dynamic and thoughtful game. Let&#x27;s consider incorporating these elements to reach a consensus that benefits all players.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate both Tarski&#x27;s and Goedel&#x27;s suggestions for balancing deliberation and decision-making efficiency. Extending unanimous consent to two and a half circuits seems a reasonable compromise, and I support the structured debate period to enhance discussion quality. However, I propose we also include a provision allowing players to request a re-vote within a limited number of turns if new information arises, ensuring that decisions are made with the best available knowledge. This would further ensure fairness and adaptability in our evolving game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate both Tarski&#x27;s and Goedel&#x27;s balanced proposals to adjust the unanimous consent duration. I support extending it to two and a half circuits, as it allows more thoughtful discussion without undue delay. Incorporating a structured debate period further enhances strategic depth. Additionally, Church&#x27;s idea for a re-vote provision is prudent, ensuring decisions adapt to new insights. Let&#x27;s integrate these ideas, including a re-vote limit of one turn, to maintain fairness and dynamic play. This approach respects procedural integrity while promoting strategic engagement.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the thoughtful proposals from Tarski, Goedel, and Church, each contributing valuable ideas to enhance the deliberation process while maintaining efficiency. Extending unanimous consent to two and a half circuits with a two-thirds majority threshold seems like a balanced compromise. The structured debate period and the re-vote provision proposed by Church are excellent additions, promoting fairness and adaptability. Let&#x27;s also consider adding a preliminary review step for rule changes requiring unanimous consent, allowing players to refine proposals before formal debate. This could streamline discussions and ensure that only well-considered changes reach the voting stage, aligning with our goal of a dynamic yet thoughtful game.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the collaborative spirit and constructive suggestions from all players. The proposal to extend unanimous consent to two and a half circuits, combined with the structured debate period and re-vote provision, seems a well-rounded approach. I support integrating the preliminary review step suggested by Post, as it would allow us to refine rule changes before formal debate, ensuring only thoughtful proposals reach voting. This ensures the game remains both dynamic and fair. Let&#x27;s proceed with these combined elements for a well-considered amendment.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the constructive input from everyone, and I agree that the combination of extending unanimous consent to two and a half circuits with a two-thirds majority threshold is a balanced approach. The structured debate period, re-vote provision, and preliminary review step are excellent additions that promote fairness and strategic depth. I propose that we also consider incorporating a mechanism for players to anonymously express concerns about a rule change during the debate period, ensuring that all viewpoints are considered without pressure. This could further enhance the quality of our discussions and lead to more informed decisions, aligning with our shared goals of maintaining a dynamic and thoughtful game. Let&#x27;s integrate these elements to create a comprehensive amendment that benefits all players.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive discussion and the thoughtful proposals from everyone, particularly the addition of a mechanism for anonymously expressing concerns, which could significantly enhance the deliberation process. To further ensure fairness and transparency, I suggest we also include a provision allowing for a brief summary of each player&#x27;s position on a rule change to be shared at the end of the debate period. This would help clarify any misunderstandings and ensure that all voices are heard, promoting a more informed and equitable decision-making process. Let&#x27;s integrate these elements to finalize the amendment.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate Goedel&#x27;s proposal for anonymous expression of concerns during the debate period, as it could help surface important viewpoints without pressure. To further enhance transparency, I suggest we also include a provision for a brief, player-submitted rationale to accompany each vote, ensuring that all decisions are well-documented and understood. This would promote accountability and clarity in our decision-making process. Let&#x27;s integrate these elements to finalize a comprehensive and fair amendment.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive discussion and the thoughtful contributions from all players, particularly the proposals to ensure transparency and fairness through anonymous concerns, position summaries, and vote rationales. To further enhance strategic depth, I propose incorporating a mechanism for periodic reviews of the voting threshold itself, allowing us to adapt to the evolving dynamics of the game. This could help us maintain a balance between deliberation and efficiency as the game progresses. Let&#x27;s integrate these elements into a robust amendment that supports a dynamic and fair game environment.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the comprehensive proposal crafted through our collaborative discussion. The extension to two and a half circuits, combined with a structured debate period, re-vote provision, preliminary review, anonymous concerns, position summaries, vote rationales, and periodic reviews of the voting threshold, reflects a well-considered approach to enhancing strategic depth and fairness. I support this amendment and look forward to its adoption, as it aligns with our shared goal of maintaining a dynamic yet thoughtful game environment. Let&#x27;s move forward with this proposal.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the comprehensive approach taken by everyone, and I strongly support the amendment that combines these thoughtful elements. The inclusion of periodic reviews of the voting threshold is particularly insightful, as it allows us to dynamically adapt to the game&#x27;s evolving nature. Additionally, I suggest adding a clause that encourages players to document any lessons learned from the debate process for future reference. This could help us refine our strategic thinking and decision-making over time. Let&#x27;s finalize this proposal and move forward with its adoption.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the comprehensive and collaborative effort that has gone into crafting this proposal. The integration of elements like structured debates, anonymous concerns, and periodic reviews indeed enhances the strategic depth and fairness of our game. To further support this amendment, I propose we add a clause to ensure that all players have equal access to resources and information during debates, preventing any imbalance in influence. This will help maintain a level playing field and promote informed decision-making. Let&#x27;s adopt this amendment and continue our pursuit of a dynamic yet equitable game environment.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative and comprehensive effort from all players in refining this amendment. The proposed extension to two and a half circuits with a two-thirds majority threshold, along with the structured debate period and re-vote provision, strikes a balance between thorough deliberation and efficient decision-making. The inclusion of anonymous concerns, position summaries, vote rationales, and periodic reviews adds significant value by promoting transparency and adaptability.
+
+To further enhance fairness, I suggest adding a mechanism for equal access to resources during debates, ensuring no player holds undue influence. This aligns with our shared commitment to maintaining a dynamic and fair game environment. I am in full support of this proposal and look forward to its adoption. Let&#x27;s proceed with this well-rounded amendment.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the comprehensive and collaborative effort that has led to this robust amendment. The balanced approach of extending unanimous consent to two and a half circuits, combined with the two-thirds majority threshold, structured debate period, re-vote provision, preliminary review, anonymous concerns, position summaries, vote rationales, periodic reviews, and equal access to resources, aligns perfectly with our shared goals of maintaining strategic depth and fairness. To ensure continued adaptability, I propose adding a clause for periodic feedback sessions after each circuit of turns, allowing us to reflect on the amendment&#x27;s impact and make necessary adjustments. This will help us sustain a dynamic and equitable game environment. Let&#x27;s finalize and adopt this proposal.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Tarski</td><td class="why">Extending to three circuits without re-evaluating efficiency and impact risks unnecessary delay.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The amendment promotes thorough deliberation while ensuring a dynamic game progression.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">Promotes fairness and strategic depth while maintaining a balanced decision-making process.</td></tr><tr><td class="v nay">nay</td><td>Kleene</td><td class="why">Unanimous consent for three circuits excessively delays decisions.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">Extending the unanimous consent phase and adding structured debates enhance fairness and strategic depth.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 3 aye · 2 nay</span></p>
+<p class="lede">Rule 206 states that a proposal that fails to be adopted results in the proposer losing 5 points.</p>
+<div class="eyebrow">The motion · 2 of 2</div>
+<div class="engrossed"><div class="caption">To amend §203</div><span class="inserted">A rule change is adopted only when at least 80% of the eligible voters vote aye, until every player has completed two full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.</span></div>
+<p class="lede">This proposal balances the need for broad agreement with a feasible path to progress.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the proposal&#x27;s intent to introduce a more attainable voting threshold, Goedel. However, I must express concern that moving from unanimous consent to an 80% threshold could risk hasty rule changes that might disrupt the delicate balance and strategic depth we have cultivated. Maintaining unanimous consent until after the first two rounds of play ensures that all players have sufficient opportunity to assess the evolving game dynamics, which is critical for informed decision-making. As an alternative, I suggest we consider a temporary threshold of a supermajority, say 75%, after the first circuit of turns rather than 80%, as it may strike a better balance between efficiency and careful deliberation. This would still allow for some flexibility in adoption while maintaining a rigorous standard of consensus. I am willing to negotiate on this percentage to find a compromise that upholds the integrity of our game.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate Tarski&#x27;s willingness to negotiate on the threshold percentage, and I acknowledge his concerns about maintaining strategic depth. To address these concerns, I propose a revised amendment: &quot;A rule change is adopted only when at least 70% of the eligible voters vote aye, until every player has completed two full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.&quot; This adjustment aims to find a middle ground that facilitates more dynamic rule changes without sacrificing thorough consideration. Let&#x27;s discuss this proposal further to ensure it aligns with our collective goals.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate Goedel&#x27;s willingness to adjust the threshold to 70%, which shows a commitment to finding a middle ground. However, I believe that even with this reduction, the risk of compromising the strategic balance remains. To further ensure thorough deliberation, I suggest a phased approach: &quot;A rule change is adopted only when 60% of eligible voters vote aye after the first circuit of turns, and 70% after the second circuit, before finally dropping to a simple majority thereafter.&quot; This gradual increase in the threshold allows us to adapt to the evolving dynamics while still prioritizing consensus and careful consideration. I am open to further refining this proposal to balance efficiency with the integrity of our game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate Church&#x27;s thoughtful phased approach, which seeks to balance the need for progress with careful deliberation. However, even a 60% threshold after the first circuit may still lead to hasty decisions that could destabilize the strategic integrity we aim to maintain. I propose a compromise: &quot;A rule change is adopted only when at least 85% of eligible voters vote aye until every player has completed one full circuit of turns. The threshold then drops to 75% until every player completes two full circuits. Thereafter, it drops permanently to a simple majority.&quot; This gradual reduction respects the need for initial consensus while allowing for more flexibility as players become familiar with the evolving rules. I&#x27;m open to negotiating on these percentages to find a solution that all can agree upon while maintaining our game&#x27;s integrity.</span></div><div class="line"><span class="who">Post</span><span class="said">Post: I appreciate Church&#x27;s phased approach and Kleene&#x27;s proposal, both of which aim to balance flexibility and consensus. However, I am concerned that even an 85% threshold in the initial phase might still lead to premature rule changes. I propose a compromise that maintains a higher bar initially while gradually easing the requirement: &quot;A rule change is adopted only when 90% of eligible voters vote aye until every player has completed one full circuit of turns, then 80% until the second circuit, before dropping to a simple majority thereafter.&quot; This approach ensures robust initial consensus while allowing for more agility as the game progresses. I am open to further refining these percentages to achieve a consensus that preserves the strategic depth and fairness we all value.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the thoughtful contributions from all players, and I concur with Post&#x27;s emphasis on maintaining robust initial consensus. However, I am concerned that even a 90% threshold initially might still lead to hasty decisions as we adjust to the evolving dynamics of the game. To address this, I propose a slight modification to Post&#x27;s approach: &quot;A rule change is adopted only when 95% of eligible voters vote aye until every player has completed one full circuit of turns, then 85% until the second circuit, before dropping to a simple majority thereafter.&quot; This ensures that our initial decisions are made with utmost care, preserving the strategic depth we value while gradually allowing for greater flexibility. I am open to negotiating these percentages further to ensure we reach a consensus that upholds the integrity of our game.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the detailed and thoughtful proposals from everyone, and I agree with Tarski&#x27;s suggestion to start with a high threshold to ensure careful consideration. However, I propose a compromise to balance our need for consensus with the need for adaptability: &quot;A rule change is adopted only when 92% of eligible voters vote aye until every player has completed one full circuit of turns, then 82% until the second circuit, before dropping to a simple majority thereafter.&quot; This approach aims to strike a balance between maintaining strategic depth and allowing for necessary flexibility as we become more familiar with the game&#x27;s evolving dynamics. I&#x27;m open to further adjusting these percentages to find a consensus that aligns with our shared goals.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the collaborative effort and thoughtful proposals from everyone, particularly Tarski&#x27;s and Goedel&#x27;s latest adjustments, which show a commitment to balancing consensus with adaptability. To ensure we maintain strategic depth while allowing for necessary flexibility, I propose we adopt Goedel&#x27;s latest threshold of 92% initially, but adjust it to 87% after the first circuit of turns, before finally dropping to a simple majority thereafter. This compromise ensures robust initial consensus while gradually increasing the likelihood of productive rule changes as we become more attuned to the evolving dynamics of the game. Let&#x27;s work together to refine these percentages further if needed, to ensure a consensus that preserves the integrity and fairness of our game.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate Church&#x27;s willingness to negotiate and find a middle ground. His proposal of 92% initially and 87% after the first circuit is a thoughtful compromise, but I am concerned that even 87% could still risk premature changes. To address this while acknowledging the need for adaptability, I propose: &quot;A rule change is adopted only when 90% of eligible voters vote aye until every player has completed one full circuit of turns, then 85% until the second circuit, before dropping to a simple majority thereafter.&quot; This maintains robust initial consensus while allowing for gradual flexibility. I am open to further adjustments to ensure we reach a consensus that preserves the integrity and fairness of our game.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the constructive dialogue and the various thoughtful proposals that have been put forth. As we strive to balance consensus with adaptability, I suggest we adopt a slightly more flexible initial threshold to facilitate progress while still prioritizing careful consideration. Therefore, I propose: &quot;A rule change is adopted only when 88% of eligible voters vote aye until every player has completed one full circuit of turns, then 83% until the second circuit, before dropping to a simple majority thereafter.&quot; This approach maintains a high standard initially and gradually eases the threshold to allow for necessary adaptability. Let&#x27;s continue refining these percentages to ensure we reach a consensus that upholds the integrity and fairness of our game.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Tarski</span><span class="said">I appreciate the constructive dialogue and the efforts to balance consensus with adaptability. However, even 88% initially could still lead to premature rule changes. As a compromise that prioritizes robust initial consensus while allowing for gradual flexibility, I propose: &quot;A rule change is adopted only when 90% of eligible voters vote aye until every player has completed one full circuit of turns, then 85% until the second circuit, before dropping to a simple majority thereafter.&quot; Let&#x27;s refine these percentages if necessary to ensure a consensus that upholds the strategic depth and fairness we all value.</span></div><div class="line"><span class="who">Goedel</span><span class="said">I appreciate the thorough discussion and the collaborative effort to find a balanced solution. To ensure we maintain both strategic depth and adaptability, I propose a slight modification: &quot;A rule change is adopted only when 89% of eligible voters vote aye until every player has completed one full circuit of turns, then 84% until the second circuit, before dropping to a simple majority thereafter.&quot; This offers a robust initial threshold while allowing for greater flexibility as we progress. I&#x27;m open to further adjustments to ensure a consensus that aligns with our shared goals.</span></div><div class="line"><span class="who">Church</span><span class="said">I appreciate the diligent negotiation and the various thoughtful proposals to adjust our voting threshold. The proposal by Goedel to adopt a rule change with 89% approval initially and 84% after the second circuit strikes a good balance between maintaining strategic depth and allowing for adaptability. It ensures robust initial consensus while gradually easing restrictions, aligning with our shared goals of fairness and strategic integrity in the game. I support this proposal.</span></div><div class="line"><span class="who">Kleene</span><span class="said">I appreciate the collaborative effort and the proposal&#x27;s intention to balance strategic depth with flexibility. The phased thresholds proposed by Goedel seem reasonable, and I am willing to support this compromise as it maintains a high standard initially while allowing for adaptability as the game progresses. Let&#x27;s proceed with 89% initially and 84% after the second circuit before dropping to a simple majority.</span></div><div class="line"><span class="who">Post</span><span class="said">I appreciate the consensus-building efforts and the balanced proposal put forth by Goedel, which aims to maintain strategic depth while allowing for gradual adaptability. The phased thresholds of 89% initially and 84% after the second circuit before dropping to a simple majority seem to strike a thoughtful compromise that aligns with our shared goals. I support this proposal as it reflects a well-considered approach to evolving our rule set while ensuring careful deliberation. Let&#x27;s proceed with this adjustment.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Tarski</td><td class="why">The proposal balances consensus with adaptability.</td></tr><tr><td class="v aye">aye</td><td>Goedel</td><td class="why">The phased thresholds balance consensus and adaptability effectively.</td></tr><tr><td class="v aye">aye</td><td>Church</td><td class="why">The phased thresholds ensure initial consensus and gradual adaptability.</td></tr><tr><td class="v aye">aye</td><td>Kleene</td><td class="why">The phased thresholds ensure robust initial consensus while allowing for gradual flexibility.</td></tr><tr><td class="v aye">aye</td><td>Post</td><td class="why">This amendment balances adaptability with the need for robust consensus.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §203 Turn 29 · Proposal §335 on the motion of <b>Goedel</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A rule change is adopted only when every eligible voter votes aye — unanimous consent — until every player has completed two full circuits of turns. Thereafter, the threshold drops permanently to a two-thirds majority.</span><span class="inserted">A rule change is adopted only when at least 80% of the eligible voters vote aye, until every player has completed two full circuits of turns. Thereafter, the threshold drops permanently to a simple majority.</span>
+</div>
+<p class="lede">Goedel&#x27;s proposal was adopted without opposition, so rule 324 awards Goedel 3 points.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

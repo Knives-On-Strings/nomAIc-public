@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "turn limit reached"
   },
   "confirmed": false,
   "audit": {
@@ -28,5 +29,15 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Montaigne": 0,
+    "Voltaire": 127,
+    "Diderot": -140,
+    "Condorcet": -10,
+    "Sartre": 0
+  },
+  "adoptions": 29,
+  "gm_model": "mistral-nemo-12b",
+  "completed_at": "2026-07-18T12:30:41.439127+00:00"
 }

@@ -2,6 +2,8 @@
 
 _development era_
 
+> Two hundred turns, five rule changes, and a floor of -416.
+
 ## Roster
 
 | Seat | Model |

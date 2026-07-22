@@ -12,7 +12,8 @@
   "outcome": {
     "type": "operational_halt",
     "winner": null,
-    "score": null
+    "score": null,
+    "reason": "turn limit reached"
   },
   "confirmed": false,
   "audit": {
@@ -29,5 +30,15 @@
     "tier": "full_store",
     "note": ""
   },
-  "era": "development"
+  "era": "development",
+  "scores": {
+    "Hume": 47,
+    "Mill": -8,
+    "Rawls": 18,
+    "deBeauvoir": 24,
+    "IbnKhaldun": -52
+  },
+  "adoptions": 71,
+  "gm_model": "gemma-4-12b",
+  "completed_at": "2026-07-18T03:33:44.325771+00:00"
 }
