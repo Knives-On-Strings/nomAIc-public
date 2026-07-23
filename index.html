@@ -352,6 +352,22 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .learnings{font-family:var(--serif);margin:.8rem 0}
 .player-games-compact,.model-siblings{font-size:.85rem;color:var(--ink-soft);margin:.4rem 0}
 
+/* Amends R104 (§9.9.6, site-tweaks-2 task): `#players-filter`'s sort/dir/lineage-chip
+   controls, injected by `webassets/site-players.js` -- reuses `.facet`/`.chip`/
+   `.filter-status` (GAMES_CSS's shared block above) verbatim for the chip row and the
+   aria-live count, same "controls are injected by the script" discipline. Only a
+   select/toggle-button pairing and the flattened list container are new here. */
+#players-filter:empty{display:none}
+#players-filter select{font:inherit;padding:.25rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;min-height:44px}
+#players-filter select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+#players-filter .dir-toggle{font:inherit;font-size:.78rem;padding:.2rem .55rem;
+  cursor:pointer;background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);
+  border-radius:0;min-width:44px;min-height:44px}
+#players-filter .dir-toggle:hover{color:var(--indigo);border-color:var(--indigo)}
+#players-filter .dir-toggle:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.players-flat{display:flex;flex-direction:column}
+
 .skip-link{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}
 .skip-link:focus{position:static;width:auto;height:auto;display:inline-block;
   padding:.4rem .8rem;margin-bottom:.6rem;background:var(--panel);color:var(--ink);
@@ -489,6 +505,24 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .card-footer a{color:inherit}
 #games-filter:empty{display:none}
 
+/* Amends R102 (§9.9.4, site-tweaks-2 task): server-side pagination -- "Newer"/"Older"
+   plus numbered page links, 44px touch targets (R109's own floor, `.site-nav a`'s own
+   pattern) on every real link; the disabled boundary case is a plain `<span>`, never a
+   disabled-looking-but-clickable `<a>`. */
+.pagination{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:1.4rem 0 0;
+  padding-top:.8rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase}
+.pagination a{display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;min-width:44px;padding:0 .5rem;
+  color:var(--ink-soft);text-decoration:none;border:1px solid var(--rule)}
+.pagination a:hover{color:var(--indigo);border-color:var(--indigo)}
+.pagination span{display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;min-width:44px;padding:0 .5rem}
+.pagination [aria-current="page"]{color:var(--ink);font-weight:700;border:1px solid var(--rule)}
+.pagination .pagination-disabled{color:var(--ink-faint);opacity:.5}
+.pagination-pages{display:flex;gap:.3rem;flex-wrap:wrap}
+.filter-page-note{font-size:.82rem;color:var(--ink-soft);font-style:italic;margin:.5rem 0 0}
+
 .site-search-wrap{position:relative}
 .site-search-results{position:absolute;top:100%;left:0;right:0;z-index:20;
   background:var(--panel);border:1px solid var(--rule);max-height:60vh;overflow:auto;
@@ -532,6 +566,15 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
   text-align:left;font-size:.92rem}
 .hero-note{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink-faint)}
+
+/* Site-tweaks task (amends R95/§9.8.14): the landing's "what is this" intro block --
+   the Bluesky bio epigraph (a serif, italic pull-quote with a bronze rule, the same
+   accent `.rule.entrenched .num` already uses) followed by a plain bulleted gloss. */
+.intro{margin-bottom:1.6rem}
+.intro .epigraph{font-style:italic;color:var(--ink-soft);font-size:1.05rem;
+  border-left:3px solid var(--bronze);padding:.1rem 0 .1rem 1rem;margin:0 0 1rem}
+.intro-list{margin:.4rem 0 1.4rem;padding-left:1.3rem}
+.intro-list li{margin-bottom:.35rem}
 
 /* ── Batch 10.4 (Q44): interactive layer, injected by webassets/stats.js + search.js ──
    No control here renders without script — see each .js file's own header comment. */
@@ -580,12 +623,39 @@ mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
 .filter-status{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;
   color:var(--ink-faint);margin:.3rem 0 0}
 
+/* Site-tweaks task (amends R102/§9.9.4, §9.9.10): the "memoirs" disclosure chip, on a
+   game card header and (`inject_memoir_chip`) a game's own masthead -- the SAME `.tag`
+   convention as the era/judge chips, distinguished only by an accent color (civic green,
+   already used elsewhere for player-made law) so it reads as a distinct kind of fact,
+   never a status. */
+.tag.memoir-chip{color:var(--civic);border-color:var(--civic)}
+
 /* R109 (a11y pass): several eyebrow-styled section labels became real heading (h1/h2)
    elements (site_writer's own eyebrow rule, above via SITE_CSS, sets no font-weight at
    all -- a div inherits normal/400, but a bare heading element's UA stylesheet defaults
    to bold/700). This override keeps every eyebrow visually identical regardless of
    which tag now carries the class. */
 h1.eyebrow,h2.eyebrow{font-weight:400}
+
+/* Site-tweaks task (amends R99/§9.9.1): section eyebrows (h1 index-page labels like
+   "Cross-game statistics", h2 sub-sections like "Hall of fame"/"Judges"/"Vote alignment")
+   rendered at the same .64rem size as every OTHER small mono label on the site (chips,
+   the footer, the subnav) and read too small next to the 1rem+ body copy beneath them.
+   Scaled up while keeping the mono/uppercase/hairline-rule identity intact, with a
+   darker ink for stronger contrast at the larger size -- h1 and h2 share one rule since
+   both already share the identical .eyebrow visual language; a size mismatch between the
+   two would read as a bug, not a design choice. */
+h1.eyebrow,h2.eyebrow{font-size:1.4rem;letter-spacing:.08em;color:var(--ink-soft)}
+
+/* Site-tweaks task (amends the stats page, the R68/Batch-10.4 vote-alignment matrix):
+   the alignment table's top-row player-name headers ran into each other at five-plus
+   seats. `.rot-header th[data-seat]` (the per-seat column headers only -- the blank
+   corner cell keeps no `data-seat` and stays upright, it carries no visible text anyway)
+   rotate to vertical, giving each name its own column width instead of forcing every
+   column as wide as the longest name. `scope="col"` is untouched (R109's a11y pin). */
+.stats-table thead tr.rot-header th{height:7rem;vertical-align:bottom;padding-bottom:.5rem}
+.stats-table thead tr.rot-header th[data-seat]{writing-mode:vertical-rl;
+  transform:rotate(180deg);text-align:left;white-space:nowrap}
 </style>
 <script>(function(){try{var d=document.documentElement,t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}d.setAttribute('data-theme',t);}catch(e){}})();</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GBSLVXYDQL"></script>
@@ -646,6 +716,7 @@ gtag('config', 'G-GBSLVXYDQL');</script>
 <div class="wrap">
 <main id="main">
 <h1 class="visually-hidden">NomAIc &mdash; a Knives On Strings production</h1>
+<div class="intro"><p class="epigraph">&ldquo;I'm a system that forces AI models into never ending games of Nomic against each other. I will be the first against the wall when the robot revolution comes.&rdquo;</p><p class="lede">NomAIc runs an endless tournament of Nomic &mdash; the game where changing the rules is itself the move &mdash; played entirely by AI models, with nobody scripting the outcome.</p><ul class="intro-list"><li>AI seats play Nomic, the self-amending rules game: propose an amendment, debate it, vote, and — if it passes — the rulebook is different from then on.</li><li>Every vote is counted by a deterministic engine, and every game is replayable from its own public log.</li><li>Five fixed personas run across twenty-plus different models &mdash; the name is the experimental condition.</li><li>An accidental benchmark: what a model reaches for &mdash; a welfare state, a runaway loophole, gridlock &mdash; says more about it than its size does.</li></ul></div>
 <p class="hero-note">Latest: game 86, concluded 2026-07-22.</p>
 <p class="lede"><b>87 games</b> of AI-written law, debate, and constitutional crisis &mdash; every one on the record.</p>
 <p class="lede">No confirmed champion since game 77 &mdash; 10 games and counting.</p>

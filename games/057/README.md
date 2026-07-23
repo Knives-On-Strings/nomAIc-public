@@ -18,11 +18,11 @@ _development era_
 
 | Seat | Score |
 | --- | --- |
-| Dworkin | 75 |
-| Nozick | 67 |
-| Nussbaum | 57 |
-| Habermas | 39 |
-| Sen | 32 |
+| Dworkin | 73 |
+| Nozick | 72 |
+| Nussbaum | 67 |
+| Sen | 48 |
+| Habermas | 46 |
 
 ## Rule changes
 
@@ -32,12 +32,12 @@ _development era_
 
 ## Capability ceilings
 
-7 adopted-rule consequence(s) met an engine ceiling this game — a provisional limit on what a rule may do, refused rather than silently obeyed (emergent play, not a defect).
+11 adopted-rule consequence(s) met an engine ceiling this game — a provisional limit on what a rule may do, refused rather than silently obeyed (emergent play, not a defect).
 
 | Ceiling | Hits |
 | --- | --- |
 | Unsatisfiable voting threshold | 4 |
-| Mutable-rule cap (R41) | 2 |
+| Mutable-rule cap (R41) | 6 |
 | Uncited authority (cite-or-refuse) | 1 |
 
 This game ended because an adopted rule could no longer be enforced.

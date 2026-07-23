@@ -39,6 +39,13 @@
  */
 'use strict';
 import { hasMatch } from './text-match.js';
+// Amends R102 (site-tweaks-2 task): `distinctValues` is now the ONE shared copy
+// `filter-controls.js` exports — `webassets/site-players.js` imports it too, rather
+// than a second, drifting copy of the same 8-line function. Re-exported here so the
+// existing `import { distinctValues } from './site-filter.js'` call site
+// (`tests/test_site_filter.mjs`) keeps working unchanged.
+import { distinctValues } from './filter-controls.js';
+export { distinctValues };
 
 // ── pure helpers (unit-tested in tests/test_site_filter.mjs) ────────────────────────
 
@@ -90,20 +97,6 @@ export function queryParam(search, name) {
 export function matchesText(record, q) {
   if (!q) return true;
   return hasMatch(record.text, q);
-}
-
-/** The distinct values of `field` across `records`, sorted — the fixed chip set to
- *  offer for that facet (stable regardless of which chips are currently active). */
-export function distinctValues(records, field) {
-  var seen = {}, out = [];
-  records.forEach(function (r) {
-    var v = r[field];
-    if (v && !Object.prototype.hasOwnProperty.call(seen, v)) {
-      seen[v] = true;
-      out.push(v);
-    }
-  });
-  return out.sort();
 }
 
 /** The distinct lineage VALUES across `records` — like `distinctValues`, but for the
@@ -186,10 +179,43 @@ export function visibleSorted(records, active, sortKey) {
  *  already takes, so the DOM layer below need not duplicate the filtering to know how
  *  many passed. `sortKey` doesn't change the COUNT, only the order, but is accepted
  *  here (rather than a plain `visibleCount`) so the one call site can pass exactly the
- *  same three arguments it already computes for `visibleSorted` itself. */
-export function statusText(records, active, sortKey) {
+ *  same three arguments it already computes for `visibleSorted` itself.
+ *
+ *  `pageInfo` (amends R102, site-tweaks-2 pagination task): `{page, pages}` when
+ *  `/games/` is paginated (`pages > 1`) — absent/undefined on a single-page archive,
+ *  where the wording is byte-identical to before this task. When present, M is only
+ *  ever THIS PAGE's own card count, never the whole archive's — pretending otherwise
+ *  would mislead a reader who can't see the pagination nav (a non-visual reader
+ *  relying on this aria-live region alone), so the wording says "on this page". */
+export function statusText(records, active, sortKey, pageInfo) {
   var visible = visibleSorted(records, active, sortKey).length;
-  return visible + ' of ' + records.length + ' games shown';
+  var scoped = !!(pageInfo && pageInfo.pages > 1);
+  return visible + ' of ' + records.length + ' games shown' + (scoped ? ' on this page' : '');
+}
+
+/** Amends R102 (§9.9.4, pagination task): is ANY chip or the text filter currently
+ *  active? Shared by `pageFilterNoteText` below — kept separate from `passesFilters`,
+ *  which asks whether one RECORD matches, not whether the active state as a whole
+ *  represents "a filter is on". */
+export function anyFilterActive(active) {
+  return !!((active.outcome && active.outcome.size) ||
+           (active.era && active.era.size) ||
+           (active.lineage && active.lineage.size) ||
+           active.text);
+}
+
+/** Amends R102 (§9.9.4, pagination task): the visible "filtering only this page" note
+ *  — `''` (nothing rendered) unless the archive IS paginated (`pageInfo.pages > 1`)
+ *  AND a chip/text filter is actually active. A reader who hasn't touched a control
+ *  yet sees every card already on this page, which is not misleading on its own — the
+ *  note exists for the moment a reader narrows the visible set and might reasonably
+ *  assume that narrowed the WHOLE archive, not just these 20 (or fewer, on the last
+ *  page) games. This is the "simpler, robust option" the task offered over having
+ *  this script fetch sibling pages' cards over the network: no second request, no
+ *  partial/merged result set, no new failure mode — just an honest sentence. */
+export function pageFilterNoteText(active, pageInfo) {
+  if (!pageInfo || pageInfo.pages <= 1 || !anyFilterActive(active)) return '';
+  return 'Filtering this page only — use the header search to search the whole archive.';
 }
 
 // ── DOM wiring (createElement/textContent only — invariant 9) ──────────────────────
@@ -210,6 +236,16 @@ export function statusText(records, active, sortKey) {
   var active = { outcome: new Set(), era: new Set(), lineage: new Set(), text: initialQuery };
   var sortKey = 'newest';
 
+  // Amends R102 (§9.9.4, pagination task): `data-page`/`data-pages`, present on the
+  // mount only when `/games/` is actually paginated (`build_games_index`, absent for a
+  // single-page archive) — read once, passed straight through to `statusText`/
+  // `pageFilterNoteText`.
+  var pageInfo;
+  if (mount.dataset.page && mount.dataset.pages) {
+    pageInfo = { page: parseInt(mount.dataset.page, 10) || 1,
+                pages: parseInt(mount.dataset.pages, 10) || 1 };
+  }
+
   // Amends R102/R109 (§9.9.4/§9.9.12): a visually-quiet, always-present result-count
   // region — createElement/textContent only (invariant 9) — updated by every
   // `rerender()`, mirroring the visible hide/show a sighted reader already sees.
@@ -219,6 +255,16 @@ export function statusText(records, active, sortKey) {
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
 
+  // Amends R102 (§9.9.4, pagination task): the "filtering this page only" note — same
+  // aria-live region as `status` (a screen-reader user gets both sentences in one
+  // announcement), empty (and so invisible — no dead control) whenever
+  // `pageFilterNoteText` says there is nothing to warn about.
+  var note = document.createElement('p');
+  note.id = 'games-filter-page-note';
+  note.className = 'filter-page-note';
+  note.setAttribute('role', 'status');
+  note.setAttribute('aria-live', 'polite');
+
   function rerender() {
     records.forEach(function (r) {
       r.el.hidden = !passesFilters(r, active);
@@ -226,7 +272,8 @@ export function statusText(records, active, sortKey) {
     visibleSorted(records, active, sortKey).forEach(function (r) {
       container.appendChild(r.el);   // moves the existing node; nothing is recreated
     });
-    status.textContent = statusText(records, active, sortKey);
+    status.textContent = statusText(records, active, sortKey, pageInfo);
+    note.textContent = pageFilterNoteText(active, pageInfo);
   }
 
   function buildFacet(host, labelText, values, set, formatLabel) {
@@ -316,6 +363,7 @@ export function statusText(records, active, sortKey) {
   mount.appendChild(sortRow);
 
   mount.appendChild(status);
+  mount.appendChild(note);
 
   rerender();
 })();

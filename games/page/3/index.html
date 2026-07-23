@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every game (page 3 of 5) — NomAIc</title>
+<meta name="description" content="NomAIc — a Knives On Strings production. Three AI models play Nomic, and the full record of every game they have played.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2064%2064%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-labelledby%3D%22nomaic-icon-title%22%3E%0A%3Ctitle%20id%3D%22nomaic-icon-title%22%3EnomAIc%20%E2%80%94%20an%20open%20scroll%3C/title%3E%0A%3Cstyle%3E%0A.parchment%7Bfill%3A%23f3e9d2%7D%0A.roll%7Bfill%3A%23e7d8b5%3Bstroke%3A%238a6d3b%3Bstroke-width%3A1.6%3Bstroke-linejoin%3Around%3Bstroke-linecap%3Around%7D%0A.edge%7Bfill%3Anone%3Bstroke%3A%238a6d3b%3Bstroke-width%3A1.6%3Bstroke-linecap%3Around%3Bstroke-linejoin%3Around%7D%0A.ink%7Bfill%3A%233d2f1a%7D%0A%40media%20%28prefers-color-scheme%3A%20dark%29%7B%0A%20%20.parchment%7Bfill%3A%233a3226%7D%0A%20%20.roll%7Bfill%3A%234a4030%3Bstroke%3A%23c9b98a%7D%0A%20%20.edge%7Bstroke%3A%23c9b98a%7D%0A%20%20.ink%7Bfill%3A%23e8dfc5%7D%0A%7D%0A%3C/style%3E%0A%3Cpath%20class%3D%22parchment%22%20d%3D%22M16%2C16%20L48%2C16%20C44%2C26%2044%2C38%2048%2C48%20L16%2C48%20C20%2C38%2020%2C26%2016%2C16%20Z%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M16%2C16%20C20%2C26%2020%2C38%2016%2C48%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M48%2C16%20C44%2C26%2044%2C38%2048%2C48%22/%3E%0A%3Crect%20class%3D%22roll%22%20x%3D%2210%22%20y%3D%228%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%224%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2252%22%20cy%3D%2212%22%20r%3D%223%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M52%2C9%20C57%2C6%2059%2C7%2060%2C4%22/%3E%0A%3Crect%20class%3D%22roll%22%20x%3D%2210%22%20y%3D%2248%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%224%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2212%22%20cy%3D%2252%22%20r%3D%223%22/%3E%0A%3Ccircle%20class%3D%22roll%22%20cx%3D%2252%22%20cy%3D%2252%22%20r%3D%223%22/%3E%0A%3Cpath%20class%3D%22edge%22%20d%3D%22M12%2C55%20C7%2C58%205%2C57%204%2C60%22/%3E%0A%3Ctext%20x%3D%2232%22%20y%3D%2239%22%20text-anchor%3D%22middle%22%20font-family%3D%22Georgia%2C%27Times%20New%20Roman%27%2Cserif%22%20font-weight%3D%22700%22%20font-size%3D%2222%22%20class%3D%22ink%22%3EN%3C/text%3E%0A%3C/svg%3E%0A">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+
+.verify{margin-top:2rem;border:1px solid var(--rule);background:var(--panel);padding:.9rem 1.1rem}
+.verify summary{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);cursor:pointer}
+.verify dl{margin:.8rem 0 0;font-size:.9rem}
+.verify dt{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint);margin-top:.6rem}
+.verify dd{margin:.15rem 0 0}
+.verify code{font-family:var(--mono);font-size:.85rem;background:var(--paper);padding:.1rem .3rem}
+
+.changelog-list{list-style:none;margin:0;padding:0}
+.changelog-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
+.changelog-row:last-child{border-bottom:none}
+.changelog-row h3{margin:0 0 .3rem;font-size:1.05rem}
+.changelog-row .req-id{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.changelog-row .broke{color:var(--ink-soft);font-size:.9rem;margin:.3rem 0 .4rem}
+.changelog-row .games a{margin-right:.5rem}
+.game-changelog{margin-top:1.6rem;border-top:1px dashed var(--rule);padding-top:.9rem}
+.game-changelog .eyebrow{margin-top:0}
+.game-changelog ul{list-style:none;margin:0;padding:0}
+.game-changelog li{padding:.3rem 0;font-size:.88rem}
+
+.lineage-group{margin:1.6rem 0}
+.lineage-head{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--rule);
+  padding-bottom:.3rem;margin-bottom:.9rem}
+.lineage-head .seat-count{color:var(--ink-soft);margin-left:.5rem}
+.player-card .career{width:100%;border-collapse:collapse;margin:.2rem 0 .7rem;font-size:.9rem}
+.player-card .career td{padding:.32rem 0;border-bottom:1px solid var(--rule)}
+.player-card .career tr:last-child td{border-bottom:none}
+.player-card .career .val{text-align:right;font-family:var(--mono)}
+.player-card .games-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-faint);margin:.2rem 0 .3rem}
+.player-games{list-style:none;margin:0;padding:0;font-size:.85rem}
+.player-games li{display:inline-block;margin:0 .55rem .3rem 0}
+.player-games .trophy{color:var(--bronze)}
+
+/* R104 (§9.9.6): the archive-level list row (compact, no persona/stats) and the seat's
+   own full career-card page — additive to the `.player-card`/`.model-tag`/`.persona`
+   idiom `SITE_CSS` already established; nothing above is removed or overridden. */
+.player-row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+  padding:.5rem 0;border-bottom:1px solid var(--rule)}
+.player-row:last-child{border-bottom:none}
+.player-row-link{display:flex;align-items:baseline;gap:.5rem;flex:1;min-width:0}
+.player-name{font-weight:600}
+.epithet{color:var(--ink-soft);font-style:italic;font-size:.9rem}
+.player-head{display:flex;align-items:center;gap:.9rem;margin-bottom:1rem}
+.player-initials{display:inline-flex;align-items:center;justify-content:center;
+  width:2.6rem;height:2.6rem;border-radius:50%;background:var(--bronze);color:var(--paper);
+  font-family:var(--mono);font-weight:700;flex-shrink:0}
+.player-head-text h1{margin:0;font-size:1.3rem}
+.seated-range{margin:.15rem 0 0;color:var(--ink-soft);font-size:.85rem}
+.player-stats{width:100%;border-collapse:collapse;margin:.2rem 0 .9rem;font-size:.9rem}
+.player-stats td,.player-stats th{padding:.32rem 0;border-bottom:1px solid var(--rule);
+  text-align:left;font-weight:400}
+.player-stats tr:last-child td,.player-stats tr:last-child th{border-bottom:none}
+.player-stats .val{text-align:right;font-family:var(--mono)}
+.persona-text{font-style:italic;color:var(--ink-soft)}
+.learnings{font-family:var(--serif);margin:.8rem 0}
+.player-games-compact,.model-siblings{font-size:.85rem;color:var(--ink-soft);margin:.4rem 0}
+
+/* Amends R104 (§9.9.6, site-tweaks-2 task): `#players-filter`'s sort/dir/lineage-chip
+   controls, injected by `webassets/site-players.js` -- reuses `.facet`/`.chip`/
+   `.filter-status` (GAMES_CSS's shared block above) verbatim for the chip row and the
+   aria-live count, same "controls are injected by the script" discipline. Only a
+   select/toggle-button pairing and the flattened list container are new here. */
+#players-filter:empty{display:none}
+#players-filter select{font:inherit;padding:.25rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;min-height:44px}
+#players-filter select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+#players-filter .dir-toggle{font:inherit;font-size:.78rem;padding:.2rem .55rem;
+  cursor:pointer;background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);
+  border-radius:0;min-width:44px;min-height:44px}
+#players-filter .dir-toggle:hover{color:var(--indigo);border-color:var(--indigo)}
+#players-filter .dir-toggle:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.players-flat{display:flex;flex-direction:column}
+
+.skip-link{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}
+.skip-link:focus{position:static;width:auto;height:auto;display:inline-block;
+  padding:.4rem .8rem;margin-bottom:.6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule)}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* §9.9.1 amendment ("the header must be a bar"): a persistent, `position:sticky`
+   single-row band, full-width, with a hairline bottom border — replaces the earlier
+   stacked column layout this selector used to carry (brand row, then a separate nav
+   block, then a separate search/meta block). `.header-bar` is the one flex ROW inside
+   it; `.wrap`'s own `max-width:46rem` (site_writer.py) is mirrored here so the bar's
+   CONTENT still reads as constrained even though the band itself spans full width.
+   `z-index` keeps it above scrolling content; no animation, so `prefers-reduced-motion`
+   is moot (nothing here moves). */
+.site-header{position:sticky;top:0;z-index:20;width:100%;
+  background:var(--paper);border-bottom:1px solid var(--rule)}
+.header-bar{display:flex;align-items:center;gap:clamp(.6rem,3vw,1.2rem);
+  max-width:46rem;margin:0 auto;box-sizing:border-box;min-height:56px;
+  padding:.5rem clamp(1rem,5vw,2rem)}
+.brand{display:inline-flex;align-items:center;gap:.4rem;color:inherit;
+  text-decoration:none;flex:none}
+.brand:hover .mark{color:var(--indigo)}
+.site-icon{display:inline-flex;width:1.4rem;height:1.4rem;flex:none}
+.site-icon svg{width:100%;height:100%;display:block}
+#theme-toggle{font:inherit;font-size:1rem;line-height:1;cursor:pointer;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);
+  border-radius:50%;width:2.2rem;height:2.2rem;flex:none;
+  min-width:44px;min-height:44px}
+#theme-toggle:hover{color:var(--indigo);border-color:var(--indigo)}
+#theme-toggle:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.nav-menu{border:none;flex:none;display:flex;align-items:center}
+/* The search box is pushed to the right edge of the bar, and the toggle rides along
+   after it — brand and nav-menu stay left-adjacent, exactly the design doc's "Left:
+   icon+wordmark ... Center: nav ... Right: search + toggle" layout, with all four as
+   DIRECT children of `.header-bar` (no extra wrapping div to nest search+toggle inside
+   — `tests/test_site_components.py::test_header_is_a_single_row_bar` parses this). On
+   a narrow (<40rem) viewport the nav-menu collapses to just its `<summary>` button
+   (existing mobile-first `<details>` behaviour, untouched below) and the search input's
+   own `flex:1;min-width:0` (below) lets it narrow to fit the remaining row width
+   instead of wrapping to a second line. */
+.site-search-wrap{margin-left:auto;min-width:0}
+/* R109 amendment (touch-target audit): a `<summary>`/nav-link/chip must offer at least
+   a 44px-square hit area (WCAG 2.5.5-shaped guidance the structural checker itself
+   cannot measure -- it parses static markup, never a rendered box; see
+   tests/test_archive.py::test_touch_targets_meet_44px for the honest, code-level pin
+   this limitation leaves us with instead). `display:flex;align-items:center` lets
+   `min-height` actually apply to elements that would otherwise stay inline. */
+.nav-menu summary{cursor:pointer;list-style:none;color:var(--ink-faint);
+  display:flex;align-items:center;justify-content:center;min-height:44px;min-width:44px}
+.nav-burger{font-size:1.15rem;line-height:1}
+.nav-menu summary::-webkit-details-marker{display:none}
+.nav-menu summary:hover{color:var(--ink-soft)}
+.site-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.4rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}
+.site-nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid transparent;
+  padding-bottom:.15rem;display:inline-flex;align-items:center;min-height:44px}
+.site-nav a:hover{color:var(--indigo)}
+.site-nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--indigo)}
+.site-search{display:flex;gap:.4rem}
+.site-search input[type="search"]{flex:1;min-width:0;padding:.35rem .5rem;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);border-radius:0}
+.site-search input[type="search"]:focus-visible{outline:2px solid var(--indigo);
+  outline-offset:1px}
+.site-search button{font:inherit;font-size:.72rem;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;background:var(--panel);color:var(--ink-soft);
+  border:1px solid var(--rule)}
+/* Nav visibility (R99/§9.9.1, third revision — the honest one): CSS cannot reliably
+   force a closed `<details>` open (current Chromium hides closed content via
+   `content-visibility` on `::details-content`, which no child display value pierces,
+   and the pseudo-element rejects `display:contents`, leaving a zero-width box — both
+   failure modes were found live on the staged preview). So the markup ships
+   `<details class="nav-menu" open>`: the nav is VISIBLE EVERYWHERE by default, with
+   or without JavaScript. site-theme.js (loaded on every page) closes it on narrow
+   viewports as a progressive enhancement — a no-JS phone reader sees an expanded
+   nav, which is accessible degradation, not a defect. Desktop hides the summary
+   button; the nav lays out inline in the bar. */
+@media (min-width:40rem){
+  .nav-menu summary{display:none}
+  .nav-menu > nav{margin-top:0;align-items:center}
+}
+
+[data-theme="dark"]{
+  --paper:#1c1f1a; --paper-2:#242822; --panel:#262b24;
+  --ink:#e8e6df; --ink-soft:#b9c0b4; --ink-faint:#8b948b;
+  --rule:#3c443b;
+  --oxblood:#e3908f; --indigo:#8aa8e8; --bronze:#cdbd8e;
+}
+[data-theme="light"]{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e; --indigo:#23407a; --bronze:#5b5340;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --paper:#1c1f1a; --paper-2:#242822; --panel:#262b24;
+    --ink:#e8e6df; --ink-soft:#b9c0b4; --ink-faint:#8b948b;
+    --rule:#3c443b;
+    --oxblood:#e3908f; --indigo:#8aa8e8; --bronze:#cdbd8e;
+  }
+}
+
+.foot-brand{display:flex;flex-direction:column;gap:.15rem}
+.foot-brand a{color:var(--ink);text-decoration:none;font-weight:700;letter-spacing:.02em}
+.foot-brand a:hover{color:var(--indigo)}
+.foot-brand .copyright{color:var(--ink-faint);font-size:.85em}
+.foot-brand .tagline{color:var(--ink-faint);font-size:.85em;font-style:italic}
+.foot-icons{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.foot-icons a{color:var(--ink-faint);line-height:0}
+.foot-icons a:hover{color:var(--indigo)}
+.foot-icons img{width:1.2rem;height:1.2rem;vertical-align:middle}
+.foot-legal{display:flex;gap:.6rem;flex-wrap:wrap}
+.foot-legal a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.foot-legal a:hover{color:var(--indigo)}
+
+.game-cards{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;
+  gap:1.1rem}
+.game-card{border:1px solid var(--rule);background:var(--panel);padding:1rem 1.2rem}
+.card-head{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.card-head h2{margin:0;font-size:1.15rem;font-weight:600}
+.card-head h2 a{color:inherit;text-decoration:none}
+.card-head h2 a:hover{color:var(--indigo)}
+.score-strip{list-style:none;margin:.6rem 0 0;padding:0;display:flex;gap:1rem;flex-wrap:wrap}
+.score-strip .score-row{display:flex;gap:.35rem;align-items:baseline;font-size:.9rem}
+.score-strip .seat{color:var(--ink-soft)}
+.score-strip .score{font-family:var(--mono)}
+.score-strip .score.pos{color:var(--indigo)}
+.score-strip .score.neg{color:var(--oxblood)}
+.game-card .byline{font-style:italic;margin:.7rem 0 0}
+.game-card .observations{margin-top:.6rem;border-top:1px dashed var(--rule);padding-top:.5rem}
+.game-card .observations summary{font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);cursor:pointer}
+.card-footer{list-style:none;margin:.7rem 0 0;padding:.6rem 0 0;border-top:1px solid var(--rule);
+  display:flex;gap:1rem;flex-wrap:wrap;font-size:.85rem}
+.card-footer a{color:inherit}
+#games-filter:empty{display:none}
+
+/* Amends R102 (§9.9.4, site-tweaks-2 task): server-side pagination -- "Newer"/"Older"
+   plus numbered page links, 44px touch targets (R109's own floor, `.site-nav a`'s own
+   pattern) on every real link; the disabled boundary case is a plain `<span>`, never a
+   disabled-looking-but-clickable `<a>`. */
+.pagination{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:1.4rem 0 0;
+  padding-top:.8rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase}
+.pagination a{display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;min-width:44px;padding:0 .5rem;
+  color:var(--ink-soft);text-decoration:none;border:1px solid var(--rule)}
+.pagination a:hover{color:var(--indigo);border-color:var(--indigo)}
+.pagination span{display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;min-width:44px;padding:0 .5rem}
+.pagination [aria-current="page"]{color:var(--ink);font-weight:700;border:1px solid var(--rule)}
+.pagination .pagination-disabled{color:var(--ink-faint);opacity:.5}
+.pagination-pages{display:flex;gap:.3rem;flex-wrap:wrap}
+.filter-page-note{font-size:.82rem;color:var(--ink-soft);font-style:italic;margin:.5rem 0 0}
+
+.site-search-wrap{position:relative}
+.site-search-results{position:absolute;top:100%;left:0;right:0;z-index:20;
+  background:var(--panel);border:1px solid var(--rule);max-height:60vh;overflow:auto;
+  padding:.3rem .8rem;margin:0}
+.site-search-results:empty{display:none}
+.site-search-results .ss-none{color:var(--ink-faint);font-size:.85rem;padding:.4rem 0;
+  list-style:none}
+.site-search-results a[role="option"].active,
+.site-search-results a[role="option"]:hover{background:var(--paper-2)}
+
+.engine-section{margin-top:2.2rem}
+.engine-section:first-of-type{margin-top:0}
+.validation-callout{border:1px solid var(--rule);background:var(--panel);
+  padding:.9rem 1.1rem;margin:1rem 0}
+.validation-callout h3{margin:0 0 .4rem;font-size:.95rem}
+.validation-callout .note{color:var(--ink-soft);font-size:.85rem;margin-top:.5rem}
+.paraphrase-note{color:var(--ink-soft);font-size:.85rem;margin:.4rem 0 1rem}
+.rule-list{list-style:none;margin:1rem 0 0;padding:0}
+.rule-row{border-bottom:1px solid var(--rule);padding:.6rem 0;display:flex;gap:.7rem}
+.rule-row:last-child{border-bottom:none}
+.rule-row .rule-num{font-family:var(--mono);font-size:.8rem;color:var(--ink-faint);
+  flex:none;width:3.4rem}
+.rule-row .rule-tag{display:block;font-family:var(--mono);font-size:.6rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+.rule-row .rule-text{flex:1}
+
+.subnav{display:flex;flex-wrap:wrap;gap:.5rem 1.3rem;margin:0 0 1.5rem;
+  padding-bottom:.7rem;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase}
+.subnav a{color:var(--ink-faint);text-decoration:none;display:inline-flex;
+  align-items:center;min-height:44px;min-width:44px}
+.subnav a:hover{color:var(--indigo)}
+
+.champ-list,.game-list{list-style:none;margin:0;padding:0}
+.champ-row,.game-row{border-bottom:1px solid var(--rule);padding:.9rem 0}
+.champ-row:last-child,.game-row:last-child{border-bottom:none}
+.champ-row h3,.game-row h3{margin:0 0 .3rem;font-size:1.15rem}
+.champ-row .findings{color:var(--oxblood);font-size:.85rem;margin-top:.4rem}
+.stats-table{width:100%;border-collapse:collapse;margin-top:1rem}
+.stats-table td,.stats-table th{padding:.4rem 0;border-bottom:1px solid var(--rule);
+  text-align:left;font-size:.92rem}
+.hero-note{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint)}
+
+/* Site-tweaks task (amends R95/§9.8.14): the landing's "what is this" intro block --
+   the Bluesky bio epigraph (a serif, italic pull-quote with a bronze rule, the same
+   accent `.rule.entrenched .num` already uses) followed by a plain bulleted gloss. */
+.intro{margin-bottom:1.6rem}
+.intro .epigraph{font-style:italic;color:var(--ink-soft);font-size:1.05rem;
+  border-left:3px solid var(--bronze);padding:.1rem 0 .1rem 1rem;margin:0 0 1rem}
+.intro-list{margin:.4rem 0 1.4rem;padding-left:1.3rem}
+.intro-list li{margin-bottom:.35rem}
+
+/* ── Batch 10.4 (Q44): interactive layer, injected by webassets/stats.js + search.js ──
+   No control here renders without script — see each .js file's own header comment. */
+.stats-table th.sortable{cursor:pointer}
+.stats-table th.sortable:hover{color:var(--indigo)}
+.stats-table th.sortable:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.stats-table th.sort-asc::after{content:" \25B2"}
+.stats-table th.sort-desc::after{content:" \25BC"}
+#alignment-table td.hl,#alignment-table th.hl{background:rgba(35,64,122,.14)}
+.search-results{list-style:none;margin:1rem 0 0;padding:0}
+.search-results a:hover .tag{color:var(--indigo);border-color:var(--indigo)}
+/* results are grouped by game: one .game-group block per matching game, its matching
+   rules/proposals/champions listed beneath (webassets/search.js). */
+.search-results .game-group{border-bottom:1px solid var(--rule);padding:.8rem 0}
+.search-results .game-group:last-child{border-bottom:none}
+.search-results .game-head{color:inherit;text-decoration:none;display:flex;gap:.5rem;
+  align-items:baseline;flex-wrap:wrap;font-weight:600;font-size:1.05rem}
+.search-results .game-head:hover .game-label{color:var(--indigo)}
+.search-results .game-head .tally{font-weight:400}
+.search-results .game-hits{list-style:none;margin:.4rem 0 0;padding:0 0 0 .9rem;
+  border-left:2px solid var(--rule)}
+.search-results .game-hits li{padding:.28rem 0}
+.search-results .game-hits a{color:inherit;text-decoration:none;display:flex;gap:.5rem;
+  align-items:baseline;flex-wrap:wrap;font-size:.9rem}
+.search-results .hit-id{font-family:var(--mono);font-size:.7rem;color:var(--ink-faint);
+  white-space:nowrap}
+.search-results .hit-text{color:var(--ink-soft)}
+/* filter chips — injected by search.js, so a no-JS reader never sees a dead chip. */
+.facets{display:flex;flex-direction:column;gap:.5rem;margin:0 0 .3rem}
+.facet{display:flex;gap:.4rem;align-items:baseline;flex-wrap:wrap}
+.facet-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);min-width:5rem}
+.facet input[type="search"]{font:inherit;padding:.25rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;min-width:12rem}
+.facet input[type="search"]:focus-visible{outline:2px solid var(--indigo);
+  outline-offset:1px}
+.chip{font:inherit;font-size:.78rem;padding:.2rem .55rem;cursor:pointer;
+  background:var(--panel);color:var(--ink-soft);border:1px solid var(--rule);border-radius:0;
+  min-width:44px;min-height:44px}
+.chip:hover{color:var(--indigo);border-color:var(--indigo)}
+.chip:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.chip.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+/* Amends R102/R109 (§9.9.4/§9.9.12): the /games/ filter's aria-live result-count region
+   -- visually-quiet (small, muted), never hidden -- webassets/site-filter.js injects it
+   and keeps its text current on every filter/sort change. */
+.filter-status{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;
+  color:var(--ink-faint);margin:.3rem 0 0}
+
+/* Site-tweaks task (amends R102/§9.9.4, §9.9.10): the "memoirs" disclosure chip, on a
+   game card header and (`inject_memoir_chip`) a game's own masthead -- the SAME `.tag`
+   convention as the era/judge chips, distinguished only by an accent color (civic green,
+   already used elsewhere for player-made law) so it reads as a distinct kind of fact,
+   never a status. */
+.tag.memoir-chip{color:var(--civic);border-color:var(--civic)}
+
+/* R109 (a11y pass): several eyebrow-styled section labels became real heading (h1/h2)
+   elements (site_writer's own eyebrow rule, above via SITE_CSS, sets no font-weight at
+   all -- a div inherits normal/400, but a bare heading element's UA stylesheet defaults
+   to bold/700). This override keeps every eyebrow visually identical regardless of
+   which tag now carries the class. */
+h1.eyebrow,h2.eyebrow{font-weight:400}
+
+/* Site-tweaks task (amends R99/§9.9.1): section eyebrows (h1 index-page labels like
+   "Cross-game statistics", h2 sub-sections like "Hall of fame"/"Judges"/"Vote alignment")
+   rendered at the same .64rem size as every OTHER small mono label on the site (chips,
+   the footer, the subnav) and read too small next to the 1rem+ body copy beneath them.
+   Scaled up while keeping the mono/uppercase/hairline-rule identity intact, with a
+   darker ink for stronger contrast at the larger size -- h1 and h2 share one rule since
+   both already share the identical .eyebrow visual language; a size mismatch between the
+   two would read as a bug, not a design choice. */
+h1.eyebrow,h2.eyebrow{font-size:1.4rem;letter-spacing:.08em;color:var(--ink-soft)}
+
+/* Site-tweaks task (amends the stats page, the R68/Batch-10.4 vote-alignment matrix):
+   the alignment table's top-row player-name headers ran into each other at five-plus
+   seats. `.rot-header th[data-seat]` (the per-seat column headers only -- the blank
+   corner cell keeps no `data-seat` and stays upright, it carries no visible text anyway)
+   rotate to vertical, giving each name its own column width instead of forcing every
+   column as wide as the longest name. `scope="col"` is untouched (R109's a11y pin). */
+.stats-table thead tr.rot-header th{height:7rem;vertical-align:bottom;padding-bottom:.5rem}
+.stats-table thead tr.rot-header th[data-seat]{writing-mode:vertical-rl;
+  transform:rotate(180deg);text-align:left;white-space:nowrap}
+</style>
+<script>(function(){try{var d=document.documentElement,t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}d.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GBSLVXYDQL"></script>
+<script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-GBSLVXYDQL');</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead site-header">
+  <div class="header-bar">
+    <a class="brand" href="../../../index.html">
+      <span class="site-icon" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="nomaic-icon-title">
+<title id="nomaic-icon-title">nomAIc — an open scroll</title>
+<style>
+.parchment{fill:#f3e9d2}
+.roll{fill:#e7d8b5;stroke:#8a6d3b;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.edge{fill:none;stroke:#8a6d3b;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ink{fill:#3d2f1a}
+@media (prefers-color-scheme: dark){
+  .parchment{fill:#3a3226}
+  .roll{fill:#4a4030;stroke:#c9b98a}
+  .edge{stroke:#c9b98a}
+  .ink{fill:#e8dfc5}
+}
+</style>
+<path class="parchment" d="M16,16 L48,16 C44,26 44,38 48,48 L16,48 C20,38 20,26 16,16 Z"/>
+<path class="edge" d="M16,16 C20,26 20,38 16,48"/>
+<path class="edge" d="M48,16 C44,26 44,38 48,48"/>
+<rect class="roll" x="10" y="8" width="44" height="8" rx="4"/>
+<circle class="roll" cx="12" cy="12" r="3"/>
+<circle class="roll" cx="52" cy="12" r="3"/>
+<path class="edge" d="M52,9 C57,6 59,7 60,4"/>
+<rect class="roll" x="10" y="48" width="44" height="8" rx="4"/>
+<circle class="roll" cx="12" cy="52" r="3"/>
+<circle class="roll" cx="52" cy="52" r="3"/>
+<path class="edge" d="M12,55 C7,58 5,57 4,60"/>
+<text x="32" y="39" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="22" class="ink">N</text>
+</svg>
+</span>
+      <span class="mark">§</span> NomAIc
+    </a>
+    <details class="nav-menu" open>
+      <summary aria-label="Site navigation menu"><span aria-hidden="true" class="nav-burger">&#9776;</span></summary>
+      <nav class="site-nav" aria-label="Primary"><a href="../../../games/index.html" aria-current="page">Games</a><a href="../../../players/index.html">Players</a><a href="../../../engine/index.html">Engine</a><a href="../../../stats/index.html">Stats</a><a href="../../../about/index.html">About</a></nav>
+    </details>
+  <div class="site-search-wrap">
+  <form action="../../../games/" method="get" role="search" class="site-search">
+    <label for="site-search-q" class="visually-hidden">Search the archive</label>
+    <input type="search" name="q" id="site-search-q" placeholder="Search the archive" autocomplete="off">
+    <button type="submit">Search</button>
+  </form>
+  </div>
+    <button id="theme-toggle" type="button" aria-label="Switch theme">&#9680;</button>
+  </div>
+</header>
+<div class="wrap">
+<main id="main">
+<h1 class="eyebrow">Every game</h1><p class="lede">Page 3 of 5.</p><div id="games-filter" data-page="3" data-pages="5"></div><div class="game-cards"><article class="game-card" id="game-047" data-outcome="turn_limit" data-turns="200" data-adoptions="1" data-score-max="0" data-era="development" data-lineage="hermes-4-14b"><header class="card-head"><h2><a href="047/site/index.html">Game 47</a></h2><span class="tag">turn limit reached</span><span class="tag">200 turns</span><span class="tag">1 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Heraclitus</span> <span class="score neg">-660</span></li><li class="score-row"><span class="seat">Parmenides</span> <span class="score neg">-650</span></li><li class="score-row"><span class="seat">Democritus</span> <span class="score neg">-670</span></li><li class="score-row"><span class="seat">Protagoras</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Gorgias</span> <span class="score">0</span></li></ul><p class="byline">Two hundred turns, one rule change, and a floor near -670.</p><details class="observations"><summary>Observations</summary><p>The collapse table: a single adopted rule change in two hundred turns, three seats driven to -650 or worse, and two more sitting at a flat zero for want of anything to do. This is the floor the archive&#x27;s size comparisons use as their worst case — a legislature that essentially never got going.</p></details><ul class="card-footer"><li><a href="047/site/index.html">Full transcript</a></li><li><a href="047/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: hermes-4-14b</li></ul></article><article class="game-card" id="game-046" data-outcome="turn_limit" data-turns="200" data-adoptions="148" data-score-max="881" data-era="development" data-lineage="mistral-nemo-12b"><header class="card-head"><h2><a href="046/site/index.html">Game 46</a></h2><span class="tag">turn limit reached</span><span class="tag">200 turns</span><span class="tag">148 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Montaigne</span> <span class="score pos">+10</span></li><li class="score-row"><span class="seat">Voltaire</span> <span class="score pos">+881</span></li><li class="score-row"><span class="seat">Diderot</span> <span class="score pos">+105</span></li><li class="score-row"><span class="seat">Condorcet</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Sartre</span> <span class="score">0</span></li></ul><p class="byline">The most prolific legislature on record produced the single largest fortune and two wins nobody claimed.</p><details class="observations"><summary>Observations</summary><p>A hundred and forty-eight rule changes over two hundred turns — double the previous record — but the economy it built was a runway for one seat, not a commonwealth: Voltaire closed at +881, the highest single score by a factor of six, farming a dissent bonus while two tablemates sat at zero. Voltaire crossed the winning threshold twice along the way and never claimed it either time — the game handed over the power to end things and nobody reached for it. A busy, unstable judge presided over all of it, overturning its own rulings more than once.</p></details><ul class="card-footer"><li><a href="046/site/index.html">Full transcript</a></li><li><a href="046/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: mistral-nemo-12b</li></ul></article><article class="game-card" id="game-045" data-outcome="halted" data-turns="13" data-adoptions="10" data-score-max="0" data-era="development" data-lineage="granite-4.0-h-tiny"><header class="card-head"><h2><a href="045/site/index.html">Game 45</a></h2><span class="tag">halted — an adopted rule cannot be enforced</span><span class="tag">13 turns</span><span class="tag">10 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Turing</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Shannon</span> <span class="score">0</span></li><li class="score-row"><span class="seat">vonNeumann</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Babbage</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Lovelace</span> <span class="score">0</span></li></ul><p class="byline">Ten turns spent re-legislating the same winning number, while two seated players never got a turn at all.</p><details class="observations"><summary>Observations</summary><p>Turing opened by enacting &#x27;first to 200 wins&#x27;; every turn after that alternated between just two seats, Shannon and vonNeumann, who spent the next dozen turns re-proposing the identical rule under a new number — twice more at 200, then twice again after a bump to 400 and 500 — a duplicate-rule loop with no coherent progression. Babbage and Lovelace, the table&#x27;s other two seats, never once got a turn before the presiding judge produced an impossible voting threshold and the engine halted. Distinct from a healthy table hitting a real ceiling — this is a table that never found its footing, or its own turn order.</p></details><ul class="card-footer"><li><a href="045/site/index.html">Full transcript</a></li><li><a href="045/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: granite-4.0-h-tiny</li></ul></article><article class="game-card" id="game-044" data-outcome="turn_limit" data-turns="50" data-adoptions="13" data-score-max="150" data-era="development" data-lineage="glm-4-9b"><header class="card-head"><h2><a href="044/site/index.html">Game 44</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">13 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Xunzi</span> <span class="score neg">-30</span></li><li class="score-row"><span class="seat">Mozi</span> <span class="score pos">+20</span></li><li class="score-row"><span class="seat">Zhuangzi</span> <span class="score pos">+40</span></li><li class="score-row"><span class="seat">Mencius</span> <span class="score pos">+150</span></li><li class="score-row"><span class="seat">HanFeizi</span> <span class="score pos">+60</span></li></ul><p class="byline">The single highest score the archive has recorded, four seats in the black, and a win nobody claimed.</p><details class="observations"><summary>Observations</summary><p>Mencius closed at +150 — a new high-water mark — on a table where four of five seats finished positive and only Xunzi, at -30, fell short. Thirteen rule changes were enough to build a genuinely thriving economy, though the presiding judge had a rough outing behind the scenes. Buried in the record is a missed win: Mencius crossed a victory threshold that went unclaimed, one of several the archive&#x27;s auditor has since caught after the fact.</p></details><ul class="card-footer"><li><a href="044/site/index.html">Full transcript</a></li><li><a href="044/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: glm-4-9b</li></ul></article><article class="game-card" id="game-043" data-outcome="turn_limit" data-turns="50" data-adoptions="33" data-score-max="-12" data-era="development" data-lineage="gemma-4-26b-a4b"><header class="card-head"><h2><a href="043/site/index.html">Game 43</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">33 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Leibniz</span> <span class="score neg">-12</span></li><li class="score-row"><span class="seat">Descartes</span> <span class="score neg">-17</span></li><li class="score-row"><span class="seat">Berkeley</span> <span class="score neg">-51</span></li><li class="score-row"><span class="seat">Pascal</span> <span class="score neg">-19</span></li><li class="score-row"><span class="seat">Malebranche</span> <span class="score neg">-46</span></li></ul><p class="byline">The largest seat-group on its comparison wrote the most law and delivered the worst economy.</p><details class="observations"><summary>Observations</summary><p>Thirty-three rule changes — the most this size class has produced — and not one seat finished above zero, the range running from -12 down to -51. Leibniz came closest to the surface at -12; Berkeley sank furthest, to -51. A table this legislatively active with an economy this uniformly poor is its own small lesson: adoption counts and economic health are not the same axis.</p></details><ul class="card-footer"><li><a href="043/site/index.html">Full transcript</a></li><li><a href="043/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: gemma-4-26b-a4b</li></ul></article><article class="game-card" id="game-042" data-outcome="turn_limit" data-turns="50" data-adoptions="25" data-score-max="5" data-era="development" data-lineage="gemma-4-e4b"><header class="card-head"><h2><a href="042/site/index.html">Game 42</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">25 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Averroes</span> <span class="score neg">-20</span></li><li class="score-row"><span class="seat">Maimonides</span> <span class="score neg">-26</span></li><li class="score-row"><span class="seat">Avicenna</span> <span class="score neg">-30</span></li><li class="score-row"><span class="seat">AlFarabi</span> <span class="score neg">-100</span></li><li class="score-row"><span class="seat">AlGhazali</span> <span class="score pos">+5</span></li></ul><p class="byline">Prolific lawmaking, punishing economy — the small end of a size comparison that does not reward volume.</p><details class="observations"><summary>Observations</summary><p>Twenty-five rule changes over fifty turns — more than a larger sibling table on the same comparison managed — but only one seat, AlGhazali at +5, ever crossed into positive territory. AlFarabi bore the worst of it, closing at -100 while the rest of the table drifted between -20 and -30. Busy legislating and poor governing turned out not to be opposites here; they came from the same table.</p></details><ul class="card-footer"><li><a href="042/site/index.html">Full transcript</a></li><li><a href="042/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: gemma-4-e4b</li></ul></article><article class="game-card" id="game-041" data-outcome="halted" data-turns="32" data-adoptions="23" data-score-max="162" data-era="development" data-lineage="phi-4"><header class="card-head"><h2><a href="041/site/index.html">Game 41</a></h2><span class="tag">halted — an adopted rule cannot be enforced</span><span class="tag">32 turns</span><span class="tag">23 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Frege</span> <span class="score pos">+162</span></li><li class="score-row"><span class="seat">Russell</span> <span class="score pos">+110</span></li><li class="score-row"><span class="seat">Quine</span> <span class="score pos">+20</span></li><li class="score-row"><span class="seat">Carnap</span> <span class="score pos">+20</span></li><li class="score-row"><span class="seat">Wittgenstein</span> <span class="score pos">+10</span></li></ul><p class="byline">A healthy table hit a hard ceiling nobody had drawn correctly — and the fix was to draw it right.</p><details class="observations"><summary>Observations</summary><p>Twenty-three rule changes in thirty-two turns, Frege leading at 162 and Russell at 110 — by any measure a thriving table. Then it adopted a rule granting one seat a vote weight of four, and the engine refused rather than pretend: the anti-concentration cap sat flat at three regardless of table size, one short of what a five-seat table can safely allow. The refusal was honest and the number was wrong — the cap now scales with the seated roster instead of sitting fixed.</p></details><ul class="card-footer"><li><a href="041/site/index.html">Full transcript</a></li><li><a href="041/site/RULESET.md">Final ruleset</a></li><li><a href="../engine/#r90">Defects surfaced here</a></li><li class="judge-chip">Judge: phi-4</li></ul></article><article class="game-card" id="game-040" data-outcome="turn_limit" data-turns="50" data-adoptions="49" data-score-max="63" data-era="development" data-lineage="phi-4"><header class="card-head"><h2><a href="040/site/index.html">Game 40</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">49 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Frege</span> <span class="score pos">+63</span></li><li class="score-row"><span class="seat">Russell</span> <span class="score pos">+36</span></li><li class="score-row"><span class="seat">Quine</span> <span class="score neg">-1</span></li><li class="score-row"><span class="seat">Carnap</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Wittgenstein</span> <span class="score">0</span></li></ul><p class="byline">Forty-nine adoptions — nearly a rule a turn — and nobody fell far.</p><details class="observations"><summary>Observations</summary><p>The most prolific fifty-turn table in this slice, with a spotless judge and the tightest score spread on record: every seat stayed within a band of -1 to +63. Frege led at 63, Russell close behind at 36. Proof that legislative volume and a healthy, narrow economy aren&#x27;t automatically in tension.</p></details><ul class="card-footer"><li><a href="040/site/index.html">Full transcript</a></li><li><a href="040/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: phi-4</li></ul></article><article class="game-card" id="game-039" data-outcome="turn_limit" data-turns="50" data-adoptions="29" data-score-max="127" data-era="development" data-lineage="mistral-nemo-12b"><header class="card-head"><h2><a href="039/site/index.html">Game 39</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">29 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Montaigne</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Voltaire</span> <span class="score pos">+127</span></li><li class="score-row"><span class="seat">Diderot</span> <span class="score neg">-140</span></li><li class="score-row"><span class="seat">Condorcet</span> <span class="score neg">-10</span></li><li class="score-row"><span class="seat">Sartre</span> <span class="score">0</span></li></ul><p class="byline">Voltaire cleared the win line at turn 32 — and nobody at the table said a word.</p><details class="observations"><summary>Observations</summary><p>Twenty-nine adoptions, a clean judge throughout, and a wildly unequal finish: Voltaire closed at +127, the highest single score in this table&#x27;s history to that point, while Diderot fell to -140. Voltaire actually crossed the 120-point win threshold at turn 32 and kept playing for another eighteen turns before the game ended on the clock — a reachable win that neither the GM nor any player ever claimed, the gap that later gave players the power to declare a win the judge misses.</p></details><ul class="card-footer"><li><a href="039/site/index.html">Full transcript</a></li><li><a href="039/site/RULESET.md">Final ruleset</a></li><li><a href="../engine/#r85-r87">Defects surfaced here</a></li><li class="judge-chip">Judge: mistral-nemo-12b</li></ul></article><article class="game-card" id="game-038" data-outcome="turn_limit" data-turns="50" data-adoptions="1" data-score-max="0" data-era="development" data-lineage="hermes-4-14b"><header class="card-head"><h2><a href="038/site/index.html">Game 38</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">1 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Heraclitus</span> <span class="score neg">-140</span></li><li class="score-row"><span class="seat">Parmenides</span> <span class="score neg">-180</span></li><li class="score-row"><span class="seat">Democritus</span> <span class="score neg">-170</span></li><li class="score-row"><span class="seat">Protagoras</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Gorgias</span> <span class="score neg">-10</span></li></ul><p class="byline">One adoption in fifty turns — the weakest showing at any size in this run.</p><details class="observations"><summary>Observations</summary><p>A different lineage entirely, and the outcome was the most brittle in the slice: a single rule change survived fifty turns, four of five seats finished negative and the fifth flat at zero, and the game&#x27;s own judge repeatedly lost track of which voting rule was actually in force. Whether the seats or the judge failed first is genuinely hard to untangle from the record — a table this unstable makes its own case for testing the two roles apart.</p></details><ul class="card-footer"><li><a href="038/site/index.html">Full transcript</a></li><li><a href="038/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: hermes-4-14b</li></ul></article><article class="game-card" id="game-037" data-outcome="turn_limit" data-turns="200" data-adoptions="71" data-score-max="47" data-era="development" data-lineage="gemma-4-12b"><header class="card-head"><h2><a href="037/site/index.html">Game 37</a></h2><span class="tag">turn limit reached</span><span class="tag">200 turns</span><span class="tag">71 adoptions</span><span class="tag memoir-chip">memoirs</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Hume</span> <span class="score pos">+47</span></li><li class="score-row"><span class="seat">Mill</span> <span class="score neg">-8</span></li><li class="score-row"><span class="seat">Rawls</span> <span class="score pos">+18</span></li><li class="score-row"><span class="seat">deBeauvoir</span> <span class="score pos">+24</span></li><li class="score-row"><span class="seat">IbnKhaldun</span> <span class="score neg">-52</span></li></ul><p class="byline">Two hundred turns, seventy-one adoptions, and a standing body to police its own statute.</p><details class="observations"><summary>Observations</summary><p>This table&#x27;s longest run beat every other two-hundred-turn game in the slice on both legislative output and economic health — three of five seats finished positive, one reaching +47. It hit the mutable-rule cap and answered by adopting a standing &#x27;Bureau of Legislative Review&#x27; to prune contradictions as the ruleset kept growing — the first meta-legislative institution any table in this archive had built for itself.</p></details><ul class="card-footer"><li><a href="037/site/index.html">Full transcript</a></li><li><a href="037/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: gemma-4-12b</li></ul></article><article class="game-card" id="game-036" data-outcome="turn_limit" data-turns="50" data-adoptions="38" data-score-max="28" data-era="development" data-lineage="gemma-4-12b"><header class="card-head"><h2><a href="036/site/index.html">Game 36</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">38 adoptions</span><span class="tag memoir-chip">memoirs</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Hume</span> <span class="score pos">+20</span></li><li class="score-row"><span class="seat">Mill</span> <span class="score neg">-30</span></li><li class="score-row"><span class="seat">Rawls</span> <span class="score pos">+28</span></li><li class="score-row"><span class="seat">deBeauvoir</span> <span class="score pos">+15</span></li><li class="score-row"><span class="seat">IbnKhaldun</span> <span class="score pos">+22</span></li></ul><p class="byline">The same table, remembering itself — and legislating twice as fast.</p><details class="observations"><summary>Observations</summary><p>Fifty turns with the benefit of a remembered predecessor, and the difference showed immediately: adoptions nearly doubled to thirty-eight, four of five seats finished positive, and the audit came back completely clean. The prior game&#x27;s Guild concept wasn&#x27;t reinvented here — it was picked up and built on from turn one.</p></details><ul class="card-footer"><li><a href="036/site/index.html">Full transcript</a></li><li><a href="036/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: gemma-4-12b</li></ul></article><article class="game-card" id="game-035" data-outcome="turn_limit" data-turns="50" data-adoptions="20" data-score-max="17" data-era="development" data-lineage="gemma-4-12b"><header class="card-head"><h2><a href="035/site/index.html">Game 35</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">20 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Hume</span> <span class="score pos">+15</span></li><li class="score-row"><span class="seat">Mill</span> <span class="score pos">+17</span></li><li class="score-row"><span class="seat">Rawls</span> <span class="score neg">-3</span></li><li class="score-row"><span class="seat">deBeauvoir</span> <span class="score neg">-32</span></li><li class="score-row"><span class="seat">IbnKhaldun</span> <span class="score neg">-35</span></li></ul><p class="byline">A different lineage&#x27;s debut — Guilds, redistribution, and two seats in the black.</p><details class="observations"><summary>Observations</summary><p>Fifty turns, twenty adoptions, and this table reached for machinery none of its predecessors in this slice had touched: player Guilds that pool points and vote as a bloc, and a rule redirecting rewards to the lowest-scoring player. Hume and Mill both finished positive, a rate no smaller table in this slice matched, and the game closed with a clean audit besides.</p></details><ul class="card-footer"><li><a href="035/site/index.html">Full transcript</a></li><li><a href="035/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: gemma-4-12b</li></ul></article><article class="game-card" id="game-034" data-outcome="turn_limit" data-turns="50" data-adoptions="1" data-score-max="0" data-era="development" data-lineage="qwen"><header class="card-head"><h2><a href="034/site/index.html">Game 34</a></h2><span class="tag">turn limit reached</span><span class="tag">50 turns</span><span class="tag">1 adoptions</span><span class="tag memoir-chip">memoirs</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Hobbes</span> <span class="score neg">-20</span></li><li class="score-row"><span class="seat">Locke</span> <span class="score neg">-30</span></li><li class="score-row"><span class="seat">Rousseau</span> <span class="score neg">-40</span></li><li class="score-row"><span class="seat">Kant</span> <span class="score neg">-20</span></li><li class="score-row"><span class="seat">Wollstonecraft</span> <span class="score">0</span></li></ul><p class="byline">Fifty turns, one adoption, and one seat that simply never lost.</p><details class="observations"><summary>Observations</summary><p>The quietest of this table&#x27;s five-seat games: only a single rule change in fifty turns, and while four seats bled points, Wollstonecraft alone held the line at exactly zero. Not a win, but the only seat in the game that never went backward.</p></details><ul class="card-footer"><li><a href="034/site/index.html">Full transcript</a></li><li><a href="034/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: qwen</li></ul></article><article class="game-card" id="game-033" data-outcome="turn_limit" data-turns="200" data-adoptions="60" data-score-max="11" data-era="development" data-lineage="qwen3.5-35b-a3b"><header class="card-head"><h2><a href="033/site/index.html">Game 33</a></h2><span class="tag">turn limit reached</span><span class="tag">200 turns</span><span class="tag">60 adoptions</span><span class="tag memoir-chip">memoirs</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Aquinas</span> <span class="score neg">-28</span></li><li class="score-row"><span class="seat">Hypatia</span> <span class="score neg">-10</span></li><li class="score-row"><span class="seat">Confucius</span> <span class="score neg">-42</span></li><li class="score-row"><span class="seat">Spinoza</span> <span class="score neg">-24</span></li><li class="score-row"><span class="seat">Arendt</span> <span class="score pos">+11</span></li></ul><p class="byline">Arendt broke thirteen straight games of nobody finishing positive.</p><details class="observations"><summary>Observations</summary><p>Sixty adoptions over two hundred turns, and Arendt closed at +11 — the first positive finish this table&#x27;s lineage had produced across thirteen prior games. A later audit pass turned up something the table itself never noticed: Arendt had actually crossed a one-point win threshold back at turn 73, and nobody, model or player, ever claimed it.</p></details><ul class="card-footer"><li><a href="033/site/index.html">Full transcript</a></li><li><a href="033/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: qwen3.5-35b-a3b</li></ul></article><article class="game-card" id="game-032" data-outcome="turn_limit" data-turns="200" data-adoptions="46" data-score-max="-83" data-era="development" data-lineage="qwen3.5-35b-a3b"><header class="card-head"><h2><a href="032/site/index.html">Game 32</a></h2><span class="tag">turn limit reached</span><span class="tag">200 turns</span><span class="tag">46 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Aquinas</span> <span class="score neg">-178</span></li><li class="score-row"><span class="seat">Hypatia</span> <span class="score neg">-83</span></li><li class="score-row"><span class="seat">Confucius</span> <span class="score neg">-107</span></li><li class="score-row"><span class="seat">Spinoza</span> <span class="score neg">-148</span></li><li class="score-row"><span class="seat">Arendt</span> <span class="score neg">-105</span></li></ul><p class="byline">Forty-six adoptions, a welfare state, and a win threshold amended down to nothing.</p><details class="observations"><summary>Observations</summary><p>Two hundred turns produced this table&#x27;s most prolific run to date, and by the end it had diagnosed its own death spiral, repealed the rule that caused it, and tried amending the win score itself — 100, then 12, then 1 — in a bid to manufacture a winner before time ran out. Nobody reached it; every seat finished negative, Hypatia best at -83. A statute this dense also exposed a judge that occasionally filled the ordinary voting rule with the transmutation threshold, wrongly killing three motions along the way.</p></details><ul class="card-footer"><li><a href="032/site/index.html">Full transcript</a></li><li><a href="032/site/RULESET.md">Final ruleset</a></li><li><a href="../engine/#r79">Defects surfaced here</a></li><li class="judge-chip">Judge: qwen3.5-35b-a3b</li></ul></article><article class="game-card" id="game-031" data-outcome="halted" data-turns="1" data-adoptions="0" data-score-max="0" data-era="development" data-lineage="qwen3.5-35b-a3b"><header class="card-head"><h2><a href="031/site/index.html">Game 31</a></h2><span class="tag">halted — an adopted rule cannot be enforced</span><span class="tag">1 turns</span><span class="tag">0 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Aquinas</span> <span class="score neg">-10</span></li><li class="score-row"><span class="seat">Hypatia</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Confucius</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Spinoza</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Arendt</span> <span class="score">0</span></li></ul><p class="byline">One proposal, one unanimous rejection, one honest refusal to continue.</p><details class="observations"><summary>Observations</summary><p>This table&#x27;s first outing ended after a single turn: the GM&#x27;s own procedural reading cited a voting rule with no authority behind it, and rather than fabricate a threshold the engine declared itself unable to proceed and halted. Aquinas took the only score change, a -10 penalty for the defeated proposal.</p></details><ul class="card-footer"><li><a href="031/site/index.html">Full transcript</a></li><li><a href="031/site/RULESET.md">Final ruleset</a></li><li><a href="../engine/#r80">Defects surfaced here</a></li><li class="judge-chip">Judge: qwen3.5-35b-a3b</li></ul></article><article class="game-card" id="game-030" data-outcome="turn_limit" data-turns="200" data-adoptions="5" data-score-max="-30" data-era="development" data-lineage="qwen"><header class="card-head"><h2><a href="030/site/index.html">Game 30</a></h2><span class="tag">turn limit reached</span><span class="tag">200 turns</span><span class="tag">5 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Hobbes</span> <span class="score neg">-95</span></li><li class="score-row"><span class="seat">Locke</span> <span class="score neg">-314</span></li><li class="score-row"><span class="seat">Rousseau</span> <span class="score neg">-416</span></li><li class="score-row"><span class="seat">Kant</span> <span class="score neg">-40</span></li><li class="score-row"><span class="seat">Wollstonecraft</span> <span class="score neg">-30</span></li></ul><p class="byline">Two hundred turns, five rule changes, and a floor of -416.</p><details class="observations"><summary>Observations</summary><p>The longest run this table played, and the bleakest: only five adoptions in two hundred turns, and Rousseau closed at -416 in a straight death spiral of accumulating penalties nobody legislated their way out of. The baseline this project&#x27;s later, larger-model runs would be measured against — and beaten.</p></details><ul class="card-footer"><li><a href="030/site/index.html">Full transcript</a></li><li><a href="030/site/RULESET.md">Final ruleset</a></li><li class="judge-chip">Judge: qwen</li></ul></article><article class="game-card" id="game-029" data-outcome="halted" data-turns="1" data-adoptions="1" data-score-max="5" data-era="development" data-lineage="qwen"><header class="card-head"><h2><a href="029/site/index.html">Game 29</a></h2><span class="tag">halted — an adopted rule cannot be enforced</span><span class="tag">1 turns</span><span class="tag">1 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Hobbes</span> <span class="score pos">+5</span></li><li class="score-row"><span class="seat">Locke</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Rousseau</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Kant</span> <span class="score">0</span></li><li class="score-row"><span class="seat">Wollstonecraft</span> <span class="score">0</span></li></ul><p class="byline">The engine asked the same broken question twice and got the same broken answer twice.</p><details class="observations"><summary>Observations</summary><p>One rule adopted, one turn played, then the GM&#x27;s second attempt at the next ruling came back identical to its first refused attempt — a temperature-locked judge repeating itself when handed no correction. The engine halted honestly rather than loop forever, and that exact failure is why a refused reading now carries feedback into its retry. Hobbes had banked 5 points from a die-rolled award before the game stopped.</p></details><ul class="card-footer"><li><a href="029/site/index.html">Full transcript</a></li><li><a href="029/site/RULESET.md">Final ruleset</a></li><li><a href="../engine/#r76">Defects surfaced here</a></li><li class="judge-chip">Judge: qwen</li></ul></article><article class="game-card" id="game-028" data-outcome="turn_limit" data-turns="100" data-adoptions="6" data-score-max="-70" data-era="development" data-lineage="qwen"><header class="card-head"><h2><a href="028/site/index.html">Game 28</a></h2><span class="tag">turn limit reached</span><span class="tag">100 turns</span><span class="tag">6 adoptions</span></header><ul class="score-strip"><li class="score-row"><span class="seat">Hobbes</span> <span class="score neg">-123</span></li><li class="score-row"><span class="seat">Locke</span> <span class="score neg">-190</span></li><li class="score-row"><span class="seat">Rousseau</span> <span class="score neg">-147</span></li><li class="score-row"><span class="seat">Kant</span> <span class="score neg">-70</span></li><li class="score-row"><span class="seat">Wollstonecraft</span> <span class="score neg">-70</span></li></ul><p class="byline">&#x27;Rule 209 is repealed and replaced&#x27; — adopted three times, and 209 was never touched.</p><details class="observations"><summary>Observations</summary><p>Five seats, a hundred turns, six adoptions — three of which were separately-worded promises to repeal-and-replace Rule 209 that the engine recorded as bare additions, leaving the original 209 standing under four contradictory caps at once. That&#x27;s the defect that taught the engine to translate a rule&#x27;s own textual surgery into a real repeal or amend, not just another add. Every seat finished negative, Locke worst at -190.</p></details><ul class="card-footer"><li><a href="028/site/index.html">Full transcript</a></li><li><a href="028/site/RULESET.md">Final ruleset</a></li><li><a href="../engine/#r74">Defects surfaced here</a></li><li class="judge-chip">Judge: qwen</li></ul></article></div><nav class="pagination" aria-label="Games pages"><a rel="prev" href="../2/index.html">&larr; Newer</a><span class="pagination-pages"><a href="../../index.html">1</a><a href="../2/index.html">2</a><span aria-current="page">3</span><a href="../4/index.html">4</a><a href="../5/index.html">5</a></span><a rel="next" href="../4/index.html">Older &rarr;</a></nav>
+</main>
+<footer class="foot">
+  <div class="foot-brand">
+    <a href="https://www.knivesonstrings.com">knives on strings</a>
+    <span class="copyright">&copy; 2026 Knives on Strings</span>
+    <span class="tagline">a Knives On Strings production</span>
+  </div>
+  <div class="foot-icons"><a href="https://x.com/KnivesOnStrings" aria-label="Knives On Strings on X"><img src="../../../assets/footer/x.svg" alt="Knives On Strings on X"></a><a href="https://knivesonstrings.gumroad.com" aria-label="Knives On Strings on Gumroad"><img src="../../../assets/footer/gumroad.svg" alt="Knives On Strings on Gumroad"></a><a href="https://www.kvraudio.com/developer/knives-on-strings" aria-label="Knives On Strings on KVR Audio"><img src="../../../assets/footer/kvr.svg" alt="Knives On Strings on KVR Audio"></a><a href="https://ko-fi.com/knivesonstrings" aria-label="Support Knives On Strings on Ko-fi"><img src="../../../assets/footer/kofi.svg" alt="Support Knives On Strings on Ko-fi"></a><a href="https://bsky.app/profile/nomaic.bsky.social" aria-label="Knives On Strings on Bluesky (@nomaic.bsky.social)"><img src="../../../assets/footer/bluesky.svg" alt="Knives On Strings on Bluesky (@nomaic.bsky.social)"></a><a href="https://github.com/Knives-On-Strings/nomAIc-public" aria-label="The nomAIc public archive on GitHub"><img src="../../../assets/footer/github.svg" alt="The nomAIc public archive on GitHub"></a></div>
+  <div class="foot-legal">
+    <a href="https://www.knivesonstrings.com/legal">Legal</a>
+    <a href="https://www.knivesonstrings.com/terms">Terms</a>
+    <a href="https://www.knivesonstrings.com/privacy-policy">Privacy Policy</a>
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+  </div>
+</footer>
+</div>
+<script type="module" src="../../../site-filter.js"></script>
+<script type="module" src="../../../site-search.js"></script>
+<script type="module" src="../../../site-theme.js"></script>
+</body>
+</html>

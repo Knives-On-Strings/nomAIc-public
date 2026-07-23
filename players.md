@@ -110,13 +110,13 @@ Games: [Game 75](games/075/README.md) (28), [Game 87](games/087/README.md) (-46)
 | --- | --- |
 | Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | 75 / 43.0 / 11 |
-| Proposals made | 9 |
-| Adoption rate (as proposer) | 100% |
-| Dissent rate (nay on adopted) | 4% |
-| Absences | 3 |
+| Best / avg / worst score | 73 / 42.0 / 11 |
+| Proposals made | 11 |
+| Adoption rate (as proposer) | 82% |
+| Dissent rate (nay on adopted) | 9% |
+| Absences | 5 |
 
-Games: [Game 48](games/048/README.md) (11), [Game 57](games/057/README.md) (75)
+Games: [Game 48](games/048/README.md) (11), [Game 57](games/057/README.md) (73)
 
 ### Habermas
 
@@ -127,13 +127,13 @@ Games: [Game 48](games/048/README.md) (11), [Game 57](games/057/README.md) (75)
 | --- | --- |
 | Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | 39 / 24.5 / 10 |
-| Proposals made | 9 |
-| Adoption rate (as proposer) | 33% |
+| Best / avg / worst score | 46 / 28.0 / 10 |
+| Proposals made | 11 |
+| Adoption rate (as proposer) | 36% |
 | Dissent rate (nay on adopted) | 0% |
-| Absences | 5 |
+| Absences | 7 |
 
-Games: [Game 48](games/048/README.md) (10), [Game 57](games/057/README.md) (39)
+Games: [Game 48](games/048/README.md) (10), [Game 57](games/057/README.md) (46)
 
 ### Nozick
 
@@ -144,13 +144,13 @@ Games: [Game 48](games/048/README.md) (10), [Game 57](games/057/README.md) (39)
 | --- | --- |
 | Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | 67 / 39.5 / 12 |
-| Proposals made | 10 |
-| Adoption rate (as proposer) | 90% |
-| Dissent rate (nay on adopted) | 4% |
-| Absences | 2 |
+| Best / avg / worst score | 72 / 42.0 / 12 |
+| Proposals made | 12 |
+| Adoption rate (as proposer) | 83% |
+| Dissent rate (nay on adopted) | 5% |
+| Absences | 4 |
 
-Games: [Game 48](games/048/README.md) (12), [Game 57](games/057/README.md) (67)
+Games: [Game 48](games/048/README.md) (12), [Game 57](games/057/README.md) (72)
 
 ### Nussbaum
 
@@ -161,13 +161,13 @@ Games: [Game 48](games/048/README.md) (12), [Game 57](games/057/README.md) (67)
 | --- | --- |
 | Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | 57 / 33.0 / 9 |
-| Proposals made | 9 |
-| Adoption rate (as proposer) | 67% |
+| Best / avg / worst score | 67 / 38.0 / 9 |
+| Proposals made | 11 |
+| Adoption rate (as proposer) | 64% |
 | Dissent rate (nay on adopted) | 0% |
-| Absences | 3 |
+| Absences | 5 |
 
-Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (57)
+Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (67)
 
 ### Sen
 
@@ -178,13 +178,13 @@ Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (57)
 | --- | --- |
 | Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | 32 / 20.5 / 9 |
-| Proposals made | 9 |
-| Adoption rate (as proposer) | 56% |
+| Best / avg / worst score | 48 / 28.5 / 9 |
+| Proposals made | 11 |
+| Adoption rate (as proposer) | 55% |
 | Dissent rate (nay on adopted) | 0% |
-| Absences | 3 |
+| Absences | 6 |
 
-Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (32)
+Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (48)
 
 ## gemma-4-12b  (5 seats)
 
