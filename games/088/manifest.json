@@ -1,0 +1,41 @@
+{
+  "game": 88,
+  "players": [
+    "WilliamJames",
+    "Dewey",
+    "Royce",
+    "Santayana",
+    "Emerson"
+  ],
+  "ruleset": "full",
+  "turns": 12,
+  "outcome": {
+    "type": "operational_halt",
+    "winner": null,
+    "score": null,
+    "reason": "seat Dewey was absent 3 consecutive times"
+  },
+  "confirmed": false,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 833509874,
+  "started": "2026-07-24T18:29:42.274652+00:00",
+  "ended": "2026-07-24T18:40:51.965364+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "WilliamJames": -10,
+    "Dewey": 0,
+    "Royce": 0,
+    "Santayana": 0,
+    "Emerson": 0
+  },
+  "adoptions": 0,
+  "gm_model": "deepseek/deepseek-v3.2",
+  "completed_at": "2026-07-24T18:40:51.965364+00:00"
+}

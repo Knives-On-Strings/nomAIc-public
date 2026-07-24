@@ -1,0 +1,40 @@
+{
+  "game": 89,
+  "players": [
+    "Frege-2",
+    "Russell-2",
+    "Quine-2",
+    "Carnap-2",
+    "Wittgenstein-2"
+  ],
+  "ruleset": "full",
+  "turns": 22,
+  "outcome": {
+    "type": "win",
+    "winner": "Frege-2",
+    "score": 104
+  },
+  "confirmed": true,
+  "audit": {
+    "clean": true,
+    "findings": []
+  },
+  "seed": 1639894413,
+  "started": "2026-07-24T18:51:18.634997+00:00",
+  "ended": "2026-07-24T19:29:59.242874+00:00",
+  "coverage": {
+    "tier": "full_store",
+    "note": ""
+  },
+  "era": "development",
+  "scores": {
+    "Frege-2": 104,
+    "Russell-2": 50,
+    "Quine-2": -5,
+    "Carnap-2": 0,
+    "Wittgenstein-2": 0
+  },
+  "adoptions": 18,
+  "gm_model": "phi-4",
+  "completed_at": "2026-07-24T19:29:59.242874+00:00"
+}

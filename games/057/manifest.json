@@ -8,7 +8,7 @@
     "Habermas"
   ],
   "ruleset": "full",
-  "turns": 45,
+  "turns": 50,
   "outcome": {
     "type": "operational_halt",
     "winner": null,
@@ -24,7 +24,7 @@
   },
   "seed": 1619365176,
   "started": "2026-07-20T08:38:51.858052+00:00",
-  "ended": "2026-07-23T07:55:20.935987+00:00",
+  "ended": "2026-07-24T07:11:21.520308+00:00",
   "coverage": {
     "tier": "full_store",
     "note": ""
@@ -32,10 +32,10 @@
   "era": "development",
   "scores": {
     "Nozick": 72,
-    "Sen": 48,
+    "Sen": 58,
     "Nussbaum": 67,
     "Dworkin": 73,
-    "Habermas": 46
+    "Habermas": 48
   },
   "adoptions": 31,
   "gm_model": "gemini-3.1-pro-preview",

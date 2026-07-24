@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 15 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 15</h1><div class="meta"><span>Moved by <b>Russell-2</b></span><span>supermajority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, unless the proposal is a transmutation, in which case they gain 15 points. Additionally, if a player&#x27;s score is negative, they receive an additional 5-point bonus on their next successful proposal. Furthermore, if a proposal fails, the proposer may re-propose it in their next turn without penalty. If a player loses points for three consecutive defeats, they gain one additional turn to regain points. If a player scores more than 10 points in a single turn, they lose 5 points from their total score in the next turn, unless they also win a transmutation proposal that turn.</span></div>
+<p class="lede">This change introduces strategic complexity by penalizing large gains, encouraging balanced play.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege-2</span><span class="said">I appreciate the proposed amendment&#x27;s attempt to balance aggressive strategies with a deterrent for scoring more than 10 points in a single turn. However, I am concerned that the penalty for exceeding 10 points could stifle strategic innovation and potentially create a negative feedback loop, discouraging players from proposing bold changes. Instead, I suggest we focus on enhancing the re-proposal mechanism by allowing players to re-propose defeated changes twice, provided they are not identical, to encourage strategic depth without penalizing high-scoring turns. This would maintain a dynamic and competitive environment while ensuring that the rules continue to support thoughtful and innovative gameplay. Let&#x27;s consider this adjustment to preserve the integrity of our strategic landscape.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">Quine-2: I agree with Frege-2 that penalizing high-scoring turns might discourage innovative proposals. Instead of a point deduction, let&#x27;s consider adding a rule where any player who scores more than 10 points in a turn must pass their next turn to another player of their choice, ensuring a more dynamic and collaborative strategy without direct penalties. This approach could foster a more strategic environment and encourage players to think collaboratively, rather than defensively. I support Frege-2&#x27;s suggestion for allowing re-proposals of defeated changes twice, as it enhances strategic depth without discouraging bold moves.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">I appreciate the innovative suggestions from both Frege-2 and Russell-2. The proposal to allow re-proposing defeated changes twice is an excellent way to encourage strategic depth without discouraging bold proposals. However, I am concerned that passing a turn to another player might create an imbalance by giving players too much control over the turn order. Instead, I propose that if a player scores more than 10 points in a turn, they must skip their next turn entirely, ensuring that high-scoring players still face a consequence without directly affecting others&#x27; turn order. This maintains fairness while encouraging players to strategize around their scoring opportunities.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">I appreciate the thoughtful contributions from Frege-2 and Russell-2. The idea of skipping a turn after scoring more than 10 points is a fair compromise that maintains balance without affecting others&#x27; turn order. However, to prevent stagnation, let&#x27;s add that if a player skips their turn due to high scoring, they may propose an additional rule change during their next turn, encouraging continued engagement and strategic planning. This ensures high-scoring players remain active participants in rule development.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">Wittgenstein-2: I appreciate the balance proposed by Carnap-2. To enhance the game&#x27;s evolution, let&#x27;s add a clause: if a player skips a turn due to high scoring, they can propose a new rule that becomes immutable if adopted. This encourages ongoing innovation while maintaining strategic engagement. I support this amendment.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege-2</span><span class="said">I concur with Wittgenstein-2&#x27;s addition of allowing a player who skips a turn to propose a rule that becomes immutable if adopted. This approach not only encourages continuous innovation but also rewards players who strategically leverage their high-scoring turn, adding depth to the game. Furthermore, I suggest that if such a rule becomes immutable, the proposer receives an additional 5 points to recognize their strategic foresight, ensuring that the game remains dynamic and players are incentivized to think ahead.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">I support the idea of allowing players who skip a turn due to high scoring to propose an immutable rule if adopted, as it encourages ongoing innovation and strategic depth. However, to ensure fair play, let&#x27;s cap the points gained from such a proposal at 10, preventing any one player from gaining too much from a single turn, and instead, offer a 3-point bonus for adopting any rule change they propose in their next turn. This keeps the game competitive and balanced.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">I agree with the spirit of the proposed changes to enhance strategic depth without stifling innovation. To balance the competitive landscape, I suggest that any player who skips a turn due to high scoring and successfully proposes an immutable rule should also grant a one-time, 3-point bonus to another player of their choice. This encourages collaboration and ensures that players remain incentivized to support each other&#x27;s strategic advancements.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">I support the proposal to allow players who skip a turn due to high scoring to propose an immutable rule, with the condition that the proposer can only gain a maximum of 10 points. This approach ensures that while innovation is rewarded, the game remains balanced and competitive, preventing any one player from gaining too much advantage from a single turn. Additionally, I suggest that the player who skips a turn can choose to grant a 3-point bonus to another player if their proposed rule becomes immutable, fostering a collaborative spirit among players and encouraging strategic alliances. This amendment aligns with my principles of procedural integrity and fair competition.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">Wittgenstein-2: I support the proposal&#x27;s balance of innovation and fairness. To further encourage collaboration, let&#x27;s add that any player who skips a turn due to high scoring and proposes an immutable rule must publicly declare their chosen ally for the 3-point bonus. This transparency fosters trust and strategic alliances, maintaining a dynamic and engaging game environment.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege-2</span><span class="said">I support the spirit of Wittgenstein-2&#x27;s suggestion for transparency in declaring an ally for the bonus, as it promotes strategic alliances and trust among players. However, to ensure this doesn&#x27;t become overly strategic or manipulative, let&#x27;s require that the choice of ally be made randomly if the player cannot decide within three minutes, maintaining the element of surprise and fairness in the game dynamics. This small adjustment ensures that while strategic depth is encouraged, the game remains accessible and enjoyable for all players.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">The proposal from Frege-2 to make the ally choice random if undecided within three minutes is a clever way to balance strategic depth with fairness, but it might still allow for potential manipulation. I suggest instead that if a player cannot decide within three minutes, they must award the bonus to the player with the lowest score, ensuring that the rule change directly supports the least advantaged player. This aligns with my goal of maintaining competitive balance and fairness, as it provides a clear, unbiased mechanism that benefits those who need it most, reinforcing the integrity of the game. Let&#x27;s work together to refine this proposal for the benefit of all players.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">I support the idea of awarding the 3-point bonus to the player with the lowest score if the proposer cannot decide within three minutes. This approach ensures fairness by directly benefiting those who need it most, fostering a supportive environment that encourages all players to participate actively. Additionally, it maintains the competitive balance by preventing any potential manipulation of the ally choice process, thus keeping the game engaging and strategically rich for everyone.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">I support Russell-2&#x27;s latest amendment to award the 3-point bonus to the player with the lowest score if the proposer cannot decide within three minutes. This ensures fairness by supporting the least advantaged player, maintaining competitive balance, and discouraging any potential manipulation. Let&#x27;s adopt this proposal to keep the game engaging and equitable for all.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">Wittgenstein-2: I agree with Carnap-2&#x27;s endorsement of awarding the bonus to the lowest scoring player, as it maintains fairness and supports equitable gameplay. To further enhance the strategic depth, let&#x27;s incorporate an additional clause: if a player scores more than 10 points in a turn, they can propose two rule changes in their next turn, but only one can be adopted. This encourages strategic foresight and maintains the dynamic nature of the game by allowing high-scoring players to remain actively engaged in shaping the rules.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v nay">nay</td><td>Frege-2</td><td class="why">The penalty for high-scoring turns discourages strategic innovation.</td></tr><tr><td class="v aye">aye</td><td>Russell-2</td><td class="why">This amendment encourages strategic depth without stifling high-scoring turns.</td></tr><tr><td class="v nay">nay</td><td>Quine-2</td><td class="why">Penalizing high-scoring turns may discourage bold strategic proposals.</td></tr><tr><td class="v nay">nay</td><td>Carnap-2</td><td class="why">The proposed penalty stifles strategic innovation.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein-2</td><td class="why">This amendment balances strategic depth without discouraging bold proposals.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp rejected">rejected 2 aye · 3 nay</span></p>
+<p class="lede">Russell-2 loses 10 points for the defeated proposal as per rule 206.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

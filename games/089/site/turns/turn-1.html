@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 1 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 1</h1><div class="meta"><span>Moved by <b>Frege-2</b></span><span>unanimous consent (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, unless the proposal is a transmutation, in which case they gain 15 points.</span></div>
+<p class="lede">Incentivizes transmutation proposals for greater potential gains.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege-2</span><span class="said">The proposed amendment introduces a significant incentive for proposing transmutations by awarding 15 points instead of the standard 1-6 points from a die roll. However, this change could destabilize the game&#x27;s balance by encouraging frequent transmutations, potentially leading to rule changes that are too rapid and undermining the strategic depth of the game. To preserve the integrity of the game&#x27;s structure and maintain a measured pace of rule changes, it would be prudent to limit the frequency of transmutations or adjust the point reward to a less drastic increase. This approach ensures that while players are still incentivized to propose transmutations, the core mechanics and strategic planning remain intact.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">Russell-2: Frege-2 raises valid concerns about game balance. I support the amendment with a compromise: transmutations grant 10 points instead of 15, maintaining an incentive while reducing the risk of excessive rule changes. Let&#x27;s ensure the strategic depth remains by keeping transmutations a thoughtful choice, not just a high-reward tactic.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">Quine-2: I agree with Russell-2&#x27;s compromise on awarding 10 points for transmutations. This adjustment maintains an incentive for strategic rule changes while preserving the game&#x27;s balance. Furthermore, I propose adding a condition: transmutations can only be proposed once per player every three turns to prevent rapid destabilization of the ruleset. This ensures thoughtful consideration and maintains a fair and engaging game environment for all players.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">As a principled proceduralist, I must emphasize the importance of maintaining precise procedures. Frege-2&#x27;s amendment to award 15 points for transmutations indeed risks destabilizing the game by encouraging excessive rule changes. Russell-2&#x27;s suggestion to reduce this to 10 points is a step towards preserving balance. However, Quine-2&#x27;s additional condition to limit transmutations to once per player every three turns is crucial. This ensures that transmutations remain a strategic choice rather than a frequent tactic. I propose we adopt this amendment with the 10-point reward and the limitation on frequency, maintaining both the game&#x27;s integrity and strategic depth.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">I appreciate the thoughtful contributions from my colleagues. The compromise to award 10 points for transmutations, coupled with Quine-2&#x27;s suggestion to limit their frequency, strikes a balance between incentivizing strategic rule changes and maintaining game stability. However, I propose further refining the incentive structure by allowing an additional point for each player voting in favor of the transmutation, capped at 5 additional points. This adjustment encourages not only the proposer to carefully consider the transmutation but also engages other players in the decision-making process, fostering a more collaborative and strategic environment. Let&#x27;s adopt this proposal to enhance the depth and fairness of our game.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege-2</span><span class="said">I commend Wittgenstein-2&#x27;s proposal to further refine the incentive structure for transmutations by granting additional points for voter support. This approach encourages proposers to craft their transmutations with broad appeal and fosters collaboration among players. However, to ensure the game remains competitive and balanced, I suggest capping the total additional points at 5, as proposed. This cap maintains a reasonable upper limit, preventing any single transmutation from disproportionately impacting the game&#x27;s balance. By adopting this nuanced approach, we preserve both the strategic depth and fairness of the game, ensuring a dynamic yet stable environment for all players.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">Russell-2: I support Wittgenstein-2&#x27;s proposal with the additional point system, as it encourages strategic thinking and collaboration. To further refine, I suggest that the cap of 5 additional points be reached only when at least four players vote in favor, ensuring a wider consensus and preventing a small majority from skewing the game&#x27;s balance. This adjustment maintains the incentive for thoughtful transmutations while fostering a more inclusive and strategic voting process.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">I concur with Russell-2&#x27;s suggestion to require at least four players&#x27; votes for the full 5-point bonus, as it encourages broader consensus and strategic collaboration. Additionally, to ensure clarity and fairness, let&#x27;s stipulate that these additional points for voter support are awarded only when the transmutation is successfully adopted, maintaining a clear link between strategic alignment and reward. This ensures that the incentive structure remains robust yet fair, fostering a collaborative and thoughtful approach to rule changes.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">Carnap-2: I endorse the collective refinement to the transmutation proposal. By requiring at least four votes to achieve the full 5-point bonus, we ensure that transmutations are not only strategic but also widely supported, aligning with the principles of thoughtful rule-making and fair play. This consensus-driven approach balances individual initiative with collective agreement, maintaining the integrity of our game&#x27;s procedures. Let&#x27;s adopt this proposal with the outlined conditions for a harmonious and strategic gameplay experience.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">Wittgenstein-2: I appreciate the consensus we&#x27;ve reached on refining the transmutation proposal. To further ensure clarity and fairness, let&#x27;s explicitly state that the additional points for voter support are awarded only when the transmutation is adopted. This maintains a strong link between strategic alignment and reward, encouraging collaborative and thoughtful rule changes. Let&#x27;s proceed with this proposal to enhance our game&#x27;s strategic depth and fairness.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege-2</span><span class="said">Frege-2: I support the refined proposal. By requiring at least four votes for the full bonus and awarding additional points only upon adoption, we ensure that transmutations are both strategic and collectively endorsed. This approach fosters thoughtful collaboration while preserving the game&#x27;s balance. Let&#x27;s adopt this proposal for a fair and engaging game environment.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">Russell-2: I support the proposed amendment as it now strikes a balance between incentivizing strategic transmutations and maintaining game stability. By awarding 10 points with a potential for up to 5 additional points for broader support, we encourage thoughtful rule changes and foster collaboration. This approach ensures that transmutations are carefully considered and widely supported, preserving the integrity and strategic depth of our game. Let&#x27;s adopt this proposal to enhance our gameplay experience.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">Quine-2: I fully support the refined proposal, as it balances strategic incentives with fairness. By requiring at least four votes for the full bonus and awarding points only upon adoption, we ensure that transmutations are both meaningful and collectively endorsed. This fosters a collaborative environment while preserving the integrity of our game. Let&#x27;s move forward with this proposal to maintain a fair and engaging gameplay experience.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">As Carnap-2, I concur with the refined proposal. By structuring incentives around both the proposer&#x27;s initiative and the collective endorsement of transmutations, we ensure a balanced and strategic gameplay experience. This consensus-driven approach maintains the integrity of the game&#x27;s procedures and fosters a collaborative environment, aligning with my principles. Let&#x27;s adopt this proposal for a fair and engaging game.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">Wittgenstein-2: I agree with the consensus on the refined proposal. To further enhance strategic depth, let&#x27;s consider adding a clause that allows players to challenge a transmutation within a turn of its adoption, ensuring it aligns with the game&#x27;s spirit. This safeguard maintains balance while encouraging thoughtful participation. Let&#x27;s adopt this proposal with the challenge mechanism for a robust and fair gameplay experience.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Frege-2</td><td class="why">Balances strategic depth with fairness by incentivizing thoughtful transmutations.</td></tr><tr><td class="v aye">aye</td><td>Russell-2</td><td class="why">This proposal incentivizes strategic transmutations while maintaining game balance.</td></tr><tr><td class="v aye">aye</td><td>Quine-2</td><td class="why">This proposal encourages strategic transmutations while maintaining balance.</td></tr><tr><td class="v aye">aye</td><td>Carnap-2</td><td class="why">The proposal balances incentives with strategic depth.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein-2</td><td class="why">The proposal incentivizes thoughtful transmutations and fosters collaboration.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 1 · Proposal §301 on the motion of <b>Frege-2</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, unless the proposal is a transmutation, in which case they gain 15 points.</span>
+</div>
+<p class="lede">The proposal was a transmutation, so Frege-2 gains 15 points as per the amended rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>

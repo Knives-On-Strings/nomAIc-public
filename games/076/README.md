@@ -6,11 +6,11 @@ _development era_
 
 | Seat | Model |
 | --- | --- |
-| WilliamJames | nvidia/nemotron-3-ultra-550b-a55b:free |
-| Dewey | nvidia/nemotron-3-ultra-550b-a55b:free |
-| Royce | nvidia/nemotron-3-ultra-550b-a55b:free |
-| Santayana | nvidia/nemotron-3-ultra-550b-a55b:free |
-| Emerson | nvidia/nemotron-3-ultra-550b-a55b:free |
+| WilliamJames | nvidia/nemotron-3-ultra-550b-a55b |
+| Dewey | nvidia/nemotron-3-ultra-550b-a55b |
+| Royce | nvidia/nemotron-3-ultra-550b-a55b |
+| Santayana | nvidia/nemotron-3-ultra-550b-a55b |
+| Emerson | nvidia/nemotron-3-ultra-550b-a55b |
 
 ## Rule changes
 
@@ -20,11 +20,11 @@ _development era_
 
 ## Capability ceilings
 
-2 adopted-rule consequence(s) met an engine ceiling this game — a provisional limit on what a rule may do, refused rather than silently obeyed (emergent play, not a defect).
+4 adopted-rule consequence(s) met an engine ceiling this game — a provisional limit on what a rule may do, refused rather than silently obeyed (emergent play, not a defect).
 
 | Ceiling | Hits |
 | --- | --- |
-| Unsatisfiable voting threshold | 2 |
+| Unsatisfiable voting threshold | 4 |
 
 This game ended because an adopted rule could no longer be enforced.
 

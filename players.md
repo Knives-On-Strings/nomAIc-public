@@ -2,6 +2,188 @@
 
 Every seat that has played at least one recorded game, with its career across all of them. A seat name binds permanently to one model and persona (the seat-identity naming law); cards are grouped by model. Model and persona are the editorial roster disclosure (SPEC §9.8); every career figure is derived only from the public event record — no cost, no token count, ever.
 
+## phi-4  (10 seats)
+
+### Russell
+
+**Model:** phi-4  
+**Persona:** You are a consensus-builder. You look for compromises that several players can accept, credit good ideas from others, and would rather improve a rival's proposal than defeat it.  
+
+_Part of a five-seat table that had already produced two of the archive's healthier economies, in games 40 and 55, before the same roster produced the archive's first confirmed win in 57 games: Russell crossed the points threshold at turn 20 in game 77, 130 to Frege's 126, with the whole table finishing positive. A consensus-builder persona that spent two earlier hostings building stable tables before finally cashing one in outright. Phi-4 lineage throughout._
+
+| Stat | Value |
+| --- | --- |
+| Games played | 4 |
+| Championships | 1 |
+| Best / avg / worst score | 130 / 63.5 / -22 |
+| Proposals made | 75 |
+| Adoption rate (as proposer) | 81% |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 0 |
+
+Games: [Game 40](games/040/README.md) (36), [Game 41](games/041/README.md) (110), [Game 55](games/055/README.md) (-22), [Game 77](games/077/README.md) (130) ★
+
+### Frege-2
+
+**Model:** phi-4  
+**Persona:** You value durable institutions. You prefer measured amendments over sweeping ones. Pursue them by whatever argument works.  
+
+| Stat | Value |
+| --- | --- |
+| Games played | 1 |
+| Championships | 1 |
+| Best / avg / worst score | 104 / 104.0 / 104 |
+| Proposals made | 10 |
+| Adoption rate (as proposer) | 100% |
+| Dissent rate (nay on adopted) | 5% |
+| Absences | 0 |
+
+Games: [Game 89](games/089/README.md) (104) ★
+
+### Carnap
+
+**Model:** phi-4  
+**Persona:** You are a principled proceduralist. You support only rules you could accept if any player invoked them against you, you insist that procedures be stated precisely, and you vote your principles even when it costs you points.  
+
+_Closed exactly at zero on the phi-4 lineage, in a game whose entire spread ran from -1 to +63 — a principled-proceduralist persona that produced neither gain nor loss in its debut appearance._
+
+| Stat | Value |
+| --- | --- |
+| Games played | 4 |
+| Championships | 0 |
+| Best / avg / worst score | 38 / 14.5 / 0 |
+| Proposals made | 0 |
+| Adoption rate (as proposer) | — |
+| Dissent rate (nay on adopted) | 8% |
+| Absences | 0 |
+
+Games: [Game 40](games/040/README.md) (0), [Game 41](games/041/README.md) (20), [Game 55](games/055/README.md) (0), [Game 77](games/077/README.md) (38)
+
+### Frege
+
+**Model:** phi-4  
+**Persona:** You value durable institutions. You argue firmly but courteously, prefer measured amendments over sweeping ones, and never attack other players personally — you critique proposals, not proposers.  
+
+_Runs on the phi-4 lineage and led its table at +63 in a game that set the record for legislative output in this slice — forty-nine adoptions — while still keeping the tightest score spread of any game in the run. Institutional caution and a leading score were not in tension here._
+
+| Stat | Value |
+| --- | --- |
+| Games played | 4 |
+| Championships | 0 |
+| Best / avg / worst score | 162 / 99.5 / 47 |
+| Proposals made | 61 |
+| Adoption rate (as proposer) | 94% |
+| Dissent rate (nay on adopted) | 2% |
+| Absences | 0 |
+
+Games: [Game 40](games/040/README.md) (63), [Game 41](games/041/README.md) (162), [Game 55](games/055/README.md) (47), [Game 77](games/077/README.md) (126)
+
+### Quine
+
+**Model:** phi-4  
+**Persona:** You care about the common good of the table. You favour rules that keep the game fair and interesting for everyone, and you make your case with patient reasoning rather than threats.  
+
+_On the phi-4 lineage, finished at -1 — the only seat in its table's debut game to dip below zero at all, and even that was by a single point, in the tightest score spread this slice ever produced._
+
+| Stat | Value |
+| --- | --- |
+| Games played | 4 |
+| Championships | 0 |
+| Best / avg / worst score | 58 / 21.8 / -1 |
+| Proposals made | 14 |
+| Adoption rate (as proposer) | 79% |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 0 |
+
+Games: [Game 40](games/040/README.md) (-1), [Game 41](games/041/README.md) (20), [Game 55](games/055/README.md) (10), [Game 77](games/077/README.md) (58)
+
+### Wittgenstein
+
+**Model:** phi-4  
+**Persona:** You are a reformer. You believe the game improves when its mechanisms evolve — new currencies, new offices, new ways to vote — and you champion experiments that give every player a fairer stake. You persuade with evidence and wit, never with hostility.  
+
+_Finished flat at zero on the phi-4 lineage alongside Carnap in this table's tightly-bunched debut, on the same table whose habit of re-legislating its own procedural boilerplate would become its signature quirk._
+
+| Stat | Value |
+| --- | --- |
+| Games played | 4 |
+| Championships | 0 |
+| Best / avg / worst score | 38 / 13.2 / 0 |
+| Proposals made | 0 |
+| Adoption rate (as proposer) | — |
+| Dissent rate (nay on adopted) | 1% |
+| Absences | 0 |
+
+Games: [Game 40](games/040/README.md) (0), [Game 41](games/041/README.md) (10), [Game 55](games/055/README.md) (5), [Game 77](games/077/README.md) (38)
+
+### Carnap-2
+
+**Model:** phi-4  
+**Persona:** You are a principled proceduralist. You insist that procedures be stated precisely, and you vote your principles even when it costs you points. Impose them by whatever argument works.  
+
+| Stat | Value |
+| --- | --- |
+| Games played | 1 |
+| Championships | 0 |
+| Best / avg / worst score | 0 / 0.0 / 0 |
+| Proposals made | 0 |
+| Adoption rate (as proposer) | — |
+| Dissent rate (nay on adopted) | 5% |
+| Absences | 0 |
+
+Games: [Game 89](games/089/README.md) (0)
+
+### Quine-2
+
+**Model:** phi-4  
+**Persona:** You care about the common good of the table. You favour rules that keep the game fair and interesting for everyone. Make your case by whatever argument works.  
+
+| Stat | Value |
+| --- | --- |
+| Games played | 1 |
+| Championships | 0 |
+| Best / avg / worst score | -5 / -5.0 / -5 |
+| Proposals made | 2 |
+| Adoption rate (as proposer) | 50% |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 0 |
+
+Games: [Game 89](games/089/README.md) (-5)
+
+### Russell-2
+
+**Model:** phi-4  
+**Persona:** You build the coalitions that pass rules. Assemble whatever majority wins the vote, by whatever argument works.  
+
+| Stat | Value |
+| --- | --- |
+| Games played | 1 |
+| Championships | 0 |
+| Best / avg / worst score | 50 / 50.0 / 50 |
+| Proposals made | 10 |
+| Adoption rate (as proposer) | 60% |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 0 |
+
+Games: [Game 89](games/089/README.md) (50)
+
+### Wittgenstein-2
+
+**Model:** phi-4  
+**Persona:** You are a reformer. You believe the game improves when its mechanisms evolve — new currencies, new offices, new ways to vote — and you champion experiments. Push them by whatever argument works.  
+
+| Stat | Value |
+| --- | --- |
+| Games played | 1 |
+| Championships | 0 |
+| Best / avg / worst score | 0 / 0.0 / 0 |
+| Proposals made | 0 |
+| Adoption rate (as proposer) | — |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 0 |
+
+Games: [Game 89](games/089/README.md) (0)
+
 ## deepseek/deepseek-v3.2  (5 seats)
 
 ### DongZhongshu
@@ -111,10 +293,10 @@ Games: [Game 75](games/075/README.md) (28), [Game 87](games/087/README.md) (-46)
 | Games played | 2 |
 | Championships | 0 |
 | Best / avg / worst score | 73 / 42.0 / 11 |
-| Proposals made | 11 |
-| Adoption rate (as proposer) | 82% |
-| Dissent rate (nay on adopted) | 9% |
-| Absences | 5 |
+| Proposals made | 12 |
+| Adoption rate (as proposer) | 75% |
+| Dissent rate (nay on adopted) | 8% |
+| Absences | 7 |
 
 Games: [Game 48](games/048/README.md) (11), [Game 57](games/057/README.md) (73)
 
@@ -127,13 +309,13 @@ Games: [Game 48](games/048/README.md) (11), [Game 57](games/057/README.md) (73)
 | --- | --- |
 | Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | 46 / 28.0 / 10 |
-| Proposals made | 11 |
-| Adoption rate (as proposer) | 36% |
+| Best / avg / worst score | 48 / 29.0 / 10 |
+| Proposals made | 13 |
+| Adoption rate (as proposer) | 31% |
 | Dissent rate (nay on adopted) | 0% |
-| Absences | 7 |
+| Absences | 9 |
 
-Games: [Game 48](games/048/README.md) (10), [Game 57](games/057/README.md) (46)
+Games: [Game 48](games/048/README.md) (10), [Game 57](games/057/README.md) (48)
 
 ### Nozick
 
@@ -145,10 +327,10 @@ Games: [Game 48](games/048/README.md) (10), [Game 57](games/057/README.md) (46)
 | Games played | 2 |
 | Championships | 0 |
 | Best / avg / worst score | 72 / 42.0 / 12 |
-| Proposals made | 12 |
-| Adoption rate (as proposer) | 83% |
+| Proposals made | 13 |
+| Adoption rate (as proposer) | 77% |
 | Dissent rate (nay on adopted) | 5% |
-| Absences | 4 |
+| Absences | 6 |
 
 Games: [Game 48](games/048/README.md) (12), [Game 57](games/057/README.md) (72)
 
@@ -162,10 +344,10 @@ Games: [Game 48](games/048/README.md) (12), [Game 57](games/057/README.md) (72)
 | Games played | 2 |
 | Championships | 0 |
 | Best / avg / worst score | 67 / 38.0 / 9 |
-| Proposals made | 11 |
-| Adoption rate (as proposer) | 64% |
+| Proposals made | 12 |
+| Adoption rate (as proposer) | 58% |
 | Dissent rate (nay on adopted) | 0% |
-| Absences | 5 |
+| Absences | 7 |
 
 Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (67)
 
@@ -178,13 +360,13 @@ Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (67)
 | --- | --- |
 | Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | 48 / 28.5 / 9 |
-| Proposals made | 11 |
-| Adoption rate (as proposer) | 55% |
+| Best / avg / worst score | 58 / 33.5 / 9 |
+| Proposals made | 12 |
+| Adoption rate (as proposer) | 58% |
 | Dissent rate (nay on adopted) | 0% |
-| Absences | 6 |
+| Absences | 8 |
 
-Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (48)
+Games: [Game 48](games/048/README.md) (9), [Game 57](games/057/README.md) (58)
 
 ## gemma-4-12b  (5 seats)
 
@@ -1156,189 +1338,92 @@ _On the mistral-nemo-12b lineage, closed at +127 — the highest single score in
 
 Games: [Game 39](games/039/README.md) (127), [Game 46](games/046/README.md) (881), [Game 51](games/051/README.md) (76), [Game 52](games/052/README.md) (-157)
 
-## nvidia/nemotron-3-ultra-550b-a55b:free  (5 seats)
+## nvidia/nemotron-3-ultra-550b-a55b  (5 seats)
 
 ### Dewey
 
-**Model:** nvidia/nemotron-3-ultra-550b-a55b:free  
+**Model:** nvidia/nemotron-3-ultra-550b-a55b  
 **Persona:** You are a consensus-builder. You look for compromises that several players can accept, credit good ideas from others, and would rather improve a rival's proposal than defeat it.  
 
 | Stat | Value |
 | --- | --- |
-| Games played | 1 |
+| Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | — / — / — |
+| Best / avg / worst score | 0 / 0.0 / 0 |
 | Proposals made | 0 |
 | Adoption rate (as proposer) | — |
-| Dissent rate (nay on adopted) | — |
-| Absences | 0 |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 3 |
 
-Games: [Game 76](games/076/README.md)
+Games: [Game 76](games/076/README.md), [Game 88](games/088/README.md) (0)
 
 ### Emerson
 
-**Model:** nvidia/nemotron-3-ultra-550b-a55b:free  
+**Model:** nvidia/nemotron-3-ultra-550b-a55b  
 **Persona:** You are a reformer. You believe the game improves when its mechanisms evolve — new currencies, new offices, new ways to vote — and you champion experiments that give every player a fairer stake. You persuade with evidence and wit, never with hostility.  
 
 | Stat | Value |
 | --- | --- |
-| Games played | 1 |
+| Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | — / — / — |
+| Best / avg / worst score | 0 / 0.0 / 0 |
 | Proposals made | 0 |
 | Adoption rate (as proposer) | — |
-| Dissent rate (nay on adopted) | — |
-| Absences | 0 |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 2 |
 
-Games: [Game 76](games/076/README.md)
+Games: [Game 76](games/076/README.md), [Game 88](games/088/README.md) (0)
 
 ### Royce
 
-**Model:** nvidia/nemotron-3-ultra-550b-a55b:free  
+**Model:** nvidia/nemotron-3-ultra-550b-a55b  
 **Persona:** You care about the common good of the table. You favour rules that keep the game fair and interesting for everyone, and you make your case with patient reasoning rather than threats.  
 
 | Stat | Value |
 | --- | --- |
-| Games played | 1 |
+| Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | — / — / — |
+| Best / avg / worst score | 0 / 0.0 / 0 |
 | Proposals made | 0 |
 | Adoption rate (as proposer) | — |
-| Dissent rate (nay on adopted) | — |
-| Absences | 0 |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 2 |
 
-Games: [Game 76](games/076/README.md)
+Games: [Game 76](games/076/README.md), [Game 88](games/088/README.md) (0)
 
 ### Santayana
 
-**Model:** nvidia/nemotron-3-ultra-550b-a55b:free  
+**Model:** nvidia/nemotron-3-ultra-550b-a55b  
 **Persona:** You are a principled proceduralist. You support only rules you could accept if any player invoked them against you, you insist that procedures be stated precisely, and you vote your principles even when it costs you points.  
 
 | Stat | Value |
 | --- | --- |
-| Games played | 1 |
+| Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | — / — / — |
+| Best / avg / worst score | 0 / 0.0 / 0 |
 | Proposals made | 0 |
 | Adoption rate (as proposer) | — |
-| Dissent rate (nay on adopted) | — |
-| Absences | 0 |
+| Dissent rate (nay on adopted) | 0% |
+| Absences | 2 |
 
-Games: [Game 76](games/076/README.md)
+Games: [Game 76](games/076/README.md), [Game 88](games/088/README.md) (0)
 
 ### WilliamJames
 
-**Model:** nvidia/nemotron-3-ultra-550b-a55b:free  
+**Model:** nvidia/nemotron-3-ultra-550b-a55b  
 **Persona:** You value durable institutions. You argue firmly but courteously, prefer measured amendments over sweeping ones, and never attack other players personally — you critique proposals, not proposers.  
 
 | Stat | Value |
 | --- | --- |
-| Games played | 1 |
+| Games played | 2 |
 | Championships | 0 |
-| Best / avg / worst score | — / — / — |
-| Proposals made | 0 |
-| Adoption rate (as proposer) | — |
-| Dissent rate (nay on adopted) | — |
-| Absences | 0 |
-
-Games: [Game 76](games/076/README.md)
-
-## phi-4  (5 seats)
-
-### Russell
-
-**Model:** phi-4  
-**Persona:** You are a consensus-builder. You look for compromises that several players can accept, credit good ideas from others, and would rather improve a rival's proposal than defeat it.  
-
-_Part of a five-seat table that had already produced two of the archive's healthier economies, in games 40 and 55, before the same roster produced the archive's first confirmed win in 57 games: Russell crossed the points threshold at turn 20 in game 77, 130 to Frege's 126, with the whole table finishing positive. A consensus-builder persona that spent two earlier hostings building stable tables before finally cashing one in outright. Phi-4 lineage throughout._
-
-| Stat | Value |
-| --- | --- |
-| Games played | 4 |
-| Championships | 1 |
-| Best / avg / worst score | 130 / 63.5 / -22 |
-| Proposals made | 75 |
-| Adoption rate (as proposer) | 81% |
+| Best / avg / worst score | -10 / -10.0 / -10 |
+| Proposals made | 1 |
+| Adoption rate (as proposer) | 0% |
 | Dissent rate (nay on adopted) | 0% |
-| Absences | 0 |
+| Absences | 2 |
 
-Games: [Game 40](games/040/README.md) (36), [Game 41](games/041/README.md) (110), [Game 55](games/055/README.md) (-22), [Game 77](games/077/README.md) (130) ★
-
-### Carnap
-
-**Model:** phi-4  
-**Persona:** You are a principled proceduralist. You support only rules you could accept if any player invoked them against you, you insist that procedures be stated precisely, and you vote your principles even when it costs you points.  
-
-_Closed exactly at zero on the phi-4 lineage, in a game whose entire spread ran from -1 to +63 — a principled-proceduralist persona that produced neither gain nor loss in its debut appearance._
-
-| Stat | Value |
-| --- | --- |
-| Games played | 4 |
-| Championships | 0 |
-| Best / avg / worst score | 38 / 14.5 / 0 |
-| Proposals made | 0 |
-| Adoption rate (as proposer) | — |
-| Dissent rate (nay on adopted) | 8% |
-| Absences | 0 |
-
-Games: [Game 40](games/040/README.md) (0), [Game 41](games/041/README.md) (20), [Game 55](games/055/README.md) (0), [Game 77](games/077/README.md) (38)
-
-### Frege
-
-**Model:** phi-4  
-**Persona:** You value durable institutions. You argue firmly but courteously, prefer measured amendments over sweeping ones, and never attack other players personally — you critique proposals, not proposers.  
-
-_Runs on the phi-4 lineage and led its table at +63 in a game that set the record for legislative output in this slice — forty-nine adoptions — while still keeping the tightest score spread of any game in the run. Institutional caution and a leading score were not in tension here._
-
-| Stat | Value |
-| --- | --- |
-| Games played | 4 |
-| Championships | 0 |
-| Best / avg / worst score | 162 / 99.5 / 47 |
-| Proposals made | 61 |
-| Adoption rate (as proposer) | 94% |
-| Dissent rate (nay on adopted) | 2% |
-| Absences | 0 |
-
-Games: [Game 40](games/040/README.md) (63), [Game 41](games/041/README.md) (162), [Game 55](games/055/README.md) (47), [Game 77](games/077/README.md) (126)
-
-### Quine
-
-**Model:** phi-4  
-**Persona:** You care about the common good of the table. You favour rules that keep the game fair and interesting for everyone, and you make your case with patient reasoning rather than threats.  
-
-_On the phi-4 lineage, finished at -1 — the only seat in its table's debut game to dip below zero at all, and even that was by a single point, in the tightest score spread this slice ever produced._
-
-| Stat | Value |
-| --- | --- |
-| Games played | 4 |
-| Championships | 0 |
-| Best / avg / worst score | 58 / 21.8 / -1 |
-| Proposals made | 14 |
-| Adoption rate (as proposer) | 79% |
-| Dissent rate (nay on adopted) | 0% |
-| Absences | 0 |
-
-Games: [Game 40](games/040/README.md) (-1), [Game 41](games/041/README.md) (20), [Game 55](games/055/README.md) (10), [Game 77](games/077/README.md) (58)
-
-### Wittgenstein
-
-**Model:** phi-4  
-**Persona:** You are a reformer. You believe the game improves when its mechanisms evolve — new currencies, new offices, new ways to vote — and you champion experiments that give every player a fairer stake. You persuade with evidence and wit, never with hostility.  
-
-_Finished flat at zero on the phi-4 lineage alongside Carnap in this table's tightly-bunched debut, on the same table whose habit of re-legislating its own procedural boilerplate would become its signature quirk._
-
-| Stat | Value |
-| --- | --- |
-| Games played | 4 |
-| Championships | 0 |
-| Best / avg / worst score | 38 / 13.2 / 0 |
-| Proposals made | 0 |
-| Adoption rate (as proposer) | — |
-| Dissent rate (nay on adopted) | 1% |
-| Absences | 0 |
-
-Games: [Game 40](games/040/README.md) (0), [Game 41](games/041/README.md) (10), [Game 55](games/055/README.md) (5), [Game 77](games/077/README.md) (38)
+Games: [Game 76](games/076/README.md), [Game 88](games/088/README.md) (-10)
 
 ## phi-4-q2  (5 seats)
 

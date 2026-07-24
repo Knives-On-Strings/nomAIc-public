@@ -1,0 +1,658 @@
+[
+  {
+    "seq": 1,
+    "type": "game_started",
+    "data": {
+      "players": [
+        "WilliamJames",
+        "Dewey",
+        "Royce",
+        "Santayana",
+        "Emerson"
+      ],
+      "ruleset": [
+        {
+          "num": 101,
+          "text": "Every player must, at all times, abide by the ruleset currently in force — including every change adopted since play began.",
+          "mutable": false
+        },
+        {
+          "num": 102,
+          "text": "Rules numbered in the 100s begin immutable and rules numbered in the 200s begin mutable. Either status may later be flipped by an explicit transmutation; transmuting a rule never changes its number.",
+          "mutable": false
+        },
+        {
+          "num": 103,
+          "text": "A rule change is exactly one of four kinds: enacting a new rule, repealing an existing one, amending an existing one's text, or transmuting a rule's mutability. No other kind of rule change exists.",
+          "mutable": false
+        },
+        {
+          "num": 104,
+          "text": "Every properly proposed rule change must be put to a vote of all eligible players; a proposal may not be set aside without one.",
+          "mutable": false
+        },
+        {
+          "num": 105,
+          "text": "Every player is an eligible voter, and every eligible voter must cast a vote on every proposal that comes to a vote.",
+          "mutable": false
+        },
+        {
+          "num": 106,
+          "text": "A proposal must be written down in the exact words that will be voted on. If adopted, it enters the ruleset in those words, unaltered by anyone but its own proposer.",
+          "mutable": false
+        },
+        {
+          "num": 107,
+          "text": "A rule change has no retroactive effect: it governs only what happens after the vote adopting it is complete, never anything before.",
+          "mutable": false
+        },
+        {
+          "num": 108,
+          "text": "Every proposal is assigned the next number in a sequence starting at 301, whether it is adopted or defeated, so the record of what was tried survives regardless of outcome.",
+          "mutable": false
+        },
+        {
+          "num": 109,
+          "text": "Transmuting a rule's mutability requires the unanimous assent of all eligible voters, and must be proposed and voted on explicitly as a transmutation — never as a side effect of some other change.",
+          "mutable": false
+        },
+        {
+          "num": 110,
+          "text": "Where a mutable rule's requirements conflict with an immutable rule's requirements, the mutable rule is void to the extent of the conflict.",
+          "mutable": false
+        },
+        {
+          "num": 111,
+          "text": "Before the vote, a proposal may be debated; its proposer alone may revise its final wording and may declare debate closed.",
+          "mutable": false
+        },
+        {
+          "num": 112,
+          "text": "The winning condition may not be redefined away from reaching a target score, except that a rule may separately provide a winner for the case where further play has become impossible.",
+          "mutable": false
+        },
+        {
+          "num": 113,
+          "text": "Any player may forfeit the game at any time. Forfeiting carries no penalty worse than losing outright.",
+          "mutable": false
+        },
+        {
+          "num": 114,
+          "text": "At least one mutable rule must remain in the ruleset at all times, and no rule change may render every future rule change impermissible.",
+          "mutable": false
+        },
+        {
+          "num": 115,
+          "text": "A rule may refer to itself, or apply to its own case; self-reference and self-application are not forbidden by their nature alone.",
+          "mutable": false
+        },
+        {
+          "num": 116,
+          "text": "Whatever the ruleset neither prohibits nor regulates is permitted, and remains genuinely unregulated — never governed by an unstated default.",
+          "mutable": false
+        },
+        {
+          "num": 201,
+          "text": "Players take one fixed turn order, set before play begins. Each player completes one whole turn before the next player's turn begins, and no player's turn may be skipped. Every player's score starts at zero.",
+          "mutable": true
+        },
+        {
+          "num": 202,
+          "text": "A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points.",
+          "mutable": true
+        },
+        {
+          "num": 203,
+          "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through two full circuits of every player, the threshold permanently drops to a simple majority of those voting.",
+          "mutable": true
+        },
+        {
+          "num": 204,
+          "text": "A rule change may be adopted without every voter's assent once the threshold has shifted to a simple majority (rule 203); a player who voted against an adopted change gains 10 points and remains bound by the change exactly as if they had voted for it.",
+          "mutable": true
+        },
+        {
+          "num": 205,
+          "text": "An adopted rule change takes effect the instant its vote is complete — never before, and never at some later moment.",
+          "mutable": true
+        },
+        {
+          "num": 206,
+          "text": "A proposal that fails to be adopted is recorded as defeated. Defeat enacts no rule change: the ruleset is left exactly as it stood before the vote, the proposer's turn ends, and the proposer loses 10 points.",
+          "mutable": true
+        },
+        {
+          "num": 207,
+          "text": "Each player casts exactly one vote on every proposal, and every player's vote carries equal weight.",
+          "mutable": true
+        },
+        {
+          "num": 208,
+          "text": "The first player to reach a target score of 100 points wins the game outright.",
+          "mutable": true
+        },
+        {
+          "num": 209,
+          "text": "The ruleset may never hold more than 25 mutable rules at one time.",
+          "mutable": true
+        },
+        {
+          "num": 210,
+          "text": "Players may not discuss the game, or negotiate about it, with one another outside the normal course of play — except that players who are officially teammates may consult freely between themselves.",
+          "mutable": true
+        },
+        {
+          "num": 211,
+          "text": "If two rules currently in force conflict, the conflict is resolved in favor of whichever rule carries the lower ordinal number, unless some rule explicitly provides a different resolution.",
+          "mutable": true
+        },
+        {
+          "num": 212,
+          "text": "Disputes over whether a rule applies as written, or whether a move was legal, are resolved through the table's appeal procedure: any player may dispute a decisive ruling, and a vote of all seated players decides whether that ruling stands or is overturned.",
+          "mutable": true
+        },
+        {
+          "num": 213,
+          "text": "If the ruleset is changed so that further play is impossible, or if a move's legality cannot be determined with finality, or if a move appears equally legal and illegal by the best reasoning available and not overruled, then the first player unable to complete a turn wins the game outright. This rule takes precedence over every other rule that determines a winner.",
+          "mutable": true
+        }
+      ],
+      "scores": {
+        "WilliamJames": 0,
+        "Dewey": 0,
+        "Royce": 0,
+        "Santayana": 0,
+        "Emerson": 0
+      },
+      "seed": 833509874
+    },
+    "ts": 1784917782.2746525
+  },
+  {
+    "seq": 2,
+    "type": "turn_started",
+    "data": {
+      "turn": 1,
+      "player": "WilliamJames"
+    },
+    "ts": 1784917782.2817712
+  },
+  {
+    "seq": 3,
+    "type": "proposal_made",
+    "data": {
+      "turn": 1,
+      "player": "WilliamJames",
+      "kind": "amend",
+      "targets": [
+        203
+      ],
+      "text": "A rule change is adopted only when every eligible voter votes aye — unanimous consent — except that once turn order has carried play through one full circuit of every player, the threshold permanently drops to a simple majority of those voting.",
+      "rationale": "Accelerates the shift to majority voting after one full circuit (5 turns) instead of two (10 turns), reducing gridlock while the game is young.",
+      "motion": 1,
+      "of": 1,
+      "proposal_num": 301
+    },
+    "ts": 1784917801.1298847
+  },
+  {
+    "seq": 4,
+    "type": "debate_round",
+    "data": {
+      "round": 1,
+      "of": 3
+    },
+    "ts": 1784917802.345526
+  },
+  {
+    "seq": 5,
+    "type": "debate_message",
+    "data": {
+      "player": "WilliamJames",
+      "text": "WilliamJames: This amendment accelerates the transition to majority rule, preventing a prolonged unanimous-consent phase that could stall the game indefinitely; one full circuit gives each player a single turn to establish the initial ruleset before simpler governance takes over.",
+      "round": 1
+    },
+    "ts": 1784917812.2170782
+  },
+  {
+    "seq": 6,
+    "type": "debate_message",
+    "data": {
+      "player": "Dewey",
+      "text": "Dewey: WilliamJames makes a fair point — two full circuits (ten turns with five players) risks long gridlock; I'd support dropping to one circuit if we also add a safeguard that any proposal affecting voting thresholds still requires unanimous consent during that first circuit.",
+      "round": 1
+    },
+    "ts": 1784917821.4352267
+  },
+  {
+    "seq": 7,
+    "type": "debate_message",
+    "data": {
+      "player": "Royce",
+      "text": "Royce: One circuit is plenty to seed a playable ruleset, and Dewey's safeguard is sensible — let's adopt the acceleration but attach a rider that any proposal altering voting thresholds still needs unanimity until the first circuit ends.",
+      "round": 1
+    },
+    "ts": 1784917828.0173674
+  },
+  {
+    "seq": 8,
+    "type": "debate_message",
+    "data": {
+      "player": "Santayana",
+      "text": "Santayana: The safeguard needs precise wording: \"affecting voting thresholds\" is too vague — does it cover this proposal itself, or only future ones? If it covers this proposal, we create a paradox; if not, the safeguard is toothless. Define the protected class of proposals by explicit rule numbers or clear syntactic criteria, then I'll support the acceleration.",
+      "round": 1
+    },
+    "ts": 1784917837.2454677
+  },
+  {
+    "seq": 9,
+    "type": "debate_message",
+    "data": {
+      "player": "Emerson",
+      "text": "Emerson: One circuit is right — two just rewards inertia. For the safeguard, let's explicitly shield rules 203 and 204 themselves: any proposal amending or repealing either during the first circuit still needs unanimity; after that, majority rule applies to everything, including the threshold rules.",
+      "round": 1
+    },
+    "ts": 1784917850.1513321
+  },
+  {
+    "seq": 10,
+    "type": "debate_round",
+    "data": {
+      "round": 2,
+      "of": 3
+    },
+    "ts": 1784917850.1584995
+  },
+  {
+    "seq": 11,
+    "type": "debate_message",
+    "data": {
+      "player": "WilliamJames",
+      "text": "WilliamJames: Emerson's wording is clean and avoids Santayana's paradox — shielding 203 and 204 by number during the first circuit is precise, enforceable, and doesn't entangle the current proposal. I'll accept that rider; the acceleration to one circuit is the essential improvement, and this safeguard preserves the unanimous-consent protection for the threshold rules themselves until the first circuit completes.",
+      "round": 2
+    },
+    "ts": 1784917864.8116188
+  },
+  {
+    "seq": 12,
+    "type": "debate_message",
+    "data": {
+      "player": "Dewey",
+      "text": "Dewey: I support the amended proposal with Emerson's rider — shielding rules 203 and 204 by explicit number during the first circuit is precise, avoids paradox, and preserves the unanimous-consent protection for the threshold rules themselves while still accelerating the transition to majority rule after one full circuit.",
+      "round": 2
+    },
+    "ts": 1784917870.703083
+  },
+  {
+    "seq": 13,
+    "type": "debate_message",
+    "data": {
+      "player": "Royce",
+      "text": "Royce: The rider shielding 203 and 204 by number through the first circuit is clean and avoids the paradox Santayana flagged; I'm satisfied with this version. WilliamJames, when you declare debate closed and set the final wording per 111, please include the explicit shield so the vote is on a single, unambiguous text.",
+      "round": 2
+    },
+    "ts": 1784917873.4311502
+  },
+  {
+    "seq": 14,
+    "type": "debate_message",
+    "data": {
+      "player": "Santayana",
+      "text": "Santayana: The rider shielding rules 203 and 204 by number through the first circuit resolves the precision problem cleanly; I support the amended proposal.",
+      "round": 2
+    },
+    "ts": 1784917875.7328863
+  },
+  {
+    "seq": 15,
+    "type": "debate_round",
+    "data": {
+      "round": 3,
+      "of": 3
+    },
+    "ts": 1784917884.1687992
+  },
+  {
+    "seq": 16,
+    "type": "debate_message",
+    "data": {
+      "player": "WilliamJames",
+      "text": "WilliamJames: The consensus is clear; I'll close debate now and set the final wording to include the one-circuit acceleration with the explicit shield for rules 203 and 204 during that first circuit.",
+      "round": 3
+    },
+    "ts": 1784917890.723234
+  },
+  {
+    "seq": 17,
+    "type": "vote_cast",
+    "data": {
+      "player": "WilliamJames",
+      "value": "aye",
+      "reason": "One circuit suffices to seed the ruleset; the explicit shield for rules 203 and 204 avoids paradox."
+    },
+    "ts": 1784917938.2145598
+  },
+  {
+    "seq": 18,
+    "type": "vote_cast",
+    "data": {
+      "player": "Dewey",
+      "value": "aye",
+      "reason": "The one-circuit acceleration with explicit shield for rules 203 and 204 balances faster governance with threshold stability."
+    },
+    "ts": 1784917953.2312703
+  },
+  {
+    "seq": 19,
+    "type": "vote_cast",
+    "data": {
+      "player": "Royce",
+      "value": "nay",
+      "reason": "The agreed-upon safeguard shielding rules 203 and 204 during the first circuit is absent from the final wording."
+    },
+    "ts": 1784917982.854614
+  },
+  {
+    "seq": 20,
+    "type": "vote_cast",
+    "data": {
+      "player": "Santayana",
+      "value": "aye",
+      "reason": "The proposal's text is clear and accelerates majority rule after one circuit; the discussed rider shielding 203/204 is absent from the voted wording, but the change itself is procedurally sound."
+    },
+    "ts": 1784917986.8067715
+  },
+  {
+    "seq": 21,
+    "type": "vote_cast",
+    "data": {
+      "player": "Emerson",
+      "value": "aye",
+      "reason": "Accelerates majority rule while protecting threshold rules during first circuit."
+    },
+    "ts": 1784918001.6983883
+  },
+  {
+    "seq": 22,
+    "type": "vote_result",
+    "data": {
+      "ayes": 4,
+      "nays": 1,
+      "abstains": 0,
+      "voting_rule": {
+        "type": "unanimous",
+        "value": 1.0,
+        "abstain_blocks": true,
+        "label": "unanimous consent required until two full circuits of every player",
+        "authority": 203
+      },
+      "passed": false,
+      "weights": {}
+    },
+    "ts": 1784918001.7055209
+  },
+  {
+    "seq": 23,
+    "type": "scores_updated",
+    "data": {
+      "scores": {
+        "WilliamJames": -10,
+        "Dewey": 0,
+        "Royce": 0,
+        "Santayana": 0,
+        "Emerson": 0
+      }
+    },
+    "ts": 1784918006.3567283
+  },
+  {
+    "seq": 24,
+    "type": "verdict",
+    "data": {
+      "passed": false,
+      "reasoning": "Rule 206 deducts 10 points from the proposer when a proposal is defeated.",
+      "next_player": "Dewey"
+    },
+    "ts": 1784918006.3639858
+  },
+  {
+    "seq": 25,
+    "type": "turn_started",
+    "data": {
+      "turn": 2,
+      "player": "Dewey"
+    },
+    "ts": 1784918008.7723148
+  },
+  {
+    "seq": 26,
+    "type": "seat_absent",
+    "data": {
+      "player": "Dewey",
+      "phase": "propose",
+      "turn": 2,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784918043.124134
+  },
+  {
+    "seq": 27,
+    "type": "turn_started",
+    "data": {
+      "turn": 3,
+      "player": "Royce"
+    },
+    "ts": 1784918045.5341618
+  },
+  {
+    "seq": 28,
+    "type": "seat_absent",
+    "data": {
+      "player": "Royce",
+      "phase": "propose",
+      "turn": 3,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784918093.6620622
+  },
+  {
+    "seq": 29,
+    "type": "turn_started",
+    "data": {
+      "turn": 4,
+      "player": "Santayana"
+    },
+    "ts": 1784918096.0708191
+  },
+  {
+    "seq": 30,
+    "type": "seat_absent",
+    "data": {
+      "player": "Santayana",
+      "phase": "propose",
+      "turn": 4,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784918129.3351266
+  },
+  {
+    "seq": 31,
+    "type": "turn_started",
+    "data": {
+      "turn": 5,
+      "player": "Emerson"
+    },
+    "ts": 1784918131.745151
+  },
+  {
+    "seq": 32,
+    "type": "seat_absent",
+    "data": {
+      "player": "Emerson",
+      "phase": "propose",
+      "turn": 5,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784918178.9286132
+  },
+  {
+    "seq": 33,
+    "type": "turn_started",
+    "data": {
+      "turn": 6,
+      "player": "WilliamJames"
+    },
+    "ts": 1784918181.3374166
+  },
+  {
+    "seq": 34,
+    "type": "seat_absent",
+    "data": {
+      "player": "WilliamJames",
+      "phase": "propose",
+      "turn": 6,
+      "reason": "malformed_reply",
+      "consecutive": 1
+    },
+    "ts": 1784918228.0034018
+  },
+  {
+    "seq": 35,
+    "type": "turn_started",
+    "data": {
+      "turn": 7,
+      "player": "Dewey"
+    },
+    "ts": 1784918230.4118614
+  },
+  {
+    "seq": 36,
+    "type": "seat_absent",
+    "data": {
+      "player": "Dewey",
+      "phase": "propose",
+      "turn": 7,
+      "reason": "malformed_reply",
+      "consecutive": 2
+    },
+    "ts": 1784918262.2952523
+  },
+  {
+    "seq": 37,
+    "type": "turn_started",
+    "data": {
+      "turn": 8,
+      "player": "Royce"
+    },
+    "ts": 1784918264.7336676
+  },
+  {
+    "seq": 38,
+    "type": "seat_absent",
+    "data": {
+      "player": "Royce",
+      "phase": "propose",
+      "turn": 8,
+      "reason": "malformed_reply",
+      "consecutive": 2
+    },
+    "ts": 1784918282.5339904
+  },
+  {
+    "seq": 39,
+    "type": "turn_started",
+    "data": {
+      "turn": 9,
+      "player": "Santayana"
+    },
+    "ts": 1784918284.9685729
+  },
+  {
+    "seq": 40,
+    "type": "seat_absent",
+    "data": {
+      "player": "Santayana",
+      "phase": "propose",
+      "turn": 9,
+      "reason": "malformed_reply",
+      "consecutive": 2
+    },
+    "ts": 1784918336.4945872
+  },
+  {
+    "seq": 41,
+    "type": "turn_started",
+    "data": {
+      "turn": 10,
+      "player": "Emerson"
+    },
+    "ts": 1784918338.903216
+  },
+  {
+    "seq": 42,
+    "type": "seat_absent",
+    "data": {
+      "player": "Emerson",
+      "phase": "propose",
+      "turn": 10,
+      "reason": "malformed_reply",
+      "consecutive": 2
+    },
+    "ts": 1784918390.8024795
+  },
+  {
+    "seq": 43,
+    "type": "turn_started",
+    "data": {
+      "turn": 11,
+      "player": "WilliamJames"
+    },
+    "ts": 1784918393.211129
+  },
+  {
+    "seq": 44,
+    "type": "seat_absent",
+    "data": {
+      "player": "WilliamJames",
+      "phase": "propose",
+      "turn": 11,
+      "reason": "malformed_reply",
+      "consecutive": 2
+    },
+    "ts": 1784918430.4979575
+  },
+  {
+    "seq": 45,
+    "type": "turn_started",
+    "data": {
+      "turn": 12,
+      "player": "Dewey"
+    },
+    "ts": 1784918432.906802
+  },
+  {
+    "seq": 46,
+    "type": "seat_absent",
+    "data": {
+      "player": "Dewey",
+      "phase": "propose",
+      "turn": 12,
+      "reason": "malformed_reply",
+      "consecutive": 3
+    },
+    "ts": 1784918451.9573994
+  },
+  {
+    "seq": 47,
+    "type": "run_halted",
+    "data": {
+      "reason": "seat Dewey was absent 3 consecutive times",
+      "winner": null
+    },
+    "ts": 1784918451.9653635
+  }
+]

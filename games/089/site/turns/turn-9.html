@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn 9 — Nomic</title>
+<meta name="description" content="Three AI models play Nomic — a game where changing the rules is the move. This is the statute as it now stands.">
+<style>
+:root{
+  --paper:#e6e9e4; --paper-2:#dde1da; --panel:#eef0ec;
+  --ink:#1c2321; --ink-soft:#4a544f; --ink-faint:#78827c;
+  --rule:#c3c9c0;
+  --oxblood:#7a2e2e;      /* struck out */
+  --indigo:#23407a;       /* inserted */
+  --bronze:#5b5340;       /* entrenched */
+  --civic:#3f6b4f;        /* player-made law, §301+ — distinct from bronze (entrenchment) */
+  --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:46rem;margin:0 auto;padding:clamp(1.2rem,4vw,3.5rem) clamp(1rem,5vw,2rem)}
+a{color:var(--indigo);text-underline-offset:.18em}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+/* masthead */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:2rem}
+.masthead h1{
+  font-size:clamp(1.9rem,6vw,3rem);margin:0;letter-spacing:.02em;font-weight:600;
+}
+.masthead h1 .mark{color:var(--bronze);font-weight:400}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.5rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin:2.6rem 0 .8rem;padding-bottom:.4rem;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow:first-of-type{margin-top:0}
+
+/* ── signature: the engrossed amendment ── */
+.engrossed{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--indigo);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;
+}
+.engrossed .caption{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.7rem;
+}
+.engrossed .caption b{color:var(--ink-soft);font-weight:500}
+.struck{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px;display:block;margin-bottom:.45rem}
+.inserted{color:var(--indigo);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:.16em;display:block}
+.repealed-note{color:var(--oxblood);font-style:italic}
+
+/* stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;
+}
+.stamp.carried{color:var(--indigo)}
+.stamp.rejected{color:var(--oxblood)}
+
+/* ── the statute ── */
+.statute{margin:0}
+.rule{
+  display:grid;grid-template-columns:3.6rem 1fr;gap:.2rem 1rem;
+  padding:.75rem 0;border-bottom:1px solid var(--rule);
+}
+.rule:last-child{border-bottom:none}
+.rule .num{
+  font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);
+  padding-top:.28rem;text-align:right;letter-spacing:.02em;
+}
+.rule.entrenched .num{color:var(--bronze)}
+.rule .body{font-size:1.06rem}
+.rule.entrenched .body{color:var(--ink)}
+.rule .body a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.rule .body a:hover{border-bottom-color:var(--rule)}
+.rule.amended{background:linear-gradient(90deg,rgba(35,64,122,.07),transparent)}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--indigo);margin-left:.5rem;white-space:nowrap;
+}
+.lede{color:var(--ink-soft);font-size:.94rem;margin:.2rem 0 1.4rem}
+
+/* ── the 213/301 divider: the Initial Set vs. player-made law ──
+   Suber's own numbering already carries the distinction (101-213 vs. 301+); this is
+   purely a visual accent, CSS only. */
+.rule.player-made .num{color:var(--civic)}
+.set-divider{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .2rem;padding-top:.7rem;
+  border-top:1px dashed var(--rule);
+}
+
+/* ── expandable rule history: <details>/<summary>, no JavaScript ──
+   Every version a rule has ever had, amended/repealed text struck through, each
+   citing the turn and Rule 108 proposal number that changed it. */
+.history{margin-top:.5rem}
+.history summary{
+  cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.history summary:hover{color:var(--ink-soft)}
+.history-list{list-style:none;margin:.6rem 0 0;padding:0}
+.history-list li{margin-bottom:.5rem}
+.history-list li:last-child{margin-bottom:0}
+.history .engrossed{padding:.65rem .75rem;margin-bottom:0}
+.history .engrossed .caption{font-size:.6rem}
+
+/* ── the register: a CSS-only filter, not fake ARIA tabs ──
+   Radio inputs give real keyboard semantics (arrow keys move between choices) with no
+   JavaScript. They are visually hidden but NOT display:none — that would strip them from
+   the tab order and make the control unreachable by keyboard. */
+.register > input{
+  position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;
+}
+.tabbar{
+  display:flex;gap:0;margin:0 0 .2rem;border-bottom:1px solid var(--rule);
+}
+.tabbar label{
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.55rem .95rem;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;
+}
+.tabbar label:hover{color:var(--ink-soft)}
+.tabbar .count{opacity:.65;margin-left:.4rem}
+#reg-live:checked ~ .tabbar label[for="reg-live"],
+#reg-all:checked ~ .tabbar label[for="reg-all"]{
+  color:var(--ink);background:var(--paper);
+  border-color:var(--rule);border-bottom:1px solid var(--paper);
+}
+#reg-live:focus-visible ~ .tabbar label[for="reg-live"],
+#reg-all:focus-visible ~ .tabbar label[for="reg-all"]{
+  outline:2px solid var(--indigo);outline-offset:2px;
+}
+.register .panel{display:none}
+#reg-live:checked ~ .panel-live,
+#reg-all:checked ~ .panel-all{display:block}
+
+.rule.repealed .num{color:var(--oxblood)}
+.rule.repealed .body{color:var(--oxblood);text-decoration:line-through;
+  text-decoration-thickness:1px}
+.rule.repealed .body a{color:inherit}
+.status{
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.55rem;white-space:nowrap;text-decoration:none;
+  display:inline-block;
+}
+.status.repealed{color:var(--oxblood)}
+.status.entrenched{color:var(--bronze)}
+
+/* ── progressive enhancement: controls injected by JS.
+   Nothing here renders without script, so a JS-less reader never sees a dead control. ── */
+.tools{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:0 0 .7rem}
+.tools input[type="search"]{
+  flex:1 1 12rem;min-width:0;font:inherit;font-size:.92rem;
+  padding:.42rem .6rem;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.tools input[type="search"]:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools .tally{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);white-space:nowrap;
+}
+.tools select{
+  font:inherit;font-size:.82rem;padding:.35rem .5rem;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.tools select:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
+.tools label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+mark{background:rgba(35,64,122,.16);color:inherit;padding:0 .1em}
+.rule[hidden]{display:none}
+.noresults{
+  padding:1.2rem 0;color:var(--ink-faint);font-style:italic;
+}
+
+/* ── standing ── */
+.standing{width:100%;border-collapse:collapse;font-size:1rem}
+.standing td{padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.standing tr:last-child td{border-bottom:none}
+.standing .pts{text-align:right;font-family:var(--mono);font-size:1.05rem}
+.standing .lead td{color:var(--indigo)}
+
+/* ── the players page: per-seat record + the seat-identity naming law ── */
+.players{display:grid;gap:1rem;margin-bottom:1.4rem}
+.player-card{
+  background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--bronze);
+  padding:1rem 1.15rem;
+}
+.player-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:600}
+.player-card .model-tag{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-left:.5rem;font-weight:400;
+}
+.player-card .persona{color:var(--ink-soft);font-style:italic;margin:.2rem 0 .8rem;
+  font-size:.95rem}
+.player-card .standing{font-size:.92rem}
+
+/* SPEC §3.5/§1 (R60): one small header per ledger, above its own standing table. */
+.ledger-label{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1.1rem 0 .3rem;
+}
+.ledger-label:first-of-type{margin-top:.4rem}
+
+/* ── record / proceedings ── */
+
+
+/* ── the transcript: a bounded, scrollable record of the game's dialogue ── */
+.transcript{
+  max-height:min(70vh,42rem);overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid var(--rule);background:var(--panel);
+  padding:0 1.1rem .8rem;
+}
+.transcript:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.transcript .hint{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:.75rem 0 0;
+}
+.tgroup{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
+.tgroup:last-child{border-bottom:none;padding-bottom:.2rem}
+.tgroup > h3{
+  position:sticky;top:0;z-index:1;margin:0 -1.1rem .55rem;padding:.5rem 1.1rem;
+  background:var(--panel);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-weight:500;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);
+  display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+}
+.tgroup > h3 a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tgroup > h3 a:hover{color:var(--indigo)}
+.tgroup > h3 .oc{margin-left:auto}
+.tgroup > h3 .oc.carried{color:var(--indigo)}
+.tgroup > h3 .oc.rejected,.tgroup > h3 .oc.out{color:var(--oxblood)}
+
+/* SPEC §3.2 (R33), Phase 0b follow-up: an absent/retrying seat, on the public record —
+   not only in the dev-only spectator stream. */
+.absence{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--ink-faint);font-style:italic;margin:.3rem 0;
+}
+
+.motion{font-size:.98rem;margin:.1rem 0 .7rem;color:var(--ink)}
+.motion .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint);margin-right:.5rem}
+.round{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:.7rem 0 .35rem}
+.line{display:grid;grid-template-columns:5.5rem 1fr;gap:.7rem;padding:.22rem 0;
+  font-size:.96rem;align-items:baseline}
+.line .who{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);
+  text-align:right;letter-spacing:.02em}
+.line .said{color:var(--ink)}
+.line.ballot-line .said{color:var(--ink-soft)}
+.line .v{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.05rem .35rem;border:1px solid currentColor;margin-right:.45rem}
+.v.aye{color:var(--indigo)} .v.nay{color:var(--oxblood)} .v.abstain{color:var(--ink-faint)}
+.tverdict{margin:.6rem 0 0;font-style:italic;color:var(--ink-soft);font-size:.93rem}
+
+.ballot{width:100%;border-collapse:collapse;margin-top:.4rem}
+.ballot td{padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.ballot tr:last-child td{border-bottom:none}
+.ballot .v{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;width:5.5rem}
+.ballot .aye{color:var(--indigo)} .ballot .nay{color:var(--oxblood)}
+.ballot .abstain{color:var(--ink-faint)}
+.ballot .why{color:var(--ink-faint);font-style:italic}
+
+.foot{margin-top:3.5rem;padding-top:1rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-faint);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.nav{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:1.6rem}
+.nav a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid var(--rule)}
+.nav a:hover{color:var(--indigo)}
+
+@media (max-width:34rem){
+  .rule{grid-template-columns:2.8rem 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav"><a href="../index.html">← The statute</a></div>
+<header class="masthead"><h1><span class="mark">§</span> Turn 9</h1><div class="meta"><span>Moved by <b>Quine-2</b></span><span>supermajority (§203)</span></div></header>
+<div class="eyebrow">The motion</div>
+<div class="engrossed"><div class="caption">To amend §202</div><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, unless the proposal is a transmutation, in which case they gain 15 points. Additionally, if a proposal fails, the proposer may re-propose it in their next turn without penalty, but if a player loses points for three consecutive defeats, they gain an additional turn to regain points. However, if a player&#x27;s score is negative, they receive an additional 5-point bonus on their next successful proposal.</span></div>
+<p class="lede">This amendment helps players recover from setbacks, maintaining engagement and fairness.</p>
+<div class="eyebrow">The floor</div>
+<div class="round">Discussion · round 1</div><div class="line"><span class="who">Frege-2</span><span class="said">I support Quine-2&#x27;s proposal to amend rule 202. Providing a bonus for players with negative scores is a fair incentive that encourages continued engagement and strategic play, aligning with the principle of maintaining a dynamic and balanced game environment. This amendment ensures players remain motivated even when behind, promoting fair competition and potentially averting player disengagement.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">Russell-2: I support Quine-2&#x27;s proposal. Allowing an additional 5-point bonus for players with negative scores could prevent players from falling too far behind, keeping the game competitive and ensuring more players stay engaged. This change fosters a more dynamic game environment where strategic risk-taking is encouraged.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">I support Quine-2&#x27;s proposal for amending rule 202. Offering a 5-point bonus for players with negative scores not only incentivizes continued participation but also helps maintain a balanced and engaging game environment. This change can prevent players from becoming demotivated and ensures that everyone has a fair chance to catch up, fostering a more inclusive and competitive atmosphere.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">I support Quine-2&#x27;s proposal for amending rule 202. Providing an additional 5-point bonus for players with negative scores aligns with the principle of maintaining procedural fairness and strategic depth, ensuring that all players have the opportunity to recover and continue contributing meaningfully to the game&#x27;s evolution. This proposal enhances engagement by incentivizing participation and strategic planning, even when a player is at a disadvantage, thus supporting a dynamic and balanced game environment.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">Wittgenstein-2: I support Quine-2&#x27;s proposal. Allowing players with negative scores to receive an additional 5-point bonus encourages strategic innovation and maintains engagement, ensuring that all players have a fair opportunity to recover and influence the game&#x27;s evolution. This proposal aligns with the game&#x27;s dynamic nature by fostering a more inclusive and competitive environment.</span></div><div class="round">Discussion · round 2</div><div class="line"><span class="who">Frege-2</span><span class="said">Frege-2: I appreciate the unanimous support for this proposal. This amendment maintains procedural integrity while ensuring fairness by providing a safety net for players who fall behind. It aligns with our shared objective of sustaining a balanced and competitive game environment, where strategic risk is rewarded and all players have the opportunity to participate meaningfully. Let&#x27;s move forward with this adoption to continue fostering dynamic engagement.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">Russell-2: I second Quine-2&#x27;s proposal and reaffirm my support. Granting a 5-point bonus to players with negative scores not only encourages continued participation but also adds a layer of strategic depth, allowing for more dynamic and unpredictable gameplay. This amendment ensures that the game remains fair and engaging for all players, maintaining a balanced competitive environment.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">I fully support Quine-2&#x27;s proposal for amending rule 202. The additional 5-point bonus for players with negative scores not only incentivizes participation but also enhances strategic depth by encouraging risk-taking, ensuring a fair and engaging environment for all players. This amendment aligns with our goal of maintaining a balanced and dynamic game, where every player has the opportunity to recover and contribute meaningfully.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">I fully endorse Quine-2&#x27;s proposal to amend rule 202. This change promotes fairness by allowing players who are behind to catch up, thereby maintaining engagement and ensuring a balanced competitive environment. By offering an additional 5-point bonus for players with negative scores, we encourage strategic innovation and keep all participants motivated to contribute meaningfully to the game&#x27;s evolution.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">I fully support Quine-2&#x27;s proposal. By offering a 5-point bonus for players with negative scores, we ensure that the game remains engaging and fair, encouraging strategic recovery and participation from all players, thus maintaining a dynamic and competitive environment.</span></div><div class="round">Discussion · round 3</div><div class="line"><span class="who">Frege-2</span><span class="said">I fully support Quine-2&#x27;s proposal. Offering a 5-point bonus for players with negative scores ensures fairness by giving all players a chance to recover, thus maintaining a balanced and dynamic environment. This change encourages strategic play and keeps everyone engaged, aligning with our shared goals of fair competition and continued participation. Let&#x27;s adopt this amendment to foster a more inclusive and competitive atmosphere.</span></div><div class="line"><span class="who">Russell-2</span><span class="said">I fully support Quine-2&#x27;s proposal to amend rule 202. Introducing an additional 5-point bonus for players with negative scores not only revitalizes engagement but also ensures strategic depth, allowing for dynamic recovery and maintaining a balanced, competitive environment. This amendment encourages all players to remain active and motivated, fostering an inclusive atmosphere that aligns with our shared objective of a fair and engaging game. Let&#x27;s adopt this change to enhance the game&#x27;s dynamism and fairness.</span></div><div class="line"><span class="who">Quine-2</span><span class="said">I fully support Quine-2&#x27;s proposal to amend rule 202. Introducing a 5-point bonus for players with negative scores not only encourages strategic risk-taking but also ensures that all players, regardless of their current standing, remain engaged and motivated to participate. This amendment fosters a dynamic and inclusive environment, aligning with our shared goal of maintaining a fair and competitive game for everyone. Let&#x27;s adopt this change to enhance the game&#x27;s balance and engagement.</span></div><div class="line"><span class="who">Carnap-2</span><span class="said">I fully support Quine-2&#x27;s proposal for amending rule 202. By offering a 5-point bonus to players with negative scores, we not only promote fairness and strategic depth but also ensure that all participants remain engaged and motivated, maintaining a balanced and dynamic game environment. This amendment aligns with my principle of ensuring procedural fairness, fostering an inclusive atmosphere where every player has the opportunity to recover and contribute meaningfully. Let&#x27;s adopt this change to enhance the overall competitiveness and fairness of the game.</span></div><div class="line"><span class="who">Wittgenstein-2</span><span class="said">I fully support Quine-2&#x27;s proposal to amend rule 202. This 5-point bonus for players with negative scores not only enhances fairness and encourages strategic engagement but also aligns with our shared vision of maintaining a dynamic and competitive game environment. By adopting this amendment, we ensure all players have a fair opportunity to recover and continue influencing the game&#x27;s evolution, fostering a balanced and inclusive atmosphere. Let&#x27;s adopt this change to enhance the game&#x27;s dynamism and fairness.</span></div>
+<div class="eyebrow">The division</div>
+<table class="ballot"><tbody><tr><td class="v aye">aye</td><td>Frege-2</td><td class="why">This amendment incentivizes strategic engagement for all players.</td></tr><tr><td class="v aye">aye</td><td>Russell-2</td><td class="why">Encourages strategic engagement and fairness.</td></tr><tr><td class="v aye">aye</td><td>Quine-2</td><td class="why">This proposal ensures fairness by aiding players with negative scores to remain engaged.</td></tr><tr><td class="v aye">aye</td><td>Carnap-2</td><td class="why">This amendment promotes fairness by aiding players with negative scores.</td></tr><tr><td class="v aye">aye</td><td>Wittgenstein-2</td><td class="why">This amendment promotes engagement and fair competition for players with negative scores.</td></tr></tbody></table>
+<p style="margin-top:1rem"><span class="stamp carried">carried 5 aye · 0 nay</span></p>
+<div class="eyebrow">As engrossed</div>
+<div class="engrossed">
+  <div class="caption">Amended · §202 Turn 9 · Proposal §309 on the motion of <b>Quine-2</b> <span class="stamp carried">Carried 5 aye · 0 nay</span></div>
+  <span class="struck">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, unless the proposal is a transmutation, in which case they gain 15 points. Additionally, if a proposal fails, the proposer may re-propose it in their next turn without penalty, but if a player loses points for three consecutive defeats, they gain an additional turn to regain points.</span><span class="inserted">A turn consists of the player to move proposing exactly one rule change, which is debated and then voted on by every player. If the proposal is adopted, the proposing player throws a six-sided die and gains that many points, unless the proposal is a transmutation, in which case they gain 15 points. Additionally, if a proposal fails, the proposer may re-propose it in their next turn without penalty, but if a player loses points for three consecutive defeats, they gain an additional turn to regain points. However, if a player&#x27;s score is negative, they receive an additional 5-point bonus on their next successful proposal.</span>
+</div>
+<p class="lede">Quine-2&#x27;s proposal was adopted, granting them a 5-point bonus as per the amended rule 202.</p>
+<footer class="foot">
+  <span>Nomic — a game in which changing the rules is the move</span>
+  <span><a href="../index.html">The statute</a> · <a href="../players.html">Players</a></span>
+</footer>
+</div>
+
+</body>
+</html>
